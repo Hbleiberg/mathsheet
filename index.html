@@ -1700,13 +1700,16 @@ function renderAnswerProblem(problem, answer) {
 }
 
 function buildAnswerKeySheet(allAnswers, isLast) {
-  var sheet = document.createElement("div");
-  sheet.className = "mwg-answer-key-sheet" + (isLast ? "" : " print-break");
-  var html = '<div class="mwg-ak-title">Answer Key</div>';
+  // Returns a document fragment with one page per student
+  var frag = document.createDocumentFragment();
   for (var i = 0; i < allAnswers.length; i++) {
     var entry = allAnswers[i];
     var problems = entry.problems;
-    html += '<div class="mwg-ak-student">' + esc(entry.name) + (entry.number ? " No." + esc(entry.number) : "") + ' \u2014 ' + esc(entry.desc) + '</div>';
+    var isLastSheet = isLast && i === allAnswers.length - 1;
+    var sheet = document.createElement("div");
+    sheet.className = "mwg-answer-key-sheet" + (isLastSheet ? "" : " print-break");
+    var html = '<div class="mwg-ak-title">Answer Key — ' + esc(entry.name) + (entry.number ? " No." + esc(entry.number) : "") + '</div>';
+    html += '<div class="mwg-ak-student">' + esc(entry.desc) + '</div>';
     if (entry.useHoriz) {
       html += '<div class="mwg-horiz-grid" style="height:auto">';
       for (var j = 0; j < problems.length; j++) html += renderAnswerProblem(problems[j], problems[j].answer);
@@ -1716,9 +1719,10 @@ function buildAnswerKeySheet(allAnswers, isLast) {
       for (var j = 0; j < problems.length; j++) html += renderAnswerProblem(problems[j], problems[j].answer);
       html += '</div>';
     }
+    sheet.innerHTML = html;
+    frag.appendChild(sheet);
   }
-  sheet.innerHTML = html;
-  return sheet;
+  return frag;
 }
 
 function generate() {
@@ -1741,7 +1745,7 @@ function generate() {
       }
     }
   }
-  if (doKey && allAnswers.length) resultsDiv.appendChild(buildAnswerKeySheet(allAnswers, true));
+  if (doKey && allAnswers.length) resultsDiv.appendChild(buildAnswerKeySheet(allAnswers, !doKey));
   resultsDiv.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -1770,75 +1774,58 @@ function generateAndSavePdf() {
       return;
     }
     showSuccess("Generating PDF, please wait...");
-    // Render each worksheet individually then combine into one PDF
-    // This avoids page overflow issues with html2pdf's single-element approach
+
+    // Build a hidden container with each sheet cloned and sized to exactly one landscape page
+    // 1056px = 11in at 96dpi (browser standard)
+    var PX_PER_IN = 96;
+    var PAGE_W = 11 * PX_PER_IN;  // 1056px
+    var PAGE_H = 8.5 * PX_PER_IN; // 816px
+
+    var container = document.createElement("div");
+    container.style.cssText = "position:fixed;left:-9999px;top:0;width:" + PAGE_W + "px;background:white;";
+    document.body.appendChild(container);
+
+    for (var i = 0; i < sheets.length; i++) {
+      var clone = sheets[i].cloneNode(true);
+      // Force exact page dimensions and remove page-break class
+      clone.style.cssText = [
+        "width:" + PAGE_W + "px",
+        "height:" + PAGE_H + "px",
+        "overflow:hidden",
+        "margin:0",
+        "padding:24px 29px",
+        "background:white",
+        "box-sizing:border-box",
+        "display:flex",
+        "flex-direction:column",
+        "page-break-after:always",
+        "break-after:page"
+      ].join(";");
+      clone.classList.remove("print-break");
+      container.appendChild(clone);
+    }
+
     var opt = {
       margin:      0,
       filename:    "worksheets.pdf",
       image:       { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true, windowWidth: 1056 },
-      jsPDF:       { unit: "in", format: "letter", orientation: "landscape" }
-    };
-    // Clone each sheet into a temporary wrapper sized exactly to one landscape page
-    var wrapper = document.createElement("div");
-    wrapper.style.cssText = "position:absolute;left:-9999px;top:0;width:11in;";
-    document.body.appendChild(wrapper);
-
-    var worker = html2pdf().set(opt);
-    var chain = Promise.resolve();
-    var pageCount = 0;
-
-    for (var i = 0; i < sheets.length; i++) {
-      (function(sheet, idx) {
-        chain = chain.then(function() {
-          var clone = sheet.cloneNode(true);
-          clone.style.cssText = "width:11in;height:8.5in;overflow:hidden;margin:0;padding:0.25in 0.3in;background:white;box-sizing:border-box;display:flex;flex-direction:column;";
-          clone.classList.remove("print-break");
-          wrapper.innerHTML = "";
-          wrapper.appendChild(clone);
-          if (idx === 0) {
-            return worker.from(clone).toImg().then(function() {
-              pageCount++;
-            });
-          } else {
-            return worker.from(clone).toImg().then(function() {
-              pageCount++;
-            });
-          }
-        });
-      })(sheets[i], i);
-    }
-
-    chain.then(function() {
-      document.body.removeChild(wrapper);
-    });
-
-    // Simpler fallback: render all at once with explicit page sizing
-    var container = document.createElement("div");
-    container.style.cssText = "width:11in;";
-    for (var i = 0; i < sheets.length; i++) {
-      var clone = sheets[i].cloneNode(true);
-      clone.style.cssText = "width:11in;height:8.5in;overflow:hidden;margin:0;padding:0.25in 0.3in;background:white;box-sizing:border-box;display:flex;flex-direction:column;page-break-after:always;";
-      clone.classList.remove("print-break");
-      container.appendChild(clone);
-    }
-    document.body.appendChild(container);
-
-    var pdfOpt = {
-      margin:      0,
-      filename:    "worksheets.pdf",
-      image:       { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 1.5, useCORS: true, windowWidth: 1056 },
-      jsPDF:       { unit: "in", format: "letter", orientation: "landscape" },
-      pagebreak:   { mode: "css", after: ".mwg-worksheet,.mwg-answer-key-sheet" }
+      html2canvas: {
+        scale:       1,
+        useCORS:     true,
+        width:       PAGE_W,
+        windowWidth: PAGE_W,
+        logging:     false
+      },
+      jsPDF:     { unit: "px", format: [PAGE_W, PAGE_H], orientation: "landscape" },
+      pagebreak: { mode: ["css","legacy"], after: "div" }
     };
 
-    html2pdf().set(pdfOpt).from(container).save().then(function() {
+    html2pdf().set(opt).from(container).save().then(function() {
       document.body.removeChild(container);
       showSuccess("PDF saved!");
-    }).catch(function() {
+    }).catch(function(err) {
       document.body.removeChild(container);
-      showNotice("PDF generation failed. Please use Generate & Print and save as PDF from the print dialog.");
+      showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF in the print dialog.");
     });
   }, 300);
 }
