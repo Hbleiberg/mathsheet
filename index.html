@@ -1729,7 +1729,7 @@ function buildAnswerKeySheet(allAnswers, isLast) {
         '<div class="mwg-ws-header-main">' +
           '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(entry.name) + '</span></div>' +
           '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + (entry.number ? esc(entry.number) : "") + '</span></div>' +
-          '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">ANSWER KEY — ' + esc(entry.desc) + '</span></div>' +
+          '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">ANSWER KEY — ' + esc(entry.desc) + (entry.copies > 1 ? " — Sheet " + entry.copyNum + " of " + entry.copies : "") + '</span></div>' +
         '</div>' +
       '</div>' +
       '<div class="mwg-ak-body">' + bodyHtml + '</div>';
@@ -1753,8 +1753,8 @@ function generate() {
       var isLast = !doKey && pageCounter === total;
       var result = buildWorksheet(student, c, copies, isLast);
       resultsDiv.appendChild(result.el);
-      if (doKey && c === 1) {
-        allAnswers.push({ name:student.name, number:student.number, desc:descriptionFor(student.type,student.grade,student.count), problems:result.problems, useHoriz:result.useHoriz, grid:result.grid });
+      if (doKey) {
+        allAnswers.push({ name:student.name, number:student.number, desc:descriptionFor(student.type,student.grade,student.count), problems:result.problems, useHoriz:result.useHoriz, grid:result.grid, copyNum:c, copies:copies });
       }
     }
   }
