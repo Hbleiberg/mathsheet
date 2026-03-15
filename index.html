@@ -1692,13 +1692,15 @@ function renderAnswerProblem(problem, answer) {
   if (problem.kind === "division") {
     var wide = String(problem.html).indexOf("1.3in") !== -1 || String(problem.html).indexOf("1.02in") === -1;
     var minW = wide ? "1.3in" : "1.02in";
+    var divFontSize = wide ? "18px" : "20px";
+    // Answer sits above the bracket line, right-aligned inside the bracket (like a real quotient)
     return '<div class="mwg-problem-cell">' +
-      '<div style="text-align:center">' +
-        '<div class="mwg-division-problem" style="min-width:' + minW + ';font-size:' + (wide?"18px":"20px") + '">' +
-          '<span class="mwg-division-divisor">' + problem.divisor + '</span>' +
-          '<div class="mwg-division-bracket"><span class="mwg-division-dividend">' + problem.dividend + '</span></div>' +
+      '<div class="mwg-division-problem" style="min-width:' + minW + ';font-size:' + divFontSize + ';align-items:flex-start">' +
+        '<span class="mwg-division-divisor">' + problem.divisor + '</span>' +
+        '<div style="display:flex;flex-direction:column;border-left:2px solid rgb(17,17,17)">' +
+          '<span style="display:block;font-weight:bold;color:rgb(180,0,0);font-size:' + divFontSize + ';text-align:right;padding:0 4px 0 6px;border-bottom:2px solid rgb(17,17,17);line-height:1.2">' + ansStr + '</span>' +
+          '<span style="display:block;padding:2px 4px 0 6px;line-height:1.2">' + problem.dividend + '</span>' +
         '</div>' +
-        '<span style="display:block;font-weight:bold;color:rgb(180,0,0);font-size:15px;text-align:center;padding-top:2px">' + ansStr + '</span>' +
       '</div>' +
     '</div>';
   }
