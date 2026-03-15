@@ -701,6 +701,13 @@ break-after:avoid !important;
     <button type="button" id="clearSavedRosterButton" class="btn-small">Clear Saved Roster</button>
   </div>
 
+  <div id="mmValidationBox" style="display:none;border:1px solid rgb(204,0,0);background:rgb(255,243,243);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:14px;line-height:1.6;">
+    <div id="mmValidationMsg"></div>
+    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+      <button type="button" id="mmValidationFix" class="btn-small">Fix</button>
+      <button type="button" id="mmValidationGenerate" class="btn-small">Generate Anyway</button>
+    </div>
+  </div>
   <div class="primary-actions">
     <button type="button" id="generatePrintButton" class="btn-large">Generate &amp; Print Worksheets</button>
     <button type="button" id="savePdfButton" class="btn-large">Generate &amp; Save PDF</button>
@@ -711,20 +718,7 @@ break-after:avoid !important;
 <div id="results"></div>
 <div id="errors"></div>
 
-<div class="modal-overlay" id="mmValidationModal">
-  <div class="modal-box" style="max-width:480px">
-    <div class="modal-header">
-      <div class="modal-title">Incomplete Students</div>
-    </div>
-    <div class="modal-body">
-      <div id="mmValidationMsg" style="font-size:14px;line-height:1.6;margin-bottom:12px;"></div>
-      <div class="modal-actions">
-        <button type="button" id="mmValidationFix" class="btn-small">Fix</button>
-        <button type="button" id="mmValidationGenerate" class="btn-small">Generate Anyway</button>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <div class="modal-overlay" id="advancedCodeModal">
   <div class="modal-box">
@@ -757,7 +751,7 @@ var clearSavedRosterButton = null;
 var generatePrintButton = null;
 var savePdfButton = null;
 var answerKeyToggle = null;
-var mmValidationModal = null;
+var mmValidationBox = null;
 var mmValidationMsg = null;
 var mmValidationFix = null;
 var mmValidationGenerate = null;
@@ -951,7 +945,10 @@ function setInputMode(mode) {
 }
 
 function clearErrors() { errors.innerHTML = ""; }
-function clearStatusMessages() { statusMessages.innerHTML = ""; }
+function clearStatusMessages() {
+  statusMessages.innerHTML = "";
+  if (mmValidationBox) mmValidationBox.style.display = "none";
+}
 
 function showErrors(errorList) {
   if (!errorList || !errorList.length) { errors.innerHTML = ""; return; }
@@ -1383,7 +1380,8 @@ function validateAndRun(action) {
   }
   html += '<br>Fields are highlighted in red. You can fix them or generate anyway.';
   mmValidationMsg.innerHTML = html;
-  mmValidationModal.classList.add("active");
+  mmValidationBox.style.display = "block";
+  mmValidationBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function generateWorksheets() {
@@ -1523,7 +1521,7 @@ function assignDomRefs() {
   useAdvancedCodeButton      = document.getElementById("useAdvancedCodeButton");
   answerKeyToggle            = document.getElementById("answerKeyToggle");
   savePdfButton              = document.getElementById("savePdfButton");
-  mmValidationModal          = document.getElementById("mmValidationModal");
+  mmValidationBox            = document.getElementById("mmValidationBox");
   mmValidationMsg            = document.getElementById("mmValidationMsg");
   mmValidationFix            = document.getElementById("mmValidationFix");
   mmValidationGenerate       = document.getElementById("mmValidationGenerate");
@@ -1584,14 +1582,14 @@ function wireButtons() {
   });
 
   mmValidationFix.addEventListener("click", function() {
-    mmValidationModal.classList.remove("active");
+    mmValidationBox.style.display = "none";
     mmPendingAction = null;
     var first = studentsContainer.querySelector('[style*="rgb(204,0,0)"]');
     if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
   });
 
   mmValidationGenerate.addEventListener("click", function() {
-    mmValidationModal.classList.remove("active");
+    mmValidationBox.style.display = "none";
     clearValidationHighlights();
     if (mmPendingAction) {
       var action = mmPendingAction;
