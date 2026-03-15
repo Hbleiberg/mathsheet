@@ -1,0 +1,1631 @@
+<div id="math-minute-app">
+<style>
+
+#math-minute-app{
+font-family:Arial,sans-serif;
+max-width:1100px;
+margin:0 auto;
+color:#111;
+}
+
+#math-minute-app *,
+#math-minute-app *::before,
+#math-minute-app *::after{
+box-sizing:border-box;
+}
+
+#student-form-title{
+text-align:center;
+margin-bottom:18px;
+}
+
+.student-entry{
+border:1px solid #ccc;
+padding:12px;
+margin-bottom:12px;
+border-radius:8px;
+background:#f9f9f9;
+}
+
+.student-entry-header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+margin-bottom:10px;
+}
+
+.student-entry h3{
+margin:0;
+font-size:18px;
+}
+
+.student-entry-actions{
+display:flex;
+align-items:center;
+gap:10px;
+flex-wrap:wrap;
+justify-content:flex-end;
+}
+
+.duplicate-student-link,
+.delete-student-link{
+font-size:13px;
+color:#0645AD;
+text-decoration:underline;
+cursor:pointer;
+background:none;
+border:none;
+padding:0;
+line-height:1.2;
+}
+
+.duplicate-student-link:hover,
+.delete-student-link:hover{
+color:#042f6b;
+}
+
+.student-grid{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+}
+
+.student-grid label,
+.advanced-input-wrap label,
+.setting-group label,
+.level-reference-card label{
+display:block;
+font-weight:bold;
+margin-bottom:4px;
+font-size:14px;
+}
+
+.student-grid input,
+.student-grid select,
+.advanced-input-wrap textarea,
+.setting-group select{
+width:100%;
+padding:8px;
+font-size:14px;
+}
+
+.advanced-layout{
+display:grid;
+grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);
+gap:14px;
+align-items:start;
+}
+
+.advanced-input-wrap,
+.level-reference-card{
+border:1px solid #ccc;
+padding:12px;
+margin-bottom:12px;
+border-radius:8px;
+background:#f9f9f9;
+}
+
+.advanced-input-wrap textarea{
+min-height:180px;
+resize:vertical;
+font-family:Arial,sans-serif;
+}
+
+.advanced-help{
+font-size:13px;
+color:#444;
+margin-top:8px;
+line-height:1.4;
+}
+
+.level-reference-title{
+font-size:15px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.level-reference-grid{
+display:grid;
+grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+gap:6px 18px;
+font-size:13px;
+line-height:1.35;
+align-items:start;
+}
+
+.level-reference-item{
+white-space:nowrap;
+}
+
+.button-row{
+margin-top:16px;
+display:flex;
+gap:10px;
+flex-wrap:nowrap;
+align-items:center;
+overflow-x:auto;
+padding-bottom:2px;
+justify-content:center;
+}
+
+.primary-actions{
+margin-top:12px;
+display:flex;
+gap:12px;
+flex-wrap:wrap;
+align-items:center;
+justify-content:center;
+}
+
+.btn-small{
+padding:7px 12px;
+font-size:14px;
+cursor:pointer;
+flex:0 0 auto;
+white-space:nowrap;
+}
+
+.btn-large{
+padding:12px 20px;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.mode-pill{
+display:inline-block;
+padding:6px 10px;
+border-radius:999px;
+background:#eef3ff;
+border:1px solid #c7d6ff;
+font-size:13px;
+font-weight:bold;
+flex:0 0 auto;
+white-space:nowrap;
+}
+
+.settings-row{
+display:flex;
+gap:14px;
+flex-wrap:wrap;
+align-items:end;
+justify-content:space-between;
+margin:10px 0 8px 0;
+}
+
+.settings-left{
+display:flex;
+gap:14px;
+flex-wrap:wrap;
+align-items:end;
+}
+
+.setting-group{
+min-width:210px;
+max-width:260px;
+flex:0 1 260px;
+}
+
+.student-counter{
+font-size:14px;
+font-weight:bold;
+color:#444;
+margin:6px 0 10px 0;
+}
+
+#advancedInputSection{
+display:none;
+}
+
+#results{
+margin-top:30px;
+}
+
+/* PRINT PAGE FIX */
+
+.worksheet{
+width:11in;
+height:8.5in;
+margin:0 auto 12px auto;
+background:white;
+color:black;
+padding:0.25in 0.3in;
+border:1px solid #bbb;
+display:flex;
+flex-direction:column;
+overflow:hidden;
+page-break-inside:avoid;
+break-inside:avoid-page;
+}
+
+.worksheet.print-break{
+page-break-after:always;
+}
+
+.worksheet:last-child{
+page-break-after:auto;
+}
+
+.worksheet-header{
+border-top:2px solid #222;
+border-left:2px solid #222;
+border-right:2px solid #222;
+padding:7px 10px 8px 10px;
+margin-bottom:0.02in;
+flex:0 0 auto;
+}
+
+.worksheet-header-main{
+width:100%;
+display:grid;
+grid-template-columns:2fr 1fr 3fr;
+gap:14px;
+align-items:center;
+}
+
+.student-field{
+display:flex;
+align-items:center;
+gap:8px;
+min-width:0;
+}
+
+.student-field-label{
+font-size:12px;
+font-weight:bold;
+text-transform:uppercase;
+letter-spacing:.35px;
+flex-shrink:0;
+}
+
+.student-field-value{
+flex:1;
+min-height:24px;
+border-bottom:1px solid #222;
+padding:1px 3px;
+font-size:18px;
+font-weight:bold;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+}
+
+.description-box{
+min-height:24px;
+border:1px solid #222;
+padding:6px 8px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+font-size:13px;
+font-style:italic;
+line-height:1.15;
+background:#fafafa;
+}
+
+.description-text{
+min-width:0;
+flex:1 1 auto;
+}
+
+.worksheet-set-label{
+border-left:1px solid #bbb;
+padding-left:10px;
+font-style:normal;
+font-weight:bold;
+white-space:nowrap;
+}
+
+.worksheet-body{
+flex:1 1 auto;
+min-height:0;
+display:flex;
+overflow:hidden;
+}
+
+.problems-grid{
+width:100%;
+height:100%;
+display:grid;
+grid-template-columns:repeat(10,1fr);
+justify-items:center;
+align-items:center;
+padding:0;
+min-height:0;
+min-width:0;
+row-gap:0;
+}
+
+.rows-3{
+grid-template-rows:repeat(3,1fr);
+}
+
+.rows-4{
+grid-template-rows:repeat(4,1fr);
+}
+
+.rows-5{
+grid-template-rows:repeat(5,1fr);
+}
+
+.rows-6{
+grid-template-rows:repeat(6,1fr);
+}
+
+.problem-cell{
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+min-height:0;
+min-width:0;
+}
+
+.problem-stack{
+width:0.62in;
+text-align:right;
+font-size:23px;
+line-height:0.98;
+font-family:Arial,sans-serif;
+}
+
+.problem-top{
+display:block;
+min-height:22px;
+padding-right:1px;
+}
+
+.problem-bottom-line{
+display:flex;
+justify-content:flex-end;
+align-items:center;
+min-height:24px;
+border-bottom:2px solid #111;
+padding-bottom:1px;
+}
+
+.problem-operator{
+margin-right:2px;
+}
+
+.problem-bottom{
+min-width:18px;
+text-align:right;
+display:inline-block;
+}
+
+.division-problem{
+display:inline-flex;
+align-items:flex-start;
+justify-content:center;
+font-size:23px;
+line-height:0.98;
+font-family:Arial,sans-serif;
+min-width:1.02in;
+}
+
+.division-divisor{
+padding-top:8px;
+padding-right:2px;
+min-width:0.22in;
+text-align:right;
+}
+
+.division-bracket{
+border-left:2px solid #111;
+border-top:2px solid #111;
+min-width:0.48in;
+padding:2px 4px 0 6px;
+min-height:0.32in;
+display:flex;
+align-items:flex-start;
+justify-content:flex-start;
+}
+
+.division-dividend{
+display:inline-block;
+padding-top:1px;
+}
+
+.error-box{
+border:1px solid #d33;
+background:#fff3f3;
+color:#900;
+padding:10px 12px;
+border-radius:8px;
+margin-top:12px;
+white-space:pre-line;
+}
+
+.notice-box{
+border:1px solid #d6aa00;
+background:#fff8db;
+color:#6b5600;
+padding:10px 12px;
+border-radius:8px;
+margin-top:12px;
+white-space:pre-line;
+}
+
+.success-box{
+border:1px solid #3c9a49;
+background:#eefbf0;
+color:#23652d;
+padding:10px 12px;
+border-radius:8px;
+margin-top:12px;
+white-space:pre-line;
+}
+
+.modal-overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.45);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:9999;
+padding:20px;
+}
+
+.modal-overlay.active{
+display:flex;
+}
+
+.modal-box{
+width:min(760px,100%);
+max-height:85vh;
+background:#fff;
+border-radius:12px;
+box-shadow:0 20px 60px rgba(0,0,0,0.25);
+overflow:hidden;
+display:flex;
+flex-direction:column;
+}
+
+.modal-header{
+padding:14px 16px;
+border-bottom:1px solid #ddd;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:12px;
+}
+
+.modal-title{
+font-size:18px;
+font-weight:bold;
+}
+
+.modal-close{
+border:1px solid #bbb;
+background:#f5f5f5;
+border-radius:6px;
+padding:6px 10px;
+cursor:pointer;
+font-size:14px;
+}
+
+.modal-body{
+padding:16px;
+}
+
+.modal-body textarea{
+width:100%;
+min-height:260px;
+resize:vertical;
+font-family:Arial,sans-serif;
+font-size:14px;
+padding:10px;
+}
+
+.modal-help{
+margin-top:10px;
+font-size:13px;
+color:#444;
+line-height:1.4;
+}
+
+.modal-actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:12px;
+}
+
+@media (max-width:860px){
+  .advanced-layout{
+    grid-template-columns:1fr;
+  }
+
+  .level-reference-grid{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:6px 12px;
+  }
+}
+
+@media (max-width:560px){
+  .student-grid{
+    grid-template-columns:1fr;
+  }
+
+  .student-entry-header{
+    align-items:flex-start;
+  }
+
+  .student-entry-actions{
+    justify-content:flex-start;
+  }
+
+  .level-reference-card{
+    overflow-x:auto;
+  }
+
+  .level-reference-grid{
+    grid-template-columns:minmax(120px,1fr) minmax(120px,1fr);
+    gap:6px 10px;
+    min-width:250px;
+  }
+
+  .level-reference-item{
+    white-space:normal;
+    word-break:break-word;
+  }
+
+  .worksheet-header-main{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+
+  .description-box{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .worksheet-set-label{
+    border-left:none;
+    padding-left:0;
+  }
+
+  .primary-actions{
+    flex-direction:column;
+    align-items:stretch;
+  }
+}
+
+@page{
+size:11in 8.5in landscape;
+margin:0;
+}
+
+@media print{
+
+html, body{
+margin:0 !important;
+padding:0 !important;
+}
+
+body > *{
+display:none !important;
+}
+
+#results{
+display:block !important;
+width:11in !important;
+margin:0 !important;
+padding:0 !important;
+}
+
+.worksheet{
+display:flex !important;
+border:none !important;
+box-shadow:none !important;
+margin:0 !important;
+padding:0.25in 0.3in !important;
+width:11in !important;
+height:8.5in !important;
+}
+
+.worksheet.print-break{
+page-break-after:always !important;
+break-after:page !important;
+}
+
+.worksheet:last-child{
+page-break-after:avoid !important;
+break-after:avoid !important;
+}
+
+}
+
+</style>
+
+<form id="mathMinuteForm">
+  <div class="button-row" style="margin-top:0; margin-bottom:12px;">
+    <span class="mode-pill" id="modeIndicator">Standard Input</span>
+    <button type="button" id="toggleInputModeButton" class="btn-small">Advanced Input</button>
+  </div>
+
+  <div class="settings-row">
+    <div class="settings-left">
+      <div class="setting-group">
+        <label for="worksheetsPerStudent">Worksheets per student</label>
+        <select id="worksheetsPerStudent">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
+      <input type="checkbox" id="answerKeyToggle" style="width:16px;height:16px;cursor:pointer;" />
+      <label for="answerKeyToggle" style="cursor:pointer;">Print answer key</label>
+    </div>
+  </div>
+
+  <div id="standardInputSection">
+    <div class="student-counter" id="studentCounter">Students: 0</div>
+    <div id="studentsContainer"></div>
+  </div>
+
+  <div id="advancedInputSection">
+    <div class="advanced-layout">
+      <div class="advanced-input-wrap">
+        <label for="advancedInputBox">Paste student data</label>
+        <textarea id="advancedInputBox" placeholder="Harrison, 2, 19; Emily, 5, 7; Jacob, 14, 21;"></textarea>
+        <div class="advanced-help">
+          Format: <strong>STUDENTNAME, NUMBER, LEVEL; NEXTSTUDENT, NEXTNUMBER, LEVEL;</strong><br>
+          You can also paste one student per line.<br>
+          Example: <strong>Harrison, 2, 19; Emily, 5, 7; Jacob, 14, 21;</strong><br>
+          Extra spaces are okay. Blank trailing entries are ignored. Invalid entries are skipped and listed in an error message.
+        </div>
+      </div>
+
+      <div class="level-reference-card">
+        <div class="level-reference-title">Level Reference</div>
+        <div class="level-reference-grid" id="levelReferenceGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="button-row">
+    <button type="button" id="addStudentButton" class="btn-small">Add Student</button>
+    <button type="button" id="generateAdvancedCodeButton" class="btn-small">Generate Advanced Code</button>
+    <button type="button" id="saveRosterButton" class="btn-small">Save Roster</button>
+    <button type="button" id="clearCurrentRosterButton" class="btn-small">Clear Current Roster</button>
+    <button type="button" id="clearSavedRosterButton" class="btn-small">Clear Saved Roster</button>
+  </div>
+
+  <div class="primary-actions">
+    <button type="button" id="generatePrintButton" class="btn-large">Generate &amp; Print Worksheets</button>
+    <button type="button" id="savePdfButton" class="btn-large">Generate &amp; Save PDF</button>
+  </div>
+</form>
+
+<div id="statusMessages"></div>
+<div id="results"></div>
+<div id="errors"></div>
+
+<div class="modal-overlay" id="mmValidationModal">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title">Incomplete Students</div>
+    </div>
+    <div class="modal-body">
+      <div id="mmValidationMsg" style="font-size:14px;line-height:1.6;margin-bottom:12px;"></div>
+      <div class="modal-actions">
+        <button type="button" id="mmValidationFix" class="btn-small">Fix</button>
+        <button type="button" id="mmValidationGenerate" class="btn-small">Generate Anyway</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="advancedCodeModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Advanced Input Code</div>
+      <button type="button" class="modal-close" id="closeAdvancedCodeModal">Close</button>
+    </div>
+    <div class="modal-body">
+      <textarea id="advancedCodeOutput" readonly=""></textarea>
+      <div class="modal-help">
+        This text is formatted for the Advanced Input box. You can copy and paste it directly.
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="copyAdvancedCodeButton" class="btn-small">Copy Code</button>
+        <button type="button" id="useAdvancedCodeButton" class="btn-small">Use in Advanced Input</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+"use strict";
+
+var studentsContainer = null;
+var addStudentButton = null;
+var saveRosterButton = null;
+var clearCurrentRosterButton = null;
+var clearSavedRosterButton = null;
+var generatePrintButton = null;
+var savePdfButton = null;
+var answerKeyToggle = null;
+var mmValidationModal = null;
+var mmValidationMsg = null;
+var mmValidationFix = null;
+var mmValidationGenerate = null;
+var mmPendingAction = null;
+var results = null;
+var errors = null;
+var statusMessages = null;
+var toggleInputModeButton = null;
+var standardInputSection = null;
+var advancedInputSection = null;
+var advancedInputBox = null;
+var modeIndicator = null;
+var worksheetsPerStudent = null;
+var levelReferenceGrid = null;
+var studentCounter = null;
+var generateAdvancedCodeButton = null;
+var advancedCodeModal = null;
+var closeAdvancedCodeModal = null;
+var advancedCodeOutput = null;
+var copyAdvancedCodeButton = null;
+var useAdvancedCodeButton = null;
+
+var STORAGE_KEY = "mathMinuteRosterData_v1";
+var inputMode = "standard";
+
+var levelNames = [
+  "01 - Easy Addition",
+  "02 - Hard Addition",
+  "03 - Easy Subtraction",
+  "04 - Hard Subtraction",
+  "05 - 40 Addition",
+  "06 - 40 Subtraction",
+  "07 - 50 Addition",
+  "08 - 50 Subtraction",
+  "09 - 60 Addition",
+  "10 - 60 Subtraction",
+  "11 - Easy X",
+  "12 - Hard X",
+  "13 - 40 X",
+  "14 - 50 X",
+  "15 - 60 X",
+  "16 - Easy \u00f7",
+  "17 - Hard \u00f7",
+  "18 - 40 \u00f7",
+  "19 - 50 \u00f7",
+  "20 - 60 \u00f7",
+  "21 - Mixed"
+];
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "\u0027");
+}
+
+function renderLevelReference() {
+  var left = levelNames.slice(0, 11);
+  var right = levelNames.slice(11);
+  var maxRows = Math.max(left.length, right.length);
+  var html = "";
+  for (var i = 0; i < maxRows; i++) {
+    if (left[i]) {
+      html += '<div class="level-reference-item">' + (i + 1) + " \u2013 " +
+        escapeHtml(left[i].replace(/^\d+\s-\s/, "")) + "</div>";
+    } else {
+      html += "<div></div>";
+    }
+    if (right[i]) {
+      html += '<div class="level-reference-item">' + (i + 12) + " \u2013 " +
+        escapeHtml(right[i].replace(/^\d+\s-\s/, "")) + "</div>";
+    } else {
+      html += "<div></div>";
+    }
+  }
+  levelReferenceGrid.innerHTML = html;
+}
+
+function updateStudentCounter() {
+  var count = studentsContainer.querySelectorAll(".student-entry").length;
+  studentCounter.textContent = "Students: " + count;
+}
+
+function getLevelOptions(selectedValue) {
+  selectedValue = selectedValue || "";
+  var options = '<option value="">Select Level</option>';
+  for (var i = 0; i < levelNames.length; i++) {
+    var value = i + 1;
+    var selected = String(value) === String(selectedValue) ? "selected" : "";
+    options += '<option value="' + value + '" ' + selected + ">" + levelNames[i] + "</option>";
+  }
+  return options;
+}
+
+function createStudentEntry(index, studentData) {
+  studentData = studentData || {};
+  var nameValue   = studentData.name   ? escapeHtml(studentData.name)   : "";
+  var numberValue = studentData.number ? escapeHtml(studentData.number) : "";
+  var levelValue  = studentData.level  ? studentData.level               : "";
+
+  var div = document.createElement("div");
+  div.className = "student-entry";
+  div.innerHTML =
+    '<div class="student-entry-header">' +
+      '<h3>Student ' + index + '</h3>' +
+      '<div class="student-entry-actions">' +
+        '<button type="button" class="duplicate-student-link">Duplicate student</button>' +
+        '<button type="button" class="delete-student-link">Delete student</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="student-grid">' +
+      '<div><label>Student Name</label><input type="text" name="studentName" value="' + nameValue + '" /></div>' +
+      '<div><label>Student Number</label><input type="text" name="studentNumber" value="' + numberValue + '" /></div>' +
+      '<div><label>Level</label><select name="level">' + getLevelOptions(levelValue) + '</select></div>' +
+    '</div>';
+
+  var deleteButton = div.querySelector(".delete-student-link");
+  deleteButton.addEventListener("click", function () {
+    div.parentNode.removeChild(div);
+    if (!studentsContainer.querySelector(".student-entry")) {
+      buildDefaultStudents();
+    } else {
+      refreshStudentNumbers();
+      updateStudentCounter();
+    }
+    clearStatusMessages();
+  });
+
+  var duplicateButton = div.querySelector(".duplicate-student-link");
+  duplicateButton.addEventListener("click", function () {
+    var name   = div.querySelector('input[name="studentName"]').value.trim();
+    var number = div.querySelector('input[name="studentNumber"]').value.trim();
+    var level  = div.querySelector('select[name="level"]').value;
+    var newNumber = number;
+    if (!isNaN(number) && number !== "") {
+      newNumber = String(parseInt(number, 10) + 1);
+    }
+    var newEntry = createStudentEntry(
+      studentsContainer.querySelectorAll(".student-entry").length + 1,
+      { name: name, number: newNumber, level: level }
+    );
+    div.parentNode.insertBefore(newEntry, div.nextSibling);
+    refreshStudentNumbers();
+    clearStatusMessages();
+  });
+
+  return div;
+}
+
+function refreshStudentNumbers() {
+  var entries = studentsContainer.querySelectorAll(".student-entry");
+  for (var i = 0; i < entries.length; i++) {
+    entries[i].querySelector("h3").textContent = "Student " + (i + 1);
+  }
+  updateStudentCounter();
+}
+
+function addStudent(studentData) {
+  var count = studentsContainer.querySelectorAll(".student-entry").length + 1;
+  studentsContainer.appendChild(createStudentEntry(count, studentData));
+  updateStudentCounter();
+}
+
+function buildDefaultStudents() {
+  studentsContainer.innerHTML = "";
+  for (var i = 1; i <= 3; i++) {
+    studentsContainer.appendChild(createStudentEntry(i));
+  }
+  updateStudentCounter();
+}
+
+function setInputMode(mode) {
+  inputMode = mode === "advanced" ? "advanced" : "standard";
+  if (inputMode === "advanced") {
+    standardInputSection.style.display = "none";
+    advancedInputSection.style.display = "block";
+    modeIndicator.textContent = "Advanced Input";
+    toggleInputModeButton.textContent = "Back to Standard Input";
+    addStudentButton.style.display = "none";
+    if (generateAdvancedCodeButton) generateAdvancedCodeButton.style.display = "none";
+  } else {
+    standardInputSection.style.display = "block";
+    advancedInputSection.style.display = "none";
+    modeIndicator.textContent = "Standard Input";
+    toggleInputModeButton.textContent = "Advanced Input";
+    addStudentButton.style.display = "inline-block";
+    if (generateAdvancedCodeButton) generateAdvancedCodeButton.style.display = "inline-block";
+  }
+}
+
+function clearErrors() { errors.innerHTML = ""; }
+function clearStatusMessages() { statusMessages.innerHTML = ""; }
+
+function showErrors(errorList) {
+  if (!errorList || !errorList.length) { errors.innerHTML = ""; return; }
+  var box = document.createElement("div");
+  box.className = "error-box";
+  box.textContent = "Some entries were skipped:\n\n" + errorList.join("\n");
+  errors.innerHTML = "";
+  errors.appendChild(box);
+}
+
+function showNotice(message) {
+  var box = document.createElement("div");
+  box.className = "notice-box";
+  box.textContent = message;
+  statusMessages.innerHTML = "";
+  statusMessages.appendChild(box);
+}
+
+function showSuccess(message) {
+  var box = document.createElement("div");
+  box.className = "success-box";
+  box.textContent = message;
+  statusMessages.innerHTML = "";
+  statusMessages.appendChild(box);
+}
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getLevelMeta(level) {
+  var meta = {
+    1:  { description: "Thirty addition facts, sums less than ten",         rowsClass: "rows-3" },
+    2:  { description: "Thirty addition facts, sums through twenty",        rowsClass: "rows-3" },
+    3:  { description: "Thirty subtraction facts, numbers through ten",     rowsClass: "rows-3" },
+    4:  { description: "Thirty subtraction facts, numbers through twenty",  rowsClass: "rows-3" },
+    5:  { description: "Forty addition facts",                              rowsClass: "rows-4" },
+    6:  { description: "Forty subtraction facts",                           rowsClass: "rows-4" },
+    7:  { description: "Fifty addition facts",                              rowsClass: "rows-5" },
+    8:  { description: "Fifty subtraction facts",                           rowsClass: "rows-5" },
+    9:  { description: "Sixty addition facts",                              rowsClass: "rows-6" },
+    10: { description: "Sixty subtraction facts",                           rowsClass: "rows-6" },
+    11: { description: "Thirty easy multiplication facts",                  rowsClass: "rows-3" },
+    12: { description: "Thirty hard multiplication facts",                  rowsClass: "rows-3" },
+    13: { description: "Forty multiplication facts",                        rowsClass: "rows-4" },
+    14: { description: "Fifty multiplication facts",                        rowsClass: "rows-5" },
+    15: { description: "Sixty multiplication facts",                        rowsClass: "rows-6" },
+    16: { description: "Thirty easy division facts",                        rowsClass: "rows-3" },
+    17: { description: "Thirty hard division facts",                        rowsClass: "rows-3" },
+    18: { description: "Forty division facts",                              rowsClass: "rows-4" },
+    19: { description: "Fifty division facts",                              rowsClass: "rows-5" },
+    20: { description: "Sixty division facts",                              rowsClass: "rows-6" },
+    21: { description: "Mixed facts: addition, subtraction, multiplication, division", rowsClass: "rows-4" }
+  };
+  return meta[level] || { description: "Math facts", rowsClass: "rows-3" };
+}
+
+function generateAdditionProblems(maxSum, count, allowZero) {
+  var problems = [];
+  while (problems.length < count) {
+    var a = randomInt(allowZero ? 0 : 1, 9);
+    var b = randomInt(allowZero ? 0 : 1, 9);
+    if (a + b <= maxSum) problems.push({ kind: "stack", operator: "+", a: a, b: b });
+  }
+  return problems;
+}
+
+function generateSubtractionProblems(maxTop, count) {
+  var problems = [];
+  while (problems.length < count) {
+    var a = randomInt(0, maxTop);
+    var b = randomInt(0, a);
+    problems.push({ kind: "stack", operator: "\u2212", a: a, b: b });
+  }
+  return problems;
+}
+
+function generateMultiplicationProblems(minFactor, maxFactor, count, allowZero) {
+  var problems = [];
+  while (problems.length < count) {
+    var a = randomInt(allowZero ? 0 : 1, 9);
+    var b = randomInt(minFactor, maxFactor);
+    if (a * b <= 100) problems.push({ kind: "stack", operator: "\u00d7", a: a, b: b });
+  }
+  return problems;
+}
+
+function generateDivisionProblems(minDivisor, maxDivisor, count) {
+  var problems = [];
+  while (problems.length < count) {
+    var divisor  = randomInt(minDivisor, maxDivisor);
+    var quotient = randomInt(0, 10);
+    problems.push({ kind: "division", divisor: divisor, dividend: divisor * quotient });
+  }
+  return problems;
+}
+
+function generateMixedProblems() {
+  return [].concat(
+    generateAdditionProblems(18, 10, true),
+    generateSubtractionProblems(20, 10),
+    generateMultiplicationProblems(0, 9, 10, true),
+    generateDivisionProblems(1, 9, 10)
+  );
+}
+
+function generateProblemsForLevel(level) {
+  switch (level) {
+    case 1:  return generateAdditionProblems(10, 30, true);
+    case 2:  return generateAdditionProblems(20, 30, true);
+    case 3:  return generateSubtractionProblems(10, 30);
+    case 4:  return generateSubtractionProblems(20, 30);
+    case 5:  return generateAdditionProblems(18, 40, true);
+    case 6:  return generateSubtractionProblems(20, 40);
+    case 7:  return generateAdditionProblems(18, 50, true);
+    case 8:  return generateSubtractionProblems(20, 50);
+    case 9:  return generateAdditionProblems(18, 60, true);
+    case 10: return generateSubtractionProblems(20, 60);
+    case 11: return generateMultiplicationProblems(0, 5, 30, true);
+    case 12: return generateMultiplicationProblems(6, 9, 30, false);
+    case 13: return generateMultiplicationProblems(0, 9, 40, true);
+    case 14: return generateMultiplicationProblems(0, 9, 50, true);
+    case 15: return generateMultiplicationProblems(0, 9, 60, true);
+    case 16: return generateDivisionProblems(1, 5, 30);
+    case 17: return generateDivisionProblems(6, 9, 30);
+    case 18: return generateDivisionProblems(1, 9, 40);
+    case 19: return generateDivisionProblems(1, 9, 50);
+    case 20: return generateDivisionProblems(1, 9, 60);
+    case 21: return generateMixedProblems();
+    default: return [];
+  }
+}
+
+function renderProblem(problem) {
+  if (problem.kind === "stack") {
+    return '<div class="problem-cell">' +
+      '<div class="problem-stack">' +
+        '<span class="problem-top">' + problem.a + '</span>' +
+        '<div class="problem-bottom-line">' +
+          '<span class="problem-operator">' + problem.operator + '</span>' +
+          '<span class="problem-bottom">' + problem.b + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+  if (problem.kind === "division") {
+    return '<div class="problem-cell">' +
+      '<div class="division-problem">' +
+        '<span class="division-divisor">' + problem.divisor + '</span>' +
+        '<div class="division-bracket">' +
+          '<span class="division-dividend">' + problem.dividend + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+  return '<div class="problem-cell"></div>';
+}
+
+function createWorksheet(name, number, level, problems, isLast, setNumber, setTotal) {
+  var worksheet = document.createElement("div");
+  worksheet.className = "worksheet" + (isLast ? "" : " print-break");
+  var safeName   = name   || "";
+  var safeNumber = number || "";
+  var meta       = getLevelMeta(level);
+  var setLabel   = setTotal > 1 ? "Worksheet " + setNumber + " of " + setTotal : "";
+  var problemsHtml = "";
+  for (var i = 0; i < problems.length; i++) {
+    problemsHtml += renderProblem(problems[i]);
+  }
+  worksheet.innerHTML =
+    '<div class="worksheet-header">' +
+      '<div class="worksheet-header-main">' +
+        '<div class="student-field">' +
+          '<span class="student-field-label">Student Name</span>' +
+          '<span class="student-field-value">' + escapeHtml(safeName) + '</span>' +
+        '</div>' +
+        '<div class="student-field">' +
+          '<span class="student-field-label">Number</span>' +
+          '<span class="student-field-value">' + escapeHtml(safeNumber) + '</span>' +
+        '</div>' +
+        '<div class="description-box">' +
+          '<span class="description-text">' + escapeHtml(meta.description) + '</span>' +
+          (setLabel ? '<span class="worksheet-set-label">' + escapeHtml(setLabel) + '</span>' : '') +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="worksheet-body">' +
+      '<div class="problems-grid ' + meta.rowsClass + '">' +
+        problemsHtml +
+      '</div>' +
+    '</div>';
+  return worksheet;
+}
+
+function getStudentsFromStandardInput() {
+  var students = [];
+  var entries  = studentsContainer.querySelectorAll(".student-entry");
+  for (var i = 0; i < entries.length; i++) {
+    var entry      = entries[i];
+    var name       = entry.querySelector('input[name="studentName"]').value.trim();
+    var number     = entry.querySelector('input[name="studentNumber"]').value.trim();
+    var levelValue = entry.querySelector('select[name="level"]').value;
+    if (!name && !number && !levelValue) continue;
+    if (!name || !levelValue) continue;
+    students.push({ name: name, number: number, level: parseInt(levelValue, 10) });
+  }
+  return { students: students, errors: [] };
+}
+
+function getStudentsFromAdvancedInput() {
+  var raw = advancedInputBox.value.trim();
+  var parsedStudents = [], parseErrors = [];
+  if (!raw) return { students: [], errors: [] };
+  var normalized = raw.replace(/\n+/g, ";");
+  var chunks = normalized.split(";");
+  for (var i = 0; i < chunks.length; i++) {
+    var entry = chunks[i].trim();
+    if (!entry) continue;
+    var parts = entry.split(",");
+    for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
+    if (parts.length !== 3) { parseErrors.push('Entry ' + (i+1) + ' is invalid: "' + entry + '"'); continue; }
+    var name   = parts[0];
+    var number = parts[1];
+    var level  = parseInt(parts[2], 10);
+    if (!name) { parseErrors.push('Entry ' + (i+1) + ' is missing a student name: "' + entry + '"'); continue; }
+    if (!parts[2] || isNaN(level) || level < 1 || level > 21) {
+      parseErrors.push('Entry ' + (i+1) + ' has an invalid level (must be 1-21): "' + entry + '"'); continue;
+    }
+    parsedStudents.push({ name: name, number: number, level: level });
+  }
+  return { students: parsedStudents, errors: parseErrors };
+}
+
+function collectStandardRoster() {
+  var students = [];
+  var entries  = studentsContainer.querySelectorAll(".student-entry");
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    students.push({
+      name:   entry.querySelector('input[name="studentName"]').value.trim(),
+      number: entry.querySelector('input[name="studentNumber"]').value.trim(),
+      level:  entry.querySelector('select[name="level"]').value
+    });
+  }
+  return students;
+}
+
+function buildAdvancedCodeFromStandardRoster() {
+  var roster = collectStandardRoster();
+  var lines  = [];
+  for (var i = 0; i < roster.length; i++) {
+    var s = roster[i];
+    if (s.name && s.level) {
+      lines.push(s.name.trim() + ", " + (s.number || "").trim() + ", " + s.level + ";");
+    }
+  }
+  return lines.join("\n");
+}
+
+function openAdvancedCodeModal() {
+  var output = buildAdvancedCodeFromStandardRoster();
+  if (!output.trim()) { showNotice("Add at least one student with a name and level before generating advanced code."); return; }
+  advancedCodeOutput.value = output;
+  advancedCodeModal.classList.add("active");
+}
+
+function closeAdvancedCodeModalFn() { advancedCodeModal.classList.remove("active"); }
+
+function applyStandardRoster(students) {
+  studentsContainer.innerHTML = "";
+  if (!students || !students.length) { buildDefaultStudents(); return; }
+  for (var i = 0; i < students.length; i++) {
+    studentsContainer.appendChild(createStudentEntry(i + 1, {
+      name:   students[i].name   || "",
+      number: students[i].number || "",
+      level:  students[i].level  || ""
+    }));
+  }
+  refreshStudentNumbers();
+}
+
+function saveRoster() {
+  var payload = {
+    inputMode:            inputMode,
+    worksheetsPerStudent: worksheetsPerStudent.value,
+    advancedInput:        advancedInputBox.value,
+    standardStudents:     collectStandardRoster()
+  };
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    clearErrors();
+    showSuccess("Roster saved.");
+  } catch (error) { showNotice("Unable to save roster in this browser."); }
+}
+
+function clearCurrentRoster() {
+  if (!window.confirm("Are you sure you want to clear the current roster?")) return;
+  setInputMode("standard");
+  studentsContainer.innerHTML = "";
+  buildDefaultStudents();
+  advancedInputBox.value = "";
+  results.innerHTML = "";
+  clearErrors();
+  showSuccess("Current roster cleared.");
+}
+
+function clearSavedRoster() {
+  if (!window.confirm("Are you sure you want to clear the saved roster?")) return;
+  try { localStorage.removeItem(STORAGE_KEY); showSuccess("Saved roster cleared."); }
+  catch (error) { showNotice("Unable to clear saved roster in this browser."); }
+}
+
+function loadRosterIfAvailable() {
+  var savedRaw = null;
+  try { savedRaw = localStorage.getItem(STORAGE_KEY); } catch (error) { buildDefaultStudents(); return; }
+  if (!savedRaw) { buildDefaultStudents(); return; }
+  try {
+    var saved = JSON.parse(savedRaw);
+    applyStandardRoster(saved.standardStudents || []);
+    advancedInputBox.value        = saved.advancedInput        || "";
+    worksheetsPerStudent.value    = saved.worksheetsPerStudent || "1";
+    setInputMode(saved.inputMode  || "standard");
+    showSuccess("Saved roster loaded.");
+  } catch (error) { buildDefaultStudents(); }
+}
+
+function renderAnswerProblem(problem, answer) {
+  var ansStr = escapeHtml(String(answer));
+  var redStyle = 'display:block;font-weight:bold;color:rgb(180,0,0);text-align:right;padding-top:2px;font-size:17px';
+  if (problem.kind === "stack") {
+    return '<div class="problem-cell">' +
+      '<div class="problem-stack">' +
+        '<span class="problem-top">' + problem.a + '</span>' +
+        '<div class="problem-bottom-line">' +
+          '<span class="problem-operator">' + problem.operator + '</span>' +
+          '<span class="problem-bottom">' + problem.b + '</span>' +
+        '</div>' +
+        '<span style="' + redStyle + '">' + ansStr + '</span>' +
+      '</div>' +
+    '</div>';
+  }
+  if (problem.kind === "division") {
+    return '<div class="problem-cell">' +
+      '<div class="division-problem">' +
+        '<span class="division-divisor">' + problem.divisor + '</span>' +
+        '<div style="display:flex;flex-direction:column;border-left:2px solid rgb(17,17,17)">' +
+          '<span style="display:block;font-weight:bold;color:rgb(180,0,0);font-size:20px;text-align:right;padding:0 4px 0 6px;border-bottom:2px solid rgb(17,17,17);line-height:1.2">' + ansStr + '</span>' +
+          '<span style="display:block;padding:2px 4px 0 6px;line-height:1.2">' + problem.dividend + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+  return '<div class="problem-cell"></div>';
+}
+
+function buildAnswerKeySheet(student, problems, isLast) {
+  var sheet = document.createElement("div");
+  sheet.className = "worksheet" + (isLast ? "" : " print-break");
+  var meta = getLevelMeta(student.level);
+  var problemsHtml = "";
+  for (var i = 0; i < problems.length; i++) {
+    problemsHtml += renderAnswerProblem(problems[i], problems[i].answer);
+  }
+  sheet.innerHTML =
+    '<div class="worksheet-header">' +
+      '<div class="worksheet-header-main">' +
+        '<div class="student-field">' +
+          '<span class="student-field-label">Student Name</span>' +
+          '<span class="student-field-value">' + escapeHtml(student.name || "") + '</span>' +
+        '</div>' +
+        '<div class="student-field">' +
+          '<span class="student-field-label">Number</span>' +
+          '<span class="student-field-value">' + escapeHtml(student.number || "") + '</span>' +
+        '</div>' +
+        '<div class="description-box">' +
+          '<span class="description-text">ANSWER KEY — ' + escapeHtml(meta.description) + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="worksheet-body">' +
+      '<div class="problems-grid ' + meta.rowsClass + '">' +
+        problemsHtml +
+      '</div>' +
+    '</div>';
+  return sheet;
+}
+
+function highlightInvalidEntries() {
+  var entries = studentsContainer.querySelectorAll(".student-entry");
+  var problems = [];
+  for (var i = 0; i < entries.length; i++) {
+    var entry   = entries[i];
+    var nameEl  = entry.querySelector('input[name="studentName"]');
+    var levelEl = entry.querySelector('select[name="level"]');
+    nameEl.style.border  = "";
+    levelEl.style.border = "";
+    var entryProblems = [];
+    if (!nameEl.value.trim()) {
+      nameEl.style.border = "2px solid rgb(204,0,0)";
+      entryProblems.push("Student Name");
+    }
+    if (!levelEl.value) {
+      levelEl.style.border = "2px solid rgb(204,0,0)";
+      entryProblems.push("Level");
+    }
+    if (entryProblems.length) {
+      problems.push("Student " + (i + 1) + ": missing " + entryProblems.join(", "));
+    }
+  }
+  return problems;
+}
+
+function clearValidationHighlights() {
+  var entries = studentsContainer.querySelectorAll(".student-entry");
+  for (var i = 0; i < entries.length; i++) {
+    entries[i].querySelector('input[name="studentName"]').style.border  = "";
+    entries[i].querySelector('select[name="level"]').style.border       = "";
+  }
+}
+
+function validateAndRun(action) {
+  if (inputMode === "advanced") { action(); return; }
+  var problems = highlightInvalidEntries();
+  if (!problems.length) { action(); return; }
+  mmPendingAction = action;
+  var html = '<strong>The following students have unfilled required fields:</strong><br><br>';
+  for (var i = 0; i < problems.length; i++) {
+    html += '• ' + escapeHtml(problems[i]) + '<br>';
+  }
+  html += '<br>Fields are highlighted in red. You can fix them or generate anyway.';
+  mmValidationMsg.innerHTML = html;
+  mmValidationModal.classList.add("active");
+}
+
+function generateWorksheets() {
+  results.innerHTML = "";
+  clearErrors();
+  clearStatusMessages();
+  var parsed = inputMode === "advanced" ? getStudentsFromAdvancedInput() : getStudentsFromStandardInput();
+  if (parsed.errors.length) showErrors(parsed.errors);
+  var copies      = parseInt(worksheetsPerStudent.value, 10) || 1;
+  var doKey       = answerKeyToggle.checked;
+  var totalPages  = parsed.students.length * copies;
+  var pageCounter = 0;
+  var allAnswers  = [];
+  for (var s = 0; s < parsed.students.length; s++) {
+    var student = parsed.students[s];
+    for (var c = 1; c <= copies; c++) {
+      pageCounter++;
+      var problems  = generateProblemsForLevel(student.level);
+      var isLast    = !doKey && pageCounter === totalPages;
+      var worksheet = createWorksheet(student.name, student.number, student.level, problems, isLast, c, copies);
+      results.appendChild(worksheet);
+      if (doKey && c === 1) {
+        allAnswers.push({ student: student, problems: problems });
+      }
+    }
+  }
+  if (doKey && allAnswers.length) {
+    for (var k = 0; k < allAnswers.length; k++) {
+      var isLastKey = k === allAnswers.length - 1;
+      results.appendChild(buildAnswerKeySheet(allAnswers[k].student, allAnswers[k].problems, isLastKey));
+    }
+  }
+  if (parsed.students.length > 0) {
+    results.scrollIntoView({ behavior: "smooth", block: "start" });
+  } else {
+    showNotice("No valid students found to generate worksheets.");
+  }
+}
+
+function doGenerateAndPrint() {
+  clearStatusMessages();
+  generateWorksheets();
+  setTimeout(function () {
+    if (results.querySelector(".worksheet")) {
+      var originalParent = results.parentNode;
+      var originalNext   = results.nextSibling;
+      results.id = "results-print";
+      document.body.appendChild(results);
+      window.print();
+      results.id = "results";
+      if (originalNext) originalParent.insertBefore(results, originalNext);
+      else originalParent.appendChild(results);
+    }
+  }, 200);
+}
+
+function doGenerateAndSavePdf() {
+  clearStatusMessages();
+  generateWorksheets();
+  setTimeout(function() {
+    var sheets = results.querySelectorAll(".worksheet");
+    if (!sheets.length) return;
+    if (typeof html2canvas === "undefined" || typeof window.jspdf === "undefined") {
+      showNotice("PDF library not loaded yet. Please try again in a moment.");
+      return;
+    }
+    var jsPDFCtor = window.jspdf.jsPDF;
+    showSuccess("Generating PDF, please wait...");
+    var PAGE_W_PX = 1056;
+    var PAGE_H_PX = 816;
+    var stage = document.createElement("div");
+    stage.style.cssText = "position:absolute;top:0;left:0;width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;z-index:-1000;pointer-events:none;background:white;";
+    document.body.appendChild(stage);
+    var jsPDFObj = null;
+    var sheetArray = [];
+    for (var i = 0; i < sheets.length; i++) sheetArray.push(sheets[i]);
+    function captureNext(idx) {
+      if (idx >= sheetArray.length) {
+        document.body.removeChild(stage);
+        jsPDFObj.save("math-minute-worksheets.pdf");
+        showSuccess("PDF saved!");
+        return;
+      }
+      var clone = sheetArray[idx].cloneNode(true);
+      clone.style.cssText = "width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;margin:0;padding:24px 29px;background:white;box-sizing:border-box;display:flex;flex-direction:column;";
+      clone.classList.remove("print-break");
+      stage.innerHTML = "";
+      stage.appendChild(clone);
+      setTimeout(function() {
+        html2canvas(clone, {
+          scale: 1.5, useCORS: true, allowTaint: true,
+          width: PAGE_W_PX, height: PAGE_H_PX,
+          windowWidth: PAGE_W_PX, windowHeight: PAGE_H_PX,
+          logging: false, backgroundColor: "white", x: 0, y: 0
+        }).then(function(canvas) {
+          var imgData = canvas.toDataURL("image/jpeg", 0.92);
+          if (!jsPDFObj) {
+            jsPDFObj = new jsPDFCtor({ orientation: "landscape", unit: "px", format: [PAGE_W_PX, PAGE_H_PX], hotfixes: ["px_scaling"] });
+          } else {
+            jsPDFObj.addPage([PAGE_W_PX, PAGE_H_PX], "landscape");
+          }
+          jsPDFObj.addImage(imgData, "JPEG", 0, 0, PAGE_W_PX, PAGE_H_PX, "", "FAST");
+          captureNext(idx + 1);
+        }).catch(function() {
+          document.body.removeChild(stage);
+          showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
+        });
+      }, 50);
+    }
+    captureNext(0);
+  }, 300);
+}
+
+function assignDomRefs() {
+  studentsContainer          = document.getElementById("studentsContainer");
+  addStudentButton           = document.getElementById("addStudentButton");
+  saveRosterButton           = document.getElementById("saveRosterButton");
+  clearCurrentRosterButton   = document.getElementById("clearCurrentRosterButton");
+  clearSavedRosterButton     = document.getElementById("clearSavedRosterButton");
+  generatePrintButton        = document.getElementById("generatePrintButton");
+  results                    = document.getElementById("results");
+  errors                     = document.getElementById("errors");
+  statusMessages             = document.getElementById("statusMessages");
+  toggleInputModeButton      = document.getElementById("toggleInputModeButton");
+  standardInputSection       = document.getElementById("standardInputSection");
+  advancedInputSection       = document.getElementById("advancedInputSection");
+  advancedInputBox           = document.getElementById("advancedInputBox");
+  modeIndicator              = document.getElementById("modeIndicator");
+  worksheetsPerStudent       = document.getElementById("worksheetsPerStudent");
+  levelReferenceGrid         = document.getElementById("levelReferenceGrid");
+  studentCounter             = document.getElementById("studentCounter");
+  generateAdvancedCodeButton = document.getElementById("generateAdvancedCodeButton");
+  advancedCodeModal          = document.getElementById("advancedCodeModal");
+  closeAdvancedCodeModal     = document.getElementById("closeAdvancedCodeModal");
+  advancedCodeOutput         = document.getElementById("advancedCodeOutput");
+  copyAdvancedCodeButton     = document.getElementById("copyAdvancedCodeButton");
+  useAdvancedCodeButton      = document.getElementById("useAdvancedCodeButton");
+  answerKeyToggle            = document.getElementById("answerKeyToggle");
+  savePdfButton              = document.getElementById("savePdfButton");
+  mmValidationModal          = document.getElementById("mmValidationModal");
+  mmValidationMsg            = document.getElementById("mmValidationMsg");
+  mmValidationFix            = document.getElementById("mmValidationFix");
+  mmValidationGenerate       = document.getElementById("mmValidationGenerate");
+}
+
+function wireButtons() {
+  toggleInputModeButton.addEventListener("click", function () {
+    clearStatusMessages();
+    setInputMode(inputMode === "standard" ? "advanced" : "standard");
+  });
+
+  addStudentButton.addEventListener("click", function () {
+    clearStatusMessages();
+    addStudent();
+    refreshStudentNumbers();
+  });
+
+  if (generateAdvancedCodeButton) {
+    generateAdvancedCodeButton.addEventListener("click", function () {
+      clearStatusMessages();
+      openAdvancedCodeModal();
+    });
+  }
+
+  closeAdvancedCodeModal.addEventListener("click", function () { closeAdvancedCodeModalFn(); });
+
+  advancedCodeModal.addEventListener("click", function (e) {
+    if (e.target === advancedCodeModal) closeAdvancedCodeModalFn();
+  });
+
+  copyAdvancedCodeButton.addEventListener("click", function () {
+    try {
+      navigator.clipboard.writeText(advancedCodeOutput.value).then(function() {
+        showSuccess("Advanced code copied.");
+      });
+    } catch (error) { showNotice("Unable to copy automatically in this browser."); }
+  });
+
+  useAdvancedCodeButton.addEventListener("click", function () {
+    advancedInputBox.value = advancedCodeOutput.value;
+    setInputMode("advanced");
+    closeAdvancedCodeModalFn();
+    showSuccess("Advanced code moved into Advanced Input.");
+  });
+
+  saveRosterButton.addEventListener("click",         function () { clearStatusMessages(); saveRoster(); });
+  clearCurrentRosterButton.addEventListener("click", function () { clearStatusMessages(); clearCurrentRoster(); });
+  clearSavedRosterButton.addEventListener("click",   function () { clearStatusMessages(); clearSavedRoster(); });
+
+  generatePrintButton.addEventListener("click", function () {
+    clearStatusMessages();
+    validateAndRun(function() { clearValidationHighlights(); doGenerateAndPrint(); });
+  });
+
+  savePdfButton.addEventListener("click", function () {
+    clearStatusMessages();
+    validateAndRun(function() { clearValidationHighlights(); doGenerateAndSavePdf(); });
+  });
+
+  mmValidationFix.addEventListener("click", function() {
+    mmValidationModal.classList.remove("active");
+    mmPendingAction = null;
+    var first = studentsContainer.querySelector('[style*="rgb(204,0,0)"]');
+    if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  mmValidationGenerate.addEventListener("click", function() {
+    mmValidationModal.classList.remove("active");
+    clearValidationHighlights();
+    if (mmPendingAction) {
+      var action = mmPendingAction;
+      mmPendingAction = null;
+      action();
+    }
+  });
+}
+
+function init() {
+  renderLevelReference();
+  loadRosterIfAvailable();
+  if (!studentsContainer.querySelector(".student-entry")) buildDefaultStudents();
+  updateStudentCounter();
+}
+
+function waitAndInit() {
+  if (document.getElementById("studentsContainer")) {
+    assignDomRefs();
+    wireButtons();
+    init();
+  } else {
+    setTimeout(waitAndInit, 50);
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", waitAndInit);
+} else {
+  waitAndInit();
+}
+
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</div>
