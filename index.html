@@ -767,16 +767,27 @@ body { margin: 0; padding: 12px; background: white; }
 
 var STORAGE_KEY = "mwgRosterData_v1";
 
-// TYPE_LABELS - grouped with easy/hard variants
 var TYPE_LABELS = {
-  easyadd:            "Easy Addition",
-  hardadd:            "Hard Addition",
-  easysub:            "Easy Subtraction",
-  hardsub:            "Hard Subtraction",
-  easymul:            "Easy Multiplication",
-  hardmul:            "Hard Multiplication",
-  easydiv:            "Easy Division",
-  harddiv:            "Hard Division",
+  add1: "Addition Level 1 (sums < 10)",
+  add2: "Addition Level 2 (sums 10-20)",
+  add3: "Addition Level 3 (2-digit + 1-digit)",
+  add4: "Addition Level 4 (2-digit + 2-digit)",
+  add5: "Addition Level 5 (3-digit + any)",
+  sub1: "Subtraction Level 1 (minuend < 10)",
+  sub2: "Subtraction Level 2 (minuend 10-20)",
+  sub3: "Subtraction Level 3 (2-digit - 1-digit)",
+  sub4: "Subtraction Level 4 (2-digit - 2-digit)",
+  sub5: "Subtraction Level 5 (3-digit - any)",
+  mul1: "Multiplication Level 1 (factor \u2264 5)",
+  mul2: "Multiplication Level 2 (factor 6-9)",
+  mul3: "Multiplication Level 3 (2-digit \u00d7 1-digit)",
+  mul4: "Multiplication Level 4 (2-digit \u00d7 2-digit)",
+  mul5: "Multiplication Level 5 (3-digit \u00d7 1-digit)",
+  div1: "Division Level 1 (divisor 1-5)",
+  div2: "Division Level 2 (divisor 6-9)",
+  div3: "Division Level 3 (2-digit \u00f7 1-digit)",
+  div4: "Division Level 4 (2-digit \u00f7 1-digit, remainder)",
+  div5: "Division Level 5 (3-digit \u00f7 1-digit)",
   fractions:          "Fractions",
   decimals:           "Decimals",
   rounding:           "Rounding",
@@ -788,32 +799,65 @@ var TYPE_LABELS = {
   mixed:              "Mixed"
 };
 
-// All grades see all types; grade only affects number ranges for higher types
-var GRADE_TYPES = {
-  1: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","mixed"],
-  2: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","mixed"],
-  3: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","mixed"],
-  4: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","fractions","decimals","rounding","longdivision","mixed"],
-  5: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
-  6: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
-  7: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","fractions","decimals","rounding","longdivision","orderofoperations","integers","mixed"],
-  8: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation","mixed"]
+// Short labels for dropdown display
+var TYPE_SHORT = {
+  add1: "Level 1 \u2014 sums < 10",
+  add2: "Level 2 \u2014 sums 10-20",
+  add3: "Level 3 \u2014 2-digit + 1-digit",
+  add4: "Level 4 \u2014 2-digit + 2-digit",
+  add5: "Level 5 \u2014 3-digit + any",
+  sub1: "Level 1 \u2014 minuend < 10",
+  sub2: "Level 2 \u2014 minuend 10-20",
+  sub3: "Level 3 \u2014 2-digit \u2212 1-digit",
+  sub4: "Level 4 \u2014 2-digit \u2212 2-digit",
+  sub5: "Level 5 \u2014 3-digit \u2212 any",
+  mul1: "Level 1 \u2014 factor \u2264 5",
+  mul2: "Level 2 \u2014 factor 6-9",
+  mul3: "Level 3 \u2014 2-digit \u00d7 1-digit",
+  mul4: "Level 4 \u2014 2-digit \u00d7 2-digit",
+  mul5: "Level 5 \u2014 3-digit \u00d7 1-digit",
+  div1: "Level 1 \u2014 divisor 1-5",
+  div2: "Level 2 \u2014 divisor 6-9",
+  div3: "Level 3 \u2014 2-digit \u00f7 1-digit",
+  div4: "Level 4 \u2014 remainder",
+  div5: "Level 5 \u2014 3-digit \u00f7 1-digit",
+  fractions:          "Fractions",
+  decimals:           "Decimals",
+  rounding:           "Rounding",
+  longdivision:       "Long Division",
+  orderofoperations:  "Order of Operations",
+  integers:           "Integers & Negatives",
+  exponents:          "Exponents & Sq. Roots",
+  scientificnotation: "Scientific Notation",
+  mixed:              "Mixed"
 };
 
-// Groups for visually grouped dropdown
+// Grade unlocks
+var GRADE_TYPES = {
+  1: ["add1","add2","sub1","sub2","mul1","mul2","div1","div2","mixed"],
+  2: ["add1","add2","sub1","sub2","mul1","mul2","div1","div2","mixed"],
+  3: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","mixed"],
+  4: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","mixed"],
+  5: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","mixed"],
+  6: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
+  7: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","integers","mixed"],
+  8: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation","mixed"]
+};
+
 var TYPE_GROUPS = [
-  { label: "Addition",       types: ["easyadd","hardadd"] },
-  { label: "Subtraction",    types: ["easysub","hardsub"] },
-  { label: "Multiplication", types: ["easymul","hardmul"] },
-  { label: "Division",       types: ["easydiv","harddiv"] },
+  { label: "Addition",       types: ["add1","add2","add3","add4","add5"] },
+  { label: "Subtraction",    types: ["sub1","sub2","sub3","sub4","sub5"] },
+  { label: "Multiplication", types: ["mul1","mul2","mul3","mul4","mul5"] },
+  { label: "Division",       types: ["div1","div2","div3","div4","div5"] },
   { label: "Other",          types: ["fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"] },
   { label: "Mixed",          types: ["mixed"] }
 ];
 
 var GRADE_REFERENCE = {
-  "All Grades": "Easy/Hard Addition, Subtraction, Multiplication, Division",
-  "Grades 4+":  "+ Fractions, Decimals, Rounding, Long Division",
-  "Grade 5+":   "+ Order of Operations",
+  "Grades 1-2": "Addition & Subtraction Levels 1-2, Multiplication & Division Levels 1-2",
+  "Grades 3-4": "+ Levels 3 (2-digit operations)",
+  "Grades 5-6": "+ Levels 4-5 (multi-digit), Fractions, Decimals, Rounding, Long Division",
+  "Grade 6+":   "+ Order of Operations",
   "Grade 7+":   "+ Integers & Negatives",
   "Grade 8+":   "+ Exponents, Scientific Notation"
 };
@@ -853,7 +897,7 @@ function injectStyles() {
     ".mwg-mixed-types{display:none;margin-top:8px;padding:10px 12px;border:1px solid rgb(199,214,255);border-radius:6px;background:rgb(238,243,255);grid-column:1/-1}",
     ".mwg-mixed-types.visible{display:block}",
     ".mwg-mixed-types-label{font-size:13px;font-weight:bold;margin-bottom:8px;color:rgb(51,51,51)}",
-    ".mwg-mixed-types-grid{display:flex;flex-wrap:wrap;gap:6px 16px}",
+    ".mwg-mixed-types-grid{display:flex;flex-wrap:wrap;gap:4px 16px}",
     ".mwg-mixed-types-grid label{font-size:13px;font-weight:normal!important;display:flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:0!important}",
     ".mwg-mixed-types-grid input[type=checkbox]{width:auto;padding:0;margin:0;cursor:pointer}",
     ".mwg-answer-key-row{display:flex;align-items:center;gap:10px;margin:8px 0 4px 0;font-size:14px}",
@@ -930,18 +974,10 @@ function esc(text) {
     .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
     .replace(/'/g,"\u0027");
 }
-
-function rand(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function randFrom(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function clearStatus() { statusDiv.innerHTML = ""; }
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randFrom(arr)  { return arr[Math.floor(Math.random() * arr.length)]; }
+function clearStatus()  { statusDiv.innerHTML = ""; }
 function clearErrors()  { errorsDiv.innerHTML = ""; }
-
 function showSuccess(m) { statusDiv.innerHTML = '<div class="mwg-success-box">' + esc(m) + '</div>'; }
 function showNotice(m)  { statusDiv.innerHTML = '<div class="mwg-notice-box">' + esc(m) + '</div>'; }
 function showErrors(list) {
@@ -958,21 +994,25 @@ function renderReference() {
   referenceGrid.innerHTML = html;
 }
 
-// Build grouped <optgroup> dropdown
+function isHorizType(type) {
+  return ["fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"].indexOf(type) !== -1;
+}
+
+function isHorizTypeName(type) { return isHorizType(type); }
+
 function getTypeOptions(grade, selected) {
+  if (!grade || parseInt(grade) < 1) {
+    return '<option value="">Select Grade First</option>';
+  }
   var availTypes = GRADE_TYPES[grade] || GRADE_TYPES[1];
   var html = '<option value="">Select Type</option>';
   for (var g = 0; g < TYPE_GROUPS.length; g++) {
     var group = TYPE_GROUPS[g];
-    // Check if any type in this group is available
     var groupTypes = [];
     for (var t = 0; t < group.types.length; t++) {
-      if (availTypes.indexOf(group.types[t]) !== -1) {
-        groupTypes.push(group.types[t]);
-      }
+      if (availTypes.indexOf(group.types[t]) !== -1) groupTypes.push(group.types[t]);
     }
     if (!groupTypes.length) continue;
-    // For mixed, no optgroup wrapper needed
     if (group.label === "Mixed") {
       var sel = "mixed" === selected ? "selected" : "";
       html += '<option value="mixed" ' + sel + '>Mixed</option>';
@@ -981,7 +1021,7 @@ function getTypeOptions(grade, selected) {
       for (var t = 0; t < groupTypes.length; t++) {
         var type = groupTypes[t];
         var sel = type === selected ? "selected" : "";
-        html += '<option value="' + type + '" ' + sel + '>' + esc(TYPE_LABELS[type]) + '</option>';
+        html += '<option value="' + type + '" ' + sel + '>' + esc(TYPE_SHORT[type] || type) + '</option>';
       }
       html += '</optgroup>';
     }
@@ -998,7 +1038,8 @@ function getGradeOptions(selected) {
   return html;
 }
 
-function getCountOptions(selected) {
+function getCountOptions(selected, capAt30) {
+  if (capAt30) return '<option value="30" selected>30 problems (max for this type)</option>';
   var html = '<option value="">Count</option>';
   for (var i = 0; i < VALID_COUNTS.length; i++) {
     var c = VALID_COUNTS[i];
@@ -1017,13 +1058,33 @@ function getMixedTypesForGrade(grade) {
   return result;
 }
 
+function mixedHasHorizChecked(entryDiv) {
+  var cbs = entryDiv.querySelectorAll(".mwg-mixed-cb:checked");
+  for (var i = 0; i < cbs.length; i++) {
+    if (isHorizType(cbs[i].value)) return true;
+  }
+  return false;
+}
+
+function updateCountForMixed(entryDiv) {
+  var typeSelect  = entryDiv.querySelector('[name="problemType"]');
+  var countSelect = entryDiv.querySelector('[name="count"]');
+  if (!typeSelect || !countSelect) return;
+  if (typeSelect.value !== "mixed") return;
+  countSelect.innerHTML = getCountOptions(countSelect.value, mixedHasHorizChecked(entryDiv));
+}
+
 function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
   var box = containerEl.querySelector(".mwg-mixed-types");
   if (!box) return;
   var types = getMixedTypesForGrade(grade);
   var checked = checkedTypes || types;
-  var html = '<div class="mwg-mixed-types-label">Include in Mixed:</div>';
-  // Render in groups
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+  html += '<div class="mwg-mixed-types-label" style="margin-bottom:0">Include in Mixed:</div>';
+  html += '<div style="display:flex;gap:8px">';
+  html += '<button type="button" class="mwg-mixed-select-all" style="font-size:12px;padding:2px 8px;cursor:pointer;font-family:Georgia,serif;">Select All</button>';
+  html += '<button type="button" class="mwg-mixed-deselect-all" style="font-size:12px;padding:2px 8px;cursor:pointer;font-family:Georgia,serif;">Deselect All</button>';
+  html += '</div></div>';
   for (var g = 0; g < TYPE_GROUPS.length; g++) {
     var group = TYPE_GROUPS[g];
     if (group.label === "Mixed") continue;
@@ -1036,11 +1097,36 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
     for (var t = 0; t < groupTypes.length; t++) {
       var type = groupTypes[t];
       var isChecked = checked.indexOf(type) !== -1 ? "checked" : "";
-      html += '<label><input type="checkbox" class="mwg-mixed-cb" value="' + type + '" ' + isChecked + '> ' + esc(TYPE_LABELS[type]) + '</label>';
+      html += '<label><input type="checkbox" class="mwg-mixed-cb" value="' + type + '" ' + isChecked + '> ' + esc(TYPE_SHORT[type] || TYPE_LABELS[type]) + '</label>';
     }
     html += '</div></div>';
   }
   box.innerHTML = html;
+  var entryDiv = containerEl;
+  box.querySelector(".mwg-mixed-select-all").addEventListener("click", function() {
+    var cbs = box.querySelectorAll(".mwg-mixed-cb");
+    for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
+    updateCountForMixed(entryDiv);
+  });
+  box.querySelector(".mwg-mixed-deselect-all").addEventListener("click", function() {
+    var cbs = box.querySelectorAll(".mwg-mixed-cb");
+    for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
+    updateCountForMixed(entryDiv);
+  });
+  var cbs = box.querySelectorAll(".mwg-mixed-cb");
+  for (var i = 0; i < cbs.length; i++) {
+    cbs[i].addEventListener("change", function() { updateCountForMixed(entryDiv); });
+  }
+}
+
+function updateCountForType(entryDiv) {
+  var typeSelect  = entryDiv.querySelector('[name="problemType"]');
+  var countSelect = entryDiv.querySelector('[name="count"]');
+  if (!typeSelect || !countSelect) return;
+  var type = typeSelect.value;
+  var capAt30 = isHorizType(type);
+  if (type === "mixed") capAt30 = mixedHasHorizChecked(entryDiv);
+  countSelect.innerHTML = getCountOptions(countSelect.value, capAt30);
 }
 
 function updateMixedVisibility(entryDiv) {
@@ -1055,6 +1141,7 @@ function updateMixedVisibility(entryDiv) {
   } else {
     mixedBox.className = "mwg-mixed-types";
   }
+  updateCountForType(entryDiv);
 }
 
 function updateTypeOptionsForGrade(entryDiv, keepType) {
@@ -1088,11 +1175,11 @@ function readEntry(div) {
 
 function createStudentEntry(index, data) {
   data = data || {};
-  var name   = data.name   || "";
+  var name  = data.name   || "";
   var number = data.number || "";
-  var grade  = data.grade  || "";
-  var type   = data.type   || "";
-  var count  = data.count  || "";
+  var grade = data.grade  || "";
+  var type  = data.type   || "";
+  var count = data.count  || "";
   var mixedTypes = data.mixedTypes || null;
   var div = document.createElement("div");
   div.className = "mwg-student-entry";
@@ -1109,8 +1196,8 @@ function createStudentEntry(index, data) {
       '<div><label>Student Name</label><input type="text" name="studentName" value="' + esc(name) + '" /></div>' +
       '<div><label>Student Number</label><input type="text" name="studentNumber" value="' + esc(number) + '" /></div>' +
       '<div><label>Grade Level</label><select name="grade">' + getGradeOptions(grade) + '</select></div>' +
-      '<div><label>Problem Type</label><select name="problemType">' + getTypeOptions(parseInt(grade)||1, type) + '</select></div>' +
-      '<div><label>Problem Count</label><select name="count">' + getCountOptions(count) + '</select></div>' +
+      '<div><label>Problem Type</label><select name="problemType">' + getTypeOptions(parseInt(grade)||0, type) + '</select></div>' +
+      '<div><label>Problem Count</label><select name="count">' + getCountOptions(count, isHorizType(type)) + '</select></div>' +
       '<div class="mwg-mixed-types"></div>' +
     '</div>';
   var gradeSelect = div.querySelector('[name="grade"]');
@@ -1144,9 +1231,7 @@ function createStudentEntry(index, data) {
 
 function refreshNumbers() {
   var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
-  for (var i = 0; i < entries.length; i++) {
-    entries[i].querySelector("h3").textContent = "Student " + (i + 1);
-  }
+  for (var i = 0; i < entries.length; i++) entries[i].querySelector("h3").textContent = "Student " + (i + 1);
   updateCounter();
 }
 
@@ -1154,8 +1239,18 @@ function updateCounter() {
   studentCounter.textContent = "Students: " + studentsContainer.querySelectorAll(".mwg-student-entry").length;
 }
 
+function getNextStudentNumber() {
+  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
+  if (!entries.length) return "";
+  var lastNum = entries[entries.length - 1].querySelector('[name="studentNumber"]').value.trim();
+  if (lastNum !== "" && !isNaN(lastNum)) return String(parseInt(lastNum, 10) + 1);
+  return "";
+}
+
 function addStudent(data) {
   var n = studentsContainer.querySelectorAll(".mwg-student-entry").length + 1;
+  if (!data) data = {};
+  if (!data.number && data.number !== 0) data.number = getNextStudentNumber();
   studentsContainer.appendChild(createStudentEntry(n, data));
   updateCounter();
 }
@@ -1169,21 +1264,21 @@ function buildDefaultStudents() {
 function setInputMode(mode) {
   inputMode = mode === "advanced" ? "advanced" : "standard";
   if (inputMode === "advanced") {
-    standardSection.style.display  = "none";
-    advancedSection.style.display  = "block";
-    modeIndicator.textContent       = "Advanced Input";
-    toggleModeBtn.textContent       = "Back to Standard Input";
-    addStudentBtn.style.display     = "none";
-    genCodeBtn.style.display        = "none";
-    fillDownBtn.style.display       = "none";
+    standardSection.style.display = "none";
+    advancedSection.style.display = "block";
+    modeIndicator.textContent     = "Advanced Input";
+    toggleModeBtn.textContent     = "Back to Standard Input";
+    addStudentBtn.style.display   = "none";
+    genCodeBtn.style.display      = "none";
+    fillDownBtn.style.display     = "none";
   } else {
-    standardSection.style.display  = "block";
-    advancedSection.style.display  = "none";
-    modeIndicator.textContent       = "Standard Input";
-    toggleModeBtn.textContent       = "Advanced Input";
-    addStudentBtn.style.display     = "inline-block";
-    genCodeBtn.style.display        = "inline-block";
-    fillDownBtn.style.display       = "inline-block";
+    standardSection.style.display = "block";
+    advancedSection.style.display = "none";
+    modeIndicator.textContent     = "Standard Input";
+    toggleModeBtn.textContent     = "Advanced Input";
+    addStudentBtn.style.display   = "inline-block";
+    genCodeBtn.style.display      = "inline-block";
+    fillDownBtn.style.display     = "inline-block";
   }
 }
 
@@ -1203,8 +1298,7 @@ function saveRoster() {
       advancedInput: advancedBox.value,
       students: collectRoster()
     }));
-    clearErrors();
-    showSuccess("Roster saved.");
+    clearErrors(); showSuccess("Roster saved.");
   } catch(e) { showNotice("Unable to save roster in this browser."); }
 }
 
@@ -1215,9 +1309,9 @@ function loadRoster() {
   try {
     var saved = JSON.parse(raw);
     applyRoster(saved.students || []);
-    advancedBox.value            = saved.advancedInput        || "";
-    worksheetsPerStudent.value   = saved.worksheetsPerStudent || "1";
-    answerKeyToggle.checked      = saved.answerKey            || false;
+    advancedBox.value          = saved.advancedInput        || "";
+    worksheetsPerStudent.value = saved.worksheetsPerStudent || "1";
+    answerKeyToggle.checked    = saved.answerKey            || false;
     setInputMode(saved.inputMode || "standard");
     showSuccess("Saved roster loaded.");
   } catch(e) { buildDefaultStudents(); }
@@ -1226,9 +1320,7 @@ function loadRoster() {
 function applyRoster(students) {
   studentsContainer.innerHTML = "";
   if (!students || !students.length) { buildDefaultStudents(); return; }
-  for (var i = 0; i < students.length; i++) {
-    studentsContainer.appendChild(createStudentEntry(i + 1, students[i]));
-  }
+  for (var i = 0; i < students.length; i++) studentsContainer.appendChild(createStudentEntry(i + 1, students[i]));
   refreshNumbers();
 }
 
@@ -1239,8 +1331,7 @@ function clearCurrentRoster() {
   buildDefaultStudents();
   advancedBox.value = "";
   resultsDiv.innerHTML = "";
-  clearErrors();
-  showSuccess("Current roster cleared.");
+  clearErrors(); showSuccess("Current roster cleared.");
 }
 
 function clearSavedRoster() {
@@ -1256,9 +1347,7 @@ function buildAdvancedCode() {
     var s = roster[i];
     if (!s.name || !s.grade || !s.type || !s.count) continue;
     var type = s.type;
-    if (type === "mixed" && s.mixedTypes && s.mixedTypes.length) {
-      type = "mixed[" + s.mixedTypes.join("|") + "]";
-    }
+    if (type === "mixed" && s.mixedTypes && s.mixedTypes.length) type = "mixed[" + s.mixedTypes.join("|") + "]";
     lines.push([s.name, s.number || "", type, s.count, s.grade].join(", ") + ";");
   }
   return lines.join("\n");
@@ -1322,9 +1411,15 @@ function fracHtml(n, d) {
   return '<span class="mwg-fraction"><span class="mwg-fraction-num">' + n + '</span><span class="mwg-fraction-den">' + d + '</span></span>';
 }
 
-// Stack problem: top number, operator + bottom number, answer line under bottom
-function stackHtml(op, a, b) {
-  return '<div class="mwg-problem-cell"><div class="mwg-problem-stack">' +
+// Determine if a type needs wider problem cells (levels 3-5)
+function isWideType(type) {
+  return ["add3","add4","add5","sub3","sub4","sub5","mul3","mul4","mul5","div3","div4","div5"].indexOf(type) !== -1;
+}
+
+function stackHtml(op, a, b, wide) {
+  var width = wide ? "1.1in" : "0.75in";
+  var fontSize = wide ? "18px" : "20px";
+  return '<div class="mwg-problem-cell"><div class="mwg-problem-stack" style="width:' + width + ';font-size:' + fontSize + '">' +
     '<span class="mwg-problem-top">' + a + '</span>' +
     '<div class="mwg-problem-bottom-line">' +
       '<span class="mwg-problem-operator">' + op + '</span>' +
@@ -1333,9 +1428,10 @@ function stackHtml(op, a, b) {
   '</div></div>';
 }
 
-function divisionHtml(divisor, dividend) {
+function divisionHtml(divisor, dividend, wide) {
+  var minWidth = wide ? "1.3in" : "1.02in";
   return '<div class="mwg-problem-cell">' +
-    '<div class="mwg-division-problem">' +
+    '<div class="mwg-division-problem" style="min-width:' + minWidth + ';font-size:' + (wide ? "18px" : "20px") + '">' +
       '<span class="mwg-division-divisor">' + divisor + '</span>' +
       '<div class="mwg-division-bracket">' +
         '<span class="mwg-division-dividend">' + dividend + '</span>' +
@@ -1346,212 +1442,156 @@ function divisionHtml(divisor, dividend) {
 
 function horizHtml(expr) { return "__HORIZ__" + expr; }
 
-// Easy Addition: sums less than 10 (both operands 1-9, sum < 10)
-function makeEasyAdd() {
-  var a, b;
-  do { a = rand(1, 8); b = rand(1, 8); } while (a + b >= 10);
-  return { html: stackHtml("+", a, b), answer: a + b };
-}
+// Addition levels
+function makeAdd1() { var a,b; do{a=rand(1,8);b=rand(1,8);}while(a+b>=10); return {html:stackHtml("+",a,b,false),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
+function makeAdd2() { var a,b; do{a=rand(1,9);b=rand(1,9);}while(a+b<10||a+b>20); return {html:stackHtml("+",a,b,false),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
+function makeAdd3() { var a=rand(10,99),b=rand(1,9); return {html:stackHtml("+",a,b,true),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
+function makeAdd4() { var a=rand(10,99),b=rand(10,99); return {html:stackHtml("+",a,b,true),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
+function makeAdd5() { var a=rand(100,999),b=rand(10,999); return {html:stackHtml("+",a,b,true),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
 
-// Hard Addition: sums 10-20 (at least one operand makes sum >= 10, never over 20)
-function makeHardAdd() {
-  var a, b;
-  do { a = rand(1, 9); b = rand(1, 9); } while (a + b < 10 || a + b > 20);
-  return { html: stackHtml("+", a, b), answer: a + b };
-}
+// Subtraction levels
+function makeSub1() { var a=rand(1,9),b=rand(0,a); return {html:stackHtml("\u2212",a,b,false),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
+function makeSub2() { var a=rand(10,20),b=rand(0,a); return {html:stackHtml("\u2212",a,b,false),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
+function makeSub3() { var a=rand(10,99),b=rand(1,9); return {html:stackHtml("\u2212",a,b,true),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
+function makeSub4() { var a=rand(10,99),b=rand(10,a); return {html:stackHtml("\u2212",a,b,true),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
+function makeSub5() { var a=rand(100,999),b=rand(10,a); return {html:stackHtml("\u2212",a,b,true),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
 
-// Easy Subtraction: minuend less than 10
-function makeEasySub() {
-  var a = rand(1, 9);
-  var b = rand(0, a);
-  return { html: stackHtml("\u2212", a, b), answer: a - b };
-}
+// Multiplication levels
+function makeMul1() { var a=rand(0,5),b=rand(0,9); if(Math.random()<0.5){var t=a;a=b;b=t;} return {html:stackHtml("\u00d7",a,b,false),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
+function makeMul2() { var a=rand(6,9),b=rand(2,9); if(Math.random()<0.5){var t=a;a=b;b=t;} return {html:stackHtml("\u00d7",a,b,false),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
+function makeMul3() { var a=rand(10,99),b=rand(2,9); return {html:stackHtml("\u00d7",a,b,true),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
+function makeMul4() { var a=rand(10,99),b=rand(10,99); return {html:stackHtml("\u00d7",a,b,true),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
+function makeMul5() { var a=rand(100,999),b=rand(2,9); return {html:stackHtml("\u00d7",a,b,true),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
 
-// Hard Subtraction: minuend 10-20
-function makeHardSub() {
-  var a = rand(10, 20);
-  var b = rand(0, a);
-  return { html: stackHtml("\u2212", a, b), answer: a - b };
+// Division levels
+function makeDiv1() { var d=rand(1,5),q=rand(0,10); return {html:divisionHtml(d,d*q,false),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+function makeDiv2() { var d=rand(6,9),q=rand(1,10); return {html:divisionHtml(d,d*q,false),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+function makeDiv3() { var d=rand(2,9),q=rand(10,99); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+function makeDiv4() {
+  var d=rand(2,9),q=rand(10,99),r=rand(1,d-1);
+  var dividend=d*q+r;
+  return {html:divisionHtml(d,dividend,true),answer:q+" r"+r,kind:"division",divisor:d,dividend:dividend};
 }
-
-// Easy Multiplication: one factor always 5 or less
-function makeEasyMul() {
-  var a = rand(0, 5);
-  var b = rand(0, 9);
-  // Randomly swap so the small factor isn't always on top
-  if (Math.random() < 0.5) { var t = a; a = b; b = t; }
-  return { html: stackHtml("\u00d7", a, b), answer: a * b };
-}
-
-// Hard Multiplication: one factor always 6-9
-function makeHardMul() {
-  var a = rand(6, 9);
-  var b = rand(2, 9);
-  if (Math.random() < 0.5) { var t = a; a = b; b = t; }
-  return { html: stackHtml("\u00d7", a, b), answer: a * b };
-}
-
-// Easy Division: divisor 1-5
-function makeEasyDiv() {
-  var divisor  = rand(1, 5);
-  var quotient = rand(0, 10);
-  return { html: divisionHtml(divisor, divisor * quotient), answer: quotient };
-}
-
-// Hard Division: divisor 6-9
-function makeHardDiv() {
-  var divisor  = rand(6, 9);
-  var quotient = rand(1, 10);
-  return { html: divisionHtml(divisor, divisor * quotient), answer: quotient };
-}
-
-function makeLongDivision(grade) {
-  var divisor  = rand(2, grade <= 5 ? 9 : 12);
-  var quotient = rand(10, grade <= 5 ? 99 : 999);
-  return { html: divisionHtml(divisor, divisor * quotient), answer: quotient };
-}
-
-function makeRounding(grade) {
-  var places = [10, 100];
-  if (grade >= 5) places.push(1000);
-  var place = randFrom(places);
-  var max = grade <= 4 ? 999 : 9999;
-  var n = rand(1, max);
-  var label = place === 10 ? "tens" : place === 100 ? "hundreds" : "thousands";
-  return { html: horizHtml("Round " + n + " to nearest " + label), answer: Math.round(n / place) * place };
-}
+function makeDiv5() { var d=rand(2,9),q=rand(100,999); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
 
 function makeFractions(grade) {
-  var d = rand(2, 9);
-  var a = rand(1, d - 1);
-  var b = rand(1, d - 1);
-  var ops = grade <= 5 ? ["+", "\u2212"] : ["+", "\u2212", "\u00d7"];
-  var op = randFrom(ops);
-  if (op === "+") {
-    return { html: horizHtml(fracHtml(a,d) + " + " + fracHtml(b,d) + " ="), answer: fractionStr(a+b, d) };
-  } else if (op === "\u2212") {
-    if (a < b) { var t = a; a = b; b = t; }
-    return { html: horizHtml(fracHtml(a,d) + " \u2212 " + fracHtml(b,d) + " ="), answer: fractionStr(a-b, d) };
-  } else {
-    return { html: horizHtml(fracHtml(a,d) + " \u00d7 " + fracHtml(b,d) + " ="), answer: fractionStr(a*b, d*d) };
-  }
+  var d=rand(2,9),a=rand(1,d-1),b=rand(1,d-1);
+  var ops=grade<=5?["+","\u2212"]:["+","\u2212","\u00d7"];
+  var op=randFrom(ops);
+  if(op==="+") return {html:horizHtml(fracHtml(a,d)+" + "+fracHtml(b,d)+" ="),answer:fractionStr(a+b,d),kind:"horiz"};
+  if(op==="\u2212"){if(a<b){var t=a;a=b;b=t;} return {html:horizHtml(fracHtml(a,d)+" \u2212 "+fracHtml(b,d)+" ="),answer:fractionStr(a-b,d),kind:"horiz"};}
+  return {html:horizHtml(fracHtml(a,d)+" \u00d7 "+fracHtml(b,d)+" ="),answer:fractionStr(a*b,d*d),kind:"horiz"};
 }
-
 function makeDecimals(grade) {
-  var places = grade <= 5 ? 1 : 2;
-  var factor = Math.pow(10, places);
-  var a = (rand(1, 99 * factor)) / factor;
-  var b = (rand(1, 99 * factor)) / factor;
-  var op = randFrom(["+", "\u2212"]);
-  if (op === "+") {
-    return { html: horizHtml(a + " + " + b + " ="), answer: +(a + b).toFixed(places) };
-  } else {
-    var hi = Math.max(a,b), lo = Math.min(a,b);
-    return { html: horizHtml(hi + " \u2212 " + lo + " ="), answer: +(hi - lo).toFixed(places) };
-  }
+  var pl=grade<=5?1:2,factor=Math.pow(10,pl);
+  var a=(rand(1,99*factor))/factor,b=(rand(1,99*factor))/factor;
+  var op=randFrom(["+","\u2212"]);
+  if(op==="+") return {html:horizHtml(a+" + "+b+" ="),answer:+(a+b).toFixed(pl),kind:"horiz"};
+  var hi=Math.max(a,b),lo=Math.min(a,b);
+  return {html:horizHtml(hi+" \u2212 "+lo+" ="),answer:+(hi-lo).toFixed(pl),kind:"horiz"};
 }
-
-function makeOrderOfOps() {
-  var a = rand(1,9), b = rand(1,9), c = rand(1,9);
-  var patterns = [
-    { expr: a + " + " + b + " \u00d7 " + c, ans: a + b * c },
-    { expr: "(" + a + " + " + b + ") \u00d7 " + c, ans: (a + b) * c },
-    { expr: a + " \u00d7 " + b + " + " + c, ans: a * b + c },
-    { expr: a + " \u00d7 (" + b + " + " + c + ")", ans: a * (b + c) }
+function makeRounding(grade) {
+  var places=[10,100];
+  if(grade>=5) places.push(1000);
+  var place=randFrom(places),max=grade<=4?999:9999,n=rand(1,max);
+  var label=place===10?"tens":place===100?"hundreds":"thousands";
+  return {html:horizHtml("Round "+n+" to nearest "+label),answer:Math.round(n/place)*place,kind:"horiz"};
+}
+function makeLongDiv(grade) {
+  var d=rand(2,grade<=5?9:12),q=rand(10,grade<=5?99:999);
+  return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q};
+}
+function makeOOO() {
+  var a=rand(1,9),b=rand(1,9),c=rand(1,9);
+  var patterns=[
+    {expr:a+" + "+b+" \u00d7 "+c,ans:a+b*c},
+    {expr:"("+a+" + "+b+") \u00d7 "+c,ans:(a+b)*c},
+    {expr:a+" \u00d7 "+b+" + "+c,ans:a*b+c},
+    {expr:a+" \u00d7 ("+b+" + "+c+")",ans:a*(b+c)}
   ];
-  var p = randFrom(patterns);
-  return { html: horizHtml(p.expr + " ="), answer: p.ans };
+  var p=randFrom(patterns);
+  return {html:horizHtml(p.expr+" ="),answer:p.ans,kind:"horiz"};
 }
-
 function makeIntegers(grade) {
-  var max = grade <= 7 ? 20 : 50;
-  var a = rand(-max, max);
-  var b = rand(-max, max);
-  var op = randFrom(["+", "\u2212"]);
-  return { html: horizHtml(a + " " + op + " (" + b + ") ="), answer: op === "+" ? a + b : a - b };
+  var max=grade<=7?20:50,a=rand(-max,max),b=rand(-max,max);
+  var op=randFrom(["+","\u2212"]);
+  return {html:horizHtml(a+" "+op+" ("+b+") ="),answer:op==="+"?a+b:a-b,kind:"horiz"};
 }
-
 function makeExponents() {
-  if (Math.random() < 0.5) {
-    var base = rand(2, 9), exp = rand(2, 3);
-    return { html: horizHtml(base + "<sup>" + exp + "</sup> ="), answer: Math.pow(base, exp) };
-  } else {
-    var root = rand(1, 12);
-    return { html: horizHtml("\u221a" + (root * root) + " ="), answer: root };
-  }
+  if(Math.random()<0.5){var base=rand(2,9),exp=rand(2,3);return {html:horizHtml(base+"<sup>"+exp+"</sup> ="),answer:Math.pow(base,exp),kind:"horiz"};}
+  var root=rand(1,12);return {html:horizHtml("\u221a"+(root*root)+" ="),answer:root,kind:"horiz"};
 }
-
-function makeScientificNotation() {
-  var coeff = (rand(10, 99) / 10).toFixed(1);
-  var exp   = rand(2, 6);
-  var val   = parseFloat(coeff) * Math.pow(10, exp);
-  if (Math.random() < 0.5) {
-    return { html: horizHtml(val.toLocaleString() + " = ? \u00d7 10<sup>?</sup>"), answer: coeff + " x 10^" + exp };
-  } else {
-    return { html: horizHtml(coeff + " \u00d7 10<sup>" + exp + "</sup> ="), answer: val.toLocaleString() };
-  }
+function makeSciNote() {
+  var coeff=(rand(10,99)/10).toFixed(1),exp=rand(2,6),val=parseFloat(coeff)*Math.pow(10,exp);
+  if(Math.random()<0.5) return {html:horizHtml(val.toLocaleString()+" = ? \u00d7 10<sup>?</sup>"),answer:coeff+" x 10^"+exp,kind:"horiz"};
+  return {html:horizHtml(coeff+" \u00d7 10<sup>"+exp+"</sup> ="),answer:val.toLocaleString(),kind:"horiz"};
 }
 
 function makeProblem(type, grade) {
   switch(type) {
-    case "easyadd":           return makeEasyAdd();
-    case "hardadd":           return makeHardAdd();
-    case "easysub":           return makeEasySub();
-    case "hardsub":           return makeHardSub();
-    case "easymul":           return makeEasyMul();
-    case "hardmul":           return makeHardMul();
-    case "easydiv":           return makeEasyDiv();
-    case "harddiv":           return makeHardDiv();
-    case "longdivision":      return makeLongDivision(grade);
-    case "rounding":          return makeRounding(grade);
-    case "fractions":         return makeFractions(grade);
-    case "decimals":          return makeDecimals(grade);
-    case "orderofoperations": return makeOrderOfOps();
-    case "integers":          return makeIntegers(grade);
-    case "exponents":         return makeExponents();
-    case "scientificnotation":return makeScientificNotation();
-    default:                  return makeEasyAdd();
+    case "add1": return makeAdd1();
+    case "add2": return makeAdd2();
+    case "add3": return makeAdd3();
+    case "add4": return makeAdd4();
+    case "add5": return makeAdd5();
+    case "sub1": return makeSub1();
+    case "sub2": return makeSub2();
+    case "sub3": return makeSub3();
+    case "sub4": return makeSub4();
+    case "sub5": return makeSub5();
+    case "mul1": return makeMul1();
+    case "mul2": return makeMul2();
+    case "mul3": return makeMul3();
+    case "mul4": return makeMul4();
+    case "mul5": return makeMul5();
+    case "div1": return makeDiv1();
+    case "div2": return makeDiv2();
+    case "div3": return makeDiv3();
+    case "div4": return makeDiv4();
+    case "div5": return makeDiv5();
+    case "fractions":          return makeFractions(grade);
+    case "decimals":           return makeDecimals(grade);
+    case "rounding":           return makeRounding(grade);
+    case "longdivision":       return makeLongDiv(grade);
+    case "orderofoperations":  return makeOOO();
+    case "integers":           return makeIntegers(grade);
+    case "exponents":          return makeExponents();
+    case "scientificnotation": return makeSciNote();
+    default: return makeAdd1();
   }
 }
 
 function generateProblems(type, count, grade, mixedTypes) {
-  var problems = [];
-  // Cap horizontal problem types at 30 to prevent overflow
-  var horizTypes = ["fractions","decimals","rounding","orderofoperations","integers","exponents","scientificnotation"];
+  var horizTypes = ["fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"];
   if (horizTypes.indexOf(type) !== -1 && count > 30) count = 30;
+  var problems = [];
   if (type === "mixed") {
     var pool = (mixedTypes && mixedTypes.length) ? mixedTypes : getMixedTypesForGrade(grade);
-    // Check if pool contains any horiz types - if so cap at 30
     var poolHasHoriz = false;
-    for (var h = 0; h < pool.length; h++) {
-      if (horizTypes.indexOf(pool[h]) !== -1) { poolHasHoriz = true; break; }
-    }
+    for (var h = 0; h < pool.length; h++) { if (horizTypes.indexOf(pool[h]) !== -1) { poolHasHoriz = true; break; } }
     if (poolHasHoriz && count > 30) count = 30;
     for (var i = 0; i < count; i++) problems.push(makeProblem(pool[i % pool.length], grade));
-    // Shuffle
-    for (var i = problems.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = problems[i]; problems[i] = problems[j]; problems[j] = tmp;
-    }
+    for (var i = problems.length - 1; i > 0; i--) { var j=Math.floor(Math.random()*(i+1)),tmp=problems[i];problems[i]=problems[j];problems[j]=tmp; }
   } else {
     for (var i = 0; i < count; i++) problems.push(makeProblem(type, grade));
   }
   return problems;
 }
 
-function isHorizType(type) {
-  return ["fractions","decimals","rounding","orderofoperations","integers","exponents","scientificnotation"].indexOf(type) !== -1;
-}
-
 function isMixedHoriz(problems) {
-  for (var i = 0; i < problems.length; i++) {
-    if (String(problems[i].html).indexOf("__HORIZ__") === 0) return true;
-  }
+  for (var i = 0; i < problems.length; i++) { if (String(problems[i].html).indexOf("__HORIZ__") === 0) return true; }
   return false;
 }
 
-function getGridConfig(count, useHoriz) {
+function getGridConfig(count, useHoriz, wide) {
   if (useHoriz) return { useHoriz: true };
+  // Wide problems (levels 3-5) use fewer columns
+  if (wide) {
+    if (count <= 30) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-6" };
+    if (count <= 40) return { colClass: "mwg-cols-4", rowClass: "mwg-rows-10" };
+    if (count <= 50) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-10" };
+    return { colClass: "mwg-cols-5", rowClass: "mwg-rows-12" };
+  }
   if (count === 30) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-6" };
   if (count === 40) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-8" };
   if (count === 50) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-10" };
@@ -1560,15 +1600,20 @@ function getGridConfig(count, useHoriz) {
 }
 
 function descriptionFor(type, grade, count) {
-  return count + " " + (TYPE_LABELS[type] || type) + " problems \u2014 Grade " + grade;
+  return count + " " + (TYPE_LABELS[type] || type) + " \u2014 Grade " + grade;
 }
 
 function buildWorksheet(student, setNum, setTotal, isLast) {
-  var name = student.name, number = student.number, grade = student.grade;
-  var type = student.type, count = student.count, mixedTypes = student.mixedTypes;
+  var name=student.name, number=student.number, grade=student.grade;
+  var type=student.type, count=student.count, mixedTypes=student.mixedTypes;
   var problems = generateProblems(type, count, grade, mixedTypes);
   var useHoriz = isHorizType(type) || (type === "mixed" && isMixedHoriz(problems));
-  var grid = getGridConfig(count, useHoriz);
+  var wide = !useHoriz && isWideType(type);
+  // For mixed, check if any stacked problem is wide
+  if (!useHoriz && type === "mixed") {
+    for (var i = 0; i < problems.length; i++) { if (problems[i].kind === "stack" && String(problems[i].html).indexOf("1.1in") !== -1) { wide = true; break; } }
+  }
+  var grid = getGridConfig(count, useHoriz, wide);
   var ws = document.createElement("div");
   ws.className = "mwg-worksheet" + (isLast ? "" : " print-break");
   var setLabel = setTotal > 1 ? "Worksheet " + setNum + " of " + setTotal : "";
@@ -1587,15 +1632,47 @@ function buildWorksheet(student, setNum, setTotal, isLast) {
     bodyHtml += '</div>';
   }
   ws.innerHTML =
-    '<div class="mwg-ws-header">' +
-      '<div class="mwg-ws-header-main">' +
-        '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(name) + '</span></div>' +
-        '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + esc(number) + '</span></div>' +
-        '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">' + esc(desc) + '</span>' + (setLabel ? '<span class="mwg-ws-set-label">' + esc(setLabel) + '</span>' : '') + '</div>' +
-      '</div>' +
-    '</div>' +
+    '<div class="mwg-ws-header"><div class="mwg-ws-header-main">' +
+      '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(name) + '</span></div>' +
+      '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + esc(number) + '</span></div>' +
+      '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">' + esc(desc) + '</span>' + (setLabel ? '<span class="mwg-ws-set-label">' + esc(setLabel) + '</span>' : '') + '</div>' +
+    '</div></div>' +
     '<div class="mwg-ws-body">' + bodyHtml + '</div>';
-  return { el: ws, problems: problems };
+  return { el: ws, problems: problems, useHoriz: useHoriz, grid: grid };
+}
+
+function renderAnswerProblem(problem, answer) {
+  var ansStr = esc(String(answer));
+  var ansStyle = 'display:block;font-weight:bold;color:rgb(180,0,0);text-align:right;padding-top:2px';
+  if (problem.kind === "stack") {
+    var wide = String(problem.html).indexOf("1.1in") !== -1;
+    var width = wide ? "1.1in" : "0.75in";
+    var fontSize = wide ? "18px" : "20px";
+    return '<div class="mwg-problem-cell"><div class="mwg-problem-stack" style="width:' + width + ';font-size:' + fontSize + '">' +
+      '<span class="mwg-problem-top">' + problem.a + '</span>' +
+      '<div class="mwg-problem-bottom-line"><span class="mwg-problem-operator">' + problem.operator + '</span><span class="mwg-problem-bottom">' + problem.b + '</span></div>' +
+      '<span style="' + ansStyle + ';font-size:' + (wide?"15px":"17px") + '">' + ansStr + '</span>' +
+    '</div></div>';
+  }
+  if (problem.kind === "division") {
+    var wide = String(problem.html).indexOf("1.3in") !== -1 || String(problem.html).indexOf("1.02in") === -1;
+    var minW = wide ? "1.3in" : "1.02in";
+    return '<div class="mwg-problem-cell">' +
+      '<div style="text-align:center">' +
+        '<div class="mwg-division-problem" style="min-width:' + minW + ';font-size:' + (wide?"18px":"20px") + '">' +
+          '<span class="mwg-division-divisor">' + problem.divisor + '</span>' +
+          '<div class="mwg-division-bracket"><span class="mwg-division-dividend">' + problem.dividend + '</span></div>' +
+        '</div>' +
+        '<span style="display:block;font-weight:bold;color:rgb(180,0,0);font-size:15px;text-align:center;padding-top:2px">' + ansStr + '</span>' +
+      '</div>' +
+    '</div>';
+  }
+  // Horiz
+  var expr = String(problem.html).replace("__HORIZ__", "");
+  return '<div class="mwg-horiz-cell">' +
+    '<div class="mwg-horiz-problem">' + expr + '</div>' +
+    '<span style="font-size:15px;font-weight:bold;color:rgb(180,0,0);margin-left:8px;flex-shrink:0">' + ansStr + '</span>' +
+  '</div>';
 }
 
 function buildAnswerKeySheet(allAnswers, isLast) {
@@ -1604,12 +1681,17 @@ function buildAnswerKeySheet(allAnswers, isLast) {
   var html = '<div class="mwg-ak-title">Answer Key</div>';
   for (var i = 0; i < allAnswers.length; i++) {
     var entry = allAnswers[i];
+    var problems = entry.problems;
     html += '<div class="mwg-ak-student">' + esc(entry.name) + (entry.number ? " No." + esc(entry.number) : "") + ' \u2014 ' + esc(entry.desc) + '</div>';
-    html += '<div class="mwg-ak-answers">';
-    for (var j = 0; j < entry.problems.length; j++) {
-      html += '<div class="mwg-ak-answer"><span class="mwg-ak-num">' + (j+1) + '.</span> ' + esc(String(entry.problems[j].answer)) + '</div>';
+    if (entry.useHoriz) {
+      html += '<div class="mwg-horiz-grid" style="height:auto">';
+      for (var j = 0; j < problems.length; j++) html += renderAnswerProblem(problems[j], problems[j].answer);
+      html += '</div>';
+    } else {
+      html += '<div class="mwg-problems-grid ' + entry.grid.colClass + ' ' + entry.grid.rowClass + '" style="height:auto;margin-bottom:8px">';
+      for (var j = 0; j < problems.length; j++) html += renderAnswerProblem(problems[j], problems[j].answer);
+      html += '</div>';
     }
-    html += '</div>';
   }
   sheet.innerHTML = html;
   return sheet;
@@ -1617,16 +1699,12 @@ function buildAnswerKeySheet(allAnswers, isLast) {
 
 function generate() {
   resultsDiv.innerHTML = "";
-  clearErrors();
-  clearStatus();
+  clearErrors(); clearStatus();
   var parsed = inputMode === "advanced" ? parseAdvancedInput() : getStudentsFromStandard();
   if (parsed.errors.length) showErrors(parsed.errors);
   if (!parsed.students.length) { showNotice("No valid students found."); return; }
-  var copies = parseInt(worksheetsPerStudent.value) || 1;
-  var doKey  = answerKeyToggle.checked;
-  var total  = parsed.students.length * copies;
-  var pageCounter = 0;
-  var allAnswers  = [];
+  var copies=parseInt(worksheetsPerStudent.value)||1, doKey=answerKeyToggle.checked;
+  var total=parsed.students.length*copies, pageCounter=0, allAnswers=[];
   for (var s = 0; s < parsed.students.length; s++) {
     var student = parsed.students[s];
     for (var c = 1; c <= copies; c++) {
@@ -1635,7 +1713,7 @@ function generate() {
       var result = buildWorksheet(student, c, copies, isLast);
       resultsDiv.appendChild(result.el);
       if (doKey && c === 1) {
-        allAnswers.push({ name: student.name, number: student.number, desc: descriptionFor(student.type, student.grade, student.count), problems: result.problems });
+        allAnswers.push({ name:student.name, number:student.number, desc:descriptionFor(student.type,student.grade,student.count), problems:result.problems, useHoriz:result.useHoriz, grid:result.grid });
       }
     }
   }
@@ -1644,12 +1722,10 @@ function generate() {
 }
 
 function generateAndPrint() {
-  clearStatus();
-  generate();
+  clearStatus(); generate();
   setTimeout(function() {
     if (!resultsDiv.querySelector(".mwg-worksheet")) return;
-    var originalParent = resultsDiv.parentNode;
-    var originalNext   = resultsDiv.nextSibling;
+    var originalParent=resultsDiv.parentNode, originalNext=resultsDiv.nextSibling;
     resultsDiv.id = "mwg-results-print";
     document.body.appendChild(resultsDiv);
     window.print();
@@ -1660,10 +1736,7 @@ function generateAndPrint() {
 }
 
 function wireButtons() {
-  toggleModeBtn.addEventListener("click", function() {
-    clearStatus();
-    setInputMode(inputMode === "standard" ? "advanced" : "standard");
-  });
+  toggleModeBtn.addEventListener("click", function() { clearStatus(); setInputMode(inputMode==="standard"?"advanced":"standard"); });
   addStudentBtn.addEventListener("click",   function() { clearStatus(); addStudent(); refreshNumbers(); });
   genCodeBtn.addEventListener("click",      function() { clearStatus(); openCodeModal(); });
   saveBtn.addEventListener("click",         function() { clearStatus(); saveRoster(); });
@@ -1685,13 +1758,10 @@ function wireButtons() {
     showSuccess("Settings filled down from Student 1.");
   });
   closeModal.addEventListener("click", function() { codeModal.className = "mwg-modal-overlay"; });
-  codeModal.addEventListener("click", function(e) {
-    if (e.target === codeModal) codeModal.className = "mwg-modal-overlay";
-  });
+  codeModal.addEventListener("click", function(e) { if (e.target === codeModal) codeModal.className = "mwg-modal-overlay"; });
   copyCodeBtn.addEventListener("click", function() {
-    try {
-      navigator.clipboard.writeText(codeOutput.value).then(function() { showSuccess("Code copied."); });
-    } catch(e) { showNotice("Unable to copy automatically."); }
+    try { navigator.clipboard.writeText(codeOutput.value).then(function() { showSuccess("Code copied."); }); }
+    catch(e) { showNotice("Unable to copy automatically."); }
   });
   useCodeBtn.addEventListener("click", function() {
     advancedBox.value = codeOutput.value;
