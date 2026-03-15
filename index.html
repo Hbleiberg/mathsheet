@@ -761,6 +761,21 @@ body { margin: 0; padding: 12px; background: white; }
     </div>
   </div>
 </div>
+
+<div class="mwg-modal-overlay" id="mwgValidationModal">
+  <div class="mwg-modal-box" style="max-width:480px">
+    <div class="mwg-modal-header">
+      <div class="mwg-modal-title">Incomplete Students</div>
+    </div>
+    <div class="mwg-modal-body">
+      <div id="mwgValidationMsg" style="font-size:14px;line-height:1.6;margin-bottom:12px;"></div>
+      <div class="mwg-modal-actions">
+        <button type="button" id="mwgValidationFix" class="mwg-btn-small">Fix</button>
+        <button type="button" id="mwgValidationGenerate" class="mwg-btn-small">Generate Anyway</button>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
@@ -873,7 +888,9 @@ var form, studentsContainer, studentCounter, standardSection,
     addStudentBtn, genCodeBtn, saveBtn, clearCurrentBtn, clearSavedBtn,
     generateBtn, savePdfBtn, fillDownBtn, worksheetsPerStudent, answerKeyToggle,
     resultsDiv, statusDiv, errorsDiv, codeModal, closeModal,
-    codeOutput, copyCodeBtn, useCodeBtn, referenceGrid;
+    codeOutput, copyCodeBtn, useCodeBtn, referenceGrid,
+    validationModal, validationMsg, validationFix, validationGenerate;
+var pendingGenerateAction = null;
 
 function injectStyles() {
   if (document.getElementById("mwg-injected-styles")) return;
@@ -969,6 +986,10 @@ function assignDomRefs() {
   copyCodeBtn          = document.getElementById("mwgCopyCodeBtn");
   useCodeBtn           = document.getElementById("mwgUseCodeBtn");
   referenceGrid        = document.getElementById("mwgReferenceGrid");
+  validationModal      = document.getElementById("mwgValidationModal");
+  validationMsg        = document.getElementById("mwgValidationMsg");
+  validationFix        = document.getElementById("mwgValidationFix");
+  validationGenerate   = document.getElementById("mwgValidationGenerate");
 }
 
 function esc(text) {
@@ -1742,24 +1763,153 @@ function generateAndSavePdf() {
   clearStatus();
   generate();
   setTimeout(function() {
-    if (!resultsDiv.querySelector(".mwg-worksheet")) return;
+    var sheets = resultsDiv.querySelectorAll(".mwg-worksheet, .mwg-answer-key-sheet");
+    if (!sheets.length) return;
     if (typeof html2pdf === "undefined") {
       showNotice("PDF library not loaded yet. Please try again in a moment.");
       return;
     }
     showSuccess("Generating PDF, please wait...");
+    // Render each worksheet individually then combine into one PDF
+    // This avoids page overflow issues with html2pdf's single-element approach
     var opt = {
       margin:      0,
       filename:    "worksheets.pdf",
       image:       { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-      jsPDF:       { unit: "in", format: "letter", orientation: "landscape" },
-      pagebreak:   { mode: ["css","legacy"], before: ".print-break" }
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true, windowWidth: 1056 },
+      jsPDF:       { unit: "in", format: "letter", orientation: "landscape" }
     };
-    html2pdf().set(opt).from(resultsDiv).save().then(function() {
-      showSuccess("PDF saved!");
+    // Clone each sheet into a temporary wrapper sized exactly to one landscape page
+    var wrapper = document.createElement("div");
+    wrapper.style.cssText = "position:absolute;left:-9999px;top:0;width:11in;";
+    document.body.appendChild(wrapper);
+
+    var worker = html2pdf().set(opt);
+    var chain = Promise.resolve();
+    var pageCount = 0;
+
+    for (var i = 0; i < sheets.length; i++) {
+      (function(sheet, idx) {
+        chain = chain.then(function() {
+          var clone = sheet.cloneNode(true);
+          clone.style.cssText = "width:11in;height:8.5in;overflow:hidden;margin:0;padding:0.25in 0.3in;background:white;box-sizing:border-box;display:flex;flex-direction:column;";
+          clone.classList.remove("print-break");
+          wrapper.innerHTML = "";
+          wrapper.appendChild(clone);
+          if (idx === 0) {
+            return worker.from(clone).toImg().then(function() {
+              pageCount++;
+            });
+          } else {
+            return worker.from(clone).toImg().then(function() {
+              pageCount++;
+            });
+          }
+        });
+      })(sheets[i], i);
+    }
+
+    chain.then(function() {
+      document.body.removeChild(wrapper);
     });
-  }, 200);
+
+    // Simpler fallback: render all at once with explicit page sizing
+    var container = document.createElement("div");
+    container.style.cssText = "width:11in;";
+    for (var i = 0; i < sheets.length; i++) {
+      var clone = sheets[i].cloneNode(true);
+      clone.style.cssText = "width:11in;height:8.5in;overflow:hidden;margin:0;padding:0.25in 0.3in;background:white;box-sizing:border-box;display:flex;flex-direction:column;page-break-after:always;";
+      clone.classList.remove("print-break");
+      container.appendChild(clone);
+    }
+    document.body.appendChild(container);
+
+    var pdfOpt = {
+      margin:      0,
+      filename:    "worksheets.pdf",
+      image:       { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 1.5, useCORS: true, windowWidth: 1056 },
+      jsPDF:       { unit: "in", format: "letter", orientation: "landscape" },
+      pagebreak:   { mode: "css", after: ".mwg-worksheet,.mwg-answer-key-sheet" }
+    };
+
+    html2pdf().set(pdfOpt).from(container).save().then(function() {
+      document.body.removeChild(container);
+      showSuccess("PDF saved!");
+    }).catch(function() {
+      document.body.removeChild(container);
+      showNotice("PDF generation failed. Please use Generate & Print and save as PDF from the print dialog.");
+    });
+  }, 300);
+}
+
+function highlightInvalidEntries() {
+  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
+  var problems = [];
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    var nameEl  = entry.querySelector('[name="studentName"]');
+    var gradeEl = entry.querySelector('[name="grade"]');
+    var typeEl  = entry.querySelector('[name="problemType"]');
+    var countEl = entry.querySelector('[name="count"]');
+    var entryProblems = [];
+    // Reset styles
+    nameEl.style.border  = "";
+    gradeEl.style.border = "";
+    typeEl.style.border  = "";
+    countEl.style.border = "";
+    if (!nameEl.value.trim()) {
+      nameEl.style.border = "2px solid rgb(204,0,0)";
+      entryProblems.push("Student Name");
+    }
+    if (!gradeEl.value) {
+      gradeEl.style.border = "2px solid rgb(204,0,0)";
+      entryProblems.push("Grade Level");
+    }
+    if (!typeEl.value) {
+      typeEl.style.border = "2px solid rgb(204,0,0)";
+      entryProblems.push("Problem Type");
+    }
+    if (!countEl.value) {
+      countEl.style.border = "2px solid rgb(204,0,0)";
+      entryProblems.push("Problem Count");
+    }
+    if (entryProblems.length) {
+      problems.push("Student " + (i + 1) + ": missing " + entryProblems.join(", "));
+    }
+  }
+  return problems;
+}
+
+function clearValidationHighlights() {
+  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    entry.querySelector('[name="studentName"]').style.border  = "";
+    entry.querySelector('[name="grade"]').style.border        = "";
+    entry.querySelector('[name="problemType"]').style.border  = "";
+    entry.querySelector('[name="count"]').style.border        = "";
+  }
+}
+
+function validateAndRun(action) {
+  if (inputMode === "advanced") {
+    action();
+    return;
+  }
+  var problems = highlightInvalidEntries();
+  if (!problems.length) {
+    action();
+    return;
+  }
+  pendingGenerateAction = action;
+  var html = '<strong>The following students have unfilled required fields:</strong><br><br>';
+  for (var i = 0; i < problems.length; i++) {
+    html += '• ' + esc(problems[i]) + '<br>';
+  }
+  html += '<br>Fields are highlighted in red. You can fix them or generate anyway.';
+  validationMsg.innerHTML = html;
+  validationModal.className = "mwg-modal-overlay active";
 }
 
 function wireButtons() {
@@ -1769,8 +1919,28 @@ function wireButtons() {
   saveBtn.addEventListener("click",         function() { clearStatus(); saveRoster(); });
   clearCurrentBtn.addEventListener("click", function() { clearStatus(); clearCurrentRoster(); });
   clearSavedBtn.addEventListener("click",   function() { clearStatus(); clearSavedRoster(); });
-  generateBtn.addEventListener("click",     function() { generateAndPrint(); });
-  savePdfBtn.addEventListener("click",      function() { generateAndSavePdf(); });
+  generateBtn.addEventListener("click", function() {
+    validateAndRun(function() { clearValidationHighlights(); generateAndPrint(); });
+  });
+  savePdfBtn.addEventListener("click", function() {
+    validateAndRun(function() { clearValidationHighlights(); generateAndSavePdf(); });
+  });
+  validationFix.addEventListener("click", function() {
+    validationModal.className = "mwg-modal-overlay";
+    pendingGenerateAction = null;
+    // Scroll to first highlighted field
+    var first = studentsContainer.querySelector('[style*="rgb(204,0,0)"]');
+    if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+  validationGenerate.addEventListener("click", function() {
+    validationModal.className = "mwg-modal-overlay";
+    clearValidationHighlights();
+    if (pendingGenerateAction) {
+      var action = pendingGenerateAction;
+      pendingGenerateAction = null;
+      action();
+    }
+  });
   fillDownBtn.addEventListener("click", function() {
     var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
     if (entries.length < 2) return;
