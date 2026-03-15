@@ -1773,60 +1773,88 @@ function generateAndSavePdf() {
       showNotice("PDF library not loaded yet. Please try again in a moment.");
       return;
     }
+
     showSuccess("Generating PDF, please wait...");
 
-    // Build a hidden container with each sheet cloned and sized to exactly one landscape page
-    // 1056px = 11in at 96dpi (browser standard)
-    var PX_PER_IN = 96;
-    var PAGE_W = 11 * PX_PER_IN;  // 1056px
-    var PAGE_H = 8.5 * PX_PER_IN; // 816px
+    // 11in x 8.5in at 96dpi
+    var PAGE_W_PX = 1056;
+    var PAGE_H_PX = 816;
+    var PADDING   = "24px 29px";
 
-    var container = document.createElement("div");
-    container.style.cssText = "position:fixed;left:-9999px;top:0;width:" + PAGE_W + "px;background:white;";
-    document.body.appendChild(container);
+    // Place one sheet at a time in a visible-but-offscreen absolutely-positioned
+    // staging area so html2canvas can capture it (fixed positioning breaks capture)
+    var stage = document.createElement("div");
+    stage.style.cssText = "position:absolute;top:" + (document.documentElement.scrollTop + 10) + "px;left:0;width:" + PAGE_W_PX + "px;z-index:-1;opacity:0.01;pointer-events:none;";
+    document.body.appendChild(stage);
 
-    for (var i = 0; i < sheets.length; i++) {
-      var clone = sheets[i].cloneNode(true);
-      // Force exact page dimensions and remove page-break class
+    var jsPDFObj = null;
+    var sheetArray = [];
+    for (var i = 0; i < sheets.length; i++) sheetArray.push(sheets[i]);
+
+    function captureNext(idx) {
+      if (idx >= sheetArray.length) {
+        // All pages captured - save
+        document.body.removeChild(stage);
+        jsPDFObj.save("worksheets.pdf");
+        showSuccess("PDF saved!");
+        return;
+      }
+
+      var clone = sheetArray[idx].cloneNode(true);
       clone.style.cssText = [
-        "width:" + PAGE_W + "px",
-        "height:" + PAGE_H + "px",
+        "width:" + PAGE_W_PX + "px",
+        "min-height:" + PAGE_H_PX + "px",
+        "max-height:" + PAGE_H_PX + "px",
         "overflow:hidden",
         "margin:0",
-        "padding:24px 29px",
+        "padding:" + PADDING,
         "background:white",
         "box-sizing:border-box",
         "display:flex",
-        "flex-direction:column",
-        "page-break-after:always",
-        "break-after:page"
+        "flex-direction:column"
       ].join(";");
       clone.classList.remove("print-break");
-      container.appendChild(clone);
+      stage.innerHTML = "";
+      stage.appendChild(clone);
+
+      // Use html2canvas (bundled inside html2pdf)
+      var h2c = (typeof html2canvas !== "undefined") ? html2canvas : window.html2pdf.html2canvas;
+      h2c(clone, {
+        scale:       1.5,
+        useCORS:     true,
+        width:       PAGE_W_PX,
+        height:      PAGE_H_PX,
+        windowWidth: PAGE_W_PX,
+        logging:     false,
+        backgroundColor: "white"
+      }).then(function(canvas) {
+        var imgData = canvas.toDataURL("image/jpeg", 0.92);
+        var imgW = PAGE_W_PX * 1.5;
+        var imgH = PAGE_H_PX * 1.5;
+
+        if (!jsPDFObj) {
+          // jsPDF is bundled inside html2pdf as window.jspdf.jsPDF
+          var jsPDFCtor = (typeof jsPDF !== "undefined") ? jsPDF :
+                          (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
+          if (!jsPDFCtor) {
+            document.body.removeChild(stage);
+            showNotice("PDF library error. Use Generate & Print instead.");
+            return;
+          }
+          jsPDFObj = new jsPDFCtor({ orientation: "landscape", unit: "px", format: [PAGE_W_PX, PAGE_H_PX] });
+        } else {
+          jsPDFObj.addPage([PAGE_W_PX, PAGE_H_PX], "landscape");
+        }
+
+        jsPDFObj.addImage(imgData, "JPEG", 0, 0, PAGE_W_PX, PAGE_H_PX, "", "FAST");
+        captureNext(idx + 1);
+      }).catch(function() {
+        document.body.removeChild(stage);
+        showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
+      });
     }
 
-    var opt = {
-      margin:      0,
-      filename:    "worksheets.pdf",
-      image:       { type: "jpeg", quality: 0.98 },
-      html2canvas: {
-        scale:       1,
-        useCORS:     true,
-        width:       PAGE_W,
-        windowWidth: PAGE_W,
-        logging:     false
-      },
-      jsPDF:     { unit: "px", format: [PAGE_W, PAGE_H], orientation: "landscape" },
-      pagebreak: { mode: ["css","legacy"], after: "div" }
-    };
-
-    html2pdf().set(opt).from(container).save().then(function() {
-      document.body.removeChild(container);
-      showSuccess("PDF saved!");
-    }).catch(function(err) {
-      document.body.removeChild(container);
-      showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF in the print dialog.");
-    });
+    captureNext(0);
   }, 300);
 }
 
