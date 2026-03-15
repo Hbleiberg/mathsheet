@@ -1132,6 +1132,7 @@ function createWorksheet(name, number, level, problems, isLast, setNumber, setTo
         '<div class="description-box">' +
           '<span class="description-text">' + escapeHtml(meta.description) + '</span>' +
           (setLabel ? '<span class="worksheet-set-label">' + escapeHtml(setLabel) + '</span>' : '') +
+          '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span>' +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -1326,6 +1327,7 @@ function buildAnswerKeySheet(student, problems, isLast, copyNum, copies) {
         '</div>' +
         '<div class="description-box">' +
           '<span class="description-text">ANSWER KEY — ' + escapeHtml(meta.description) + escapeHtml(copyLabel) + '</span>' +
+          '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span>' +
         '</div>' +
       '</div>' +
     '</div>' +
