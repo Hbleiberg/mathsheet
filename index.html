@@ -5,11 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Custom Math Sheet Generator</title>
 <style>
-body {
-  margin: 0;
-  padding: 12px;
-  background: white;
-}
+body { margin: 0; padding: 12px; background: white; }
 #mwg-app {
   font-family: 'Georgia', serif;
   max-width: 1100px;
@@ -766,11 +762,16 @@ body {
 
 var STORAGE_KEY = "mwgRosterData_v1";
 
+// TYPE_LABELS - grouped with easy/hard variants
 var TYPE_LABELS = {
-  addition:           "Addition",
-  subtraction:        "Subtraction",
-  multiplication:     "Multiplication",
-  division:           "Division",
+  easyadd:            "Easy Addition",
+  hardadd:            "Hard Addition",
+  easysub:            "Easy Subtraction",
+  hardsub:            "Hard Subtraction",
+  easymul:            "Easy Multiplication",
+  hardmul:            "Hard Multiplication",
+  easydiv:            "Easy Division",
+  harddiv:            "Hard Division",
   fractions:          "Fractions",
   decimals:           "Decimals",
   rounding:           "Rounding",
@@ -782,22 +783,34 @@ var TYPE_LABELS = {
   mixed:              "Mixed"
 };
 
+// All grades see all types; grade only affects number ranges for higher types
 var GRADE_TYPES = {
-  1: ["addition","subtraction","multiplication","division","mixed"],
-  2: ["addition","subtraction","multiplication","division","mixed"],
-  3: ["addition","subtraction","multiplication","division","mixed"],
-  4: ["addition","subtraction","multiplication","division","fractions","decimals","rounding","longdivision","mixed"],
-  5: ["addition","subtraction","multiplication","division","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
-  6: ["addition","subtraction","multiplication","division","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
-  7: ["addition","subtraction","multiplication","division","fractions","decimals","rounding","longdivision","orderofoperations","integers","mixed"],
-  8: ["addition","subtraction","multiplication","division","fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation","mixed"]
+  1: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","mixed"],
+  2: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","mixed"],
+  3: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","mixed"],
+  4: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","fractions","decimals","rounding","longdivision","mixed"],
+  5: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
+  6: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
+  7: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","fractions","decimals","rounding","longdivision","orderofoperations","integers","mixed"],
+  8: ["easyadd","hardadd","easysub","hardsub","easymul","hardmul","easydiv","harddiv","fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation","mixed"]
 };
 
+// Groups for visually grouped dropdown
+var TYPE_GROUPS = [
+  { label: "Addition",       types: ["easyadd","hardadd"] },
+  { label: "Subtraction",    types: ["easysub","hardsub"] },
+  { label: "Multiplication", types: ["easymul","hardmul"] },
+  { label: "Division",       types: ["easydiv","harddiv"] },
+  { label: "Other",          types: ["fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"] },
+  { label: "Mixed",          types: ["mixed"] }
+];
+
 var GRADE_REFERENCE = {
-  "Grades 1-3": "Addition, subtraction, multiplication, division",
-  "Grades 4-6": "+ Fractions, decimals, rounding, long division, order of operations",
-  "Grade 7":    "+ Integers & negative numbers",
-  "Grade 8":    "+ Exponents & square roots, scientific notation"
+  "All Grades": "Easy/Hard Addition, Subtraction, Multiplication, Division",
+  "Grades 4+":  "+ Fractions, Decimals, Rounding, Long Division",
+  "Grade 5+":   "+ Order of Operations",
+  "Grade 7+":   "+ Integers & Negatives",
+  "Grade 8+":   "+ Exponents, Scientific Notation"
 };
 
 var VALID_COUNTS = [30, 40, 50, 60];
@@ -919,12 +932,8 @@ function randFrom(arr) {
 function clearStatus() { statusDiv.innerHTML = ""; }
 function clearErrors()  { errorsDiv.innerHTML = ""; }
 
-function showSuccess(m) {
-  statusDiv.innerHTML = '<div class="mwg-success-box">' + esc(m) + '</div>';
-}
-function showNotice(m) {
-  statusDiv.innerHTML = '<div class="mwg-notice-box">' + esc(m) + '</div>';
-}
+function showSuccess(m) { statusDiv.innerHTML = '<div class="mwg-success-box">' + esc(m) + '</div>'; }
+function showNotice(m)  { statusDiv.innerHTML = '<div class="mwg-notice-box">' + esc(m) + '</div>'; }
 function showErrors(list) {
   if (!list.length) { errorsDiv.innerHTML = ""; return; }
   errorsDiv.innerHTML = '<div class="mwg-error-box">Some entries were skipped:\n\n' + list.map(esc).join("\n") + '</div>';
@@ -939,13 +948,33 @@ function renderReference() {
   referenceGrid.innerHTML = html;
 }
 
+// Build grouped <optgroup> dropdown
 function getTypeOptions(grade, selected) {
-  var types = GRADE_TYPES[grade] || GRADE_TYPES[1];
+  var availTypes = GRADE_TYPES[grade] || GRADE_TYPES[1];
   var html = '<option value="">Select Type</option>';
-  for (var i = 0; i < types.length; i++) {
-    var t = types[i];
-    var sel = t === selected ? "selected" : "";
-    html += '<option value="' + t + '" ' + sel + '>' + esc(TYPE_LABELS[t]) + '</option>';
+  for (var g = 0; g < TYPE_GROUPS.length; g++) {
+    var group = TYPE_GROUPS[g];
+    // Check if any type in this group is available
+    var groupTypes = [];
+    for (var t = 0; t < group.types.length; t++) {
+      if (availTypes.indexOf(group.types[t]) !== -1) {
+        groupTypes.push(group.types[t]);
+      }
+    }
+    if (!groupTypes.length) continue;
+    // For mixed, no optgroup wrapper needed
+    if (group.label === "Mixed") {
+      var sel = "mixed" === selected ? "selected" : "";
+      html += '<option value="mixed" ' + sel + '>Mixed</option>';
+    } else {
+      html += '<optgroup label="' + esc(group.label) + '">';
+      for (var t = 0; t < groupTypes.length; t++) {
+        var type = groupTypes[t];
+        var sel = type === selected ? "selected" : "";
+        html += '<option value="' + type + '" ' + sel + '>' + esc(TYPE_LABELS[type]) + '</option>';
+      }
+      html += '</optgroup>';
+    }
   }
   return html;
 }
@@ -983,24 +1012,34 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
   if (!box) return;
   var types = getMixedTypesForGrade(grade);
   var checked = checkedTypes || types;
-  var html = '<div class="mwg-mixed-types-label">Include in Mixed:</div><div class="mwg-mixed-types-grid">';
-  for (var i = 0; i < types.length; i++) {
-    var t = types[i];
-    var isChecked = checked.indexOf(t) !== -1 ? "checked" : "";
-    html += '<label><input type="checkbox" class="mwg-mixed-cb" value="' + t + '" ' + isChecked + '> ' + esc(TYPE_LABELS[t]) + '</label>';
+  var html = '<div class="mwg-mixed-types-label">Include in Mixed:</div>';
+  // Render in groups
+  for (var g = 0; g < TYPE_GROUPS.length; g++) {
+    var group = TYPE_GROUPS[g];
+    if (group.label === "Mixed") continue;
+    var groupTypes = [];
+    for (var t = 0; t < group.types.length; t++) {
+      if (types.indexOf(group.types[t]) !== -1) groupTypes.push(group.types[t]);
+    }
+    if (!groupTypes.length) continue;
+    html += '<div style="margin-bottom:6px"><strong style="font-size:12px;color:rgb(85,85,85)">' + esc(group.label) + '</strong><div class="mwg-mixed-types-grid">';
+    for (var t = 0; t < groupTypes.length; t++) {
+      var type = groupTypes[t];
+      var isChecked = checked.indexOf(type) !== -1 ? "checked" : "";
+      html += '<label><input type="checkbox" class="mwg-mixed-cb" value="' + type + '" ' + isChecked + '> ' + esc(TYPE_LABELS[type]) + '</label>';
+    }
+    html += '</div></div>';
   }
-  html += '</div>';
   box.innerHTML = html;
 }
 
 function updateMixedVisibility(entryDiv) {
-  var typeSelect = entryDiv.querySelector('[name="problemType"]');
+  var typeSelect  = entryDiv.querySelector('[name="problemType"]');
   var gradeSelect = entryDiv.querySelector('[name="grade"]');
-  var mixedBox = entryDiv.querySelector(".mwg-mixed-types");
+  var mixedBox    = entryDiv.querySelector(".mwg-mixed-types");
   if (!typeSelect || !mixedBox) return;
-  var isMixed = typeSelect.value === "mixed";
   var grade = parseInt(gradeSelect.value) || 1;
-  if (isMixed) {
+  if (typeSelect.value === "mixed") {
     mixedBox.className = "mwg-mixed-types visible";
     renderMixedCheckboxes(entryDiv, grade);
   } else {
@@ -1045,11 +1084,9 @@ function createStudentEntry(index, data) {
   var type   = data.type   || "";
   var count  = data.count  || "";
   var mixedTypes = data.mixedTypes || null;
-
   var div = document.createElement("div");
   div.className = "mwg-student-entry";
   div.setAttribute("data-entry-id", ++entryIdCounter);
-
   div.innerHTML =
     '<div class="mwg-student-entry-header">' +
       '<h3>Student ' + index + '</h3>' +
@@ -1066,27 +1103,22 @@ function createStudentEntry(index, data) {
       '<div><label>Problem Count</label><select name="count">' + getCountOptions(count) + '</select></div>' +
       '<div class="mwg-mixed-types"></div>' +
     '</div>';
-
   var gradeSelect = div.querySelector('[name="grade"]');
   var typeSelect  = div.querySelector('[name="problemType"]');
-
   gradeSelect.addEventListener("change", function() { updateTypeOptionsForGrade(div); });
   typeSelect.addEventListener("change",  function() { updateMixedVisibility(div); });
-
   if (type === "mixed" && mixedTypes) {
     updateMixedVisibility(div);
     setTimeout(function() { renderMixedCheckboxes(div, parseInt(grade)||1, mixedTypes); }, 0);
   } else {
     updateMixedVisibility(div);
   }
-
   div.querySelector(".mwg-delete-link").addEventListener("click", function() {
     div.parentNode.removeChild(div);
     if (!studentsContainer.querySelector(".mwg-student-entry")) buildDefaultStudents();
     else refreshNumbers();
     clearStatus();
   });
-
   div.querySelector(".mwg-duplicate-link").addEventListener("click", function() {
     var dupData = readEntry(div);
     var newNum = dupData.number;
@@ -1097,7 +1129,6 @@ function createStudentEntry(index, data) {
     refreshNumbers();
     clearStatus();
   });
-
   return div;
 }
 
@@ -1110,8 +1141,7 @@ function refreshNumbers() {
 }
 
 function updateCounter() {
-  var n = studentsContainer.querySelectorAll(".mwg-student-entry").length;
-  studentCounter.textContent = "Students: " + n;
+  studentCounter.textContent = "Students: " + studentsContainer.querySelectorAll(".mwg-student-entry").length;
 }
 
 function addStudent(data) {
@@ -1129,21 +1159,21 @@ function buildDefaultStudents() {
 function setInputMode(mode) {
   inputMode = mode === "advanced" ? "advanced" : "standard";
   if (inputMode === "advanced") {
-    standardSection.style.display = "none";
-    advancedSection.style.display = "block";
-    modeIndicator.textContent = "Advanced Input";
-    toggleModeBtn.textContent = "Back to Standard Input";
-    addStudentBtn.style.display = "none";
-    genCodeBtn.style.display = "none";
-    fillDownBtn.style.display = "none";
+    standardSection.style.display  = "none";
+    advancedSection.style.display  = "block";
+    modeIndicator.textContent       = "Advanced Input";
+    toggleModeBtn.textContent       = "Back to Standard Input";
+    addStudentBtn.style.display     = "none";
+    genCodeBtn.style.display        = "none";
+    fillDownBtn.style.display       = "none";
   } else {
-    standardSection.style.display = "block";
-    advancedSection.style.display = "none";
-    modeIndicator.textContent = "Standard Input";
-    toggleModeBtn.textContent = "Advanced Input";
-    addStudentBtn.style.display = "inline-block";
-    genCodeBtn.style.display = "inline-block";
-    fillDownBtn.style.display = "inline-block";
+    standardSection.style.display  = "block";
+    advancedSection.style.display  = "none";
+    modeIndicator.textContent       = "Standard Input";
+    toggleModeBtn.textContent       = "Advanced Input";
+    addStudentBtn.style.display     = "inline-block";
+    genCodeBtn.style.display        = "inline-block";
+    fillDownBtn.style.display       = "inline-block";
   }
 }
 
@@ -1175,9 +1205,9 @@ function loadRoster() {
   try {
     var saved = JSON.parse(raw);
     applyRoster(saved.students || []);
-    advancedBox.value = saved.advancedInput || "";
-    worksheetsPerStudent.value = saved.worksheetsPerStudent || "1";
-    answerKeyToggle.checked = saved.answerKey || false;
+    advancedBox.value            = saved.advancedInput        || "";
+    worksheetsPerStudent.value   = saved.worksheetsPerStudent || "1";
+    answerKeyToggle.checked      = saved.answerKey            || false;
     setInputMode(saved.inputMode || "standard");
     showSuccess("Saved roster loaded.");
   } catch(e) { buildDefaultStudents(); }
@@ -1235,23 +1265,19 @@ function parseAdvancedInput() {
   var raw = advancedBox.value.trim();
   var students = [], errors = [];
   if (!raw) return { students: students, errors: errors };
-  var normalized = raw.replace(/\n+/g, ";");
-  var chunks = normalized.split(";");
+  var chunks = raw.replace(/\n+/g, ";").split(";");
   for (var i = 0; i < chunks.length; i++) {
     var entry = chunks[i].trim();
     if (!entry) continue;
     var parts = entry.split(",");
     for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
     if (parts.length !== 5) { errors.push("Entry " + (i+1) + " needs 5 fields: " + entry); continue; }
-    var name = parts[0], number = parts[1], typeRaw = parts[2], countStr = parts[3], gradeStr = parts[4];
-    if (!name) { errors.push("Entry " + (i+1) + " missing name."); continue; }
-    var grade = parseInt(gradeStr);
-    if (isNaN(grade) || grade < 1 || grade > 8) { errors.push("Entry " + (i+1) + " invalid grade (1-8): " + entry); continue; }
-    var count = parseInt(countStr);
-    if (VALID_COUNTS.indexOf(count) === -1) { errors.push("Entry " + (i+1) + " invalid count (30/40/50/60): " + entry); continue; }
-    var type = typeRaw;
-    var mixedTypes = null;
-    var mixedMatch = typeRaw.match(/^mixed\[([^\]]+)\]$/);
+    var grade = parseInt(parts[4]);
+    if (isNaN(grade) || grade < 1 || grade > 8) { errors.push("Entry " + (i+1) + " invalid grade: " + entry); continue; }
+    var count = parseInt(parts[3]);
+    if (VALID_COUNTS.indexOf(count) === -1) { errors.push("Entry " + (i+1) + " invalid count: " + entry); continue; }
+    var type = parts[2], mixedTypes = null;
+    var mixedMatch = type.match(/^mixed\[([^\]]+)\]$/);
     if (mixedMatch) {
       type = "mixed";
       mixedTypes = mixedMatch[1].split("|");
@@ -1259,7 +1285,7 @@ function parseAdvancedInput() {
     }
     var validTypes = GRADE_TYPES[grade] || [];
     if (validTypes.indexOf(type) === -1) { errors.push("Entry " + (i+1) + " invalid type for grade " + grade + ": " + type); continue; }
-    students.push({ name: name, number: number, grade: grade, type: type, count: count, mixedTypes: mixedTypes });
+    students.push({ name: parts[0], number: parts[1], grade: grade, type: type, count: count, mixedTypes: mixedTypes });
   }
   return { students: students, errors: errors };
 }
@@ -1276,69 +1302,96 @@ function getStudentsFromStandard() {
   return { students: students, errors: [] };
 }
 
+// ══════════════════════════════════════
+// PROBLEM GENERATORS
+// ══════════════════════════════════════
+
 function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
-
-function fractionStr(n, d) {
-  var g = gcd(Math.abs(n), Math.abs(d));
-  return (n/g) + "/" + (d/g);
-}
-
+function fractionStr(n, d) { var g = gcd(Math.abs(n), Math.abs(d)); return (n/g) + "/" + (d/g); }
 function fracHtml(n, d) {
   return '<span class="mwg-fraction"><span class="mwg-fraction-num">' + n + '</span><span class="mwg-fraction-den">' + d + '</span></span>';
 }
 
+// Stack problem: top number, operator + bottom number, answer line under bottom
 function stackHtml(op, a, b) {
-  return '<div class="mwg-problem-cell"><div>' +
-    '<div class="mwg-problem-stack">' +
-      '<span class="mwg-problem-top">' + a + '</span>' +
-      '<div class="mwg-problem-bottom-line">' +
-        '<span class="mwg-problem-operator">' + op + '</span>' +
-        '<span class="mwg-problem-bottom">' + b + '</span>' +
-      '</div>' +
+  return '<div class="mwg-problem-cell"><div class="mwg-problem-stack">' +
+    '<span class="mwg-problem-top">' + a + '</span>' +
+    '<div class="mwg-problem-bottom-line">' +
+      '<span class="mwg-problem-operator">' + op + '</span>' +
+      '<span class="mwg-problem-bottom">' + b + '</span>' +
     '</div>' +
-    '<span class="mwg-answer-blank"></span>' +
   '</div></div>';
 }
 
 function divisionHtml(divisor, dividend) {
-  return '<div class="mwg-problem-cell"><div>' +
+  return '<div class="mwg-problem-cell">' +
     '<div class="mwg-division-problem">' +
       '<span class="mwg-division-divisor">' + divisor + '</span>' +
       '<div class="mwg-division-bracket">' +
         '<span class="mwg-division-dividend">' + dividend + '</span>' +
       '</div>' +
     '</div>' +
-    '<span class="mwg-answer-blank"></span>' +
-  '</div></div>';
+  '</div>';
 }
 
 function horizHtml(expr) { return "__HORIZ__" + expr; }
 
-function makeAddition(grade) {
-  var max = grade <= 2 ? 20 : grade <= 4 ? 100 : 1000;
-  var a = rand(0, Math.floor(max * 0.6));
-  var b = rand(0, max - a);
+// Easy Addition: sums less than 10 (both operands 1-9, sum < 10)
+function makeEasyAdd() {
+  var a, b;
+  do { a = rand(1, 8); b = rand(1, 8); } while (a + b >= 10);
   return { html: stackHtml("+", a, b), answer: a + b };
 }
 
-function makeSubtraction(grade) {
-  var max = grade <= 2 ? 20 : grade <= 4 ? 100 : 1000;
-  var a = rand(1, max);
+// Hard Addition: sums 10-20 (at least one operand makes sum >= 10, never over 20)
+function makeHardAdd() {
+  var a, b;
+  do { a = rand(1, 9); b = rand(1, 9); } while (a + b < 10 || a + b > 20);
+  return { html: stackHtml("+", a, b), answer: a + b };
+}
+
+// Easy Subtraction: minuend less than 10
+function makeEasySub() {
+  var a = rand(1, 9);
   var b = rand(0, a);
   return { html: stackHtml("\u2212", a, b), answer: a - b };
 }
 
-function makeMultiplication(grade) {
-  var maxF = grade <= 2 ? 5 : grade <= 4 ? 9 : 12;
-  var a = rand(0, maxF);
-  var b = rand(0, maxF);
+// Hard Subtraction: minuend 10-20
+function makeHardSub() {
+  var a = rand(10, 20);
+  var b = rand(0, a);
+  return { html: stackHtml("\u2212", a, b), answer: a - b };
+}
+
+// Easy Multiplication: one factor always 5 or less
+function makeEasyMul() {
+  var a = rand(0, 5);
+  var b = rand(0, 9);
+  // Randomly swap so the small factor isn't always on top
+  if (Math.random() < 0.5) { var t = a; a = b; b = t; }
   return { html: stackHtml("\u00d7", a, b), answer: a * b };
 }
 
-function makeDivision(grade) {
-  var maxD = grade <= 2 ? 5 : grade <= 4 ? 9 : 12;
-  var divisor  = rand(1, maxD);
+// Hard Multiplication: one factor always 6-9
+function makeHardMul() {
+  var a = rand(6, 9);
+  var b = rand(2, 9);
+  if (Math.random() < 0.5) { var t = a; a = b; b = t; }
+  return { html: stackHtml("\u00d7", a, b), answer: a * b };
+}
+
+// Easy Division: divisor 1-5
+function makeEasyDiv() {
+  var divisor  = rand(1, 5);
   var quotient = rand(0, 10);
+  return { html: divisionHtml(divisor, divisor * quotient), answer: quotient };
+}
+
+// Hard Division: divisor 6-9
+function makeHardDiv() {
+  var divisor  = rand(6, 9);
+  var quotient = rand(1, 10);
   return { html: divisionHtml(divisor, divisor * quotient), answer: quotient };
 }
 
@@ -1388,13 +1441,13 @@ function makeDecimals(grade) {
   }
 }
 
-function makeOrderOfOps(grade) {
+function makeOrderOfOps() {
   var a = rand(1,9), b = rand(1,9), c = rand(1,9);
   var patterns = [
     { expr: a + " + " + b + " \u00d7 " + c, ans: a + b * c },
     { expr: "(" + a + " + " + b + ") \u00d7 " + c, ans: (a + b) * c },
     { expr: a + " \u00d7 " + b + " + " + c, ans: a * b + c },
-    { expr: a + " \u00d7 " + "(" + b + " + " + c + ")", ans: a * (b + c) }
+    { expr: a + " \u00d7 (" + b + " + " + c + ")", ans: a * (b + c) }
   ];
   var p = randFrom(patterns);
   return { html: horizHtml(p.expr + " ="), answer: p.ans };
@@ -1405,14 +1458,12 @@ function makeIntegers(grade) {
   var a = rand(-max, max);
   var b = rand(-max, max);
   var op = randFrom(["+", "\u2212"]);
-  var ans = op === "+" ? a + b : a - b;
-  return { html: horizHtml(a + " " + op + " (" + b + ") ="), answer: ans };
+  return { html: horizHtml(a + " " + op + " (" + b + ") ="), answer: op === "+" ? a + b : a - b };
 }
 
-function makeExponents(grade) {
+function makeExponents() {
   if (Math.random() < 0.5) {
-    var base = rand(2, 9);
-    var exp  = rand(2, 3);
+    var base = rand(2, 9), exp = rand(2, 3);
     return { html: horizHtml(base + "<sup>" + exp + "</sup> ="), answer: Math.pow(base, exp) };
   } else {
     var root = rand(1, 12);
@@ -1420,7 +1471,7 @@ function makeExponents(grade) {
   }
 }
 
-function makeScientificNotation(grade) {
+function makeScientificNotation() {
   var coeff = (rand(10, 99) / 10).toFixed(1);
   var exp   = rand(2, 6);
   var val   = parseFloat(coeff) * Math.pow(10, exp);
@@ -1433,19 +1484,23 @@ function makeScientificNotation(grade) {
 
 function makeProblem(type, grade) {
   switch(type) {
-    case "addition":          return makeAddition(grade);
-    case "subtraction":       return makeSubtraction(grade);
-    case "multiplication":    return makeMultiplication(grade);
-    case "division":          return makeDivision(grade);
+    case "easyadd":           return makeEasyAdd();
+    case "hardadd":           return makeHardAdd();
+    case "easysub":           return makeEasySub();
+    case "hardsub":           return makeHardSub();
+    case "easymul":           return makeEasyMul();
+    case "hardmul":           return makeHardMul();
+    case "easydiv":           return makeEasyDiv();
+    case "harddiv":           return makeHardDiv();
     case "longdivision":      return makeLongDivision(grade);
     case "rounding":          return makeRounding(grade);
     case "fractions":         return makeFractions(grade);
     case "decimals":          return makeDecimals(grade);
-    case "orderofoperations": return makeOrderOfOps(grade);
+    case "orderofoperations": return makeOrderOfOps();
     case "integers":          return makeIntegers(grade);
-    case "exponents":         return makeExponents(grade);
-    case "scientificnotation":return makeScientificNotation(grade);
-    default:                  return makeAddition(grade);
+    case "exponents":         return makeExponents();
+    case "scientificnotation":return makeScientificNotation();
+    default:                  return makeEasyAdd();
   }
 }
 
@@ -1453,9 +1508,8 @@ function generateProblems(type, count, grade, mixedTypes) {
   var problems = [];
   if (type === "mixed") {
     var pool = (mixedTypes && mixedTypes.length) ? mixedTypes : getMixedTypesForGrade(grade);
-    for (var i = 0; i < count; i++) {
-      problems.push(makeProblem(pool[i % pool.length], grade));
-    }
+    for (var i = 0; i < count; i++) problems.push(makeProblem(pool[i % pool.length], grade));
+    // Shuffle
     for (var i = problems.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
       var tmp = problems[i]; problems[i] = problems[j]; problems[j] = tmp;
@@ -1478,7 +1532,7 @@ function isMixedHoriz(problems) {
 }
 
 function getGridConfig(count, useHoriz) {
-  if (useHoriz) return { useHoriz: true, rows: Math.ceil(count / 2) };
+  if (useHoriz) return { useHoriz: true };
   if (count === 30) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-6" };
   if (count === 40) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-8" };
   if (count === 50) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-10" };
@@ -1553,7 +1607,7 @@ function generate() {
   var doKey  = answerKeyToggle.checked;
   var total  = parsed.students.length * copies;
   var pageCounter = 0;
-  var allAnswers = [];
+  var allAnswers  = [];
   for (var s = 0; s < parsed.students.length; s++) {
     var student = parsed.students[s];
     for (var c = 1; c <= copies; c++) {
@@ -1566,9 +1620,7 @@ function generate() {
       }
     }
   }
-  if (doKey && allAnswers.length) {
-    resultsDiv.appendChild(buildAnswerKeySheet(allAnswers, true));
-  }
+  if (doKey && allAnswers.length) resultsDiv.appendChild(buildAnswerKeySheet(allAnswers, true));
   resultsDiv.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -1593,9 +1645,9 @@ function wireButtons() {
     clearStatus();
     setInputMode(inputMode === "standard" ? "advanced" : "standard");
   });
-  addStudentBtn.addEventListener("click", function() { clearStatus(); addStudent(); refreshNumbers(); });
-  genCodeBtn.addEventListener("click",    function() { clearStatus(); openCodeModal(); });
-  saveBtn.addEventListener("click",       function() { clearStatus(); saveRoster(); });
+  addStudentBtn.addEventListener("click",   function() { clearStatus(); addStudent(); refreshNumbers(); });
+  genCodeBtn.addEventListener("click",      function() { clearStatus(); openCodeModal(); });
+  saveBtn.addEventListener("click",         function() { clearStatus(); saveRoster(); });
   clearCurrentBtn.addEventListener("click", function() { clearStatus(); clearCurrentRoster(); });
   clearSavedBtn.addEventListener("click",   function() { clearStatus(); clearSavedRoster(); });
   generateBtn.addEventListener("click",     function() { generateAndPrint(); });
@@ -1618,8 +1670,9 @@ function wireButtons() {
     if (e.target === codeModal) codeModal.className = "mwg-modal-overlay";
   });
   copyCodeBtn.addEventListener("click", function() {
-    try { navigator.clipboard.writeText(codeOutput.value).then(function() { showSuccess("Code copied."); }); }
-    catch(e) { showNotice("Unable to copy automatically."); }
+    try {
+      navigator.clipboard.writeText(codeOutput.value).then(function() { showSuccess("Code copied."); });
+    } catch(e) { showNotice("Unable to copy automatically."); }
   });
   useCodeBtn.addEventListener("click", function() {
     advancedBox.value = codeOutput.value;
