@@ -742,6 +742,13 @@ body { margin: 0; padding: 12px; background: white; }
     <button type="button" id="mwgClearSavedBtn" class="mwg-btn-small">Clear Saved Roster</button>
   </div>
 
+  <div id="mwgValidationBox" style="display:none;border:1px solid rgb(204,0,0);background:rgb(255,243,243);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:14px;line-height:1.6;">
+    <div id="mwgValidationMsg"></div>
+    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+      <button type="button" id="mwgValidationFix" class="mwg-btn-small">Fix</button>
+      <button type="button" id="mwgValidationGenerate" class="mwg-btn-small">Generate Anyway</button>
+    </div>
+  </div>
   <div class="mwg-primary-actions">
     <button type="button" id="mwgGenerateBtn" class="mwg-btn-large">Generate &amp; Print Worksheets</button>
     <button type="button" id="mwgSavePdfBtn" class="mwg-btn-large">Generate &amp; Save PDF</button>
@@ -770,20 +777,7 @@ body { margin: 0; padding: 12px; background: white; }
   </div>
 </div>
 
-<div class="mwg-modal-overlay" id="mwgValidationModal">
-  <div class="mwg-modal-box" style="max-width:480px">
-    <div class="mwg-modal-header">
-      <div class="mwg-modal-title">Incomplete Students</div>
-    </div>
-    <div class="mwg-modal-body">
-      <div id="mwgValidationMsg" style="font-size:14px;line-height:1.6;margin-bottom:12px;"></div>
-      <div class="mwg-modal-actions">
-        <button type="button" id="mwgValidationFix" class="mwg-btn-small">Fix</button>
-        <button type="button" id="mwgValidationGenerate" class="mwg-btn-small">Generate Anyway</button>
-      </div>
-    </div>
-  </div>
-</div>
+
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -898,7 +892,7 @@ var form, studentsContainer, studentCounter, standardSection,
     generateBtn, savePdfBtn, fillDownBtn, worksheetsPerStudent, answerKeyToggle,
     resultsDiv, statusDiv, errorsDiv, codeModal, closeModal,
     codeOutput, copyCodeBtn, useCodeBtn, referenceGrid,
-    validationModal, validationMsg, validationFix, validationGenerate;
+    validationBox, validationMsg, validationFix, validationGenerate;
 var pendingGenerateAction = null;
 
 function injectStyles() {
@@ -997,7 +991,7 @@ function assignDomRefs() {
   copyCodeBtn          = document.getElementById("mwgCopyCodeBtn");
   useCodeBtn           = document.getElementById("mwgUseCodeBtn");
   referenceGrid        = document.getElementById("mwgReferenceGrid");
-  validationModal      = document.getElementById("mwgValidationModal");
+  validationBox        = document.getElementById("mwgValidationBox");
   validationMsg        = document.getElementById("mwgValidationMsg");
   validationFix        = document.getElementById("mwgValidationFix");
   validationGenerate   = document.getElementById("mwgValidationGenerate");
@@ -1952,7 +1946,8 @@ function validateAndRun(action) {
   }
   html += '<br>Fields are highlighted in red. You can fix them or generate anyway.';
   validationMsg.innerHTML = html;
-  validationModal.className = "mwg-modal-overlay active";
+  validationBox.style.display = "block";
+  validationBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function wireButtons() {
@@ -1969,14 +1964,14 @@ function wireButtons() {
     validateAndRun(function() { clearValidationHighlights(); generateAndSavePdf(); });
   });
   validationFix.addEventListener("click", function() {
-    validationModal.className = "mwg-modal-overlay";
+    validationBox.style.display = "none";
     pendingGenerateAction = null;
     // Scroll to first highlighted field
     var first = studentsContainer.querySelector('[style*="rgb(204,0,0)"]');
     if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
   });
   validationGenerate.addEventListener("click", function() {
-    validationModal.className = "mwg-modal-overlay";
+    validationBox.style.display = "none";
     clearValidationHighlights();
     if (pendingGenerateAction) {
       var action = pendingGenerateAction;
