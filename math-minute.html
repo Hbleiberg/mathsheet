@@ -1304,7 +1304,7 @@ function renderAnswerProblem(problem, answer) {
   return '<div class="problem-cell"></div>';
 }
 
-function buildAnswerKeySheet(student, problems, isLast) {
+function buildAnswerKeySheet(student, problems, isLast, copyNum, copies) {
   var sheet = document.createElement("div");
   sheet.className = "worksheet" + (isLast ? "" : " print-break");
   var meta = getLevelMeta(student.level);
@@ -1312,6 +1312,7 @@ function buildAnswerKeySheet(student, problems, isLast) {
   for (var i = 0; i < problems.length; i++) {
     problemsHtml += renderAnswerProblem(problems[i], problems[i].answer);
   }
+  var copyLabel = (copies && copies > 1) ? " — Sheet " + copyNum + " of " + copies : "";
   sheet.innerHTML =
     '<div class="worksheet-header">' +
       '<div class="worksheet-header-main">' +
@@ -1324,7 +1325,7 @@ function buildAnswerKeySheet(student, problems, isLast) {
           '<span class="student-field-value">' + escapeHtml(student.number || "") + '</span>' +
         '</div>' +
         '<div class="description-box">' +
-          '<span class="description-text">ANSWER KEY — ' + escapeHtml(meta.description) + '</span>' +
+          '<span class="description-text">ANSWER KEY — ' + escapeHtml(meta.description) + escapeHtml(copyLabel) + '</span>' +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -1403,15 +1404,15 @@ function generateWorksheets() {
       var isLast    = !doKey && pageCounter === totalPages;
       var worksheet = createWorksheet(student.name, student.number, student.level, problems, isLast, c, copies);
       results.appendChild(worksheet);
-      if (doKey && c === 1) {
-        allAnswers.push({ student: student, problems: problems });
+      if (doKey) {
+        allAnswers.push({ student: student, problems: problems, copyNum: c, copies: copies });
       }
     }
   }
   if (doKey && allAnswers.length) {
     for (var k = 0; k < allAnswers.length; k++) {
       var isLastKey = k === allAnswers.length - 1;
-      results.appendChild(buildAnswerKeySheet(allAnswers[k].student, allAnswers[k].problems, isLastKey));
+      results.appendChild(buildAnswerKeySheet(allAnswers[k].student, allAnswers[k].problems, isLastKey, allAnswers[k].copyNum, allAnswers[k].copies));
     }
   }
   if (parsed.students.length > 0) {
