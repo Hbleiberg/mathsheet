@@ -1312,7 +1312,7 @@ function buildAnswerKeySheet(student, problems, isLast, copyNum, copies) {
   for (var i = 0; i < problems.length; i++) {
     problemsHtml += renderAnswerProblem(problems[i], problems[i].answer);
   }
-  var copyLabel = (copies && copies > 1) ? " — Sheet " + copyNum + " of " + copies : "";
+  var copyLabel = (copies && copies > 1) ? " (Key " + copyNum + " of " + copies + ")" : "";
   sheet.innerHTML =
     '<div class="worksheet-header">' +
       '<div class="worksheet-header-main">' +
@@ -1405,7 +1405,7 @@ function generateWorksheets() {
       var worksheet = createWorksheet(student.name, student.number, student.level, problems, isLast, c, copies);
       results.appendChild(worksheet);
       if (doKey) {
-        allAnswers.push({ student: student, problems: problems, copyNum: c, copies: copies });
+        allAnswers.push({ student: { name: student.name, number: student.number, level: student.level }, problems: problems, copyNum: c, copies: copies });
       }
     }
   }
