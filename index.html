@@ -736,6 +736,7 @@ body { margin: 0; padding: 12px; background: white; }
 
   <div class="mwg-primary-actions">
     <button type="button" id="mwgGenerateBtn" class="mwg-btn-large">Generate &amp; Print Worksheets</button>
+    <button type="button" id="mwgSavePdfBtn" class="mwg-btn-large">Generate &amp; Save PDF</button>
   </div>
 </form>
 
@@ -761,6 +762,7 @@ body { margin: 0; padding: 12px; background: white; }
   </div>
 </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 (function() {
 "use strict";
@@ -869,7 +871,7 @@ var entryIdCounter = 0;
 var form, studentsContainer, studentCounter, standardSection,
     advancedSection, advancedBox, modeIndicator, toggleModeBtn,
     addStudentBtn, genCodeBtn, saveBtn, clearCurrentBtn, clearSavedBtn,
-    generateBtn, fillDownBtn, worksheetsPerStudent, answerKeyToggle,
+    generateBtn, savePdfBtn, fillDownBtn, worksheetsPerStudent, answerKeyToggle,
     resultsDiv, statusDiv, errorsDiv, codeModal, closeModal,
     codeOutput, copyCodeBtn, useCodeBtn, referenceGrid;
 
@@ -954,6 +956,7 @@ function assignDomRefs() {
   clearCurrentBtn      = document.getElementById("mwgClearCurrentBtn");
   clearSavedBtn        = document.getElementById("mwgClearSavedBtn");
   generateBtn          = document.getElementById("mwgGenerateBtn");
+  savePdfBtn           = document.getElementById("mwgSavePdfBtn");
   fillDownBtn          = document.getElementById("mwgFillDownBtn");
   worksheetsPerStudent = document.getElementById("mwgWorksheetsPerStudent");
   answerKeyToggle      = document.getElementById("mwgAnswerKeyToggle");
@@ -1735,6 +1738,30 @@ function generateAndPrint() {
   }, 200);
 }
 
+function generateAndSavePdf() {
+  clearStatus();
+  generate();
+  setTimeout(function() {
+    if (!resultsDiv.querySelector(".mwg-worksheet")) return;
+    if (typeof html2pdf === "undefined") {
+      showNotice("PDF library not loaded yet. Please try again in a moment.");
+      return;
+    }
+    showSuccess("Generating PDF, please wait...");
+    var opt = {
+      margin:      0,
+      filename:    "worksheets.pdf",
+      image:       { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF:       { unit: "in", format: "letter", orientation: "landscape" },
+      pagebreak:   { mode: ["css","legacy"], before: ".print-break" }
+    };
+    html2pdf().set(opt).from(resultsDiv).save().then(function() {
+      showSuccess("PDF saved!");
+    });
+  }, 200);
+}
+
 function wireButtons() {
   toggleModeBtn.addEventListener("click", function() { clearStatus(); setInputMode(inputMode==="standard"?"advanced":"standard"); });
   addStudentBtn.addEventListener("click",   function() { clearStatus(); addStudent(); refreshNumbers(); });
@@ -1743,6 +1770,7 @@ function wireButtons() {
   clearCurrentBtn.addEventListener("click", function() { clearStatus(); clearCurrentRoster(); });
   clearSavedBtn.addEventListener("click",   function() { clearStatus(); clearSavedRoster(); });
   generateBtn.addEventListener("click",     function() { generateAndPrint(); });
+  savePdfBtn.addEventListener("click",      function() { generateAndSavePdf(); });
   fillDownBtn.addEventListener("click", function() {
     var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
     if (entries.length < 2) return;
