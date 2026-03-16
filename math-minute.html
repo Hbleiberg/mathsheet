@@ -705,9 +705,15 @@ break-after:avoid !important;
         </select>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
-      <input type="checkbox" id="answerKeyToggle" style="width:16px;height:16px;cursor:pointer;" />
-      <label for="answerKeyToggle" style="cursor:pointer;">Print answer key</label>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
+        <input type="checkbox" id="answerKeyToggle" style="width:16px;height:16px;cursor:pointer;" />
+        <label for="answerKeyToggle" style="cursor:pointer;">Print Answer Key</label>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
+        <input type="checkbox" id="removeNumberToggle" style="width:16px;height:16px;cursor:pointer;" />
+        <label for="removeNumberToggle" style="cursor:pointer;">Remove 'Student Number' Field</label>
+      </div>
     </div>
   </div>
 
@@ -788,6 +794,7 @@ var clearSavedRosterButton = null;
 var generatePrintButton = null;
 var savePdfButton = null;
 var answerKeyToggle = null;
+var removeNumberToggle = null;
 var mmValidationBox = null;
 var mmValidationMsg = null;
 var mmValidationFix = null;
@@ -941,6 +948,7 @@ function createStudentEntry(index, studentData) {
 }
 
 function refreshStudentNumbers() {
+  applyRemoveNumberToggle();
   var entries = studentsContainer.querySelectorAll(".student-entry");
   for (var i = 0; i < entries.length; i++) {
     entries[i].querySelector("h3").textContent = "Student " + (i + 1);
@@ -1172,10 +1180,11 @@ function createWorksheet(name, number, level, problems, isLast, setNumber, setTo
           '<span class="student-field-label">Student Name</span>' +
           '<span class="student-field-value">' + escapeHtml(safeName) + '</span>' +
         '</div>' +
+        (removeNumberToggle && removeNumberToggle.checked ? '' :
         '<div class="student-field">' +
           '<span class="student-field-label">Number</span>' +
           '<span class="student-field-value">' + escapeHtml(safeNumber) + '</span>' +
-        '</div>' +
+        '</div>') +
         '<div class="description-box">' +
           '<span class="description-text">' + escapeHtml(meta.description) + '</span>' +
           (setLabel ? '<span class="worksheet-set-label">' + escapeHtml(setLabel) + '</span>' : '') +
@@ -1283,6 +1292,8 @@ function saveRoster() {
   var payload = {
     inputMode:            inputMode,
     worksheetsPerStudent: worksheetsPerStudent.value,
+    answerKey:            answerKeyToggle.checked,
+    removeNumber:         removeNumberToggle.checked,
     advancedInput:        advancedInputBox.value,
     standardStudents:     collectStandardRoster()
   };
@@ -1319,6 +1330,9 @@ function loadRosterIfAvailable() {
     applyStandardRoster(saved.standardStudents || []);
     advancedInputBox.value        = saved.advancedInput        || "";
     worksheetsPerStudent.value    = saved.worksheetsPerStudent || "1";
+    answerKeyToggle.checked       = saved.answerKey            || false;
+    removeNumberToggle.checked    = saved.removeNumber         || false;
+    applyRemoveNumberToggle();
     setInputMode(saved.inputMode  || "standard");
     showSuccess("Saved roster loaded.");
   } catch (error) { buildDefaultStudents(); }
@@ -1369,10 +1383,11 @@ function buildAnswerKeySheet(student, problems, isLast, copyNum, copies) {
           '<span class="student-field-label">Student Name</span>' +
           '<span class="student-field-value">' + escapeHtml(student.name || "") + '</span>' +
         '</div>' +
+        (removeNumberToggle && removeNumberToggle.checked ? '' :
         '<div class="student-field">' +
           '<span class="student-field-label">Number</span>' +
           '<span class="student-field-value">' + escapeHtml(student.number || "") + '</span>' +
-        '</div>' +
+        '</div>') +
         '<div class="description-box">' +
           '<span class="description-text">ANSWER KEY — ' + escapeHtml(meta.description) + escapeHtml(copyLabel) + '</span>' +
           '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span>' +
@@ -1571,11 +1586,29 @@ function assignDomRefs() {
   copyAdvancedCodeButton     = document.getElementById("copyAdvancedCodeButton");
   useAdvancedCodeButton      = document.getElementById("useAdvancedCodeButton");
   answerKeyToggle            = document.getElementById("answerKeyToggle");
+  removeNumberToggle         = document.getElementById("removeNumberToggle");
+  removeNumberToggle.addEventListener("change", function() { applyRemoveNumberToggle(); });
   savePdfButton              = document.getElementById("savePdfButton");
   mmValidationBox            = document.getElementById("mmValidationBox");
   mmValidationMsg            = document.getElementById("mmValidationMsg");
   mmValidationFix            = document.getElementById("mmValidationFix");
   mmValidationGenerate       = document.getElementById("mmValidationGenerate");
+}
+
+function fallbackCopy(text, successMsg) {
+  var ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand("copy");
+    showSuccess(successMsg);
+  } catch (e) {
+    showNotice("Unable to copy. Please select the text and copy manually.");
+  }
+  document.body.removeChild(ta);
 }
 
 function wireButtons() {
@@ -1601,11 +1634,12 @@ function wireButtons() {
 
 
   copyAdvancedCodeButton.addEventListener("click", function () {
-    try {
-      navigator.clipboard.writeText(advancedCodeOutput.value).then(function() {
+    var text = advancedCodeOutput.value;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
         showSuccess("Advanced code copied.");
-      });
-    } catch (error) { showNotice("Unable to copy automatically in this browser."); }
+      }).catch(function() { fallbackCopy(text, "Advanced code copied."); });
+    } else { fallbackCopy(text, "Advanced code copied."); }
   });
 
   useAdvancedCodeButton.addEventListener("click", function () {
@@ -1618,6 +1652,18 @@ function wireButtons() {
   saveRosterButton.addEventListener("click",         function () { clearStatusMessages(); saveRoster(); });
   clearCurrentRosterButton.addEventListener("click", function () { clearStatusMessages(); clearCurrentRoster(); });
   clearSavedRosterButton.addEventListener("click",   function () { clearStatusMessages(); clearSavedRoster(); });
+
+function applyRemoveNumberToggle() {
+  var hide = removeNumberToggle.checked;
+  var entries = studentsContainer.querySelectorAll(".student-entry");
+  for (var i = 0; i < entries.length; i++) {
+    var numField = entries[i].querySelector('[name="studentNumber"]');
+    if (numField) {
+      var wrap = numField.closest("div") || numField.parentNode;
+      wrap.style.display = hide ? "none" : "";
+    }
+  }
+}
 
   generatePrintButton.addEventListener("click", function () {
     clearStatusMessages();
