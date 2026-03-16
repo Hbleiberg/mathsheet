@@ -451,8 +451,10 @@ body { margin: 0; padding: 12px; background: white; }
   font-style: italic;
   line-height: 1.15;
   background: #fafafa;
+  overflow: hidden;
+  white-space: nowrap;
 }
-.mwg-ws-desc-text { min-width: 0; flex: 1 1 auto; }
+.mwg-ws-desc-text { min-width: 0; flex: 1 1 auto; white-space: nowrap; }
 .mwg-ws-set-label {
   border-left: 1px solid #bbb;
   padding-left: 10px;
@@ -875,7 +877,7 @@ body { margin: 0; padding: 12px; background: white; }
 (function() {
 "use strict";
 
-var STORAGE_KEY = "mwgRosterData_v1";
+var STORAGE_KEY = "mwgRosterData_v2";
 
 var TYPE_LABELS = {
   add1: "Addition Level 1 (sums < 10)",
@@ -1652,10 +1654,10 @@ function loadRoster() {
   try {
     var saved = JSON.parse(raw);
     applyRoster(saved.students || []);
-    advancedBox.value          = saved.advancedInput        || "";
-    worksheetsPerStudent.value = saved.worksheetsPerStudent || "1";
-    answerKeyToggle.checked    = saved.answerKey            || false;
-    removeNumberToggle.checked = saved.removeNumber         || false;
+    if (advancedBox)          advancedBox.value          = saved.advancedInput        || "";
+    if (worksheetsPerStudent) worksheetsPerStudent.value = saved.worksheetsPerStudent || "1";
+    if (answerKeyToggle)      answerKeyToggle.checked    = saved.answerKey            || false;
+    if (removeNumberToggle)   removeNumberToggle.checked = saved.removeNumber         || false;
     applyRemoveNumberToggle();
     setInputMode(saved.inputMode || "standard");
     showSuccess("Saved roster loaded.");
@@ -2085,7 +2087,7 @@ function buildWorksheet(student, setNum, setTotal, isLast) {
     bodyHtml += '</div>';
   }
   ws.innerHTML =
-    '<div class="mwg-ws-header"><div class="mwg-ws-header-main">' +
+    '<div class="mwg-ws-header"><div class="mwg-ws-header-main" style="grid-template-columns:' + (removeNumberToggle && removeNumberToggle.checked ? '1fr auto' : '2fr 1fr 3fr') + '">' +
       '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(name) + '</span></div>' +
       (removeNumberToggle && removeNumberToggle.checked ? '' : '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + esc(number) + '</span></div>') +
       '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">' + esc(desc) + '</span>' + (setLabel ? '<span class="mwg-ws-set-label">' + esc(setLabel) + '</span>' : '') + '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span></div>' +
@@ -2150,7 +2152,7 @@ function buildAnswerKeySheet(allAnswers, isLast) {
     }
     sheet.innerHTML =
       '<div class="mwg-ws-header">' +
-        '<div class="mwg-ws-header-main" style="grid-template-columns:' + (removeNumberToggle && removeNumberToggle.checked ? '3fr 5fr' : '2fr 1fr 3fr') + '">' +
+        '<div class="mwg-ws-header-main" style="grid-template-columns:' + (removeNumberToggle && removeNumberToggle.checked ? '1fr auto' : '2fr 1fr 3fr') + '">' +
           '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(entry.name) + '</span></div>' +
           (removeNumberToggle && removeNumberToggle.checked ? '' : '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + (entry.number ? esc(entry.number) : "") + '</span></div>') +
           '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">ANSWER KEY — ' + esc(entry.desc) + (entry.copies > 1 ? " (Key " + entry.copyNum + " of " + entry.copies + ")" : "") + '</span><span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span></div>' +
