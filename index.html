@@ -654,21 +654,48 @@ body { margin: 0; padding: 12px; background: white; }
   }
   .mwg-worksheet {
     display: flex !important;
+    flex-direction: column !important;
     border: none !important;
     box-shadow: none !important;
     margin: 0 !important;
     padding: 0.25in 0.3in !important;
     width: 11in !important;
     height: 8.5in !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  .mwg-ws-header {
+    flex: 0 0 auto !important;
+  }
+  .mwg-ws-body {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  .mwg-problems-grid {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    display: grid !important;
   }
   .mwg-answer-key-sheet {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     border: none !important;
     box-shadow: none !important;
     margin: 0 !important;
     padding: 0.25in 0.3in !important;
     width: 11in !important;
     height: 8.5in !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  .mwg-ak-body {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    min-height: 0 !important;
+    overflow: visible !important;
   }
   .mwg-worksheet.print-break { page-break-after: always !important; break-after: page !important; }
   .mwg-answer-key-sheet.print-break { page-break-after: always !important; break-after: page !important; }
