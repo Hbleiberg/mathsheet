@@ -818,7 +818,7 @@ var advancedCodeOutput = null;
 var copyAdvancedCodeButton = null;
 var useAdvancedCodeButton = null;
 
-var STORAGE_KEY = "mathMinuteRosterData_v1";
+var STORAGE_KEY = "mathMinuteRosterData_v2";
 var inputMode = "standard";
 
 var levelNames = [
@@ -1330,12 +1330,12 @@ function loadRosterIfAvailable() {
   try {
     var saved = JSON.parse(savedRaw);
     applyStandardRoster(saved.standardStudents || []);
-    advancedInputBox.value        = saved.advancedInput        || "";
-    worksheetsPerStudent.value    = saved.worksheetsPerStudent || "1";
-    answerKeyToggle.checked       = saved.answerKey            || false;
-    removeNumberToggle.checked    = saved.removeNumber         || false;
+    if (advancedInputBox)        advancedInputBox.value     = saved.advancedInput        || "";
+    if (worksheetsPerStudent)    worksheetsPerStudent.value = saved.worksheetsPerStudent || "1";
+    if (answerKeyToggle)         answerKeyToggle.checked    = saved.answerKey            || false;
+    if (removeNumberToggle)      removeNumberToggle.checked = saved.removeNumber         || false;
     applyRemoveNumberToggle();
-    setInputMode(saved.inputMode  || "standard");
+    setInputMode(saved.inputMode || "standard");
     showSuccess("Saved roster loaded.");
   } catch (error) { buildDefaultStudents(); }
 }
@@ -1613,6 +1613,14 @@ function fallbackCopy(text, successMsg) {
   document.body.removeChild(ta);
 }
 
+function applyRemoveNumberToggle() {
+  var hide = removeNumberToggle && removeNumberToggle.checked;
+  var wraps = studentsContainer.querySelectorAll(".mm-number-field-wrap");
+  for (var i = 0; i < wraps.length; i++) {
+    wraps[i].style.display = hide ? "none" : "";
+  }
+}
+
 function wireButtons() {
   toggleInputModeButton.addEventListener("click", function () {
     clearStatusMessages();
@@ -1654,14 +1662,6 @@ function wireButtons() {
   saveRosterButton.addEventListener("click",         function () { clearStatusMessages(); saveRoster(); });
   clearCurrentRosterButton.addEventListener("click", function () { clearStatusMessages(); clearCurrentRoster(); });
   clearSavedRosterButton.addEventListener("click",   function () { clearStatusMessages(); clearSavedRoster(); });
-
-function applyRemoveNumberToggle() {
-  var hide = removeNumberToggle && removeNumberToggle.checked;
-  var wraps = studentsContainer.querySelectorAll(".mm-number-field-wrap");
-  for (var i = 0; i < wraps.length; i++) {
-    wraps[i].style.display = hide ? "none" : "";
-  }
-}
 
   generatePrintButton.addEventListener("click", function () {
     clearStatusMessages();
