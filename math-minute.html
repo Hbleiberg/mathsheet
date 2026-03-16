@@ -650,10 +650,10 @@ display:grid !important;
 height:auto !important;
 }
 
-.rows-3{ grid-template-rows:repeat(3,2.5in) !important; }
-.rows-4{ grid-template-rows:repeat(4,1.87in) !important; }
-.rows-5{ grid-template-rows:repeat(5,1.5in) !important; }
-.rows-6{ grid-template-rows:repeat(6,1.25in) !important; }
+.rows-3{ grid-template-rows:repeat(3,2.4in) !important; }
+.rows-4{ grid-template-rows:repeat(4,1.8in) !important; }
+.rows-5{ grid-template-rows:repeat(5,1.44in) !important; }
+.rows-6{ grid-template-rows:repeat(6,1.2in) !important; }
 
 .problem-cell{
 display:flex !important;
@@ -1045,7 +1045,7 @@ function generateAdditionProblems(maxSum, count, allowZero) {
 function generateSubtractionProblems(maxTop, count) {
   var problems = [];
   while (problems.length < count) {
-    var a = randomInt(0, maxTop);
+    var a = randomInt(1, maxTop);
     var b = randomInt(0, a);
     problems.push({ kind: "stack", operator: "\u2212", a: a, b: b, answer: a - b });
   }
@@ -1056,7 +1056,7 @@ function generateMultiplicationProblems(minFactor, maxFactor, count, allowZero) 
   var problems = [];
   while (problems.length < count) {
     var a = randomInt(allowZero ? 0 : 1, 9);
-    var b = randomInt(minFactor, maxFactor);
+    var b = randomInt(Math.max(minFactor, 1), maxFactor);
     if (a * b <= 100) problems.push({ kind: "stack", operator: "\u00d7", a: a, b: b, answer: a * b });
   }
   return problems;
@@ -1066,7 +1066,7 @@ function generateDivisionProblems(minDivisor, maxDivisor, count) {
   var problems = [];
   while (problems.length < count) {
     var divisor  = randomInt(minDivisor, maxDivisor);
-    var quotient = randomInt(0, 10);
+    var quotient = randomInt(1, 10);
     problems.push({ kind: "division", divisor: divisor, dividend: divisor * quotient, answer: quotient });
   }
   return problems;
@@ -1083,7 +1083,7 @@ function generateMixedProblems() {
 
 function generateProblemsForLevel(level) {
   switch (level) {
-    case 1:  return generateAdditionProblems(10, 30, true);
+    case 1:  return generateAdditionProblems(9, 30, true);
     case 2:  return generateAdditionProblems(20, 30, true);
     case 3:  return generateSubtractionProblems(10, 30);
     case 4:  return generateSubtractionProblems(20, 30);
