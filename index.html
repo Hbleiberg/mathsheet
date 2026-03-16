@@ -119,7 +119,7 @@ body { margin: 0; padding: 12px; background: white; }
   flex-wrap: wrap;
   justify-content: flex-end;
 }
-.mwg-duplicate-link, .mwg-delete-link {
+.mwg-duplicate-link {
   font-size: 13px;
   color: #0645AD;
   text-decoration: underline;
@@ -130,7 +130,8 @@ body { margin: 0; padding: 12px; background: white; }
   line-height: 1.2;
   font-family: 'Georgia', serif;
 }
-.mwg-duplicate-link:hover, .mwg-delete-link:hover { color: #042f6b; }
+.mwg-delete-link { font-size: 13px; color: rgb(185,28,28); text-decoration: underline; cursor: pointer; background: none; border: none; padding: 0; line-height: 1.2; font-family: Georgia, serif; }
+.mwg-duplicate-link:hover { color: #042f6b; }
 
 .mwg-student-grid {
   display: grid;
@@ -479,14 +480,19 @@ body { margin: 0; padding: 12px; background: white; }
   min-width: 0;
   padding: 4px 0;
 }
+.mwg-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.mwg-cols-10 { grid-template-columns: repeat(10, 1fr); }
 .mwg-cols-4 { grid-template-columns: repeat(4, 1fr); }
 .mwg-cols-5 { grid-template-columns: repeat(5, 1fr); }
 .mwg-cols-6 { grid-template-columns: repeat(6, 1fr); }
-.mwg-rows-6 { grid-template-rows: repeat(6, 1fr); }
-.mwg-rows-7 { grid-template-rows: repeat(7, 1fr); }
-.mwg-rows-8 { grid-template-rows: repeat(8, 1fr); }
-.mwg-rows-10 { grid-template-rows: repeat(10, 1fr); }
-.mwg-rows-12 { grid-template-rows: repeat(12, 1fr); }
+.mwg-rows-3  { grid-template-rows: repeat(3,  minmax(2.4in, 1fr)); }
+.mwg-rows-4  { grid-template-rows: repeat(4,  minmax(1.8in, 1fr)); }
+.mwg-rows-5  { grid-template-rows: repeat(5,  minmax(1.44in, 1fr)); }
+.mwg-rows-6  { grid-template-rows: repeat(6,  minmax(1.2in, 1fr)); }
+.mwg-rows-7  { grid-template-rows: repeat(7,  minmax(1.03in, 1fr)); }
+.mwg-rows-8  { grid-template-rows: repeat(8,  minmax(0.9in, 1fr)); }
+.mwg-rows-10 { grid-template-rows: repeat(10, minmax(0.72in, 1fr)); }
+.mwg-rows-12 { grid-template-rows: repeat(12, minmax(0.6in, 1fr)); }
 
 /* Standard stacked problem */
 .mwg-problem-cell {
@@ -719,6 +725,8 @@ body { margin: 0; padding: 12px; background: white; }
     display: grid !important;
     height: auto !important;
   }
+  .mwg-cols-3 { grid-template-columns: repeat(3, 1fr) !important; }
+  .mwg-cols-10 { grid-template-columns: repeat(10, 1fr) !important; }
   .mwg-cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
   .mwg-cols-5 { grid-template-columns: repeat(5, 1fr) !important; }
   .mwg-cols-6 { grid-template-columns: repeat(6, 1fr) !important; }
@@ -1014,8 +1022,9 @@ function injectStyles() {
     ".mwg-student-entry-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}",
     ".mwg-student-entry h3{margin:0;font-size:18px}",
     ".mwg-student-entry-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}",
-    ".mwg-duplicate-link,.mwg-delete-link{font-size:13px;color:rgb(6,69,173);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0;line-height:1.2;font-family:Georgia,serif}",
-    ".mwg-duplicate-link:hover,.mwg-delete-link:hover{color:rgb(4,47,107)}",
+    ".mwg-duplicate-link{font-size:13px;color:rgb(6,69,173);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0;line-height:1.2;font-family:Georgia,serif}.mwg-delete-link{font-size:13px;color:rgb(185,28,28);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0;line-height:1.2;font-family:Georgia,serif}",
+    ".mwg-duplicate-link:hover{color:rgb(4,47,107)}",
+    ".mwg-delete-link:hover{color:rgb(153,27,27)}",
     ".mwg-student-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:10px;align-items:end}",
     ".mwg-mixed-types{display:none;margin-top:8px;padding:10px 12px;border:1px solid rgb(199,214,255);border-radius:6px;background:rgb(238,243,255);grid-column:1/-1}",
     ".mwg-mixed-types.visible{display:block}",
@@ -1751,6 +1760,9 @@ function fracHtml(n, d) {
 function isWideType(type) {
   return ["add3","add4","add5","sub3","sub4","sub5","mul3","mul4","mul5","div3","div4","div5"].indexOf(type) !== -1;
 }
+function isDivType(type) {
+  return ["div1","div2","div3","div4","div5"].indexOf(type) !== -1;
+}
 
 function stackHtml(op, a, b, wide) {
   var width = wide ? "1.1in" : "0.75in";
@@ -2000,8 +2012,15 @@ function isMixedHoriz(problems) {
   return false;
 }
 
-function getGridConfig(count, useHoriz, wide) {
+function getGridConfig(count, useHoriz, wide, isDiv) {
   if (useHoriz) return { useHoriz: true };
+  // Division always uses 10 problems per row
+  if (isDiv) {
+    if (count <= 30) return { colClass: "mwg-cols-10", rowClass: "mwg-rows-3" };
+    if (count <= 40) return { colClass: "mwg-cols-10", rowClass: "mwg-rows-4" };
+    if (count <= 50) return { colClass: "mwg-cols-10", rowClass: "mwg-rows-5" };
+    return { colClass: "mwg-cols-10", rowClass: "mwg-rows-6" };
+  }
   // Wide problems (levels 3-5) use fewer columns
   if (wide) {
     if (count <= 30) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-6" };
@@ -2026,11 +2045,12 @@ function buildWorksheet(student, setNum, setTotal, isLast) {
   var problems = generateProblems(type, count, grade, mixedTypes, student.fracOps, student.decOps);
   var useHoriz = isHorizType(type) || (type === "mixed" && isMixedHoriz(problems));
   var wide = !useHoriz && isWideType(type);
+  var isDiv = isDivType(type) || (type === "mixed" && !useHoriz);
   // For mixed, check if any stacked problem is wide
   if (!useHoriz && type === "mixed") {
     for (var i = 0; i < problems.length; i++) { if (problems[i].kind === "stack" && String(problems[i].html).indexOf("1.1in") !== -1) { wide = true; break; } }
   }
-  var grid = getGridConfig(count, useHoriz, wide);
+  var grid = getGridConfig(count, useHoriz, wide, isDivType(type));
   var ws = document.createElement("div");
   ws.className = "mwg-worksheet" + (isLast ? "" : " print-break");
   var setLabel = setTotal > 1 ? "Worksheet " + setNum + " of " + setTotal : "";
