@@ -787,9 +787,15 @@ body { margin: 0; padding: 12px; background: white; }
         </select>
       </div>
     </div>
-    <div class="mwg-answer-key-row">
-      <input type="checkbox" id="mwgAnswerKeyToggle" />
-      <label for="mwgAnswerKeyToggle" style="font-size:14px;cursor:pointer;">Print answer key</label>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="mwg-answer-key-row">
+        <input type="checkbox" id="mwgAnswerKeyToggle" />
+        <label for="mwgAnswerKeyToggle" style="font-size:14px;cursor:pointer;">Print Answer Key</label>
+      </div>
+      <div class="mwg-answer-key-row">
+        <input type="checkbox" id="mwgRemoveNumberToggle" />
+        <label for="mwgRemoveNumberToggle" style="font-size:14px;cursor:pointer;">Remove 'Student Number' Field</label>
+      </div>
     </div>
   </div>
 
@@ -1001,6 +1007,7 @@ var form, studentsContainer, studentCounter, standardSection,
     resultsDiv, statusDiv, errorsDiv, closeModal,
     codeOutput, copyCodeBtn, useCodeBtn, referenceGrid,
     validationBox, validationMsg, validationFix, validationGenerate,
+    removeNumberToggle,
     codePanel;
 var pendingGenerateAction = null;
 
@@ -1102,6 +1109,8 @@ function assignDomRefs() {
   useCodeBtn           = document.getElementById("mwgUseCodeBtn");
   referenceGrid        = document.getElementById("mwgReferenceGrid");
   validationBox        = document.getElementById("mwgValidationBox");
+  removeNumberToggle   = document.getElementById("mwgRemoveNumberToggle");
+  removeNumberToggle.addEventListener("change", function() { applyRemoveNumberToggle(); });
   validationMsg        = document.getElementById("mwgValidationMsg");
   validationFix        = document.getElementById("mwgValidationFix");
   validationGenerate   = document.getElementById("mwgValidationGenerate");
@@ -1560,6 +1569,7 @@ function createStudentEntry(index, data) {
 }
 
 function refreshNumbers() {
+  if (removeNumberToggle) applyRemoveNumberToggle();
   var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
   for (var i = 0; i < entries.length; i++) entries[i].querySelector("h3").textContent = "Student " + (i + 1);
   updateCounter();
@@ -1625,6 +1635,7 @@ function saveRoster() {
       inputMode: inputMode,
       worksheetsPerStudent: worksheetsPerStudent.value,
       answerKey: answerKeyToggle.checked,
+      removeNumber: removeNumberToggle.checked,
       advancedInput: advancedBox.value,
       students: collectRoster()
     }));
@@ -1642,6 +1653,8 @@ function loadRoster() {
     advancedBox.value          = saved.advancedInput        || "";
     worksheetsPerStudent.value = saved.worksheetsPerStudent || "1";
     answerKeyToggle.checked    = saved.answerKey            || false;
+    removeNumberToggle.checked = saved.removeNumber         || false;
+    applyRemoveNumberToggle();
     setInputMode(saved.inputMode || "standard");
     showSuccess("Saved roster loaded.");
   } catch(e) { buildDefaultStudents(); }
@@ -2071,7 +2084,7 @@ function buildWorksheet(student, setNum, setTotal, isLast) {
   ws.innerHTML =
     '<div class="mwg-ws-header"><div class="mwg-ws-header-main">' +
       '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(name) + '</span></div>' +
-      '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + esc(number) + '</span></div>' +
+      (removeNumberToggle && removeNumberToggle.checked ? '' : '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + esc(number) + '</span></div>') +
       '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">' + esc(desc) + '</span>' + (setLabel ? '<span class="mwg-ws-set-label">' + esc(setLabel) + '</span>' : '') + '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span></div>' +
     '</div></div>' +
     '<div class="mwg-ws-body">' + bodyHtml + '</div>';
@@ -2136,7 +2149,7 @@ function buildAnswerKeySheet(allAnswers, isLast) {
       '<div class="mwg-ws-header">' +
         '<div class="mwg-ws-header-main">' +
           '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(entry.name) + '</span></div>' +
-          '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + (entry.number ? esc(entry.number) : "") + '</span></div>' +
+          (removeNumberToggle && removeNumberToggle.checked ? '' : '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + (entry.number ? esc(entry.number) : "") + '</span></div>') +
           '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">ANSWER KEY — ' + esc(entry.desc) + (entry.copies > 1 ? " (Key " + entry.copyNum + " of " + entry.copies + ")" : "") + '</span><span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span></div>' +
         '</div>' +
       '</div>' +
@@ -2337,6 +2350,30 @@ function clearValidationHighlights() {
   }
 }
 
+function fallbackCopy(text, successMsg) {
+  var ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand("copy"); showSuccess(successMsg); }
+  catch (e) { showNotice("Unable to copy. Please select the text and copy manually."); }
+  document.body.removeChild(ta);
+}
+
+function applyRemoveNumberToggle() {
+  var hide = removeNumberToggle && removeNumberToggle.checked;
+  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
+  for (var i = 0; i < entries.length; i++) {
+    var numField = entries[i].querySelector('[name="studentNumber"]');
+    if (numField) {
+      var wrap = numField.parentNode;
+      wrap.style.display = hide ? "none" : "";
+    }
+  }
+}
+
 function validateAndRun(action) {
   if (inputMode === "advanced") {
     action();
@@ -2403,7 +2440,11 @@ function wireButtons() {
   });
   closeModal.addEventListener("click", function() { codePanel.style.display = "none"; });
   copyCodeBtn.addEventListener("click", function() {
-    try { navigator.clipboard.writeText(codeOutput.value).then(function() { showSuccess("Code copied."); }); }
+    var text = codeOutput.value;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() { showSuccess("Code copied."); }).catch(function() { fallbackCopy(text, "Code copied."); });
+    } else { fallbackCopy(text, "Code copied."); }
+    try { void 0; }
     catch(e) { showNotice("Unable to copy automatically."); }
   });
   useCodeBtn.addEventListener("click", function() {
