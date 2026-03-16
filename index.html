@@ -678,11 +678,11 @@ body { margin: 0; padding: 12px; background: white; }
     display: grid !important;
     height: auto !important;
   }
-  .mwg-rows-6  { grid-template-rows: repeat(6,  1.25in) !important; }
-  .mwg-rows-7  { grid-template-rows: repeat(7,  1.07in) !important; }
-  .mwg-rows-8  { grid-template-rows: repeat(8,  0.94in) !important; }
-  .mwg-rows-10 { grid-template-rows: repeat(10, 0.75in) !important; }
-  .mwg-rows-12 { grid-template-rows: repeat(12, 0.63in) !important; }
+  .mwg-rows-6  { grid-template-rows: repeat(6,  1.2in) !important; }
+  .mwg-rows-7  { grid-template-rows: repeat(7,  1.03in) !important; }
+  .mwg-rows-8  { grid-template-rows: repeat(8,  0.9in) !important; }
+  .mwg-rows-10 { grid-template-rows: repeat(10, 0.72in) !important; }
+  .mwg-rows-12 { grid-template-rows: repeat(12, 0.6in) !important; }
   .mwg-problem-cell {
     display: flex !important;
     align-items: center !important;
@@ -1506,7 +1506,7 @@ function divisionHtml(divisor, dividend, wide) {
 function horizHtml(expr) { return "__HORIZ__" + expr; }
 
 // Addition levels
-function makeAdd1() { var a,b; do{a=rand(1,8);b=rand(1,8);}while(a+b>=10); return {html:stackHtml("+",a,b,false),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
+function makeAdd1() { var a,b; do{a=rand(0,9);b=rand(0,9);}while(a+b>=10||a+b===0); return {html:stackHtml("+",a,b,false),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
 function makeAdd2() { var a,b; do{a=rand(1,9);b=rand(1,9);}while(a+b<10||a+b>20); return {html:stackHtml("+",a,b,false),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
 function makeAdd3() { var a=rand(10,99),b=rand(1,9); return {html:stackHtml("+",a,b,true),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
 function makeAdd4() { var a=rand(10,99),b=rand(10,99); return {html:stackHtml("+",a,b,true),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
@@ -1520,14 +1520,14 @@ function makeSub4() { var a=rand(10,99),b=rand(10,a); return {html:stackHtml("\u
 function makeSub5() { var a=rand(100,999),b=rand(10,a); return {html:stackHtml("\u2212",a,b,true),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
 
 // Multiplication levels
-function makeMul1() { var a=rand(0,5),b=rand(0,9); if(Math.random()<0.5){var t=a;a=b;b=t;} return {html:stackHtml("\u00d7",a,b,false),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
+function makeMul1() { var a=rand(0,5),b=rand(1,9); if(Math.random()<0.5){var t=a;a=b;b=t;} return {html:stackHtml("\u00d7",a,b,false),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
 function makeMul2() { var a=rand(6,9),b=rand(2,9); if(Math.random()<0.5){var t=a;a=b;b=t;} return {html:stackHtml("\u00d7",a,b,false),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
 function makeMul3() { var a=rand(10,99),b=rand(2,9); return {html:stackHtml("\u00d7",a,b,true),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
 function makeMul4() { var a=rand(10,99),b=rand(10,99); return {html:stackHtml("\u00d7",a,b,true),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
 function makeMul5() { var a=rand(100,999),b=rand(2,9); return {html:stackHtml("\u00d7",a,b,true),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
 
 // Division levels
-function makeDiv1() { var d=rand(1,5),q=rand(0,10); return {html:divisionHtml(d,d*q,false),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+function makeDiv1() { var d=rand(1,5),q=rand(1,10); return {html:divisionHtml(d,d*q,false),answer:q,kind:"division",divisor:d,dividend:d*q}; }
 function makeDiv2() { var d=rand(6,9),q=rand(1,10); return {html:divisionHtml(d,d*q,false),answer:q,kind:"division",divisor:d,dividend:d*q}; }
 function makeDiv3() { var d=rand(2,9),q=rand(10,99); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
 function makeDiv4() {
@@ -1535,7 +1535,7 @@ function makeDiv4() {
   var dividend=d*q+r;
   return {html:divisionHtml(d,dividend,true),answer:q+" r"+r,kind:"division",divisor:d,dividend:dividend};
 }
-function makeDiv5() { var d=rand(2,9),q=rand(100,999); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+function makeDiv5() { var d=rand(2,9),qMax=Math.floor(999/d),q=rand(Math.max(100,Math.floor(100/d)),qMax); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
 
 function makeFractions(grade) {
   var d=rand(2,9),a=rand(1,d-1),b=rand(1,d-1);
