@@ -1,692 +1,774 @@
-<div id="math-minute-app">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custom Math Sheet Generator</title>
 <style>
-
-#math-minute-app{
-font-family:Arial,sans-serif;
-max-width:1100px;
-margin:0 auto;
-color:#111;
-}
-
-#math-minute-app *,
-#math-minute-app *::before,
-#math-minute-app *::after{
-box-sizing:border-box;
-}
-
-#student-form-title{
-text-align:center;
-margin-bottom:18px;
-}
-
-.student-entry{
-border:1px solid #ccc;
-padding:12px;
-margin-bottom:12px;
-border-radius:8px;
-background:#f9f9f9;
-}
-
-.student-entry-header{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:10px;
-margin-bottom:10px;
-}
-
-.student-entry h3{
-margin:0;
-font-size:18px;
-}
-
-.student-entry-actions{
-display:flex;
-align-items:center;
-gap:10px;
-flex-wrap:wrap;
-justify-content:flex-end;
-}
-
-.duplicate-student-link,
-.delete-student-link{
-font-size:13px;
-color:#0645AD;
-text-decoration:underline;
-cursor:pointer;
-background:none;
-border:none;
-padding:0;
-line-height:1.2;
-}
-
-.duplicate-student-link:hover,
-.delete-student-link:hover{
-color:#042f6b;
-}
-
-.student-grid{
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:10px;
-}
-
-.student-grid label,
-.advanced-input-wrap label,
-.setting-group label,
-.level-reference-card label{
-display:block;
-font-weight:bold;
-margin-bottom:4px;
-font-size:14px;
-}
-
-.student-grid input,
-.student-grid select,
-.advanced-input-wrap textarea,
-.setting-group select{
-width:100%;
-padding:8px;
-font-size:14px;
-}
-
-.advanced-layout{
-display:grid;
-grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);
-gap:14px;
-align-items:start;
-}
-
-.advanced-input-wrap,
-.level-reference-card{
-border:1px solid #ccc;
-padding:12px;
-margin-bottom:12px;
-border-radius:8px;
-background:#f9f9f9;
-}
-
-.advanced-input-wrap textarea{
-min-height:180px;
-resize:vertical;
-font-family:Arial,sans-serif;
-}
-
-.advanced-help{
-font-size:13px;
-color:#444;
-margin-top:8px;
-line-height:1.4;
-}
-
-.level-reference-title{
-font-size:15px;
-font-weight:bold;
-margin-bottom:10px;
-}
-
-.level-reference-grid{
-display:grid;
-grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-gap:6px 18px;
-font-size:13px;
-line-height:1.35;
-align-items:start;
-}
-
-.level-reference-item{
-white-space:nowrap;
-}
-
-.button-row{
-margin-top:16px;
-display:flex;
-gap:10px;
-flex-wrap:nowrap;
-align-items:center;
-overflow-x:auto;
-padding-bottom:2px;
-justify-content:center;
-}
-
-.primary-actions{
-margin-top:12px;
-display:flex;
-gap:12px;
-flex-wrap:wrap;
-align-items:center;
-justify-content:center;
-}
-
-.btn-small{
-padding:7px 12px;
-font-size:14px;
-cursor:pointer;
-flex:0 0 auto;
-white-space:nowrap;
-}
-
-.btn-large{
-padding:12px 20px;
-font-size:17px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.mode-pill{
-display:inline-block;
-padding:6px 10px;
-border-radius:999px;
-background:#eef3ff;
-border:1px solid #c7d6ff;
-font-size:13px;
-font-weight:bold;
-flex:0 0 auto;
-white-space:nowrap;
-}
-
-.settings-row{
-display:flex;
-gap:14px;
-flex-wrap:wrap;
-align-items:end;
-justify-content:space-between;
-margin:10px 0 8px 0;
-}
-
-.settings-left{
-display:flex;
-gap:14px;
-flex-wrap:wrap;
-align-items:end;
-}
-
-.setting-group{
-min-width:210px;
-max-width:260px;
-flex:0 1 260px;
-}
-
-.student-counter{
-font-size:14px;
-font-weight:bold;
-color:#444;
-margin:6px 0 10px 0;
-}
-
-#advancedInputSection{
-display:none;
-}
-
-#results{
-margin-top:30px;
-}
-
-/* PRINT PAGE FIX */
-
-.worksheet{
-width:11in;
-height:8.5in;
-margin:0 auto 12px auto;
-background:white;
-color:black;
-padding:0.25in 0.3in;
-border:1px solid #bbb;
-display:flex;
-flex-direction:column;
-overflow:hidden;
-page-break-inside:avoid;
-break-inside:avoid-page;
-}
-
-.worksheet.print-break{
-page-break-after:always;
-}
-
-.worksheet:last-child{
-page-break-after:auto;
-}
-
-.worksheet-header{
-border-top:2px solid #222;
-border-left:2px solid #222;
-border-right:2px solid #222;
-padding:7px 10px 8px 10px;
-margin-bottom:0.02in;
-flex:0 0 auto;
-}
-
-.worksheet-header-main{
-width:100%;
-display:grid;
-grid-template-columns:2fr 1fr 3fr;
-gap:14px;
-align-items:center;
-}
-
-.student-field{
-display:flex;
-align-items:center;
-gap:8px;
-min-width:0;
-}
-
-.student-field-label{
-font-size:12px;
-font-weight:bold;
-text-transform:uppercase;
-letter-spacing:.35px;
-flex-shrink:0;
-}
-
-.student-field-value{
-flex:1;
-min-height:24px;
-border-bottom:1px solid #222;
-padding:1px 3px;
-font-size:18px;
-font-weight:bold;
-overflow:hidden;
-text-overflow:ellipsis;
-white-space:nowrap;
-}
-
-.description-box{
-min-height:24px;
-border:1px solid #222;
-padding:6px 8px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:10px;
-font-size:13px;
-font-style:italic;
-line-height:1.15;
-background:#fafafa;
-}
-
-.description-text{
-min-width:0;
-flex:1 1 auto;
-}
-
-.worksheet-set-label{
-border-left:1px solid #bbb;
-padding-left:10px;
-font-style:normal;
-font-weight:bold;
-white-space:nowrap;
-}
-
-.worksheet-body{
-flex:1 1 auto;
-min-height:0;
-display:flex;
-overflow:hidden;
-}
-
-.problems-grid{
-width:100%;
-height:100%;
-display:grid;
-grid-template-columns:repeat(10,1fr);
-justify-items:center;
-align-items:center;
-padding:0;
-min-height:0;
-min-width:0;
-row-gap:0;
-}
-
-.rows-3{
-grid-template-rows:repeat(3,1fr);
-}
-
-.rows-4{
-grid-template-rows:repeat(4,1fr);
-}
-
-.rows-5{
-grid-template-rows:repeat(5,1fr);
-}
-
-.rows-6{
-grid-template-rows:repeat(6,1fr);
-}
-
-.problem-cell{
-width:100%;
-height:100%;
-display:flex;
-align-items:center;
-justify-content:center;
-min-height:0;
-min-width:0;
-}
-
-.problem-stack{
-width:0.62in;
-text-align:right;
-font-size:23px;
-line-height:0.98;
-font-family:Arial,sans-serif;
-}
-
-.problem-top{
-display:block;
-min-height:22px;
-padding-right:1px;
-}
-
-.problem-bottom-line{
-display:flex;
-justify-content:flex-end;
-align-items:center;
-min-height:24px;
-border-bottom:2px solid #111;
-padding-bottom:1px;
-}
-
-.problem-operator{
-margin-right:2px;
-}
-
-.problem-bottom{
-min-width:18px;
-text-align:right;
-display:inline-block;
-}
-
-.division-problem{
-display:inline-flex;
-align-items:flex-start;
-justify-content:center;
-font-size:23px;
-line-height:0.98;
-font-family:Arial,sans-serif;
-min-width:1.02in;
-}
-
-.division-divisor{
-padding-top:8px;
-padding-right:2px;
-min-width:0.22in;
-text-align:right;
-}
-
-.division-bracket{
-border-left:2px solid #111;
-border-top:2px solid #111;
-min-width:0.48in;
-padding:2px 4px 0 6px;
-min-height:0.32in;
-display:flex;
-align-items:flex-start;
-justify-content:flex-start;
-}
-
-.division-dividend{
-display:inline-block;
-padding-top:1px;
-}
-
-.error-box{
-border:1px solid #d33;
-background:#fff3f3;
-color:#900;
-padding:10px 12px;
-border-radius:8px;
-margin-top:12px;
-white-space:pre-line;
-}
-
-.notice-box{
-border:1px solid #d6aa00;
-background:#fff8db;
-color:#6b5600;
-padding:10px 12px;
-border-radius:8px;
-margin-top:12px;
-white-space:pre-line;
-}
-
-.success-box{
-border:1px solid #3c9a49;
-background:#eefbf0;
-color:#23652d;
-padding:10px 12px;
-border-radius:8px;
-margin-top:12px;
-white-space:pre-line;
-}
-
-.modal-overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.45);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:9999;
-padding:20px;
-}
-
-.modal-overlay.active{
-display:flex;
-}
-
-.modal-box{
-width:min(760px,100%);
-max-height:85vh;
-background:#fff;
-border-radius:12px;
-box-shadow:0 20px 60px rgba(0,0,0,0.25);
-overflow:hidden;
-display:flex;
-flex-direction:column;
-}
-
-.modal-header{
-padding:14px 16px;
-border-bottom:1px solid #ddd;
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:12px;
-}
-
-.modal-title{
-font-size:18px;
-font-weight:bold;
-}
-
-.modal-close{
-border:1px solid #bbb;
-background:#f5f5f5;
-border-radius:6px;
-padding:6px 10px;
-cursor:pointer;
-font-size:14px;
-}
-
-.modal-body{
-padding:16px;
-}
-
-.modal-body textarea{
-width:100%;
-min-height:260px;
-resize:vertical;
-font-family:Arial,sans-serif;
-font-size:14px;
-padding:10px;
-}
-
-.modal-help{
-margin-top:10px;
-font-size:13px;
-color:#444;
-line-height:1.4;
-}
-
-.modal-actions{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-top:12px;
-}
-
-@media (max-width:860px){
-  .advanced-layout{
-    grid-template-columns:1fr;
+body { margin: 0; padding: 12px; background: white; }
+#mwg-app {
+  font-family: 'Georgia', serif;
+  max-width: 1100px;
+  margin: 0 auto;
+  color: #1a1a1a;
+}
+#mwg-app *, #mwg-app *::before, #mwg-app *::after {
+  box-sizing: border-box;
+}
+
+/* ── Layout ── */
+.mwg-button-row {
+  margin-top: 0;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  align-items: center;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  justify-content: center;
+}
+.mwg-primary-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+.mwg-settings-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  margin: 10px 0 8px 0;
+}
+.mwg-settings-left {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+.mwg-setting-group {
+  min-width: 210px;
+  max-width: 260px;
+  flex: 0 1 260px;
+}
+.mwg-setting-group label,
+.mwg-student-grid label,
+.mwg-advanced-input-wrap label,
+.mwg-level-reference-card label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+.mwg-setting-group select,
+.mwg-student-grid input,
+.mwg-student-grid select,
+.mwg-advanced-input-wrap textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  font-family: 'Georgia', serif;
+}
+.mwg-student-counter {
+  font-size: 14px;
+  font-weight: bold;
+  color: #444;
+  margin: 6px 0 10px 0;
+}
+
+/* ── Mode pill ── */
+.mwg-mode-pill {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eef3ff;
+  border: 1px solid #c7d6ff;
+  font-size: 13px;
+  font-weight: bold;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* ── Student entry ── */
+.mwg-student-entry {
+  border: 1px solid #ccc;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+.mwg-student-entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.mwg-student-entry h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.mwg-student-entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.mwg-duplicate-link, .mwg-delete-link {
+  font-size: 13px;
+  color: #0645AD;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1.2;
+  font-family: 'Georgia', serif;
+}
+.mwg-duplicate-link:hover, .mwg-delete-link:hover { color: #042f6b; }
+
+.mwg-student-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  align-items: end;
+}
+
+/* ── Mixed checkboxes ── */
+.mwg-mixed-types {
+  display: none;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid #c7d6ff;
+  border-radius: 6px;
+  background: #eef3ff;
+  grid-column: 1 / -1;
+}
+.mwg-ops-panel {
+  display: none;
+  border: 1px solid rgb(199,214,255);
+  background: rgb(238,243,255);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-top: 6px;
+  grid-column: 1 / -1;
+}
+.mwg-ops-panel.visible { display: block; }
+.mwg-ops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 4px 16px;
+  margin-top: 6px;
+}
+.mwg-ops-grid label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.mwg-ops-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.mwg-ops-title { font-size: 13px; font-weight: bold; color: rgb(37,99,235); }
+.mwg-ops-select-all { font-size: 12px; padding: 2px 8px; cursor: pointer; font-family: Georgia, serif; }
+.mwg-mixed-frac-dec-group {
+  border: 1px solid rgb(199,214,255);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  background: rgb(248,250,255);
+}
+.mwg-mixed-frac-dec-group strong { font-size: 12px; color: rgb(37,99,235); display: block; margin-bottom: 4px; }
+.mwg-mixed-types.visible { display: block; }
+.mwg-mixed-types-label {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+.mwg-mixed-types-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+.mwg-mixed-types-grid label {
+  font-size: 13px;
+  font-weight: normal !important;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  margin-bottom: 0 !important;
+}
+.mwg-mixed-types-grid input[type=checkbox] {
+  width: auto;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ── Answer key toggle ── */
+.mwg-answer-key-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 4px 0;
+  font-size: 14px;
+}
+.mwg-answer-key-row input[type=checkbox] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* ── Advanced input ── */
+.mwg-advanced-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+.mwg-advanced-input-wrap, .mwg-level-reference-card {
+  border: 1px solid #ccc;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+.mwg-advanced-input-wrap textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+.mwg-advanced-help {
+  font-size: 13px;
+  color: #444;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+.mwg-reference-title {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.mwg-reference-grid {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.mwg-reference-grade {
+  margin-bottom: 6px;
+}
+.mwg-reference-grade strong {
+  display: inline-block;
+  min-width: 70px;
+}
+
+/* ── Fill down button ── */
+.mwg-fill-down-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+
+/* ── Buttons ── */
+.mwg-btn-small {
+  padding: 7px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-family: 'Georgia', serif;
+}
+.mwg-btn-large {
+  padding: 12px 20px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+}
+
+/* ── Status boxes ── */
+.mwg-error-box {
+  border: 1px solid #d33;
+  background: #fff3f3;
+  color: #900;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  white-space: pre-line;
+}
+.mwg-notice-box {
+  border: 1px solid #d6aa00;
+  background: #fff8db;
+  color: #6b5600;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  white-space: pre-line;
+}
+.mwg-success-box {
+  border: 1px solid #3c9a49;
+  background: #eefbf0;
+  color: #23652d;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  white-space: pre-line;
+}
+
+/* ── Modal ── */
+.mwg-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+.mwg-modal-overlay.active { display: flex; }
+.mwg-modal-box {
+  width: min(760px, 100%);
+  max-height: 85vh;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.mwg-modal-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.mwg-modal-title { font-size: 18px; font-weight: bold; }
+.mwg-modal-close {
+  border: 1px solid #bbb;
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Georgia', serif;
+}
+.mwg-modal-body { padding: 16px; overflow-y: auto; }
+.mwg-modal-body textarea {
+  width: 100%;
+  min-height: 260px;
+  resize: vertical;
+  font-family: 'Georgia', serif;
+  font-size: 14px;
+  padding: 10px;
+}
+.mwg-modal-help { margin-top: 10px; font-size: 13px; color: #444; line-height: 1.4; }
+.mwg-modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ══════════════════════════════════════
+   WORKSHEET STYLES
+══════════════════════════════════════ */
+.mwg-results { margin-top: 30px; }
+
+.mwg-worksheet {
+  width: 11in;
+  height: 8.5in;
+  margin: 0 auto 12px auto;
+  background: white;
+  color: black;
+  padding: 0.25in 0.3in;
+  border: 1px solid #bbb;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  page-break-inside: avoid;
+  break-inside: avoid-page;
+  font-family: Arial, sans-serif;
+}
+.mwg-worksheet.print-break { page-break-after: always; }
+.mwg-worksheet:last-child { page-break-after: auto; }
+
+.mwg-ws-header {
+  border-top: 2px solid #222;
+  border-left: 2px solid #222;
+  border-right: 2px solid #222;
+  padding: 7px 10px 8px 10px;
+  margin-bottom: 0.15in;
+  flex: 0 0 auto;
+}
+.mwg-ws-header-main {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 1fr 3fr;
+  gap: 14px;
+  align-items: center;
+}
+.mwg-ws-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.mwg-ws-field-label {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: .35px;
+  flex-shrink: 0;
+}
+.mwg-ws-field-value {
+  flex: 1;
+  min-height: 24px;
+  border-bottom: 1px solid #222;
+  padding: 1px 3px;
+  font-size: 18px;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mwg-ws-desc-box {
+  min-height: 24px;
+  border: 1px solid #222;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.15;
+  background: #fafafa;
+}
+.mwg-ws-desc-text { min-width: 0; flex: 1 1 auto; }
+.mwg-ws-set-label {
+  border-left: 1px solid #bbb;
+  padding-left: 10px;
+  font-style: normal;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* ── Problems body ── */
+.mwg-ws-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Standard grid (cols=5 for 30, cols=5 for 40 etc) */
+.mwg-problems-grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-items: start;
+  justify-items: center;
+  min-height: 0;
+  min-width: 0;
+  padding: 4px 0;
+}
+.mwg-cols-5 { grid-template-columns: repeat(5, 1fr); }
+.mwg-cols-6 { grid-template-columns: repeat(6, 1fr); }
+.mwg-rows-6 { grid-template-rows: repeat(6, 1fr); }
+.mwg-rows-7 { grid-template-rows: repeat(7, 1fr); }
+.mwg-rows-8 { grid-template-rows: repeat(8, 1fr); }
+.mwg-rows-10 { grid-template-rows: repeat(10, 1fr); }
+
+/* Standard stacked problem */
+.mwg-problem-cell {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
+  padding: 2px;
+}
+.mwg-problem-stack {
+  width: 0.75in;
+  text-align: right;
+  font-size: 20px;
+  line-height: 1;
+  font-family: Arial, sans-serif;
+}
+.mwg-problem-top {
+  display: block;
+  min-height: 22px;
+  padding-right: 1px;
+}
+.mwg-problem-bottom-line {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 22px;
+  border-bottom: 2px solid #111;
+  padding-bottom: 1px;
+}
+.mwg-problem-operator { margin-right: 2px; }
+.mwg-problem-bottom { min-width: 18px; text-align: right; display: inline-block; }
+
+/* Answer blank */
+.mwg-answer-blank {
+  display: block;
+  min-height: 18px;
+  border-bottom: 1px solid #888;
+  margin-top: 4px;
+  width: 0.75in;
+}
+
+/* Division */
+.mwg-division-problem {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  font-family: Arial, sans-serif;
+  min-width: 1.1in;
+}
+.mwg-division-divisor {
+  padding-top: 8px;
+  padding-right: 2px;
+  min-width: 0.22in;
+  text-align: right;
+}
+.mwg-division-bracket {
+  border-left: 2px solid #111;
+  border-top: 2px solid #111;
+  min-width: 0.55in;
+  padding: 2px 4px 0 6px;
+  min-height: 0.32in;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.mwg-division-dividend { display: inline-block; padding-top: 1px; }
+
+/* Horizontal / equation problems (fractions, order of ops, integers, etc.) */
+.mwg-horiz-grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 4px 30px;
+  padding: 4px 0;
+  min-height: 0;
+  align-content: start;
+}
+.mwg-horiz-cell {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  padding: 8px 4px 6px 4px;
+  border-bottom: 1px solid #ddd;
+  min-height: 0;
+  gap: 6px;
+}
+.mwg-horiz-num {
+  font-size: 12px;
+  color: #888;
+  flex-shrink: 0;
+  min-width: 20px;
+  line-height: 1;
+}
+.mwg-horiz-problem {
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  line-height: 1.3;
+  color: #111;
+  flex: 1;
+}
+.mwg-horiz-answer {
+  border-bottom: 1px solid #888;
+  min-height: 16px;
+  margin-top: 4px;
+  width: 60%;
+}
+
+/* Fraction display */
+.mwg-fraction {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  font-size: 15px;
+  line-height: 1.1;
+  margin: 0 2px;
+}
+.mwg-fraction-num { border-bottom: 1.5px solid #111; padding: 0 2px; font-size: 14px; }
+.mwg-fraction-den { padding: 0 2px; font-size: 14px; }
+
+/* Answer key sheet */
+.mwg-answer-key-sheet {
+  width: 11in;
+  height: 8.5in;
+  margin: 0 auto 12px auto;
+  background: white;
+  color: black;
+  padding: 0.25in 0.3in;
+  border: 1px solid #bbb;
+  overflow: hidden;
+  page-break-inside: avoid;
+  break-inside: avoid-page;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+.mwg-ak-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+.mwg-answer-key-sheet.print-break { page-break-after: always; }
+.mwg-answer-key-sheet:last-child { page-break-after: auto; }
+
+.mwg-ak-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0.1in;
+  border-bottom: 2px solid #222;
+  padding-bottom: 6px;
+}
+.mwg-ak-student {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0.08in 0 0.05in 0;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 3px;
+}
+.mwg-ak-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  margin-bottom: 0.05in;
+}
+.mwg-ak-answer {
+  font-size: 12px;
+  width: 1.1in;
+  padding: 1px 4px;
+}
+.mwg-ak-num { color: #888; font-size: 11px; }
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .mwg-advanced-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .mwg-student-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .mwg-student-grid { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════
+   PRINT
+══════════════════════════════════════ */
+@page { size: 11in 8.5in landscape; margin: 0; }
+
+@media print {
+  html, body { margin: 0 !important; padding: 0 !important; }
+  body > * { display: none !important; }
+  #mwg-results-print {
+    display: block !important;
+    width: 11in !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-
-  .level-reference-grid{
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    gap:6px 12px;
+  .mwg-worksheet {
+    display: flex !important;
+    flex-direction: column !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0.25in 0.3in !important;
+    width: 11in !important;
+    height: 8.5in !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
   }
-}
-
-@media (max-width:560px){
-  .student-grid{
-    grid-template-columns:1fr;
+  .mwg-ws-header {
+    flex: 0 0 auto !important;
   }
-
-  .student-entry-header{
-    align-items:flex-start;
+  .mwg-ws-body {
+    flex: 1 1 auto !important;
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
   }
-
-  .student-entry-actions{
-    justify-content:flex-start;
+  .mwg-problems-grid {
+    width: 100% !important;
+    display: grid !important;
+    height: auto !important;
   }
-
-  .level-reference-card{
-    overflow-x:auto;
+  .mwg-cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
+  .mwg-cols-5 { grid-template-columns: repeat(5, 1fr) !important; }
+  .mwg-cols-6 { grid-template-columns: repeat(6, 1fr) !important; }
+  .mwg-rows-6  { grid-template-rows: repeat(6,  1.2in) !important; }
+  .mwg-rows-7  { grid-template-rows: repeat(7,  1.03in) !important; }
+  .mwg-rows-8  { grid-template-rows: repeat(8,  0.9in) !important; }
+  .mwg-rows-10 { grid-template-rows: repeat(10, 0.72in) !important; }
+  .mwg-rows-12 { grid-template-rows: repeat(12, 0.6in) !important; }
+  .mwg-problem-cell {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
-
-  .level-reference-grid{
-    grid-template-columns:minmax(120px,1fr) minmax(120px,1fr);
-    gap:6px 10px;
-    min-width:250px;
+  .mwg-answer-key-sheet {
+    display: flex !important;
+    flex-direction: column !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0.25in 0.3in !important;
+    width: 11in !important;
+    height: 8.5in !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
   }
-
-  .level-reference-item{
-    white-space:normal;
-    word-break:break-word;
+  .mwg-ak-body {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    min-height: 0 !important;
+    overflow: visible !important;
   }
-
-  .worksheet-header-main{
-    grid-template-columns:1fr;
-    gap:8px;
-  }
-
-  .description-box{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
-  .worksheet-set-label{
-    border-left:none;
-    padding-left:0;
-  }
-
-  .primary-actions{
-    flex-direction:column;
-    align-items:stretch;
-  }
+  .mwg-worksheet.print-break { page-break-after: always !important; break-after: page !important; }
+  .mwg-answer-key-sheet.print-break { page-break-after: always !important; break-after: page !important; }
+  .mwg-worksheet:last-child { page-break-after: avoid !important; break-after: avoid !important; }
+  .mwg-answer-key-sheet:last-child { page-break-after: avoid !important; break-after: avoid !important; }
 }
-
-@page{
-size:11in 8.5in landscape;
-margin:0;
-}
-
-@media print{
-
-html, body{
-margin:0 !important;
-padding:0 !important;
-}
-
-body > *{
-display:none !important;
-}
-
-#results,
-#results-print{
-display:block !important;
-width:11in !important;
-margin:0 !important;
-padding:0 !important;
-}
-
-.worksheet{
-display:flex !important;
-flex-direction:column !important;
-border:none !important;
-box-shadow:none !important;
-margin:0 !important;
-padding:0.25in 0.3in !important;
-width:11in !important;
-height:8.5in !important;
-overflow:hidden !important;
-box-sizing:border-box !important;
-}
-
-.worksheet-header{
-flex:0 0 auto !important;
-}
-
-.worksheet-body{
-flex:1 1 auto !important;
-display:block !important;
-height:auto !important;
-overflow:visible !important;
-}
-
-.problems-grid{
-width:100% !important;
-display:grid !important;
-height:auto !important;
-}
-
-.problems-grid{ grid-template-columns:repeat(10,1fr) !important; }
-.rows-3{ grid-template-rows:repeat(3,2.4in) !important; }
-.rows-4{ grid-template-rows:repeat(4,1.8in) !important; }
-.rows-5{ grid-template-rows:repeat(5,1.44in) !important; }
-.rows-6{ grid-template-rows:repeat(6,1.2in) !important; }
-
-.problem-cell{
-display:flex !important;
-align-items:center !important;
-justify-content:center !important;
-}
-
-.worksheet.print-break{
-page-break-after:always !important;
-break-after:page !important;
-}
-
-.worksheet:last-child{
-page-break-after:avoid !important;
-break-after:avoid !important;
-}
-
-}
-
 </style>
-
-<form id="mathMinuteForm">
-  <div class="button-row" style="margin-top:0; margin-bottom:12px;">
-    <span class="mode-pill" id="modeIndicator">Standard Input</span>
-    <button type="button" id="toggleInputModeButton" class="btn-small">Advanced Input</button>
+</head>
+<body>
+<div id="mwg-app">
+<!-- ═══════════════ FORM ═══════════════ -->
+<form id="mwgForm">
+  <div class="mwg-button-row" style="margin-top:0;margin-bottom:12px;">
+    <span class="mwg-mode-pill" id="mwgModeIndicator">Standard Input</span>
+    <button type="button" id="mwgToggleModeBtn" class="mwg-btn-small">Advanced Input</button>
   </div>
 
-  <div class="settings-row">
-    <div class="settings-left">
-      <div class="setting-group">
-        <label for="worksheetsPerStudent">Worksheets per student</label>
-        <select id="worksheetsPerStudent">
+  <div class="mwg-settings-row">
+    <div class="mwg-settings-left">
+      <div class="mwg-setting-group">
+        <label for="mwgWorksheetsPerStudent">Worksheets per student</label>
+        <select id="mwgWorksheetsPerStudent">
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -695,704 +777,1525 @@ break-after:avoid !important;
         </select>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
-      <input type="checkbox" id="answerKeyToggle" style="width:16px;height:16px;cursor:pointer;" />
-      <label for="answerKeyToggle" style="cursor:pointer;">Print answer key</label>
+    <div class="mwg-answer-key-row">
+      <input type="checkbox" id="mwgAnswerKeyToggle" />
+      <label for="mwgAnswerKeyToggle" style="font-size:14px;cursor:pointer;">Print answer key</label>
     </div>
   </div>
 
-  <div id="standardInputSection">
-    <div class="student-counter" id="studentCounter">Students: 0</div>
-    <div id="studentsContainer"></div>
+  <!-- Standard input -->
+  <div id="mwgStandardSection">
+    <div class="mwg-fill-down-row">
+      <button type="button" id="mwgFillDownBtn" class="mwg-btn-small">Fill Down Settings ↓</button>
+    </div>
+    <div class="mwg-student-counter" id="mwgStudentCounter">Students: 0</div>
+    <div id="mwgStudentsContainer"></div>
   </div>
 
-  <div id="advancedInputSection">
-    <div class="advanced-layout">
-      <div class="advanced-input-wrap">
-        <label for="advancedInputBox">Paste student data</label>
-        <textarea id="advancedInputBox" placeholder="Harrison, 2, 19; Emily, 5, 7; Jacob, 14, 21;"></textarea>
-        <div class="advanced-help">
-          Format: <strong>STUDENTNAME, NUMBER, LEVEL; NEXTSTUDENT, NEXTNUMBER, LEVEL;</strong><br>
-          You can also paste one student per line.<br>
-          Example: <strong>Harrison, 2, 19; Emily, 5, 7; Jacob, 14, 21;</strong><br>
-          Extra spaces are okay. Blank trailing entries are ignored. Invalid entries are skipped and listed in an error message.
+  <!-- Advanced input -->
+  <div id="mwgAdvancedSection" style="display:none;">
+    <div class="mwg-advanced-layout">
+      <div class="mwg-advanced-input-wrap">
+        <label for="mwgAdvancedBox">Paste student data</label>
+        <textarea id="mwgAdvancedBox" placeholder="Harrison, 1, addition, 30, 3; Emily, 2, mixed, 40, 5;"></textarea>
+        <div class="mwg-advanced-help">
+          Format: <strong>Name, Number, ProblemType, Count, Grade;</strong><br>
+          Example: <strong>Harrison, 1, addition, 30, 3; Emily, 2, mixed, 40, 5;</strong><br>
+          Problem types: addition, subtraction, multiplication, division, fractions, fractions[add|sub|mul|divf|divw], decimals, decimals[add|sub|mulw|muld|divw|divd], rounding, longdivision, orderofoperations, integers, exponents, scientificnotation, mixed, mixed[type1|type2|...]<br>
+          Counts: 30, 40, 50, 60 — Grades: 1–8
         </div>
       </div>
-
-      <div class="level-reference-card">
-        <div class="level-reference-title">Level Reference</div>
-        <div class="level-reference-grid" id="levelReferenceGrid"></div>
+      <div class="mwg-level-reference-card">
+        <div class="mwg-reference-title">Grade Reference</div>
+        <div class="mwg-reference-grid" id="mwgReferenceGrid"></div>
       </div>
     </div>
   </div>
 
-  <div class="button-row">
-    <button type="button" id="addStudentButton" class="btn-small">Add Student</button>
-    <button type="button" id="generateAdvancedCodeButton" class="btn-small">Generate Advanced Code</button>
-    <button type="button" id="saveRosterButton" class="btn-small">Save Roster</button>
-    <button type="button" id="clearCurrentRosterButton" class="btn-small">Clear Current Roster</button>
-    <button type="button" id="clearSavedRosterButton" class="btn-small">Clear Saved Roster</button>
+  <div class="mwg-button-row">
+    <button type="button" id="mwgAddStudentBtn" class="mwg-btn-small">Add Student</button>
+    <button type="button" id="mwgGenCodeBtn" class="mwg-btn-small">Generate Advanced Code</button>
+    <button type="button" id="mwgSaveBtn" class="mwg-btn-small">Save Roster</button>
+    <button type="button" id="mwgClearCurrentBtn" class="mwg-btn-small">Clear Current Roster</button>
+    <button type="button" id="mwgClearSavedBtn" class="mwg-btn-small">Clear Saved Roster</button>
   </div>
 
-  <div id="mmValidationBox" style="display:none;border:1px solid rgb(204,0,0);background:rgb(255,243,243);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:14px;line-height:1.6;">
-    <div id="mmValidationMsg"></div>
+  <div id="mwgValidationBox" style="display:none;border:1px solid rgb(204,0,0);background:rgb(255,243,243);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:14px;line-height:1.6;">
+    <div id="mwgValidationMsg"></div>
     <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
-      <button type="button" id="mmValidationFix" class="btn-small">Fix</button>
-      <button type="button" id="mmValidationGenerate" class="btn-small">Generate Anyway</button>
+      <button type="button" id="mwgValidationFix" class="mwg-btn-small">Fix</button>
+      <button type="button" id="mwgValidationGenerate" class="mwg-btn-small">Generate Anyway</button>
     </div>
   </div>
-  <div class="primary-actions">
-    <button type="button" id="generatePrintButton" class="btn-large">Generate &amp; Print Worksheets</button>
-    <button type="button" id="savePdfButton" class="btn-large">Generate &amp; Save PDF</button>
+  <div class="mwg-primary-actions">
+    <button type="button" id="mwgGenerateBtn" class="mwg-btn-large">Generate &amp; Print Worksheets</button>
+    <button type="button" id="mwgSavePdfBtn" class="mwg-btn-large">Generate &amp; Save PDF</button>
   </div>
 </form>
 
-<div id="statusMessages"></div>
-<div id="results"></div>
-<div id="errors"></div>
+<div id="mwgStatus"></div>
+<div class="mwg-results" id="mwgResults"></div>
+<div id="mwgErrors"></div>
 
-<div id="advancedCodePanel" style="display:none;border:1px solid rgb(199,214,255);background:rgb(238,243,255);border-radius:8px;padding:12px 16px;margin-top:12px;">
+<div id="mwgCodePanel" style="display:none;border:1px solid rgb(199,214,255);background:rgb(238,243,255);border-radius:8px;padding:12px 16px;margin-top:12px;">
   <div style="font-weight:bold;font-size:14px;margin-bottom:8px;">Advanced Input Code</div>
-  <textarea id="advancedCodeOutput" readonly="" style="width:100%;min-height:120px;resize:vertical;font-family:Arial,sans-serif;font-size:13px;padding:8px;box-sizing:border-box;border:1px solid rgb(199,214,255);border-radius:4px;background:white;"></textarea>
-  <div style="font-size:13px;color:rgb(68,68,68);margin:8px 0;">This text is formatted for the Advanced Input box. You can copy and paste it directly.</div>
+  <textarea id="mwgCodeOutput" readonly style="width:100%;min-height:120px;resize:vertical;font-family:Georgia,serif;font-size:13px;padding:8px;box-sizing:border-box;border:1px solid rgb(199,214,255);border-radius:4px;background:white;"></textarea>
+  <div style="font-size:13px;color:rgb(68,68,68);margin:8px 0;">Copy and paste this into the Advanced Input box.</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-    <button type="button" id="copyAdvancedCodeButton" class="btn-small">Copy Code</button>
-    <button type="button" id="useAdvancedCodeButton" class="btn-small">Use in Advanced Input</button>
-    <button type="button" id="closeAdvancedCodeModal" class="btn-small">Close</button>
+    <button type="button" id="mwgCopyCodeBtn" class="mwg-btn-small">Copy Code</button>
+    <button type="button" id="mwgUseCodeBtn" class="mwg-btn-small">Use in Advanced Input</button>
+    <button type="button" id="mwgCloseModal" class="mwg-btn-small">Close</button>
   </div>
 </div>
 
+<!-- Advanced code modal -->
 
 
 
-
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-(function () {
+(function() {
 "use strict";
 
-var studentsContainer = null;
-var addStudentButton = null;
-var saveRosterButton = null;
-var clearCurrentRosterButton = null;
-var clearSavedRosterButton = null;
-var generatePrintButton = null;
-var savePdfButton = null;
-var answerKeyToggle = null;
-var mmValidationBox = null;
-var mmValidationMsg = null;
-var mmValidationFix = null;
-var mmValidationGenerate = null;
-var mmPendingAction = null;
-var results = null;
-var errors = null;
-var statusMessages = null;
-var toggleInputModeButton = null;
-var standardInputSection = null;
-var advancedInputSection = null;
-var advancedInputBox = null;
-var modeIndicator = null;
-var worksheetsPerStudent = null;
-var levelReferenceGrid = null;
-var studentCounter = null;
-var generateAdvancedCodeButton = null;
-var advancedCodePanel = null;
-var closeAdvancedCodeModal = null;
-var advancedCodeOutput = null;
-var copyAdvancedCodeButton = null;
-var useAdvancedCodeButton = null;
+var STORAGE_KEY = "mwgRosterData_v1";
 
-var STORAGE_KEY = "mathMinuteRosterData_v1";
-var inputMode = "standard";
+var TYPE_LABELS = {
+  add1: "Addition Level 1 (sums < 10)",
+  add2: "Addition Level 2 (sums 10-20)",
+  add3: "Addition Level 3 (2-digit + 1-digit)",
+  add4: "Addition Level 4 (2-digit + 2-digit)",
+  add5: "Addition Level 5 (3-digit + any)",
+  sub1: "Subtraction Level 1 (minuend < 10)",
+  sub2: "Subtraction Level 2 (minuend 10-20)",
+  sub3: "Subtraction Level 3 (2-digit - 1-digit)",
+  sub4: "Subtraction Level 4 (2-digit - 2-digit)",
+  sub5: "Subtraction Level 5 (3-digit - any)",
+  mul1: "Multiplication Level 1 (factor \u2264 5)",
+  mul2: "Multiplication Level 2 (factor 6-9)",
+  mul3: "Multiplication Level 3 (2-digit \u00d7 1-digit)",
+  mul4: "Multiplication Level 4 (2-digit \u00d7 2-digit)",
+  mul5: "Multiplication Level 5 (3-digit \u00d7 1-digit)",
+  div1: "Division Level 1 (divisor 1-5)",
+  div2: "Division Level 2 (divisor 6-9)",
+  div3: "Division Level 3 (2-digit \u00f7 1-digit)",
+  div4: "Division Level 4 (2-digit \u00f7 1-digit, remainder)",
+  div5: "Division Level 5 (3-digit \u00f7 1-digit)",
+  fractions:          "Fractions",
+  "fractions-add":    "Fractions — Addition",
+  "fractions-sub":    "Fractions — Subtraction",
+  "fractions-mul":    "Fractions — Multiplication",
+  "fractions-divf":   "Fractions — Division (frac ÷ frac)",
+  "fractions-divw":   "Fractions — Division (frac ÷ whole)",
+  decimals:           "Decimals",
+  "decimals-add":     "Decimals — Addition",
+  "decimals-sub":     "Decimals — Subtraction",
+  "decimals-mulw":    "Decimals — Multiplication (dec × whole)",
+  "decimals-muld":    "Decimals — Multiplication (dec × dec)",
+  "decimals-divw":    "Decimals — Division (dec ÷ whole)",
+  "decimals-divd":    "Decimals — Division (dec ÷ dec)",
+  rounding:           "Rounding",
+  longdivision:       "Long Division",
+  orderofoperations:  "Order of Operations",
+  integers:           "Integers & Negatives",
+  exponents:          "Exponents & Sq. Roots",
+  scientificnotation: "Scientific Notation",
+  mixed:              "Mixed"
+};
 
-var levelNames = [
-  "01 - Easy Addition",
-  "02 - Hard Addition",
-  "03 - Easy Subtraction",
-  "04 - Hard Subtraction",
-  "05 - 40 Addition",
-  "06 - 40 Subtraction",
-  "07 - 50 Addition",
-  "08 - 50 Subtraction",
-  "09 - 60 Addition",
-  "10 - 60 Subtraction",
-  "11 - Easy X",
-  "12 - Hard X",
-  "13 - 40 X",
-  "14 - 50 X",
-  "15 - 60 X",
-  "16 - Easy \u00f7",
-  "17 - Hard \u00f7",
-  "18 - 40 \u00f7",
-  "19 - 50 \u00f7",
-  "20 - 60 \u00f7",
-  "21 - Mixed"
+// Short labels for dropdown display
+var TYPE_SHORT = {
+  add1: "Level 1 \u2014 sums < 10",
+  add2: "Level 2 \u2014 sums 10-20",
+  add3: "Level 3 \u2014 2-digit + 1-digit",
+  add4: "Level 4 \u2014 2-digit + 2-digit",
+  add5: "Level 5 \u2014 3-digit + any",
+  sub1: "Level 1 \u2014 minuend < 10",
+  sub2: "Level 2 \u2014 minuend 10-20",
+  sub3: "Level 3 \u2014 2-digit \u2212 1-digit",
+  sub4: "Level 4 \u2014 2-digit \u2212 2-digit",
+  sub5: "Level 5 \u2014 3-digit \u2212 any",
+  mul1: "Level 1 \u2014 factor \u2264 5",
+  mul2: "Level 2 \u2014 factor 6-9",
+  mul3: "Level 3 \u2014 2-digit \u00d7 1-digit",
+  mul4: "Level 4 \u2014 2-digit \u00d7 2-digit",
+  mul5: "Level 5 \u2014 3-digit \u00d7 1-digit",
+  div1: "Level 1 \u2014 divisor 1-5",
+  div2: "Level 2 \u2014 divisor 6-9",
+  div3: "Level 3 \u2014 2-digit \u00f7 1-digit",
+  div4: "Level 4 \u2014 remainder",
+  div5: "Level 5 \u2014 3-digit \u00f7 1-digit",
+  fractions:          "Fractions",
+  "fractions-add":    "Fractions — Addition",
+  "fractions-sub":    "Fractions — Subtraction",
+  "fractions-mul":    "Fractions — Multiplication",
+  "fractions-divf":   "Fractions — Division (frac ÷ frac)",
+  "fractions-divw":   "Fractions — Division (frac ÷ whole)",
+  decimals:           "Decimals",
+  "decimals-add":     "Decimals — Addition",
+  "decimals-sub":     "Decimals — Subtraction",
+  "decimals-mulw":    "Decimals — Multiplication (dec × whole)",
+  "decimals-muld":    "Decimals — Multiplication (dec × dec)",
+  "decimals-divw":    "Decimals — Division (dec ÷ whole)",
+  "decimals-divd":    "Decimals — Division (dec ÷ dec)",
+  rounding:           "Rounding",
+  longdivision:       "Long Division",
+  orderofoperations:  "Order of Operations",
+  integers:           "Integers & Negatives",
+  exponents:          "Exponents & Sq. Roots",
+  scientificnotation: "Scientific Notation",
+  mixed:              "Mixed"
+};
+
+// Grade unlocks
+var GRADE_TYPES = {
+  1: ["add1","add2","sub1","sub2","mul1","mul2","div1","div2","mixed"],
+  2: ["add1","add2","sub1","sub2","mul1","mul2","div1","div2","mixed"],
+  3: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","mixed"],
+  4: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","mixed"],
+  5: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","mixed"],
+  6: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
+  7: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","integers","mixed"],
+  8: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation","mixed"]
+};
+
+var TYPE_GROUPS = [
+  { label: "Addition",       types: ["add1","add2","add3","add4","add5"] },
+  { label: "Subtraction",    types: ["sub1","sub2","sub3","sub4","sub5"] },
+  { label: "Multiplication", types: ["mul1","mul2","mul3","mul4","mul5"] },
+  { label: "Division",       types: ["div1","div2","div3","div4","div5"] },
+  { label: "Fractions",      types: ["fractions"] },
+  { label: "Decimals",       types: ["decimals"] },
+  { label: "Other",          types: ["rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"] },
+  { label: "Mixed",          types: ["mixed"] }
 ];
 
-function escapeHtml(text) {
+var GRADE_REFERENCE = {
+  "Grades 1-2": "Addition & Subtraction Levels 1-2, Multiplication & Division Levels 1-2",
+  "Grades 3-4": "+ Levels 3 (2-digit operations)",
+  "Grades 5-6": "+ Levels 4-5 (multi-digit), Fractions, Decimals, Rounding, Long Division",
+  "Grade 6+":   "+ Order of Operations",
+  "Grade 7+":   "+ Integers & Negatives",
+  "Grade 8+":   "+ Exponents, Scientific Notation"
+};
+
+var VALID_COUNTS = [30, 40, 50, 60];
+var inputMode = "standard";
+var entryIdCounter = 0;
+
+var form, studentsContainer, studentCounter, standardSection,
+    advancedSection, advancedBox, modeIndicator, toggleModeBtn,
+    addStudentBtn, genCodeBtn, saveBtn, clearCurrentBtn, clearSavedBtn,
+    generateBtn, savePdfBtn, fillDownBtn, worksheetsPerStudent, answerKeyToggle,
+    resultsDiv, statusDiv, errorsDiv, closeModal,
+    codeOutput, copyCodeBtn, useCodeBtn, referenceGrid,
+    validationBox, validationMsg, validationFix, validationGenerate,
+    codePanel;
+var pendingGenerateAction = null;
+
+function injectStyles() {
+  if (document.getElementById("mwg-injected-styles")) return;
+  var rules = [
+    "[id=mwg-app]{font-family:Georgia,serif;max-width:1100px;margin:0 auto;color:rgb(26,26,26)}",
+    "[id=mwg-app] *,[id=mwg-app] *::before,[id=mwg-app] *::after{box-sizing:border-box}",
+    ".mwg-button-row{margin-top:0;margin-bottom:12px;display:flex;gap:10px;flex-wrap:nowrap;align-items:center;overflow-x:auto;padding-bottom:2px;justify-content:center}",
+    ".mwg-primary-actions{margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center}",
+    ".mwg-settings-row{display:flex;gap:14px;flex-wrap:wrap;align-items:end;justify-content:space-between;margin:10px 0 8px 0}",
+    ".mwg-settings-left{display:flex;gap:14px;flex-wrap:wrap;align-items:end}",
+    ".mwg-setting-group{min-width:210px;max-width:260px;flex:0 1 260px}",
+    ".mwg-setting-group label,.mwg-student-grid label,.mwg-advanced-input-wrap label,.mwg-level-reference-card label{display:block;font-weight:bold;margin-bottom:4px;font-size:14px}",
+    ".mwg-setting-group select,.mwg-student-grid input,.mwg-student-grid select,.mwg-advanced-input-wrap textarea{width:100%;padding:8px;font-size:14px;font-family:Georgia,serif}",
+    ".mwg-student-counter{font-size:14px;font-weight:bold;color:rgb(68,68,68);margin:6px 0 10px 0}",
+    ".mwg-mode-pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgb(238,243,255);border:1px solid rgb(199,214,255);font-size:13px;font-weight:bold;flex:0 0 auto;white-space:nowrap}",
+    ".mwg-student-entry{border:1px solid rgb(204,204,204);padding:12px;margin-bottom:12px;border-radius:8px;background:rgb(249,249,249)}",
+    ".mwg-student-entry-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}",
+    ".mwg-student-entry h3{margin:0;font-size:18px}",
+    ".mwg-student-entry-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}",
+    ".mwg-duplicate-link,.mwg-delete-link{font-size:13px;color:rgb(6,69,173);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0;line-height:1.2;font-family:Georgia,serif}",
+    ".mwg-duplicate-link:hover,.mwg-delete-link:hover{color:rgb(4,47,107)}",
+    ".mwg-student-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:10px;align-items:end}",
+    ".mwg-mixed-types{display:none;margin-top:8px;padding:10px 12px;border:1px solid rgb(199,214,255);border-radius:6px;background:rgb(238,243,255);grid-column:1/-1}",
+    ".mwg-mixed-types.visible{display:block}",
+    ".mwg-mixed-types-label{font-size:13px;font-weight:bold;margin-bottom:8px;color:rgb(51,51,51)}",
+    ".mwg-mixed-types-grid{display:flex;flex-wrap:wrap;gap:4px 16px}",
+    ".mwg-mixed-types-grid label{font-size:13px;font-weight:normal!important;display:flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:0!important}",
+    ".mwg-mixed-types-grid input[type=checkbox]{width:auto;padding:0;margin:0;cursor:pointer}",
+    ".mwg-answer-key-row{display:flex;align-items:center;gap:10px;margin:8px 0 4px 0;font-size:14px}",
+    ".mwg-answer-key-row input[type=checkbox]{width:16px;height:16px;cursor:pointer}",
+    ".mwg-advanced-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:14px;align-items:start}",
+    ".mwg-advanced-input-wrap,.mwg-level-reference-card{border:1px solid rgb(204,204,204);padding:12px;margin-bottom:12px;border-radius:8px;background:rgb(249,249,249)}",
+    ".mwg-advanced-input-wrap textarea{min-height:180px;resize:vertical}",
+    ".mwg-advanced-help{font-size:13px;color:rgb(68,68,68);margin-top:8px;line-height:1.4}",
+    ".mwg-reference-title{font-size:15px;font-weight:bold;margin-bottom:10px}",
+    ".mwg-reference-grid{font-size:13px;line-height:1.6}",
+    ".mwg-reference-grade{margin-bottom:6px}",
+    ".mwg-reference-grade strong{display:inline-block;min-width:70px}",
+    ".mwg-fill-down-row{display:flex;justify-content:flex-end;margin-bottom:6px}",
+    ".mwg-btn-small{padding:7px 12px;font-size:14px;cursor:pointer;flex:0 0 auto;white-space:nowrap;font-family:Georgia,serif}",
+    ".mwg-btn-large{padding:12px 20px;font-size:17px;font-weight:bold;cursor:pointer;font-family:Georgia,serif}",
+    ".mwg-error-box{border:1px solid rgb(221,51,51);background:rgb(255,243,243);color:rgb(153,0,0);padding:10px 12px;border-radius:8px;margin-top:12px;white-space:pre-line}",
+    ".mwg-notice-box{border:1px solid rgb(214,170,0);background:rgb(255,248,219);color:rgb(107,86,0);padding:10px 12px;border-radius:8px;margin-top:12px;white-space:pre-line}",
+    ".mwg-success-box{border:1px solid rgb(60,154,73);background:rgb(238,251,240);color:rgb(35,101,45);padding:10px 12px;border-radius:8px;margin-top:12px;white-space:pre-line}",
+    ".mwg-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}",
+    ".mwg-modal-overlay.active{display:flex}",
+    ".mwg-modal-box{width:min(760px,100%);max-height:85vh;background:white;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:hidden;display:flex;flex-direction:column}",
+    ".mwg-modal-header{padding:14px 16px;border-bottom:1px solid rgb(221,221,221);display:flex;justify-content:space-between;align-items:center;gap:12px}",
+    ".mwg-modal-title{font-size:18px;font-weight:bold}",
+    ".mwg-modal-close{border:1px solid rgb(187,187,187);background:rgb(245,245,245);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px;font-family:Georgia,serif}",
+    ".mwg-modal-body{padding:16px;overflow-y:auto}",
+    ".mwg-modal-body textarea{width:100%;min-height:260px;resize:vertical;font-family:Georgia,serif;font-size:14px;padding:10px}",
+    ".mwg-modal-help{margin-top:10px;font-size:13px;color:rgb(68,68,68);line-height:1.4}",
+    ".mwg-modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}",
+    ".mwg-results{margin-top:30px}",
+    ".mwg-answer-key-sheet{display:flex;flex-direction:column}",
+    ".mwg-ak-body{flex:1 1 auto;min-height:0;display:flex;overflow:hidden}",
+    ".mwg-horiz-grid{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:4px 30px;padding:4px 0;min-height:0;align-content:start}",
+    ".mwg-horiz-cell{display:flex;flex-direction:row;align-items:baseline;padding:8px 4px 6px 4px;border-bottom:1px solid rgb(221,221,221);min-height:0;gap:6px}",
+    ".mwg-horiz-num{font-size:12px;color:rgb(136,136,136);flex-shrink:0;min-width:20px;line-height:1}",
+    ".mwg-horiz-problem{font-size:16px;font-family:Arial,sans-serif;line-height:1.3;color:rgb(17,17,17);flex:1}",
+    ".mwg-horiz-answer{border-bottom:1px solid rgb(136,136,136);min-height:16px;margin-top:4px;width:60%}"
+  ];
+  var style = document.createElement("style");
+  style.id = "mwg-injected-styles";
+  style.textContent = rules.join(" ");
+  document.head.appendChild(style);
+}
+
+function assignDomRefs() {
+  form                 = document.getElementById("mwgForm");
+  studentsContainer    = document.getElementById("mwgStudentsContainer");
+  studentCounter       = document.getElementById("mwgStudentCounter");
+  standardSection      = document.getElementById("mwgStandardSection");
+  advancedSection      = document.getElementById("mwgAdvancedSection");
+  advancedBox          = document.getElementById("mwgAdvancedBox");
+  modeIndicator        = document.getElementById("mwgModeIndicator");
+  toggleModeBtn        = document.getElementById("mwgToggleModeBtn");
+  addStudentBtn        = document.getElementById("mwgAddStudentBtn");
+  genCodeBtn           = document.getElementById("mwgGenCodeBtn");
+  saveBtn              = document.getElementById("mwgSaveBtn");
+  clearCurrentBtn      = document.getElementById("mwgClearCurrentBtn");
+  clearSavedBtn        = document.getElementById("mwgClearSavedBtn");
+  generateBtn          = document.getElementById("mwgGenerateBtn");
+  savePdfBtn           = document.getElementById("mwgSavePdfBtn");
+  fillDownBtn          = document.getElementById("mwgFillDownBtn");
+  worksheetsPerStudent = document.getElementById("mwgWorksheetsPerStudent");
+  answerKeyToggle      = document.getElementById("mwgAnswerKeyToggle");
+  resultsDiv           = document.getElementById("mwgResults");
+  statusDiv            = document.getElementById("mwgStatus");
+  errorsDiv            = document.getElementById("mwgErrors");
+  codePanel            = document.getElementById("mwgCodePanel");
+  closeModal           = document.getElementById("mwgCloseModal");
+  codeOutput           = document.getElementById("mwgCodeOutput");
+  copyCodeBtn          = document.getElementById("mwgCopyCodeBtn");
+  useCodeBtn           = document.getElementById("mwgUseCodeBtn");
+  referenceGrid        = document.getElementById("mwgReferenceGrid");
+  validationBox        = document.getElementById("mwgValidationBox");
+  validationMsg        = document.getElementById("mwgValidationMsg");
+  validationFix        = document.getElementById("mwgValidationFix");
+  validationGenerate   = document.getElementById("mwgValidationGenerate");
+}
+
+function esc(text) {
   return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "\u0027");
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
+    .replace(/'/g,"\u0027");
+}
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randFrom(arr)  { return arr[Math.floor(Math.random() * arr.length)]; }
+function clearStatus()  { statusDiv.innerHTML = ""; }
+function clearErrors()  { errorsDiv.innerHTML = ""; }
+function showSuccess(m) { statusDiv.innerHTML = '<div class="mwg-success-box">' + esc(m) + '</div>'; }
+function showNotice(m)  { statusDiv.innerHTML = '<div class="mwg-notice-box">' + esc(m) + '</div>'; }
+function showErrors(list) {
+  if (!list.length) { errorsDiv.innerHTML = ""; return; }
+  errorsDiv.innerHTML = '<div class="mwg-error-box">Some entries were skipped:\n\n' + list.map(esc).join("\n") + '</div>';
 }
 
-function renderLevelReference() {
-  var left = levelNames.slice(0, 11);
-  var right = levelNames.slice(11);
-  var maxRows = Math.max(left.length, right.length);
+function renderReference() {
   var html = "";
-  for (var i = 0; i < maxRows; i++) {
-    if (left[i]) {
-      html += '<div class="level-reference-item">' + (i + 1) + " \u2013 " +
-        escapeHtml(left[i].replace(/^\d+\s-\s/, "")) + "</div>";
-    } else {
-      html += "<div></div>";
+  var keys = Object.keys(GRADE_REFERENCE);
+  for (var i = 0; i < keys.length; i++) {
+    html += '<div class="mwg-reference-grade"><strong>' + esc(keys[i]) + ':</strong> ' + esc(GRADE_REFERENCE[keys[i]]) + '</div>';
+  }
+  referenceGrid.innerHTML = html;
+}
+
+function isHorizType(type) {
+  return ["fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"].indexOf(type) !== -1;
+}
+
+function isHorizTypeName(type) { return isHorizType(type); }
+
+function getTypeOptions(grade, selected) {
+  if (!grade || parseInt(grade) < 1) {
+    return '<option value="">Select Grade First</option>';
+  }
+  var availTypes = GRADE_TYPES[grade] || GRADE_TYPES[1];
+  var html = '<option value="">Select Type</option>';
+  for (var g = 0; g < TYPE_GROUPS.length; g++) {
+    var group = TYPE_GROUPS[g];
+    var groupTypes = [];
+    for (var t = 0; t < group.types.length; t++) {
+      if (availTypes.indexOf(group.types[t]) !== -1) groupTypes.push(group.types[t]);
     }
-    if (right[i]) {
-      html += '<div class="level-reference-item">' + (i + 12) + " \u2013 " +
-        escapeHtml(right[i].replace(/^\d+\s-\s/, "")) + "</div>";
+    if (!groupTypes.length) continue;
+    if (group.label === "Mixed") {
+      var sel = "mixed" === selected ? "selected" : "";
+      html += '<option value="mixed" ' + sel + '>Mixed</option>';
     } else {
-      html += "<div></div>";
+      html += '<optgroup label="' + esc(group.label) + '">';
+      for (var t = 0; t < groupTypes.length; t++) {
+        var type = groupTypes[t];
+        var sel = type === selected ? "selected" : "";
+        html += '<option value="' + type + '" ' + sel + '>' + esc(TYPE_SHORT[type] || type) + '</option>';
+      }
+      html += '</optgroup>';
     }
   }
-  levelReferenceGrid.innerHTML = html;
+  return html;
 }
 
-function updateStudentCounter() {
-  var count = studentsContainer.querySelectorAll(".student-entry").length;
-  studentCounter.textContent = "Students: " + count;
-}
-
-function getLevelOptions(selectedValue) {
-  selectedValue = selectedValue || "";
-  var options = '<option value="">Select Level</option>';
-  for (var i = 0; i < levelNames.length; i++) {
-    var value = i + 1;
-    var selected = String(value) === String(selectedValue) ? "selected" : "";
-    options += '<option value="' + value + '" ' + selected + ">" + levelNames[i] + "</option>";
+function getGradeOptions(selected) {
+  var html = '<option value="">Grade</option>';
+  for (var g = 1; g <= 8; g++) {
+    var sel = String(g) === String(selected) ? "selected" : "";
+    html += '<option value="' + g + '" ' + sel + '>Grade ' + g + '</option>';
   }
-  return options;
+  return html;
 }
 
-function createStudentEntry(index, studentData) {
-  studentData = studentData || {};
-  var nameValue   = studentData.name   ? escapeHtml(studentData.name)   : "";
-  var numberValue = studentData.number ? escapeHtml(studentData.number) : "";
-  var levelValue  = studentData.level  ? studentData.level               : "";
+function getCountOptions(selected, capAt30) {
+  if (capAt30) return '<option value="30" selected>30 problems (max for this type)</option>';
+  var html = '<option value="">Count</option>';
+  for (var i = 0; i < VALID_COUNTS.length; i++) {
+    var c = VALID_COUNTS[i];
+    var sel = String(c) === String(selected) ? "selected" : "";
+    html += '<option value="' + c + '" ' + sel + '>' + c + ' problems</option>';
+  }
+  return html;
+}
 
+function getMixedTypesForGrade(grade) {
+  var types = GRADE_TYPES[grade] || GRADE_TYPES[1];
+  var result = [];
+  for (var i = 0; i < types.length; i++) {
+    if (types[i] !== "mixed") result.push(types[i]);
+  }
+  return result;
+}
+
+function getMixedPoolFromEntry(entryDiv, grade) {
+  var cbs = entryDiv.querySelectorAll(".mwg-mixed-cb:checked");
+  var fracOpCbs = entryDiv.querySelectorAll(".mwg-frac-op-cb:checked");
+  var decOpCbs  = entryDiv.querySelectorAll(".mwg-dec-op-cb:checked");
+  if (!cbs.length) return getMixedTypesForGrade(grade);
+  var pool = [];
+  for (var i = 0; i < cbs.length; i++) {
+    var v = cbs[i].value;
+    if (v === "fractions" && fracOpCbs.length) {
+      for (var f = 0; f < fracOpCbs.length; f++) pool.push(fracOpCbs[f].value);
+    } else if (v === "decimals" && decOpCbs.length) {
+      for (var d = 0; d < decOpCbs.length; d++) pool.push(decOpCbs[d].value);
+    } else {
+      pool.push(v);
+    }
+  }
+  return pool.length ? pool : getMixedTypesForGrade(grade);
+}
+
+function mixedHasHorizChecked(entryDiv) {
+  var cbs = entryDiv.querySelectorAll(".mwg-mixed-cb:checked");
+  for (var i = 0; i < cbs.length; i++) {
+    if (isHorizType(cbs[i].value)) return true;
+  }
+  return false;
+}
+
+var FRAC_OPS = [
+  { value: "fractions-add",  label: "Addition" },
+  { value: "fractions-sub",  label: "Subtraction" },
+  { value: "fractions-mul",  label: "Multiplication" },
+  { value: "fractions-divf", label: "Division (frac ÷ frac)" },
+  { value: "fractions-divw", label: "Division (frac ÷ whole)" }
+];
+var DEC_OPS = [
+  { value: "decimals-add",  label: "Addition" },
+  { value: "decimals-sub",  label: "Subtraction" },
+  { value: "decimals-mulw", label: "Multiplication (dec × whole)" },
+  { value: "decimals-muld", label: "Multiplication (dec × dec)" },
+  { value: "decimals-divw", label: "Division (dec ÷ whole)" },
+  { value: "decimals-divd", label: "Division (dec ÷ dec)" }
+];
+
+function renderOpsPanel(entryDiv, type, checkedFrac, checkedDec) {
+  var panel = entryDiv.querySelector(".mwg-ops-panel");
+  if (!panel) return;
+  var ops = type === "fractions" ? FRAC_OPS : DEC_OPS;
+  var checked = type === "fractions" ? (checkedFrac || ops.map(function(o){return o.value;})) : (checkedDec || ops.map(function(o){return o.value;}));
+  var cbClass = type === "fractions" ? "mwg-frac-op-cb" : "mwg-dec-op-cb";
+  var title = type === "fractions" ? "Fraction Operations" : "Decimal Operations";
+  var html = '<div class="mwg-ops-header">';
+  html += '<span class="mwg-ops-title">' + title + '</span>';
+  html += '<button type="button" class="mwg-ops-select-all">Select All Operations</button>';
+  html += '</div>';
+  html += '<div class="mwg-ops-grid">';
+  for (var i = 0; i < ops.length; i++) {
+    var op = ops[i];
+    var isChecked = checked.indexOf(op.value) !== -1 ? "checked" : "";
+    html += '<label><input type="checkbox" class="' + cbClass + '" value="' + op.value + '" ' + isChecked + '> ' + esc(op.label) + '</label>';
+  }
+  html += '</div>';
+  panel.innerHTML = html;
+  panel.querySelector(".mwg-ops-select-all").addEventListener("click", function() {
+    var cbs = panel.querySelectorAll("." + cbClass);
+    for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
+  });
+}
+
+function updateOpsPanel(entryDiv) {
+  var typeSelect = entryDiv.querySelector('[name="problemType"]');
+  var panel = entryDiv.querySelector(".mwg-ops-panel");
+  if (!typeSelect || !panel) return;
+  var type = typeSelect.value;
+  if (type === "fractions" || type === "decimals") {
+    panel.className = "mwg-ops-panel visible";
+    renderOpsPanel(entryDiv, type, null, null);
+  } else {
+    panel.className = "mwg-ops-panel";
+    panel.innerHTML = "";
+  }
+}
+
+function getSelectedOps(entryDiv, type) {
+  var cbClass = type === "fractions" ? ".mwg-frac-op-cb:checked" : ".mwg-dec-op-cb:checked";
+  var cbs = entryDiv.querySelectorAll(cbClass);
+  if (!cbs.length) return null;
+  var ops = [];
+  for (var i = 0; i < cbs.length; i++) ops.push(cbs[i].value);
+  return ops.length ? ops : null;
+}
+
+function updateCountForMixed(entryDiv) {
+  var typeSelect  = entryDiv.querySelector('[name="problemType"]');
+  var countSelect = entryDiv.querySelector('[name="count"]');
+  if (!typeSelect || !countSelect) return;
+  if (typeSelect.value !== "mixed") return;
+  countSelect.innerHTML = getCountOptions(countSelect.value, mixedHasHorizChecked(entryDiv));
+}
+
+function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
+  var box = containerEl.querySelector(".mwg-mixed-types");
+  if (!box) return;
+  var types = getMixedTypesForGrade(grade);
+  var checked = checkedTypes || types;
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+  html += '<div class="mwg-mixed-types-label" style="margin-bottom:0">Include in Mixed:</div>';
+  html += '<div style="display:flex;gap:8px">';
+  html += '<button type="button" class="mwg-mixed-select-all" style="font-size:12px;padding:2px 8px;cursor:pointer;font-family:Georgia,serif;">Select All</button>';
+  html += '<button type="button" class="mwg-mixed-deselect-all" style="font-size:12px;padding:2px 8px;cursor:pointer;font-family:Georgia,serif;">Deselect All</button>';
+  html += '</div></div>';
+  for (var g = 0; g < TYPE_GROUPS.length; g++) {
+    var group = TYPE_GROUPS[g];
+    if (group.label === "Mixed") continue;
+    var groupTypes = [];
+    for (var t = 0; t < group.types.length; t++) {
+      if (types.indexOf(group.types[t]) !== -1) groupTypes.push(group.types[t]);
+    }
+    if (!groupTypes.length) continue;
+    // Fractions and Decimals get special nested treatment
+    if (group.label === "Fractions" && groupTypes.indexOf("fractions") !== -1) {
+      var fracChecked = checked.indexOf("fractions") !== -1 || checked.some(function(c){return c.indexOf("fractions-")===0;});
+      html += '<div class="mwg-mixed-frac-dec-group">';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">';
+      html += '<label style="font-size:13px;font-weight:bold;color:rgb(37,99,235);cursor:pointer;display:flex;align-items:center;gap:6px"><input type="checkbox" class="mwg-mixed-cb mwg-frac-master" value="fractions" ' + (fracChecked?"checked":"") + '> Fractions</label>';
+      html += '<button type="button" class="mwg-ops-select-all mwg-frac-all" style="font-size:11px;padding:2px 6px;cursor:pointer;font-family:Georgia,serif;">All Operations</button>';
+      html += '</div>';
+      html += '<div class="mwg-ops-grid">';
+      for (var fo = 0; fo < FRAC_OPS.length; fo++) {
+        var fop = FRAC_OPS[fo];
+        var foChecked = checked.indexOf(fop.value) !== -1 || fracChecked ? "checked" : "";
+        html += '<label style="font-size:12px"><input type="checkbox" class="mwg-frac-op-cb mwg-mixed-op-cb" value="' + fop.value + '" ' + foChecked + '> ' + esc(fop.label) + '</label>';
+      }
+      html += '</div>';
+      html += '</div>';
+      continue;
+    }
+    if (group.label === "Decimals" && groupTypes.indexOf("decimals") !== -1) {
+      var decChecked = checked.indexOf("decimals") !== -1 || checked.some(function(c){return c.indexOf("decimals-")===0;});
+      html += '<div class="mwg-mixed-frac-dec-group">';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">';
+      html += '<label style="font-size:13px;font-weight:bold;color:rgb(37,99,235);cursor:pointer;display:flex;align-items:center;gap:6px"><input type="checkbox" class="mwg-mixed-cb mwg-dec-master" value="decimals" ' + (decChecked?"checked":"") + '> Decimals</label>';
+      html += '<button type="button" class="mwg-ops-select-all mwg-dec-all" style="font-size:11px;padding:2px 6px;cursor:pointer;font-family:Georgia,serif;">All Operations</button>';
+      html += '</div>';
+      html += '<div class="mwg-ops-grid">';
+      for (var fo = 0; fo < DEC_OPS.length; fo++) {
+        var dop = DEC_OPS[fo];
+        var doChecked = checked.indexOf(dop.value) !== -1 || decChecked ? "checked" : "";
+        html += '<label style="font-size:12px"><input type="checkbox" class="mwg-dec-op-cb mwg-mixed-op-cb" value="' + dop.value + '" ' + doChecked + '> ' + esc(dop.label) + '</label>';
+      }
+      html += '</div>';
+      html += '</div>';
+      continue;
+    }
+    html += '<div style="margin-bottom:6px"><strong style="font-size:12px;color:rgb(85,85,85)">' + esc(group.label) + '</strong><div class="mwg-mixed-types-grid">';
+    for (var t = 0; t < groupTypes.length; t++) {
+      var type = groupTypes[t];
+      var isChecked = checked.indexOf(type) !== -1 ? "checked" : "";
+      html += '<label><input type="checkbox" class="mwg-mixed-cb" value="' + type + '" ' + isChecked + '> ' + esc(TYPE_SHORT[type] || TYPE_LABELS[type]) + '</label>';
+    }
+    html += '</div></div>';
+  }
+  box.innerHTML = html;
+  var entryDiv = containerEl;
+  box.querySelector(".mwg-mixed-select-all").addEventListener("click", function() {
+    var cbs = box.querySelectorAll(".mwg-mixed-cb, .mwg-mixed-op-cb");
+    for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
+    updateCountForMixed(entryDiv);
+  });
+  box.querySelector(".mwg-mixed-deselect-all").addEventListener("click", function() {
+    var cbs = box.querySelectorAll(".mwg-mixed-cb, .mwg-mixed-op-cb");
+    for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
+    updateCountForMixed(entryDiv);
+  });
+  var fracAllBtn = box.querySelector(".mwg-frac-all");
+  if (fracAllBtn) {
+    fracAllBtn.addEventListener("click", function() {
+      var cbs = box.querySelectorAll(".mwg-frac-op-cb");
+      for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
+      var master = box.querySelector(".mwg-frac-master");
+      if (master) master.checked = true;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  var decAllBtn = box.querySelector(".mwg-dec-all");
+  if (decAllBtn) {
+    decAllBtn.addEventListener("click", function() {
+      var cbs = box.querySelectorAll(".mwg-dec-op-cb");
+      for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
+      var master = box.querySelector(".mwg-dec-master");
+      if (master) master.checked = true;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  // Master frac checkbox: check/uncheck all frac ops
+  var fracMaster = box.querySelector(".mwg-frac-master");
+  if (fracMaster) {
+    fracMaster.addEventListener("change", function() {
+      var cbs = box.querySelectorAll(".mwg-frac-op-cb");
+      for (var i = 0; i < cbs.length; i++) cbs[i].checked = fracMaster.checked;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  // Master dec checkbox: check/uncheck all dec ops
+  var decMaster = box.querySelector(".mwg-dec-master");
+  if (decMaster) {
+    decMaster.addEventListener("change", function() {
+      var cbs = box.querySelectorAll(".mwg-dec-op-cb");
+      for (var i = 0; i < cbs.length; i++) cbs[i].checked = decMaster.checked;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  // Op checkboxes: auto-check master when any op checked, auto-uncheck when all unchecked
+  var fracOpCbs = box.querySelectorAll(".mwg-frac-op-cb");
+  for (var i = 0; i < fracOpCbs.length; i++) {
+    fracOpCbs[i].addEventListener("change", function() {
+      var master = box.querySelector(".mwg-frac-master");
+      if (!master) return;
+      var any = false;
+      var cbs2 = box.querySelectorAll(".mwg-frac-op-cb");
+      for (var j = 0; j < cbs2.length; j++) if (cbs2[j].checked) any = true;
+      master.checked = any;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  var decOpCbs = box.querySelectorAll(".mwg-dec-op-cb");
+  for (var i = 0; i < decOpCbs.length; i++) {
+    decOpCbs[i].addEventListener("change", function() {
+      var master = box.querySelector(".mwg-dec-master");
+      if (!master) return;
+      var any = false;
+      var cbs2 = box.querySelectorAll(".mwg-dec-op-cb");
+      for (var j = 0; j < cbs2.length; j++) if (cbs2[j].checked) any = true;
+      master.checked = any;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  var otherCbs = box.querySelectorAll(".mwg-mixed-cb:not(.mwg-frac-master):not(.mwg-dec-master)");
+  for (var i = 0; i < otherCbs.length; i++) {
+    otherCbs[i].addEventListener("change", function() { updateCountForMixed(entryDiv); });
+  }
+}
+
+function updateCountForType(entryDiv) {
+  var typeSelect  = entryDiv.querySelector('[name="problemType"]');
+  var countSelect = entryDiv.querySelector('[name="count"]');
+  if (!typeSelect || !countSelect) return;
+  var type = typeSelect.value;
+  var capAt30 = isHorizType(type);
+  if (type === "mixed") capAt30 = mixedHasHorizChecked(entryDiv);
+  countSelect.innerHTML = getCountOptions(countSelect.value, capAt30);
+}
+
+function updateMixedVisibility(entryDiv) {
+  var typeSelect  = entryDiv.querySelector('[name="problemType"]');
+  var gradeSelect = entryDiv.querySelector('[name="grade"]');
+  var mixedBox    = entryDiv.querySelector(".mwg-mixed-types");
+  if (!typeSelect || !mixedBox) return;
+  var grade = parseInt(gradeSelect.value) || 1;
+  if (typeSelect.value === "mixed") {
+    mixedBox.className = "mwg-mixed-types visible";
+    renderMixedCheckboxes(entryDiv, grade);
+  } else {
+    mixedBox.className = "mwg-mixed-types";
+  }
+  updateCountForType(entryDiv);
+}
+
+function updateTypeOptionsForGrade(entryDiv, keepType) {
+  var gradeSelect = entryDiv.querySelector('[name="grade"]');
+  var typeSelect  = entryDiv.querySelector('[name="problemType"]');
+  if (!gradeSelect || !typeSelect) return;
+  var grade = parseInt(gradeSelect.value) || 1;
+  var currentType = keepType !== undefined ? keepType : typeSelect.value;
+  var types = GRADE_TYPES[grade] || GRADE_TYPES[1];
+  var validType = types.indexOf(currentType) !== -1 ? currentType : "";
+  typeSelect.innerHTML = getTypeOptions(grade, validType);
+  updateMixedVisibility(entryDiv);
+}
+
+function readEntry(div) {
+  var typeVal = div.querySelector('[name="problemType"]') ? div.querySelector('[name="problemType"]').value : "";
+  var grade2  = div.querySelector('[name="grade"]') ? parseInt(div.querySelector('[name="grade"]').value)||1 : 1;
+  var mixedTypes = null;
+  if (typeVal === "mixed") {
+    mixedTypes = getMixedPoolFromEntry(div, grade2);
+  }
+  var type = div.querySelector('[name="problemType"]').value;
+  var fracOps = type === "fractions" ? getSelectedOps(div, "fractions") : null;
+  var decOps  = type === "decimals"  ? getSelectedOps(div, "decimals")  : null;
+  return {
+    name:       div.querySelector('[name="studentName"]').value.trim(),
+    number:     div.querySelector('[name="studentNumber"]').value.trim(),
+    grade:      div.querySelector('[name="grade"]').value,
+    type:       type,
+    count:      div.querySelector('[name="count"]').value,
+    mixedTypes: mixedTypes,
+    fracOps:    fracOps,
+    decOps:     decOps
+  };
+}
+
+function createStudentEntry(index, data) {
+  data = data || {};
+  var name  = data.name   || "";
+  var number = data.number || "";
+  var grade = data.grade  || "";
+  var type  = data.type   || "";
+  var count = data.count  || "";
+  var mixedTypes = data.mixedTypes || null;
   var div = document.createElement("div");
-  div.className = "student-entry";
+  div.className = "mwg-student-entry";
+  div.setAttribute("data-entry-id", ++entryIdCounter);
   div.innerHTML =
-    '<div class="student-entry-header">' +
+    '<div class="mwg-student-entry-header">' +
       '<h3>Student ' + index + '</h3>' +
-      '<div class="student-entry-actions">' +
-        '<button type="button" class="duplicate-student-link">Duplicate student</button>' +
-        '<button type="button" class="delete-student-link">Delete student</button>' +
+      '<div class="mwg-student-entry-actions">' +
+        '<button type="button" class="mwg-duplicate-link">Duplicate student</button>' +
+        '<button type="button" class="mwg-delete-link">Delete student</button>' +
       '</div>' +
     '</div>' +
-    '<div class="student-grid">' +
-      '<div><label>Student Name</label><input type="text" name="studentName" value="' + nameValue + '" /></div>' +
-      '<div><label>Student Number</label><input type="text" name="studentNumber" value="' + numberValue + '" /></div>' +
-      '<div><label>Level</label><select name="level">' + getLevelOptions(levelValue) + '</select></div>' +
+    '<div class="mwg-student-grid">' +
+      '<div><label>Student Name</label><input type="text" name="studentName" value="' + esc(name) + '" /></div>' +
+      '<div><label>Student Number</label><input type="text" name="studentNumber" value="' + esc(number) + '" /></div>' +
+      '<div><label>Grade Level</label><select name="grade">' + getGradeOptions(grade) + '</select></div>' +
+      '<div><label>Problem Type</label><select name="problemType">' + getTypeOptions(parseInt(grade)||0, type) + '</select></div>' +
+      '<div><label>Problem Count</label><select name="count">' + getCountOptions(count, isHorizType(type)) + '</select></div>' +
+      '<div class="mwg-ops-panel" id="ops-' + entryIdCounter + '"></div>' +
+      '<div class="mwg-mixed-types"></div>' +
     '</div>';
-
-  var deleteButton = div.querySelector(".delete-student-link");
-  deleteButton.addEventListener("click", function () {
+  var gradeSelect = div.querySelector('[name="grade"]');
+  var typeSelect  = div.querySelector('[name="problemType"]');
+  gradeSelect.addEventListener("change", function() { updateTypeOptionsForGrade(div); });
+  typeSelect.addEventListener("change",  function() { updateMixedVisibility(div); updateOpsPanel(div); });
+  if (type === "mixed" && mixedTypes) {
+    updateMixedVisibility(div);
+    setTimeout(function() { renderMixedCheckboxes(div, parseInt(grade)||1, mixedTypes); }, 0);
+  } else {
+    updateMixedVisibility(div);
+  }
+  updateOpsPanel(div);
+  if (data.fracOps || data.decOps) {
+    setTimeout(function() { renderOpsPanel(div, type, data.fracOps, data.decOps); }, 0);
+  }
+  div.querySelector(".mwg-delete-link").addEventListener("click", function() {
     div.parentNode.removeChild(div);
-    if (!studentsContainer.querySelector(".student-entry")) {
-      buildDefaultStudents();
-    } else {
-      refreshStudentNumbers();
-      updateStudentCounter();
-    }
-    clearStatusMessages();
+    if (!studentsContainer.querySelector(".mwg-student-entry")) buildDefaultStudents();
+    else refreshNumbers();
+    clearStatus();
   });
-
-  var duplicateButton = div.querySelector(".duplicate-student-link");
-  duplicateButton.addEventListener("click", function () {
-    var name   = div.querySelector('input[name="studentName"]').value.trim();
-    var number = div.querySelector('input[name="studentNumber"]').value.trim();
-    var level  = div.querySelector('select[name="level"]').value;
-    var newNumber = number;
-    if (!isNaN(number) && number !== "") {
-      newNumber = String(parseInt(number, 10) + 1);
-    }
-    var newEntry = createStudentEntry(
-      studentsContainer.querySelectorAll(".student-entry").length + 1,
-      { name: name, number: newNumber, level: level }
-    );
+  div.querySelector(".mwg-duplicate-link").addEventListener("click", function() {
+    var dupData = readEntry(div);
+    var newNum = dupData.number;
+    if (!isNaN(newNum) && newNum !== "") newNum = String(parseInt(newNum) + 1);
+    dupData.number = newNum;
+    var newEntry = createStudentEntry(studentsContainer.querySelectorAll(".mwg-student-entry").length + 1, dupData);
     div.parentNode.insertBefore(newEntry, div.nextSibling);
-    refreshStudentNumbers();
-    clearStatusMessages();
+    refreshNumbers();
+    clearStatus();
   });
-
   return div;
 }
 
-function refreshStudentNumbers() {
-  var entries = studentsContainer.querySelectorAll(".student-entry");
-  for (var i = 0; i < entries.length; i++) {
-    entries[i].querySelector("h3").textContent = "Student " + (i + 1);
-  }
-  updateStudentCounter();
+function refreshNumbers() {
+  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
+  for (var i = 0; i < entries.length; i++) entries[i].querySelector("h3").textContent = "Student " + (i + 1);
+  updateCounter();
 }
 
-function addStudent(studentData) {
-  var count = studentsContainer.querySelectorAll(".student-entry").length + 1;
-  studentsContainer.appendChild(createStudentEntry(count, studentData));
-  updateStudentCounter();
+function updateCounter() {
+  studentCounter.textContent = "Students: " + studentsContainer.querySelectorAll(".mwg-student-entry").length;
+}
+
+function getNextStudentNumber() {
+  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
+  if (!entries.length) return "";
+  var lastNum = entries[entries.length - 1].querySelector('[name="studentNumber"]').value.trim();
+  if (lastNum !== "" && !isNaN(lastNum)) return String(parseInt(lastNum, 10) + 1);
+  return "";
+}
+
+function addStudent(data) {
+  var n = studentsContainer.querySelectorAll(".mwg-student-entry").length + 1;
+  if (!data) data = {};
+  if (!data.number && data.number !== 0) data.number = getNextStudentNumber();
+  studentsContainer.appendChild(createStudentEntry(n, data));
+  updateCounter();
 }
 
 function buildDefaultStudents() {
   studentsContainer.innerHTML = "";
-  for (var i = 1; i <= 3; i++) {
-    studentsContainer.appendChild(createStudentEntry(i));
-  }
-  updateStudentCounter();
+  for (var i = 1; i <= 3; i++) studentsContainer.appendChild(createStudentEntry(i));
+  updateCounter();
 }
 
 function setInputMode(mode) {
   inputMode = mode === "advanced" ? "advanced" : "standard";
   if (inputMode === "advanced") {
-    standardInputSection.style.display = "none";
-    advancedInputSection.style.display = "block";
-    modeIndicator.textContent = "Advanced Input";
-    toggleInputModeButton.textContent = "Back to Standard Input";
-    addStudentButton.style.display = "none";
-    if (generateAdvancedCodeButton) generateAdvancedCodeButton.style.display = "none";
+    standardSection.style.display = "none";
+    advancedSection.style.display = "block";
+    modeIndicator.textContent     = "Advanced Input";
+    toggleModeBtn.textContent     = "Back to Standard Input";
+    addStudentBtn.style.display   = "none";
+    genCodeBtn.style.display      = "none";
+    fillDownBtn.style.display     = "none";
   } else {
-    standardInputSection.style.display = "block";
-    advancedInputSection.style.display = "none";
-    modeIndicator.textContent = "Standard Input";
-    toggleInputModeButton.textContent = "Advanced Input";
-    addStudentButton.style.display = "inline-block";
-    if (generateAdvancedCodeButton) generateAdvancedCodeButton.style.display = "inline-block";
+    standardSection.style.display = "block";
+    advancedSection.style.display = "none";
+    modeIndicator.textContent     = "Standard Input";
+    toggleModeBtn.textContent     = "Advanced Input";
+    addStudentBtn.style.display   = "inline-block";
+    genCodeBtn.style.display      = "inline-block";
+    fillDownBtn.style.display     = "inline-block";
   }
 }
 
-function clearErrors() { errors.innerHTML = ""; }
-function clearStatusMessages() {
-  statusMessages.innerHTML = "";
-  if (mmValidationBox) mmValidationBox.style.display = "none";
+function collectRoster() {
+  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
+  var result = [];
+  for (var i = 0; i < entries.length; i++) result.push(readEntry(entries[i]));
+  return result;
 }
 
-function showErrors(errorList) {
-  if (!errorList || !errorList.length) { errors.innerHTML = ""; return; }
-  var box = document.createElement("div");
-  box.className = "error-box";
-  box.textContent = "Some entries were skipped:\n\n" + errorList.join("\n");
-  errors.innerHTML = "";
-  errors.appendChild(box);
+function saveRoster() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      inputMode: inputMode,
+      worksheetsPerStudent: worksheetsPerStudent.value,
+      answerKey: answerKeyToggle.checked,
+      advancedInput: advancedBox.value,
+      students: collectRoster()
+    }));
+    clearErrors(); showSuccess("Roster saved.");
+  } catch(e) { showNotice("Unable to save roster in this browser."); }
 }
 
-function showNotice(message) {
-  var box = document.createElement("div");
-  box.className = "notice-box";
-  box.textContent = message;
-  statusMessages.innerHTML = "";
-  statusMessages.appendChild(box);
+function loadRoster() {
+  var raw;
+  try { raw = localStorage.getItem(STORAGE_KEY); } catch(e) { buildDefaultStudents(); return; }
+  if (!raw) { buildDefaultStudents(); return; }
+  try {
+    var saved = JSON.parse(raw);
+    applyRoster(saved.students || []);
+    advancedBox.value          = saved.advancedInput        || "";
+    worksheetsPerStudent.value = saved.worksheetsPerStudent || "1";
+    answerKeyToggle.checked    = saved.answerKey            || false;
+    setInputMode(saved.inputMode || "standard");
+    showSuccess("Saved roster loaded.");
+  } catch(e) { buildDefaultStudents(); }
 }
 
-function showSuccess(message) {
-  var box = document.createElement("div");
-  box.className = "success-box";
-  box.textContent = message;
-  statusMessages.innerHTML = "";
-  statusMessages.appendChild(box);
+function applyRoster(students) {
+  studentsContainer.innerHTML = "";
+  if (!students || !students.length) { buildDefaultStudents(); return; }
+  for (var i = 0; i < students.length; i++) studentsContainer.appendChild(createStudentEntry(i + 1, students[i]));
+  refreshNumbers();
 }
 
-function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+function clearCurrentRoster() {
+  if (!window.confirm("Clear the current roster?")) return;
+  setInputMode("standard");
+  studentsContainer.innerHTML = "";
+  buildDefaultStudents();
+  advancedBox.value = "";
+  resultsDiv.innerHTML = "";
+  clearErrors(); showSuccess("Current roster cleared.");
 }
 
-function getLevelMeta(level) {
-  var meta = {
-    1:  { description: "Thirty addition facts, sums less than ten",         rowsClass: "rows-3" },
-    2:  { description: "Thirty addition facts, sums through twenty",        rowsClass: "rows-3" },
-    3:  { description: "Thirty subtraction facts, numbers through ten",     rowsClass: "rows-3" },
-    4:  { description: "Thirty subtraction facts, numbers through twenty",  rowsClass: "rows-3" },
-    5:  { description: "Forty addition facts",                              rowsClass: "rows-4" },
-    6:  { description: "Forty subtraction facts",                           rowsClass: "rows-4" },
-    7:  { description: "Fifty addition facts",                              rowsClass: "rows-5" },
-    8:  { description: "Fifty subtraction facts",                           rowsClass: "rows-5" },
-    9:  { description: "Sixty addition facts",                              rowsClass: "rows-6" },
-    10: { description: "Sixty subtraction facts",                           rowsClass: "rows-6" },
-    11: { description: "Thirty easy multiplication facts",                  rowsClass: "rows-3" },
-    12: { description: "Thirty hard multiplication facts",                  rowsClass: "rows-3" },
-    13: { description: "Forty multiplication facts",                        rowsClass: "rows-4" },
-    14: { description: "Fifty multiplication facts",                        rowsClass: "rows-5" },
-    15: { description: "Sixty multiplication facts",                        rowsClass: "rows-6" },
-    16: { description: "Thirty easy division facts",                        rowsClass: "rows-3" },
-    17: { description: "Thirty hard division facts",                        rowsClass: "rows-3" },
-    18: { description: "Forty division facts",                              rowsClass: "rows-4" },
-    19: { description: "Fifty division facts",                              rowsClass: "rows-5" },
-    20: { description: "Sixty division facts",                              rowsClass: "rows-6" },
-    21: { description: "Mixed facts: addition, subtraction, multiplication, division", rowsClass: "rows-4" }
-  };
-  return meta[level] || { description: "Math facts", rowsClass: "rows-3" };
+function clearSavedRoster() {
+  if (!window.confirm("Clear the saved roster?")) return;
+  try { localStorage.removeItem(STORAGE_KEY); showSuccess("Saved roster cleared."); }
+  catch(e) { showNotice("Unable to clear saved roster."); }
 }
 
-function generateAdditionProblems(maxSum, count, allowZero) {
-  var problems = [];
-  while (problems.length < count) {
-    var a = randomInt(allowZero ? 0 : 1, 9);
-    var b = randomInt(allowZero ? 0 : 1, 9);
-    if (a + b <= maxSum) problems.push({ kind: "stack", operator: "+", a: a, b: b, answer: a + b });
+function buildAdvancedCode() {
+  var roster = collectRoster();
+  var lines = [];
+  for (var i = 0; i < roster.length; i++) {
+    var s = roster[i];
+    if (!s.name || !s.grade || !s.type || !s.count) continue;
+    var type = s.type;
+    if (type === "mixed" && s.mixedTypes && s.mixedTypes.length) type = "mixed[" + s.mixedTypes.join("|") + "]";
+    if (type === "fractions" && s.fracOps && s.fracOps.length) type = "fractions[" + s.fracOps.join("|") + "]";
+    if (type === "decimals" && s.decOps && s.decOps.length) type = "decimals[" + s.decOps.join("|") + "]";
+    lines.push([s.name, s.number || "", type, s.count, s.grade].join(", ") + ";");
   }
-  return problems;
+  return lines.join("\n");
 }
 
-function generateSubtractionProblems(maxTop, count) {
-  var problems = [];
-  while (problems.length < count) {
-    var a = randomInt(1, maxTop);
-    var b = randomInt(0, a);
-    problems.push({ kind: "stack", operator: "\u2212", a: a, b: b, answer: a - b });
-  }
-  return problems;
-}
-function generateSubtractionProblemsTeens(count) {
-  var problems = [];
-  while (problems.length < count) {
-    var a = randomInt(10, 18);
-    var b = randomInt(1, a);
-    problems.push({ kind: "stack", operator: "\u2212", a: a, b: b, answer: a - b });
-  }
-  return problems;
+function openCodeModal() {
+  var code = buildAdvancedCode();
+  if (!code.trim()) { showNotice("Add at least one complete student before generating code."); return; }
+  codeOutput.value = code;
+  codePanel.style.display = "block";
+  codePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
-function generateMultiplicationProblems(minFactor, maxFactor, count, allowZero) {
-  var problems = [];
-  while (problems.length < count) {
-    var a = randomInt(allowZero ? 0 : 1, 9);
-    var b = randomInt(Math.max(minFactor, 1), maxFactor);
-    if (a * b <= 100) problems.push({ kind: "stack", operator: "\u00d7", a: a, b: b, answer: a * b });
-  }
-  return problems;
-}
-
-function generateDivisionProblems(minDivisor, maxDivisor, count) {
-  var problems = [];
-  while (problems.length < count) {
-    var divisor  = randomInt(minDivisor, maxDivisor);
-    var quotient = randomInt(1, 10);
-    problems.push({ kind: "division", divisor: divisor, dividend: divisor * quotient, answer: quotient });
-  }
-  return problems;
-}
-
-function generateMixedProblems() {
-  return [].concat(
-    generateAdditionProblems(18, 10, true),
-    generateSubtractionProblemsTeens(10),
-    generateMultiplicationProblems(0, 9, 10, true),
-    generateDivisionProblems(1, 9, 10)
-  );
-}
-
-function generateProblemsForLevel(level) {
-  switch (level) {
-    case 1:  return generateAdditionProblems(9, 30, true);
-    case 2:  return generateAdditionProblems(18, 30, false);
-    case 3:  return generateSubtractionProblems(10, 30);
-    case 4:  return generateSubtractionProblemsTeens(30);
-    case 5:  return generateAdditionProblems(18, 40, true);
-    case 6:  return generateSubtractionProblemsTeens(40);
-    case 7:  return generateAdditionProblems(18, 50, true);
-    case 8:  return generateSubtractionProblemsTeens(50);
-    case 9:  return generateAdditionProblems(18, 60, true);
-    case 10: return generateSubtractionProblemsTeens(60);
-    case 11: return generateMultiplicationProblems(0, 5, 30, true);
-    case 12: return generateMultiplicationProblems(6, 9, 30, false);
-    case 13: return generateMultiplicationProblems(0, 9, 40, true);
-    case 14: return generateMultiplicationProblems(0, 9, 50, true);
-    case 15: return generateMultiplicationProblems(0, 9, 60, true);
-    case 16: return generateDivisionProblems(1, 5, 30);
-    case 17: return generateDivisionProblems(6, 9, 30);
-    case 18: return generateDivisionProblems(1, 9, 40);
-    case 19: return generateDivisionProblems(1, 9, 50);
-    case 20: return generateDivisionProblems(1, 9, 60);
-    case 21: return generateMixedProblems();
-    default: return [];
-  }
-}
-
-function renderProblem(problem) {
-  if (problem.kind === "stack") {
-    return '<div class="problem-cell">' +
-      '<div class="problem-stack">' +
-        '<span class="problem-top">' + problem.a + '</span>' +
-        '<div class="problem-bottom-line">' +
-          '<span class="problem-operator">' + problem.operator + '</span>' +
-          '<span class="problem-bottom">' + problem.b + '</span>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }
-  if (problem.kind === "division") {
-    return '<div class="problem-cell">' +
-      '<div class="division-problem">' +
-        '<span class="division-divisor">' + problem.divisor + '</span>' +
-        '<div class="division-bracket">' +
-          '<span class="division-dividend">' + problem.dividend + '</span>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }
-  return '<div class="problem-cell"></div>';
-}
-
-function createWorksheet(name, number, level, problems, isLast, setNumber, setTotal) {
-  var worksheet = document.createElement("div");
-  worksheet.className = "worksheet" + (isLast ? "" : " print-break");
-  var safeName   = name   || "";
-  var safeNumber = number || "";
-  var meta       = getLevelMeta(level);
-  var setLabel   = setTotal > 1 ? "Worksheet " + setNumber + " of " + setTotal : "";
-  var problemsHtml = "";
-  for (var i = 0; i < problems.length; i++) {
-    problemsHtml += renderProblem(problems[i]);
-  }
-  worksheet.innerHTML =
-    '<div class="worksheet-header">' +
-      '<div class="worksheet-header-main">' +
-        '<div class="student-field">' +
-          '<span class="student-field-label">Student Name</span>' +
-          '<span class="student-field-value">' + escapeHtml(safeName) + '</span>' +
-        '</div>' +
-        '<div class="student-field">' +
-          '<span class="student-field-label">Number</span>' +
-          '<span class="student-field-value">' + escapeHtml(safeNumber) + '</span>' +
-        '</div>' +
-        '<div class="description-box">' +
-          '<span class="description-text">' + escapeHtml(meta.description) + '</span>' +
-          (setLabel ? '<span class="worksheet-set-label">' + escapeHtml(setLabel) + '</span>' : '') +
-          '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="worksheet-body">' +
-      '<div class="problems-grid ' + meta.rowsClass + '">' +
-        problemsHtml +
-      '</div>' +
-    '</div>';
-  return worksheet;
-}
-
-function getStudentsFromStandardInput() {
-  var students = [];
-  var entries  = studentsContainer.querySelectorAll(".student-entry");
-  for (var i = 0; i < entries.length; i++) {
-    var entry      = entries[i];
-    var name       = entry.querySelector('input[name="studentName"]').value.trim();
-    var number     = entry.querySelector('input[name="studentNumber"]').value.trim();
-    var levelValue = entry.querySelector('select[name="level"]').value;
-    if (!name && !number && !levelValue) continue;
-    if (!name || !levelValue) continue;
-    students.push({ name: name, number: number, level: parseInt(levelValue, 10) });
-  }
-  return { students: students, errors: [] };
-}
-
-function getStudentsFromAdvancedInput() {
-  var raw = advancedInputBox.value.trim();
-  var parsedStudents = [], parseErrors = [];
-  if (!raw) return { students: [], errors: [] };
-  var normalized = raw.replace(/\n+/g, ";");
-  var chunks = normalized.split(";");
+function parseAdvancedInput() {
+  var raw = advancedBox.value.trim();
+  var students = [], errors = [];
+  if (!raw) return { students: students, errors: errors };
+  var chunks = raw.replace(/\n+/g, ";").split(";");
   for (var i = 0; i < chunks.length; i++) {
     var entry = chunks[i].trim();
     if (!entry) continue;
     var parts = entry.split(",");
     for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
-    if (parts.length !== 3) { parseErrors.push('Entry ' + (i+1) + ' is invalid: "' + entry + '"'); continue; }
-    var name   = parts[0];
-    var number = parts[1];
-    var level  = parseInt(parts[2], 10);
-    if (!name) { parseErrors.push('Entry ' + (i+1) + ' is missing a student name: "' + entry + '"'); continue; }
-    if (!parts[2] || isNaN(level) || level < 1 || level > 21) {
-      parseErrors.push('Entry ' + (i+1) + ' has an invalid level (must be 1-21): "' + entry + '"'); continue;
+    if (parts.length !== 5) { errors.push("Entry " + (i+1) + " needs 5 fields: " + entry); continue; }
+    var grade = parseInt(parts[4]);
+    if (isNaN(grade) || grade < 1 || grade > 8) { errors.push("Entry " + (i+1) + " invalid grade: " + entry); continue; }
+    var count = parseInt(parts[3]);
+    if (VALID_COUNTS.indexOf(count) === -1) { errors.push("Entry " + (i+1) + " invalid count: " + entry); continue; }
+    var type = parts[2], mixedTypes = null, fracOps = null, decOps = null;
+    var mixedMatch = type.match(/^mixed\[([^\]]+)\]$/);
+    if (mixedMatch) {
+      type = "mixed";
+      mixedTypes = mixedMatch[1].split("|");
+      for (var m = 0; m < mixedTypes.length; m++) mixedTypes[m] = mixedTypes[m].trim();
     }
-    parsedStudents.push({ name: name, number: number, level: level });
+    var fracMatch = type.match(/^fractions\[([^\]]+)\]$/);
+    if (fracMatch) {
+      type = "fractions";
+      fracOps = fracMatch[1].split("|");
+      for (var m = 0; m < fracOps.length; m++) fracOps[m] = fracOps[m].trim();
+    }
+    var decMatch = type.match(/^decimals\[([^\]]+)\]$/);
+    if (decMatch) {
+      type = "decimals";
+      decOps = decMatch[1].split("|");
+      for (var m = 0; m < decOps.length; m++) decOps[m] = decOps[m].trim();
+    }
+    var validTypes = GRADE_TYPES[grade] || [];
+    if (validTypes.indexOf(type) === -1) { errors.push("Entry " + (i+1) + " invalid type for grade " + grade + ": " + type); continue; }
+    students.push({ name: parts[0], number: parts[1], grade: grade, type: type, count: count, mixedTypes: mixedTypes, fracOps: fracOps, decOps: decOps });
   }
-  return { students: parsedStudents, errors: parseErrors };
+  return { students: students, errors: errors };
 }
 
-function collectStandardRoster() {
+function getStudentsFromStandard() {
   var students = [];
-  var entries  = studentsContainer.querySelectorAll(".student-entry");
+  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
   for (var i = 0; i < entries.length; i++) {
-    var entry = entries[i];
-    students.push({
-      name:   entry.querySelector('input[name="studentName"]').value.trim(),
-      number: entry.querySelector('input[name="studentNumber"]').value.trim(),
-      level:  entry.querySelector('select[name="level"]').value
-    });
+    var d = readEntry(entries[i]);
+    if (!d.name && !d.grade && !d.type && !d.count) continue;
+    if (!d.name || !d.grade || !d.type || !d.count) continue;
+    students.push({ name: d.name, number: d.number, grade: parseInt(d.grade), type: d.type, count: parseInt(d.count), mixedTypes: d.mixedTypes, fracOps: d.fracOps, decOps: d.decOps });
   }
-  return students;
+  return { students: students, errors: [] };
 }
 
-function buildAdvancedCodeFromStandardRoster() {
-  var roster = collectStandardRoster();
-  var lines  = [];
-  for (var i = 0; i < roster.length; i++) {
-    var s = roster[i];
-    if (s.name && s.level) {
-      lines.push(s.name.trim() + ", " + (s.number || "").trim() + ", " + s.level + ";");
+// ══════════════════════════════════════
+// PROBLEM GENERATORS
+// ══════════════════════════════════════
+
+function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+function fractionStr(n, d) { var g = gcd(Math.abs(n), Math.abs(d)); return (n/g) + "/" + (d/g); }
+function fracHtml(n, d) {
+  return '<span class="mwg-fraction"><span class="mwg-fraction-num">' + n + '</span><span class="mwg-fraction-den">' + d + '</span></span>';
+}
+
+// Determine if a type needs wider problem cells (levels 3-5)
+function isWideType(type) {
+  return ["add3","add4","add5","sub3","sub4","sub5","mul3","mul4","mul5","div3","div4","div5"].indexOf(type) !== -1;
+}
+
+function stackHtml(op, a, b, wide) {
+  var width = wide ? "1.1in" : "0.75in";
+  var fontSize = wide ? "18px" : "20px";
+  return '<div class="mwg-problem-cell"><div class="mwg-problem-stack" style="width:' + width + ';font-size:' + fontSize + '">' +
+    '<span class="mwg-problem-top">' + a + '</span>' +
+    '<div class="mwg-problem-bottom-line">' +
+      '<span class="mwg-problem-operator">' + op + '</span>' +
+      '<span class="mwg-problem-bottom">' + b + '</span>' +
+    '</div>' +
+  '</div></div>';
+}
+
+function divisionHtml(divisor, dividend, wide) {
+  var minWidth = wide ? "1.3in" : "1.02in";
+  return '<div class="mwg-problem-cell">' +
+    '<div class="mwg-division-problem" style="min-width:' + minWidth + ';font-size:' + (wide ? "18px" : "20px") + '">' +
+      '<span class="mwg-division-divisor">' + divisor + '</span>' +
+      '<div class="mwg-division-bracket">' +
+        '<span class="mwg-division-dividend">' + dividend + '</span>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function horizHtml(expr) { return "__HORIZ__" + expr; }
+
+// Addition levels
+function makeAdd1() { var a,b; do{a=rand(0,9);b=rand(0,9);}while(a+b>=10||a+b===0); return {html:stackHtml("+",a,b,false),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
+function makeAdd2() { var a,b; do{a=rand(1,9);b=rand(1,9);}while(a+b<10||a+b>20); return {html:stackHtml("+",a,b,false),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
+function makeAdd3() { var a=rand(10,99),b=rand(1,9); return {html:stackHtml("+",a,b,true),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
+function makeAdd4() { var a=rand(10,99),b=rand(10,99); return {html:stackHtml("+",a,b,true),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
+function makeAdd5() { var a=rand(100,999),b=rand(10,999); return {html:stackHtml("+",a,b,true),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
+
+// Subtraction levels
+function makeSub1() { var a=rand(1,9),b=rand(0,a); return {html:stackHtml("\u2212",a,b,false),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
+function makeSub2() { var a=rand(10,20),b=rand(0,a); return {html:stackHtml("\u2212",a,b,false),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
+function makeSub3() { var a=rand(10,99),b=rand(1,9); return {html:stackHtml("\u2212",a,b,true),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
+function makeSub4() { var a=rand(10,99),b=rand(10,a); return {html:stackHtml("\u2212",a,b,true),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
+function makeSub5() { var a=rand(100,999),b=rand(10,a); return {html:stackHtml("\u2212",a,b,true),answer:a-b,kind:"stack",operator:"\u2212",a:a,b:b}; }
+
+// Multiplication levels
+function makeMul1() { var a=rand(0,5),b=rand(1,9); if(Math.random()<0.5){var t=a;a=b;b=t;} return {html:stackHtml("\u00d7",a,b,false),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
+function makeMul2() { var a=rand(6,9),b=rand(2,9); if(Math.random()<0.5){var t=a;a=b;b=t;} return {html:stackHtml("\u00d7",a,b,false),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
+function makeMul3() { var a=rand(10,99),b=rand(2,9); return {html:stackHtml("\u00d7",a,b,true),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
+function makeMul4() { var a=rand(10,99),b=rand(10,99); return {html:stackHtml("\u00d7",a,b,true),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
+function makeMul5() { var a=rand(100,999),b=rand(2,9); return {html:stackHtml("\u00d7",a,b,true),answer:a*b,kind:"stack",operator:"\u00d7",a:a,b:b}; }
+
+// Division levels
+function makeDiv1() { var d=rand(1,5),q=rand(1,10); return {html:divisionHtml(d,d*q,false),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+function makeDiv2() { var d=rand(6,9),q=rand(1,10); return {html:divisionHtml(d,d*q,false),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+function makeDiv3() { var d=rand(2,9),q=rand(10,99); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+function makeDiv4() {
+  var d=rand(2,9),q=rand(10,99),r=rand(1,d-1);
+  var dividend=d*q+r;
+  return {html:divisionHtml(d,dividend,true),answer:q+" r"+r,kind:"division",divisor:d,dividend:dividend};
+}
+function makeDiv5() { var d=rand(2,9),qMax=Math.floor(999/d),q=rand(Math.max(100,Math.floor(100/d)),qMax); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+
+function makeFractions(grade) {
+  var d=rand(2,9),a=rand(1,d-1),b=rand(1,d-1);
+  var ops=grade<=5?["+","\u2212"]:["+","\u2212","\u00d7"];
+  var op=randFrom(ops);
+  if(op==="+") return {html:horizHtml(fracHtml(a,d)+" + "+fracHtml(b,d)+" ="),answer:fractionStr(a+b,d),kind:"horiz"};
+  if(op==="\u2212"){if(a<b){var t=a;a=b;b=t;} return {html:horizHtml(fracHtml(a,d)+" \u2212 "+fracHtml(b,d)+" ="),answer:fractionStr(a-b,d),kind:"horiz"};}
+  return {html:horizHtml(fracHtml(a,d)+" \u00d7 "+fracHtml(b,d)+" ="),answer:fractionStr(a*b,d*d),kind:"horiz"};
+}
+function makeDecimals(grade) {
+  var pl=grade<=5?1:2,factor=Math.pow(10,pl);
+  var a=(rand(1,99*factor))/factor,b=(rand(1,99*factor))/factor;
+  var op=randFrom(["+","\u2212"]);
+  if(op==="+") return {html:horizHtml(a+" + "+b+" ="),answer:+(a+b).toFixed(pl),kind:"horiz"};
+  var hi=Math.max(a,b),lo=Math.min(a,b);
+  return {html:horizHtml(hi+" \u2212 "+lo+" ="),answer:+(hi-lo).toFixed(pl),kind:"horiz"};
+}
+function makeFracAdd() {
+  var d=rand(2,12),a=rand(1,d-1),b=rand(1,d-1);
+  return {html:horizHtml(fracHtml(a,d)+" + "+fracHtml(b,d)+" ="),answer:fractionStr(a+b,d),kind:"horiz"};
+}
+function makeFracSub() {
+  var d=rand(2,12),a=rand(1,d-1),b=rand(1,d-1);
+  if(a<b){var t=a;a=b;b=t;}
+  return {html:horizHtml(fracHtml(a,d)+" − "+fracHtml(b,d)+" ="),answer:fractionStr(a-b,d),kind:"horiz"};
+}
+function makeFracMul() {
+  var d1=rand(2,9),n1=rand(1,d1-1),d2=rand(2,9),n2=rand(1,d2-1);
+  return {html:horizHtml(fracHtml(n1,d1)+" × "+fracHtml(n2,d2)+" ="),answer:fractionStr(n1*n2,d1*d2),kind:"horiz"};
+}
+function makeFracDivF() {
+  var d1=rand(2,9),n1=rand(1,d1-1),d2=rand(2,9),n2=rand(1,d2-1);
+  return {html:horizHtml(fracHtml(n1,d1)+" ÷ "+fracHtml(n2,d2)+" ="),answer:fractionStr(n1*d2,d1*n2),kind:"horiz"};
+}
+function makeFracDivW() {
+  var d=rand(2,9),n=rand(1,d-1),w=rand(2,9);
+  return {html:horizHtml(fracHtml(n,d)+" ÷ "+w+" ="),answer:fractionStr(n,d*w),kind:"horiz"};
+}
+function makeDecAdd() {
+  var pl=rand(1,2),f=Math.pow(10,pl);
+  var a=Math.round(rand(10,99*f))/f,b=Math.round(rand(10,99*f))/f;
+  return {html:horizHtml(a.toFixed(pl)+" + "+b.toFixed(pl)+" ="),answer:parseFloat((a+b).toFixed(pl)),kind:"horiz"};
+}
+function makeDecSub() {
+  var pl=rand(1,2),f=Math.pow(10,pl);
+  var a=Math.round(rand(10,99*f))/f,b=Math.round(rand(10,99*f))/f;
+  var hi=Math.max(a,b),lo=Math.min(a,b);
+  return {html:horizHtml(hi.toFixed(pl)+" − "+lo.toFixed(pl)+" ="),answer:parseFloat((hi-lo).toFixed(pl)),kind:"horiz"};
+}
+function makeDecMulW() {
+  var pl=rand(1,2),f=Math.pow(10,pl);
+  var a=Math.round(rand(10,99*f))/f,b=rand(2,9);
+  return {html:horizHtml(a.toFixed(pl)+" × "+b+" ="),answer:parseFloat((a*b).toFixed(pl)),kind:"horiz"};
+}
+function makeDecMulD() {
+  var a=Math.round(rand(10,99))/10,b=Math.round(rand(10,99))/10;
+  return {html:horizHtml(a.toFixed(1)+" × "+b.toFixed(1)+" ="),answer:parseFloat((a*b).toFixed(2)),kind:"horiz"};
+}
+function makeDecDivW() {
+  var b=rand(2,9),pl=rand(1,2),f=Math.pow(10,pl);
+  var q=Math.round(rand(10,99*f))/f;
+  var a=parseFloat((q*b).toFixed(pl));
+  return {html:horizHtml(a.toFixed(pl)+" ÷ "+b+" ="),answer:q,kind:"horiz"};
+}
+function makeDecDivD() {
+  var b=Math.round(rand(11,99))/10,q=rand(2,9);
+  var a=parseFloat((b*q).toFixed(2));
+  return {html:horizHtml(a.toFixed(2)+" ÷ "+b.toFixed(1)+" ="),answer:q,kind:"horiz"};
+}
+function makeRounding(grade) {
+  var places=[10,100];
+  if(grade>=5) places.push(1000);
+  var place=randFrom(places),max=grade<=4?999:9999,n=rand(1,max);
+  var label=place===10?"tens":place===100?"hundreds":"thousands";
+  return {html:horizHtml("Round "+n+" to nearest "+label),answer:Math.round(n/place)*place,kind:"horiz"};
+}
+function makeLongDiv(grade) {
+  var d=rand(2,grade<=5?9:12),q=rand(10,grade<=5?99:999);
+  return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q};
+}
+function makeOOO() {
+  var a=rand(1,9),b=rand(1,9),c=rand(1,9);
+  var patterns=[
+    {expr:a+" + "+b+" \u00d7 "+c,ans:a+b*c},
+    {expr:"("+a+" + "+b+") \u00d7 "+c,ans:(a+b)*c},
+    {expr:a+" \u00d7 "+b+" + "+c,ans:a*b+c},
+    {expr:a+" \u00d7 ("+b+" + "+c+")",ans:a*(b+c)}
+  ];
+  var p=randFrom(patterns);
+  return {html:horizHtml(p.expr+" ="),answer:p.ans,kind:"horiz"};
+}
+function makeIntegers(grade) {
+  var max=grade<=7?20:50,a=rand(-max,max),b=rand(-max,max);
+  var op=randFrom(["+","\u2212"]);
+  return {html:horizHtml(a+" "+op+" ("+b+") ="),answer:op==="+"?a+b:a-b,kind:"horiz"};
+}
+function makeExponents() {
+  if(Math.random()<0.5){var base=rand(2,9),exp=rand(2,3);return {html:horizHtml(base+"<sup>"+exp+"</sup> ="),answer:Math.pow(base,exp),kind:"horiz"};}
+  var root=rand(1,12);return {html:horizHtml("\u221a"+(root*root)+" ="),answer:root,kind:"horiz"};
+}
+function makeSciNote() {
+  var coeff=(rand(10,99)/10).toFixed(1),exp=rand(2,6),val=parseFloat(coeff)*Math.pow(10,exp);
+  if(Math.random()<0.5) return {html:horizHtml(val.toLocaleString()+" = ? \u00d7 10<sup>?</sup>"),answer:coeff+" x 10^"+exp,kind:"horiz"};
+  return {html:horizHtml(coeff+" \u00d7 10<sup>"+exp+"</sup> ="),answer:val.toLocaleString(),kind:"horiz"};
+}
+
+function makeProblem(type, grade) {
+  switch(type) {
+    case "add1": return makeAdd1();
+    case "add2": return makeAdd2();
+    case "add3": return makeAdd3();
+    case "add4": return makeAdd4();
+    case "add5": return makeAdd5();
+    case "sub1": return makeSub1();
+    case "sub2": return makeSub2();
+    case "sub3": return makeSub3();
+    case "sub4": return makeSub4();
+    case "sub5": return makeSub5();
+    case "mul1": return makeMul1();
+    case "mul2": return makeMul2();
+    case "mul3": return makeMul3();
+    case "mul4": return makeMul4();
+    case "mul5": return makeMul5();
+    case "div1": return makeDiv1();
+    case "div2": return makeDiv2();
+    case "div3": return makeDiv3();
+    case "div4": return makeDiv4();
+    case "div5": return makeDiv5();
+    case "fractions":          return makeFractions(grade);
+    case "fractions-add":      return makeFracAdd();
+    case "fractions-sub":      return makeFracSub();
+    case "fractions-mul":      return makeFracMul();
+    case "fractions-divf":     return makeFracDivF();
+    case "fractions-divw":     return makeFracDivW();
+    case "decimals":           return makeDecimals(grade);
+    case "decimals-add":       return makeDecAdd();
+    case "decimals-sub":       return makeDecSub();
+    case "decimals-mulw":      return makeDecMulW();
+    case "decimals-muld":      return makeDecMulD();
+    case "decimals-divw":      return makeDecDivW();
+    case "decimals-divd":      return makeDecDivD();
+    case "rounding":           return makeRounding(grade);
+    case "longdivision":       return makeLongDiv(grade);
+    case "orderofoperations":  return makeOOO();
+    case "integers":           return makeIntegers(grade);
+    case "exponents":          return makeExponents();
+    case "scientificnotation": return makeSciNote();
+    default: return makeAdd1();
+  }
+}
+
+function generateProblems(type, count, grade, mixedTypes, fracOps, decOps) {
+  var horizTypes = ["fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"];
+  if (horizTypes.indexOf(type) !== -1 && count > 30) count = 30;
+  var problems = [];
+  if (type === "fractions" && fracOps && fracOps.length) {
+    if (count > 30) count = 30;
+    for (var i = 0; i < count; i++) problems.push(makeProblem(fracOps[i % fracOps.length], grade));
+  } else if (type === "decimals" && decOps && decOps.length) {
+    if (count > 30) count = 30;
+    for (var i = 0; i < count; i++) problems.push(makeProblem(decOps[i % decOps.length], grade));
+  } else if (type === "mixed") {
+    var pool = (mixedTypes && mixedTypes.length) ? mixedTypes : getMixedTypesForGrade(grade);
+    // Expand fractions/decimals in pool using their sub-ops if present
+    var expandedPool = [];
+    for (var h = 0; h < pool.length; h++) {
+      if (pool[h] === "fractions" && fracOps && fracOps.length) {
+        for (var fo = 0; fo < fracOps.length; fo++) expandedPool.push(fracOps[fo]);
+      } else if (pool[h] === "decimals" && decOps && decOps.length) {
+        for (var fo = 0; fo < decOps.length; fo++) expandedPool.push(decOps[fo]);
+      } else {
+        expandedPool.push(pool[h]);
+      }
     }
+    pool = expandedPool;
+    var poolHasHoriz = false;
+    for (var h = 0; h < pool.length; h++) { if (horizTypes.indexOf(pool[h]) !== -1) { poolHasHoriz = true; break; } }
+    if (poolHasHoriz && count > 30) count = 30;
+    for (var i = 0; i < count; i++) problems.push(makeProblem(pool[i % pool.length], grade));
+    for (var i = problems.length - 1; i > 0; i--) { var j=Math.floor(Math.random()*(i+1)),tmp=problems[i];problems[i]=problems[j];problems[j]=tmp; }
+  } else {
+    for (var i = 0; i < count; i++) problems.push(makeProblem(type, grade));
   }
-  return lines.join("\n");
+  return problems;
 }
 
-function openAdvancedCodeModal() {
-  var output = buildAdvancedCodeFromStandardRoster();
-  if (!output.trim()) { showNotice("Add at least one student with a name and level before generating advanced code."); return; }
-  advancedCodeOutput.value = output;
-  advancedCodePanel.style.display = "block";
-  advancedCodePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+function isMixedHoriz(problems) {
+  for (var i = 0; i < problems.length; i++) { if (String(problems[i].html).indexOf("__HORIZ__") === 0) return true; }
+  return false;
 }
 
-function closeAdvancedCodeModalFn() { advancedCodePanel.style.display = "none"; }
-
-function applyStandardRoster(students) {
-  studentsContainer.innerHTML = "";
-  if (!students || !students.length) { buildDefaultStudents(); return; }
-  for (var i = 0; i < students.length; i++) {
-    studentsContainer.appendChild(createStudentEntry(i + 1, {
-      name:   students[i].name   || "",
-      number: students[i].number || "",
-      level:  students[i].level  || ""
-    }));
+function getGridConfig(count, useHoriz, wide) {
+  if (useHoriz) return { useHoriz: true };
+  // Wide problems (levels 3-5) use fewer columns
+  if (wide) {
+    if (count <= 30) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-6" };
+    if (count <= 40) return { colClass: "mwg-cols-4", rowClass: "mwg-rows-10" };
+    if (count <= 50) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-10" };
+    return { colClass: "mwg-cols-5", rowClass: "mwg-rows-12" };
   }
-  refreshStudentNumbers();
+  if (count === 30) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-6" };
+  if (count === 40) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-8" };
+  if (count === 50) return { colClass: "mwg-cols-5", rowClass: "mwg-rows-10" };
+  if (count === 60) return { colClass: "mwg-cols-6", rowClass: "mwg-rows-10" };
+  return { colClass: "mwg-cols-5", rowClass: "mwg-rows-6" };
 }
 
-function saveRoster() {
-  var payload = {
-    inputMode:            inputMode,
-    worksheetsPerStudent: worksheetsPerStudent.value,
-    advancedInput:        advancedInputBox.value,
-    standardStudents:     collectStandardRoster()
-  };
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    clearErrors();
-    showSuccess("Roster saved.");
-  } catch (error) { showNotice("Unable to save roster in this browser."); }
+function descriptionFor(type, grade, count) {
+  return count + " " + (TYPE_LABELS[type] || type) + " \u2014 Grade " + grade;
 }
 
-function clearCurrentRoster() {
-  if (!window.confirm("Are you sure you want to clear the current roster?")) return;
-  setInputMode("standard");
-  studentsContainer.innerHTML = "";
-  buildDefaultStudents();
-  advancedInputBox.value = "";
-  results.innerHTML = "";
-  clearErrors();
-  showSuccess("Current roster cleared.");
-}
-
-function clearSavedRoster() {
-  if (!window.confirm("Are you sure you want to clear the saved roster?")) return;
-  try { localStorage.removeItem(STORAGE_KEY); showSuccess("Saved roster cleared."); }
-  catch (error) { showNotice("Unable to clear saved roster in this browser."); }
-}
-
-function loadRosterIfAvailable() {
-  var savedRaw = null;
-  try { savedRaw = localStorage.getItem(STORAGE_KEY); } catch (error) { buildDefaultStudents(); return; }
-  if (!savedRaw) { buildDefaultStudents(); return; }
-  try {
-    var saved = JSON.parse(savedRaw);
-    applyStandardRoster(saved.standardStudents || []);
-    advancedInputBox.value        = saved.advancedInput        || "";
-    worksheetsPerStudent.value    = saved.worksheetsPerStudent || "1";
-    setInputMode(saved.inputMode  || "standard");
-    showSuccess("Saved roster loaded.");
-  } catch (error) { buildDefaultStudents(); }
+function buildWorksheet(student, setNum, setTotal, isLast) {
+  var name=student.name, number=student.number, grade=student.grade;
+  var type=student.type, count=student.count, mixedTypes=student.mixedTypes;
+  var problems = generateProblems(type, count, grade, mixedTypes, student.fracOps, student.decOps);
+  var useHoriz = isHorizType(type) || (type === "mixed" && isMixedHoriz(problems));
+  var wide = !useHoriz && isWideType(type);
+  // For mixed, check if any stacked problem is wide
+  if (!useHoriz && type === "mixed") {
+    for (var i = 0; i < problems.length; i++) { if (problems[i].kind === "stack" && String(problems[i].html).indexOf("1.1in") !== -1) { wide = true; break; } }
+  }
+  var grid = getGridConfig(count, useHoriz, wide);
+  var ws = document.createElement("div");
+  ws.className = "mwg-worksheet" + (isLast ? "" : " print-break");
+  var setLabel = setTotal > 1 ? "Worksheet " + setNum + " of " + setTotal : "";
+  var desc = descriptionFor(type, grade, count);
+  var bodyHtml = "";
+  if (useHoriz) {
+    bodyHtml = '<div class="mwg-horiz-grid">';
+    for (var i = 0; i < problems.length; i++) {
+      var expr = String(problems[i].html).replace("__HORIZ__", "");
+      bodyHtml += '<div class="mwg-horiz-cell"><div class="mwg-horiz-num">' + (i+1) + '.</div><div class="mwg-horiz-problem">' + expr + '</div><div class="mwg-horiz-answer"></div></div>';
+    }
+    bodyHtml += '</div>';
+  } else {
+    bodyHtml = '<div class="mwg-problems-grid ' + grid.colClass + ' ' + grid.rowClass + '">';
+    for (var i = 0; i < problems.length; i++) bodyHtml += problems[i].html;
+    bodyHtml += '</div>';
+  }
+  ws.innerHTML =
+    '<div class="mwg-ws-header"><div class="mwg-ws-header-main">' +
+      '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(name) + '</span></div>' +
+      '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + esc(number) + '</span></div>' +
+      '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">' + esc(desc) + '</span>' + (setLabel ? '<span class="mwg-ws-set-label">' + esc(setLabel) + '</span>' : '') + '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span></div>' +
+    '</div></div>' +
+    '<div class="mwg-ws-body">' + bodyHtml + '</div>';
+  return { el: ws, problems: problems, useHoriz: useHoriz, grid: grid };
 }
 
 function renderAnswerProblem(problem, answer) {
-  var ansStr = escapeHtml(String(answer));
-  var redStyle = 'display:block;font-weight:bold;color:rgb(180,0,0);text-align:right;padding-top:2px;font-size:17px';
+  var ansStr = esc(String(answer));
+  var ansStyle = 'display:block;font-weight:bold;color:rgb(180,0,0);text-align:right;padding-top:2px';
   if (problem.kind === "stack") {
-    return '<div class="problem-cell">' +
-      '<div class="problem-stack">' +
-        '<span class="problem-top">' + problem.a + '</span>' +
-        '<div class="problem-bottom-line">' +
-          '<span class="problem-operator">' + problem.operator + '</span>' +
-          '<span class="problem-bottom">' + problem.b + '</span>' +
-        '</div>' +
-        '<span style="' + redStyle + '">' + ansStr + '</span>' +
-      '</div>' +
-    '</div>';
+    var wide = String(problem.html).indexOf("1.1in") !== -1;
+    var width = wide ? "1.1in" : "0.75in";
+    var fontSize = wide ? "18px" : "20px";
+    return '<div class="mwg-problem-cell"><div class="mwg-problem-stack" style="width:' + width + ';font-size:' + fontSize + '">' +
+      '<span class="mwg-problem-top">' + problem.a + '</span>' +
+      '<div class="mwg-problem-bottom-line"><span class="mwg-problem-operator">' + problem.operator + '</span><span class="mwg-problem-bottom">' + problem.b + '</span></div>' +
+      '<span style="' + ansStyle + ';font-size:' + (wide?"15px":"17px") + '">' + ansStr + '</span>' +
+    '</div></div>';
   }
   if (problem.kind === "division") {
-    return '<div class="problem-cell">' +
-      '<div class="division-problem">' +
-        '<span class="division-divisor">' + problem.divisor + '</span>' +
+    var wide = String(problem.html).indexOf("1.3in") !== -1 || String(problem.html).indexOf("1.02in") === -1;
+    var minW = wide ? "1.3in" : "1.02in";
+    var divFontSize = wide ? "18px" : "20px";
+    // Answer sits above the bracket line, right-aligned inside the bracket (like a real quotient)
+    return '<div class="mwg-problem-cell">' +
+      '<div class="mwg-division-problem" style="min-width:' + minW + ';font-size:' + divFontSize + ';align-items:flex-start">' +
+        '<span class="mwg-division-divisor">' + problem.divisor + '</span>' +
         '<div style="display:flex;flex-direction:column;border-left:2px solid rgb(17,17,17)">' +
-          '<span style="display:block;font-weight:bold;color:rgb(180,0,0);font-size:20px;text-align:right;padding:0 4px 0 6px;border-bottom:2px solid rgb(17,17,17);line-height:1.2">' + ansStr + '</span>' +
+          '<span style="display:block;font-weight:bold;color:rgb(180,0,0);font-size:' + divFontSize + ';text-align:right;padding:0 4px 0 6px;border-bottom:2px solid rgb(17,17,17);line-height:1.2">' + ansStr + '</span>' +
           '<span style="display:block;padding:2px 4px 0 6px;line-height:1.2">' + problem.dividend + '</span>' +
         '</div>' +
       '</div>' +
     '</div>';
   }
-  return '<div class="problem-cell"></div>';
+  // Horiz
+  var expr = String(problem.html).replace("__HORIZ__", "");
+  return '<div class="mwg-horiz-cell">' +
+    '<div class="mwg-horiz-problem">' + expr + '</div>' +
+    '<span style="font-size:15px;font-weight:bold;color:rgb(180,0,0);margin-left:8px;flex-shrink:0">' + ansStr + '</span>' +
+  '</div>';
 }
 
-function buildAnswerKeySheet(student, problems, isLast, copyNum, copies) {
-  var sheet = document.createElement("div");
-  sheet.className = "worksheet" + (isLast ? "" : " print-break");
-  var meta = getLevelMeta(student.level);
-  var problemsHtml = "";
-  for (var i = 0; i < problems.length; i++) {
-    problemsHtml += renderAnswerProblem(problems[i], problems[i].answer);
+function buildAnswerKeySheet(allAnswers, isLast) {
+  var frag = document.createDocumentFragment();
+  for (var i = 0; i < allAnswers.length; i++) {
+    var entry = allAnswers[i];
+    var problems = entry.problems;
+    var isLastSheet = isLast && i === allAnswers.length - 1;
+    var sheet = document.createElement("div");
+    sheet.className = "mwg-answer-key-sheet" + (isLastSheet ? "" : " print-break");
+    var bodyHtml = "";
+    if (entry.useHoriz) {
+      bodyHtml = '<div class="mwg-horiz-grid">';
+      for (var j = 0; j < problems.length; j++) bodyHtml += renderAnswerProblem(problems[j], problems[j].answer);
+      bodyHtml += '</div>';
+    } else {
+      bodyHtml = '<div class="mwg-problems-grid ' + entry.grid.colClass + ' ' + entry.grid.rowClass + '">';
+      for (var j = 0; j < problems.length; j++) bodyHtml += renderAnswerProblem(problems[j], problems[j].answer);
+      bodyHtml += '</div>';
+    }
+    sheet.innerHTML =
+      '<div class="mwg-ws-header">' +
+        '<div class="mwg-ws-header-main">' +
+          '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(entry.name) + '</span></div>' +
+          '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + (entry.number ? esc(entry.number) : "") + '</span></div>' +
+          '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">ANSWER KEY — ' + esc(entry.desc) + (entry.copies > 1 ? " (Key " + entry.copyNum + " of " + entry.copies + ")" : "") + '</span><span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="mwg-ak-body">' + bodyHtml + '</div>';
+    frag.appendChild(sheet);
   }
-  var copyLabel = (copies && copies > 1) ? " (Key " + copyNum + " of " + copies + ")" : "";
-  sheet.innerHTML =
-    '<div class="worksheet-header">' +
-      '<div class="worksheet-header-main">' +
-        '<div class="student-field">' +
-          '<span class="student-field-label">Student Name</span>' +
-          '<span class="student-field-value">' + escapeHtml(student.name || "") + '</span>' +
-        '</div>' +
-        '<div class="student-field">' +
-          '<span class="student-field-label">Number</span>' +
-          '<span class="student-field-value">' + escapeHtml(student.number || "") + '</span>' +
-        '</div>' +
-        '<div class="description-box">' +
-          '<span class="description-text">ANSWER KEY — ' + escapeHtml(meta.description) + escapeHtml(copyLabel) + '</span>' +
-          '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="worksheet-body">' +
-      '<div class="problems-grid ' + meta.rowsClass + '">' +
-        problemsHtml +
-      '</div>' +
-    '</div>';
-  return sheet;
+  return frag;
+}
+
+function generate() {
+  resultsDiv.innerHTML = "";
+  clearErrors(); clearStatus();
+  var parsed = inputMode === "advanced" ? parseAdvancedInput() : getStudentsFromStandard();
+  if (parsed.errors.length) showErrors(parsed.errors);
+  if (!parsed.students.length) { showNotice("No valid students found."); return; }
+  var copies=parseInt(worksheetsPerStudent.value)||1, doKey=answerKeyToggle.checked;
+  var total=parsed.students.length*copies, pageCounter=0, allAnswers=[];
+  for (var s = 0; s < parsed.students.length; s++) {
+    var student = parsed.students[s];
+    for (var c = 1; c <= copies; c++) {
+      pageCounter++;
+      var isLast = !doKey && pageCounter === total;
+      var result = buildWorksheet(student, c, copies, isLast);
+      resultsDiv.appendChild(result.el);
+      if (doKey) {
+        allAnswers.push({ name:student.name, number:student.number, desc:descriptionFor(student.type,student.grade,student.count), problems:result.problems.slice(), useHoriz:result.useHoriz, grid:result.grid, copyNum:c, copies:copies });
+      }
+    }
+  }
+  if (doKey && allAnswers.length) resultsDiv.appendChild(buildAnswerKeySheet(allAnswers, !doKey));
+  resultsDiv.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function generateAndPrint() {
+  clearStatus(); generate();
+  setTimeout(function() {
+    if (!resultsDiv.querySelector(".mwg-worksheet")) return;
+    var originalParent=resultsDiv.parentNode, originalNext=resultsDiv.nextSibling;
+    resultsDiv.id = "mwg-results-print";
+    document.body.appendChild(resultsDiv);
+    window.print();
+    resultsDiv.id = "mwgResults";
+    if (originalNext) originalParent.insertBefore(resultsDiv, originalNext);
+    else originalParent.appendChild(resultsDiv);
+  }, 200);
+}
+
+function generateAndSavePdf() {
+  clearStatus();
+  generate();
+  setTimeout(function() {
+    var sheets = resultsDiv.querySelectorAll(".mwg-worksheet, .mwg-answer-key-sheet");
+    if (!sheets.length) return;
+
+    if (typeof html2canvas === "undefined" || typeof window.jspdf === "undefined") {
+      showNotice("PDF library not loaded yet. Please try again in a moment.");
+      return;
+    }
+
+    var jsPDFCtor = window.jspdf.jsPDF;
+    showSuccess("Generating PDF, please wait...");
+
+    var PAGE_W_PX = 1056;
+    var PAGE_H_PX = 816;
+
+    // Stage element: position absolute so html2canvas can see it,
+    // scrolled just out of view vertically
+    var stage = document.createElement("div");
+    stage.style.cssText = [
+      "position:absolute",
+      "top:0",
+      "left:0",
+      "width:" + PAGE_W_PX + "px",
+      "height:" + PAGE_H_PX + "px",
+      "overflow:hidden",
+      "z-index:-1000",
+      "pointer-events:none",
+      "background:white"
+    ].join(";");
+    document.body.appendChild(stage);
+
+    var jsPDFObj = null;
+    var sheetArray = [];
+    for (var i = 0; i < sheets.length; i++) sheetArray.push(sheets[i]);
+
+    function captureNext(idx) {
+      if (idx >= sheetArray.length) {
+        document.body.removeChild(stage);
+        jsPDFObj.save("worksheets.pdf");
+        showSuccess("PDF saved!");
+        return;
+      }
+
+      var clone = sheetArray[idx].cloneNode(true);
+      clone.style.cssText = [
+        "width:" + PAGE_W_PX + "px",
+        "height:" + PAGE_H_PX + "px",
+        "overflow:hidden",
+        "margin:0",
+        "padding:24px 29px",
+        "background:white",
+        "box-sizing:border-box",
+        "display:flex",
+        "flex-direction:column"
+      ].join(";");
+      clone.classList.remove("print-break");
+      stage.innerHTML = "";
+      stage.appendChild(clone);
+
+      // Small delay to let the DOM paint before capturing
+      setTimeout(function() {
+        html2canvas(clone, {
+          scale:           1.5,
+          useCORS:         true,
+          allowTaint:      true,
+          width:           PAGE_W_PX,
+          height:          PAGE_H_PX,
+          windowWidth:     PAGE_W_PX,
+          windowHeight:    PAGE_H_PX,
+          logging:         false,
+          backgroundColor: "white",
+          x:               0,
+          y:               0
+        }).then(function(canvas) {
+          var imgData = canvas.toDataURL("image/jpeg", 0.92);
+
+          if (!jsPDFObj) {
+            jsPDFObj = new jsPDFCtor({
+              orientation: "landscape",
+              unit:        "px",
+              format:      [PAGE_W_PX, PAGE_H_PX],
+              hotfixes:    ["px_scaling"]
+            });
+          } else {
+            jsPDFObj.addPage([PAGE_W_PX, PAGE_H_PX], "landscape");
+          }
+
+          jsPDFObj.addImage(imgData, "JPEG", 0, 0, PAGE_W_PX, PAGE_H_PX, "", "FAST");
+          captureNext(idx + 1);
+
+        }).catch(function(err) {
+          document.body.removeChild(stage);
+          showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
+        });
+      }, 50);
+    }
+
+    captureNext(0);
+  }, 300);
 }
 
 function highlightInvalidEntries() {
-  var entries = studentsContainer.querySelectorAll(".student-entry");
+  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
   var problems = [];
   for (var i = 0; i < entries.length; i++) {
-    var entry   = entries[i];
-    var nameEl  = entry.querySelector('input[name="studentName"]');
-    var levelEl = entry.querySelector('select[name="level"]');
-    nameEl.style.border  = "";
-    levelEl.style.border = "";
+    var entry = entries[i];
+    var nameEl  = entry.querySelector('[name="studentName"]');
+    var gradeEl = entry.querySelector('[name="grade"]');
+    var typeEl  = entry.querySelector('[name="problemType"]');
+    var countEl = entry.querySelector('[name="count"]');
     var entryProblems = [];
+    // Reset styles
+    nameEl.style.border  = "";
+    gradeEl.style.border = "";
+    typeEl.style.border  = "";
+    countEl.style.border = "";
     if (!nameEl.value.trim()) {
       nameEl.style.border = "2px solid rgb(204,0,0)";
       entryProblems.push("Student Name");
     }
-    if (!levelEl.value) {
-      levelEl.style.border = "2px solid rgb(204,0,0)";
-      entryProblems.push("Level");
+    if (!gradeEl.value) {
+      gradeEl.style.border = "2px solid rgb(204,0,0)";
+      entryProblems.push("Grade Level");
+    }
+    if (!typeEl.value) {
+      typeEl.style.border = "2px solid rgb(204,0,0)";
+      entryProblems.push("Problem Type");
+    }
+    if (!countEl.value) {
+      countEl.style.border = "2px solid rgb(204,0,0)";
+      entryProblems.push("Problem Count");
     }
     if (entryProblems.length) {
       problems.push("Student " + (i + 1) + ": missing " + entryProblems.join(", "));
@@ -1402,249 +2305,103 @@ function highlightInvalidEntries() {
 }
 
 function clearValidationHighlights() {
-  var entries = studentsContainer.querySelectorAll(".student-entry");
+  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
   for (var i = 0; i < entries.length; i++) {
-    entries[i].querySelector('input[name="studentName"]').style.border  = "";
-    entries[i].querySelector('select[name="level"]').style.border       = "";
+    var entry = entries[i];
+    entry.querySelector('[name="studentName"]').style.border  = "";
+    entry.querySelector('[name="grade"]').style.border        = "";
+    entry.querySelector('[name="problemType"]').style.border  = "";
+    entry.querySelector('[name="count"]').style.border        = "";
   }
 }
 
 function validateAndRun(action) {
-  if (inputMode === "advanced") { action(); return; }
+  if (inputMode === "advanced") {
+    action();
+    return;
+  }
   var problems = highlightInvalidEntries();
-  if (!problems.length) { action(); return; }
-  mmPendingAction = action;
+  if (!problems.length) {
+    action();
+    return;
+  }
+  pendingGenerateAction = action;
   var html = '<strong>The following students have unfilled required fields:</strong><br><br>';
   for (var i = 0; i < problems.length; i++) {
-    html += '• ' + escapeHtml(problems[i]) + '<br>';
+    html += '• ' + esc(problems[i]) + '<br>';
   }
   html += '<br>Fields are highlighted in red. You can fix them or generate anyway.';
-  mmValidationMsg.innerHTML = html;
-  mmValidationBox.style.display = "block";
-  mmValidationBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
-
-function generateWorksheets() {
-  results.innerHTML = "";
-  clearErrors();
-  clearStatusMessages();
-  var parsed = inputMode === "advanced" ? getStudentsFromAdvancedInput() : getStudentsFromStandardInput();
-  if (parsed.errors.length) showErrors(parsed.errors);
-  var copies      = parseInt(worksheetsPerStudent.value, 10) || 1;
-  var doKey       = answerKeyToggle.checked;
-  var totalPages  = parsed.students.length * copies;
-  var pageCounter = 0;
-  var allAnswers  = [];
-  for (var s = 0; s < parsed.students.length; s++) {
-    var student = parsed.students[s];
-    for (var c = 1; c <= copies; c++) {
-      pageCounter++;
-      var problems  = generateProblemsForLevel(student.level);
-      var isLast    = !doKey && pageCounter === totalPages;
-      var worksheet = createWorksheet(student.name, student.number, student.level, problems, isLast, c, copies);
-      results.appendChild(worksheet);
-      if (doKey) {
-        allAnswers.push({ student: { name: student.name, number: student.number, level: student.level }, problems: problems, copyNum: c, copies: copies });
-      }
-    }
-  }
-  if (doKey && allAnswers.length) {
-    for (var k = 0; k < allAnswers.length; k++) {
-      var isLastKey = k === allAnswers.length - 1;
-      results.appendChild(buildAnswerKeySheet(allAnswers[k].student, allAnswers[k].problems, isLastKey, allAnswers[k].copyNum, allAnswers[k].copies));
-    }
-  }
-  if (parsed.students.length > 0) {
-    results.scrollIntoView({ behavior: "smooth", block: "start" });
-  } else {
-    showNotice("No valid students found to generate worksheets.");
-  }
-}
-
-function doGenerateAndPrint() {
-  clearStatusMessages();
-  generateWorksheets();
-  setTimeout(function () {
-    if (results.querySelector(".worksheet")) {
-      var originalParent = results.parentNode;
-      var originalNext   = results.nextSibling;
-      results.id = "results-print";
-      document.body.appendChild(results);
-      window.print();
-      results.id = "results";
-      if (originalNext) originalParent.insertBefore(results, originalNext);
-      else originalParent.appendChild(results);
-    }
-  }, 200);
-}
-
-function doGenerateAndSavePdf() {
-  clearStatusMessages();
-  generateWorksheets();
-  setTimeout(function() {
-    var sheets = results.querySelectorAll(".worksheet");
-    if (!sheets.length) return;
-    if (typeof html2canvas === "undefined" || typeof window.jspdf === "undefined") {
-      showNotice("PDF library not loaded yet. Please try again in a moment.");
-      return;
-    }
-    var jsPDFCtor = window.jspdf.jsPDF;
-    showSuccess("Generating PDF, please wait...");
-    var PAGE_W_PX = 1056;
-    var PAGE_H_PX = 816;
-    var stage = document.createElement("div");
-    stage.style.cssText = "position:absolute;top:0;left:0;width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;z-index:-1000;pointer-events:none;background:white;";
-    document.body.appendChild(stage);
-    var jsPDFObj = null;
-    var sheetArray = [];
-    for (var i = 0; i < sheets.length; i++) sheetArray.push(sheets[i]);
-    function captureNext(idx) {
-      if (idx >= sheetArray.length) {
-        document.body.removeChild(stage);
-        jsPDFObj.save("math-minute-worksheets.pdf");
-        showSuccess("PDF saved!");
-        return;
-      }
-      var clone = sheetArray[idx].cloneNode(true);
-      clone.style.cssText = "width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;margin:0;padding:24px 29px;background:white;box-sizing:border-box;display:flex;flex-direction:column;";
-      clone.classList.remove("print-break");
-      stage.innerHTML = "";
-      stage.appendChild(clone);
-      setTimeout(function() {
-        html2canvas(clone, {
-          scale: 1.5, useCORS: true, allowTaint: true,
-          width: PAGE_W_PX, height: PAGE_H_PX,
-          windowWidth: PAGE_W_PX, windowHeight: PAGE_H_PX,
-          logging: false, backgroundColor: "white", x: 0, y: 0
-        }).then(function(canvas) {
-          var imgData = canvas.toDataURL("image/jpeg", 0.92);
-          if (!jsPDFObj) {
-            jsPDFObj = new jsPDFCtor({ orientation: "landscape", unit: "px", format: [PAGE_W_PX, PAGE_H_PX], hotfixes: ["px_scaling"] });
-          } else {
-            jsPDFObj.addPage([PAGE_W_PX, PAGE_H_PX], "landscape");
-          }
-          jsPDFObj.addImage(imgData, "JPEG", 0, 0, PAGE_W_PX, PAGE_H_PX, "", "FAST");
-          captureNext(idx + 1);
-        }).catch(function() {
-          document.body.removeChild(stage);
-          showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
-        });
-      }, 50);
-    }
-    captureNext(0);
-  }, 300);
-}
-
-function assignDomRefs() {
-  studentsContainer          = document.getElementById("studentsContainer");
-  addStudentButton           = document.getElementById("addStudentButton");
-  saveRosterButton           = document.getElementById("saveRosterButton");
-  clearCurrentRosterButton   = document.getElementById("clearCurrentRosterButton");
-  clearSavedRosterButton     = document.getElementById("clearSavedRosterButton");
-  generatePrintButton        = document.getElementById("generatePrintButton");
-  results                    = document.getElementById("results");
-  errors                     = document.getElementById("errors");
-  statusMessages             = document.getElementById("statusMessages");
-  toggleInputModeButton      = document.getElementById("toggleInputModeButton");
-  standardInputSection       = document.getElementById("standardInputSection");
-  advancedInputSection       = document.getElementById("advancedInputSection");
-  advancedInputBox           = document.getElementById("advancedInputBox");
-  modeIndicator              = document.getElementById("modeIndicator");
-  worksheetsPerStudent       = document.getElementById("worksheetsPerStudent");
-  levelReferenceGrid         = document.getElementById("levelReferenceGrid");
-  studentCounter             = document.getElementById("studentCounter");
-  generateAdvancedCodeButton = document.getElementById("generateAdvancedCodeButton");
-  advancedCodePanel          = document.getElementById("advancedCodePanel");
-  closeAdvancedCodeModal     = document.getElementById("closeAdvancedCodeModal");
-  advancedCodeOutput         = document.getElementById("advancedCodeOutput");
-  copyAdvancedCodeButton     = document.getElementById("copyAdvancedCodeButton");
-  useAdvancedCodeButton      = document.getElementById("useAdvancedCodeButton");
-  answerKeyToggle            = document.getElementById("answerKeyToggle");
-  savePdfButton              = document.getElementById("savePdfButton");
-  mmValidationBox            = document.getElementById("mmValidationBox");
-  mmValidationMsg            = document.getElementById("mmValidationMsg");
-  mmValidationFix            = document.getElementById("mmValidationFix");
-  mmValidationGenerate       = document.getElementById("mmValidationGenerate");
+  validationMsg.innerHTML = html;
+  validationBox.style.display = "block";
+  validationBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function wireButtons() {
-  toggleInputModeButton.addEventListener("click", function () {
-    clearStatusMessages();
-    setInputMode(inputMode === "standard" ? "advanced" : "standard");
+  toggleModeBtn.addEventListener("click", function() { clearStatus(); setInputMode(inputMode==="standard"?"advanced":"standard"); });
+  addStudentBtn.addEventListener("click",   function() { clearStatus(); addStudent(); refreshNumbers(); });
+  genCodeBtn.addEventListener("click",      function() { clearStatus(); openCodeModal(); });
+  saveBtn.addEventListener("click",         function() { clearStatus(); saveRoster(); });
+  clearCurrentBtn.addEventListener("click", function() { clearStatus(); clearCurrentRoster(); });
+  clearSavedBtn.addEventListener("click",   function() { clearStatus(); clearSavedRoster(); });
+  generateBtn.addEventListener("click", function() {
+    validateAndRun(function() { clearValidationHighlights(); generateAndPrint(); });
   });
-
-  addStudentButton.addEventListener("click", function () {
-    clearStatusMessages();
-    addStudent();
-    refreshStudentNumbers();
+  savePdfBtn.addEventListener("click", function() {
+    validateAndRun(function() { clearValidationHighlights(); generateAndSavePdf(); });
   });
-
-  if (generateAdvancedCodeButton) {
-    generateAdvancedCodeButton.addEventListener("click", function () {
-      clearStatusMessages();
-      openAdvancedCodeModal();
-    });
-  }
-
-  closeAdvancedCodeModal.addEventListener("click", function () { closeAdvancedCodeModalFn(); });
-
-
-  copyAdvancedCodeButton.addEventListener("click", function () {
-    try {
-      navigator.clipboard.writeText(advancedCodeOutput.value).then(function() {
-        showSuccess("Advanced code copied.");
-      });
-    } catch (error) { showNotice("Unable to copy automatically in this browser."); }
-  });
-
-  useAdvancedCodeButton.addEventListener("click", function () {
-    advancedInputBox.value = advancedCodeOutput.value;
-    setInputMode("advanced");
-    closeAdvancedCodeModalFn();
-    showSuccess("Advanced code moved into Advanced Input.");
-  });
-
-  saveRosterButton.addEventListener("click",         function () { clearStatusMessages(); saveRoster(); });
-  clearCurrentRosterButton.addEventListener("click", function () { clearStatusMessages(); clearCurrentRoster(); });
-  clearSavedRosterButton.addEventListener("click",   function () { clearStatusMessages(); clearSavedRoster(); });
-
-  generatePrintButton.addEventListener("click", function () {
-    clearStatusMessages();
-    validateAndRun(function() { clearValidationHighlights(); doGenerateAndPrint(); });
-  });
-
-  savePdfButton.addEventListener("click", function () {
-    clearStatusMessages();
-    validateAndRun(function() { clearValidationHighlights(); doGenerateAndSavePdf(); });
-  });
-
-  mmValidationFix.addEventListener("click", function() {
-    mmValidationBox.style.display = "none";
-    mmPendingAction = null;
+  validationFix.addEventListener("click", function() {
+    validationBox.style.display = "none";
+    pendingGenerateAction = null;
+    // Scroll to first highlighted field
     var first = studentsContainer.querySelector('[style*="rgb(204,0,0)"]');
     if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
   });
-
-  mmValidationGenerate.addEventListener("click", function() {
-    mmValidationBox.style.display = "none";
+  validationGenerate.addEventListener("click", function() {
+    validationBox.style.display = "none";
     clearValidationHighlights();
-    if (mmPendingAction) {
-      var action = mmPendingAction;
-      mmPendingAction = null;
+    if (pendingGenerateAction) {
+      var action = pendingGenerateAction;
+      pendingGenerateAction = null;
       action();
     }
+  });
+  fillDownBtn.addEventListener("click", function() {
+    var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
+    if (entries.length < 2) return;
+    var first = readEntry(entries[0]);
+    for (var i = 1; i < entries.length; i++) {
+      var e = entries[i];
+      e.querySelector('[name="grade"]').value = first.grade;
+      updateTypeOptionsForGrade(e, first.type);
+      e.querySelector('[name="problemType"]').value = first.type;
+      e.querySelector('[name="count"]').value = first.count;
+      updateMixedVisibility(e);
+    }
+    showSuccess("Settings filled down from Student 1.");
+  });
+  closeModal.addEventListener("click", function() { codePanel.style.display = "none"; });
+  copyCodeBtn.addEventListener("click", function() {
+    try { navigator.clipboard.writeText(codeOutput.value).then(function() { showSuccess("Code copied."); }); }
+    catch(e) { showNotice("Unable to copy automatically."); }
+  });
+  useCodeBtn.addEventListener("click", function() {
+    advancedBox.value = codeOutput.value;
+    setInputMode("advanced");
+    codePanel.style.display = "none";
+    showSuccess("Code moved to Advanced Input.");
   });
 }
 
 function init() {
-  renderLevelReference();
-  loadRosterIfAvailable();
-  if (!studentsContainer.querySelector(".student-entry")) buildDefaultStudents();
-  updateStudentCounter();
+  renderReference();
+  loadRoster();
+  if (!studentsContainer.querySelector(".mwg-student-entry")) buildDefaultStudents();
+  updateCounter();
 }
 
 function waitAndInit() {
-  if (document.getElementById("studentsContainer")) {
+  if (document.getElementById("mwgStudentsContainer")) {
+    injectStyles();
     assignDomRefs();
     wireButtons();
     init();
@@ -1661,6 +2418,5 @@ if (document.readyState === "loading") {
 
 })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</div>
+</body>
+</html>
