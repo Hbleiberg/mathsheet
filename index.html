@@ -801,7 +801,7 @@ body { margin: 0; padding: 12px; background: white; }
         <div class="mwg-advanced-help">
           Format: <strong>Name, Number, ProblemType, Count, Grade;</strong><br>
           Example: <strong>Harrison, 1, addition, 30, 3; Emily, 2, mixed, 40, 5;</strong><br>
-          Problem types: addition, subtraction, multiplication, division, fractions, decimals, rounding, longdivision, orderofoperations, integers, exponents, scientificnotation, mixed<br>
+          Problem types: addition, subtraction, multiplication, division, fractions, fractions[add|sub|mul|divf|divw], decimals, decimals[add|sub|mulw|muld|divw|divd], rounding, longdivision, orderofoperations, integers, exponents, scientificnotation, mixed, mixed[type1|type2|...]<br>
           Counts: 30, 40, 50, 60 — Grades: 1–8
         </div>
       </div>
@@ -954,10 +954,10 @@ var GRADE_TYPES = {
   2: ["add1","add2","sub1","sub2","mul1","mul2","div1","div2","mixed"],
   3: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","mixed"],
   4: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","mixed"],
-  5: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","mixed"],
-  6: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","mixed"],
-  7: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","integers","mixed"],
-  8: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation","mixed"]
+  5: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","mixed"],
+  6: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
+  7: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","integers","mixed"],
+  8: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation","mixed"]
 };
 
 var TYPE_GROUPS = [
@@ -965,8 +965,8 @@ var TYPE_GROUPS = [
   { label: "Subtraction",    types: ["sub1","sub2","sub3","sub4","sub5"] },
   { label: "Multiplication", types: ["mul1","mul2","mul3","mul4","mul5"] },
   { label: "Division",       types: ["div1","div2","div3","div4","div5"] },
-  { label: "Fractions",      types: ["fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw"] },
-  { label: "Decimals",       types: ["decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd"] },
+  { label: "Fractions",      types: ["fractions"] },
+  { label: "Decimals",       types: ["decimals"] },
   { label: "Other",          types: ["rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"] },
   { label: "Mixed",          types: ["mixed"] }
 ];
@@ -1306,11 +1306,11 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
     if (!groupTypes.length) continue;
     // Fractions and Decimals get special nested treatment
     if (group.label === "Fractions" && groupTypes.indexOf("fractions") !== -1) {
-      var fracChecked = checked.indexOf("fractions") !== -1;
+      var fracChecked = checked.indexOf("fractions") !== -1 || checked.some(function(c){return c.indexOf("fractions-")===0;});
       html += '<div class="mwg-mixed-frac-dec-group">';
-      html += '<strong>Fractions</strong>';
-      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">';
-      html += '<label style="font-size:12px"><input type="checkbox" class="mwg-mixed-cb" value="fractions" ' + (fracChecked?"checked":"") + '> Include Fractions (all selected ops)</label>';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">';
+      html += '<label style="font-size:13px;font-weight:bold;color:rgb(37,99,235);cursor:pointer;display:flex;align-items:center;gap:6px"><input type="checkbox" class="mwg-mixed-cb mwg-frac-master" value="fractions" ' + (fracChecked?"checked":"") + '> Fractions</label>';
+      html += '<button type="button" class="mwg-ops-select-all mwg-frac-all" style="font-size:11px;padding:2px 6px;cursor:pointer;font-family:Georgia,serif;">All Operations</button>';
       html += '</div>';
       html += '<div class="mwg-ops-grid">';
       for (var fo = 0; fo < FRAC_OPS.length; fo++) {
@@ -1319,16 +1319,15 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
         html += '<label style="font-size:12px"><input type="checkbox" class="mwg-frac-op-cb mwg-mixed-op-cb" value="' + fop.value + '" ' + foChecked + '> ' + esc(fop.label) + '</label>';
       }
       html += '</div>';
-      html += '<button type="button" class="mwg-ops-select-all mwg-frac-all" style="font-size:11px;padding:2px 6px;margin-top:4px;cursor:pointer;font-family:Georgia,serif;">All Fraction Ops</button>';
       html += '</div>';
       continue;
     }
     if (group.label === "Decimals" && groupTypes.indexOf("decimals") !== -1) {
-      var decChecked = checked.indexOf("decimals") !== -1;
+      var decChecked = checked.indexOf("decimals") !== -1 || checked.some(function(c){return c.indexOf("decimals-")===0;});
       html += '<div class="mwg-mixed-frac-dec-group">';
-      html += '<strong>Decimals</strong>';
-      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">';
-      html += '<label style="font-size:12px"><input type="checkbox" class="mwg-mixed-cb" value="decimals" ' + (decChecked?"checked":"") + '> Include Decimals (all selected ops)</label>';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">';
+      html += '<label style="font-size:13px;font-weight:bold;color:rgb(37,99,235);cursor:pointer;display:flex;align-items:center;gap:6px"><input type="checkbox" class="mwg-mixed-cb mwg-dec-master" value="decimals" ' + (decChecked?"checked":"") + '> Decimals</label>';
+      html += '<button type="button" class="mwg-ops-select-all mwg-dec-all" style="font-size:11px;padding:2px 6px;cursor:pointer;font-family:Georgia,serif;">All Operations</button>';
       html += '</div>';
       html += '<div class="mwg-ops-grid">';
       for (var fo = 0; fo < DEC_OPS.length; fo++) {
@@ -1337,7 +1336,6 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
         html += '<label style="font-size:12px"><input type="checkbox" class="mwg-dec-op-cb mwg-mixed-op-cb" value="' + dop.value + '" ' + doChecked + '> ' + esc(dop.label) + '</label>';
       }
       html += '</div>';
-      html += '<button type="button" class="mwg-ops-select-all mwg-dec-all" style="font-size:11px;padding:2px 6px;margin-top:4px;cursor:pointer;font-family:Georgia,serif;">All Decimal Ops</button>';
       html += '</div>';
       continue;
     }
@@ -1366,7 +1364,8 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
     fracAllBtn.addEventListener("click", function() {
       var cbs = box.querySelectorAll(".mwg-frac-op-cb");
       for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
-      box.querySelector('.mwg-mixed-cb[value="fractions"]').checked = true;
+      var master = box.querySelector(".mwg-frac-master");
+      if (master) master.checked = true;
       updateCountForMixed(entryDiv);
     });
   }
@@ -1375,13 +1374,57 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
     decAllBtn.addEventListener("click", function() {
       var cbs = box.querySelectorAll(".mwg-dec-op-cb");
       for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
-      box.querySelector('.mwg-mixed-cb[value="decimals"]').checked = true;
+      var master = box.querySelector(".mwg-dec-master");
+      if (master) master.checked = true;
       updateCountForMixed(entryDiv);
     });
   }
-  var cbs = box.querySelectorAll(".mwg-mixed-cb, .mwg-mixed-op-cb");
-  for (var i = 0; i < cbs.length; i++) {
-    cbs[i].addEventListener("change", function() { updateCountForMixed(entryDiv); });
+  // Master frac checkbox: check/uncheck all frac ops
+  var fracMaster = box.querySelector(".mwg-frac-master");
+  if (fracMaster) {
+    fracMaster.addEventListener("change", function() {
+      var cbs = box.querySelectorAll(".mwg-frac-op-cb");
+      for (var i = 0; i < cbs.length; i++) cbs[i].checked = fracMaster.checked;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  // Master dec checkbox: check/uncheck all dec ops
+  var decMaster = box.querySelector(".mwg-dec-master");
+  if (decMaster) {
+    decMaster.addEventListener("change", function() {
+      var cbs = box.querySelectorAll(".mwg-dec-op-cb");
+      for (var i = 0; i < cbs.length; i++) cbs[i].checked = decMaster.checked;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  // Op checkboxes: auto-check master when any op checked, auto-uncheck when all unchecked
+  var fracOpCbs = box.querySelectorAll(".mwg-frac-op-cb");
+  for (var i = 0; i < fracOpCbs.length; i++) {
+    fracOpCbs[i].addEventListener("change", function() {
+      var master = box.querySelector(".mwg-frac-master");
+      if (!master) return;
+      var any = false;
+      var cbs2 = box.querySelectorAll(".mwg-frac-op-cb");
+      for (var j = 0; j < cbs2.length; j++) if (cbs2[j].checked) any = true;
+      master.checked = any;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  var decOpCbs = box.querySelectorAll(".mwg-dec-op-cb");
+  for (var i = 0; i < decOpCbs.length; i++) {
+    decOpCbs[i].addEventListener("change", function() {
+      var master = box.querySelector(".mwg-dec-master");
+      if (!master) return;
+      var any = false;
+      var cbs2 = box.querySelectorAll(".mwg-dec-op-cb");
+      for (var j = 0; j < cbs2.length; j++) if (cbs2[j].checked) any = true;
+      master.checked = any;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  var otherCbs = box.querySelectorAll(".mwg-mixed-cb:not(.mwg-frac-master):not(.mwg-dec-master)");
+  for (var i = 0; i < otherCbs.length; i++) {
+    otherCbs[i].addEventListener("change", function() { updateCountForMixed(entryDiv); });
   }
 }
 
@@ -1624,6 +1667,8 @@ function buildAdvancedCode() {
     if (!s.name || !s.grade || !s.type || !s.count) continue;
     var type = s.type;
     if (type === "mixed" && s.mixedTypes && s.mixedTypes.length) type = "mixed[" + s.mixedTypes.join("|") + "]";
+    if (type === "fractions" && s.fracOps && s.fracOps.length) type = "fractions[" + s.fracOps.join("|") + "]";
+    if (type === "decimals" && s.decOps && s.decOps.length) type = "decimals[" + s.decOps.join("|") + "]";
     lines.push([s.name, s.number || "", type, s.count, s.grade].join(", ") + ";");
   }
   return lines.join("\n");
@@ -1652,16 +1697,28 @@ function parseAdvancedInput() {
     if (isNaN(grade) || grade < 1 || grade > 8) { errors.push("Entry " + (i+1) + " invalid grade: " + entry); continue; }
     var count = parseInt(parts[3]);
     if (VALID_COUNTS.indexOf(count) === -1) { errors.push("Entry " + (i+1) + " invalid count: " + entry); continue; }
-    var type = parts[2], mixedTypes = null;
+    var type = parts[2], mixedTypes = null, fracOps = null, decOps = null;
     var mixedMatch = type.match(/^mixed\[([^\]]+)\]$/);
     if (mixedMatch) {
       type = "mixed";
       mixedTypes = mixedMatch[1].split("|");
       for (var m = 0; m < mixedTypes.length; m++) mixedTypes[m] = mixedTypes[m].trim();
     }
+    var fracMatch = type.match(/^fractions\[([^\]]+)\]$/);
+    if (fracMatch) {
+      type = "fractions";
+      fracOps = fracMatch[1].split("|");
+      for (var m = 0; m < fracOps.length; m++) fracOps[m] = fracOps[m].trim();
+    }
+    var decMatch = type.match(/^decimals\[([^\]]+)\]$/);
+    if (decMatch) {
+      type = "decimals";
+      decOps = decMatch[1].split("|");
+      for (var m = 0; m < decOps.length; m++) decOps[m] = decOps[m].trim();
+    }
     var validTypes = GRADE_TYPES[grade] || [];
     if (validTypes.indexOf(type) === -1) { errors.push("Entry " + (i+1) + " invalid type for grade " + grade + ": " + type); continue; }
-    students.push({ name: parts[0], number: parts[1], grade: grade, type: type, count: count, mixedTypes: mixedTypes });
+    students.push({ name: parts[0], number: parts[1], grade: grade, type: type, count: count, mixedTypes: mixedTypes, fracOps: fracOps, decOps: decOps });
   }
   return { students: students, errors: errors };
 }
@@ -1673,7 +1730,7 @@ function getStudentsFromStandard() {
     var d = readEntry(entries[i]);
     if (!d.name && !d.grade && !d.type && !d.count) continue;
     if (!d.name || !d.grade || !d.type || !d.count) continue;
-    students.push({ name: d.name, number: d.number, grade: parseInt(d.grade), type: d.type, count: parseInt(d.count), mixedTypes: d.mixedTypes });
+    students.push({ name: d.name, number: d.number, grade: parseInt(d.grade), type: d.type, count: parseInt(d.count), mixedTypes: d.mixedTypes, fracOps: d.fracOps, decOps: d.decOps });
   }
   return { students: students, errors: [] };
 }
