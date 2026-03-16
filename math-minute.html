@@ -910,7 +910,7 @@ function createStudentEntry(index, studentData) {
     '</div>' +
     '<div class="student-grid">' +
       '<div><label>Student Name</label><input type="text" name="studentName" value="' + nameValue + '" /></div>' +
-      '<div><label>Student Number</label><input type="text" name="studentNumber" value="' + numberValue + '" /></div>' +
+      '<div class="mm-number-field-wrap"><label>Student Number</label><input type="text" name="studentNumber" value="' + numberValue + '" /></div>' +
       '<div><label>Level</label><select name="level">' + getLevelOptions(levelValue) + '</select></div>' +
     '</div>';
 
@@ -960,6 +960,7 @@ function addStudent(studentData) {
   var count = studentsContainer.querySelectorAll(".student-entry").length + 1;
   studentsContainer.appendChild(createStudentEntry(count, studentData));
   updateStudentCounter();
+  if (removeNumberToggle) applyRemoveNumberToggle();
 }
 
 function buildDefaultStudents() {
@@ -968,6 +969,7 @@ function buildDefaultStudents() {
     studentsContainer.appendChild(createStudentEntry(i));
   }
   updateStudentCounter();
+  if (removeNumberToggle) applyRemoveNumberToggle();
 }
 
 function setInputMode(mode) {
@@ -1175,7 +1177,7 @@ function createWorksheet(name, number, level, problems, isLast, setNumber, setTo
   }
   worksheet.innerHTML =
     '<div class="worksheet-header">' +
-      '<div class="worksheet-header-main">' +
+      '<div class="worksheet-header-main" style="grid-template-columns:' + (removeNumberToggle && removeNumberToggle.checked ? "3fr 5fr" : "2fr 1fr 3fr") + '">' +
         '<div class="student-field">' +
           '<span class="student-field-label">Student Name</span>' +
           '<span class="student-field-value">' + escapeHtml(safeName) + '</span>' +
@@ -1378,7 +1380,7 @@ function buildAnswerKeySheet(student, problems, isLast, copyNum, copies) {
   var copyLabel = (copies && copies > 1) ? " (Key " + copyNum + " of " + copies + ")" : "";
   sheet.innerHTML =
     '<div class="worksheet-header">' +
-      '<div class="worksheet-header-main">' +
+      '<div class="worksheet-header-main" style="grid-template-columns:' + (removeNumberToggle && removeNumberToggle.checked ? "3fr 5fr" : "2fr 1fr 3fr") + '">' +
         '<div class="student-field">' +
           '<span class="student-field-label">Student Name</span>' +
           '<span class="student-field-value">' + escapeHtml(student.name || "") + '</span>' +
@@ -1654,14 +1656,10 @@ function wireButtons() {
   clearSavedRosterButton.addEventListener("click",   function () { clearStatusMessages(); clearSavedRoster(); });
 
 function applyRemoveNumberToggle() {
-  var hide = removeNumberToggle.checked;
-  var entries = studentsContainer.querySelectorAll(".student-entry");
-  for (var i = 0; i < entries.length; i++) {
-    var numField = entries[i].querySelector('[name="studentNumber"]');
-    if (numField) {
-      var wrap = numField.closest("div") || numField.parentNode;
-      wrap.style.display = hide ? "none" : "";
-    }
+  var hide = removeNumberToggle && removeNumberToggle.checked;
+  var wraps = studentsContainer.querySelectorAll(".mm-number-field-wrap");
+  for (var i = 0; i < wraps.length; i++) {
+    wraps[i].style.display = hide ? "none" : "";
   }
 }
 
