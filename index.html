@@ -669,15 +669,24 @@ body { margin: 0; padding: 12px; background: white; }
   }
   .mwg-ws-body {
     flex: 1 1 auto !important;
-    display: flex !important;
-    min-height: 0 !important;
+    display: block !important;
+    height: auto !important;
     overflow: visible !important;
   }
   .mwg-problems-grid {
     width: 100% !important;
-    height: 100% !important;
-    min-height: 0 !important;
     display: grid !important;
+    height: auto !important;
+  }
+  .mwg-rows-6  { grid-template-rows: repeat(6,  0.76in) !important; }
+  .mwg-rows-7  { grid-template-rows: repeat(7,  0.65in) !important; }
+  .mwg-rows-8  { grid-template-rows: repeat(8,  0.57in) !important; }
+  .mwg-rows-10 { grid-template-rows: repeat(10, 0.46in) !important; }
+  .mwg-rows-12 { grid-template-rows: repeat(12, 0.38in) !important; }
+  .mwg-problem-cell {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .mwg-answer-key-sheet {
     display: flex !important;
