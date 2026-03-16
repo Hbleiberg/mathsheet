@@ -1057,7 +1057,7 @@ function generateSubtractionProblems(maxTop, count) {
   var problems = [];
   while (problems.length < count) {
     var a = randomInt(1, maxTop);
-    var b = randomInt(0, a);
+    var b = randomInt(0, Math.min(a, 9));
     problems.push({ kind: "stack", operator: "\u2212", a: a, b: b, answer: a - b });
   }
   return problems;
@@ -1066,7 +1066,7 @@ function generateSubtractionProblemsTeens(count) {
   var problems = [];
   while (problems.length < count) {
     var a = randomInt(10, 18);
-    var b = randomInt(1, a);
+    var b = randomInt(1, 9);
     problems.push({ kind: "stack", operator: "\u2212", a: a, b: b, answer: a - b });
   }
   return problems;
