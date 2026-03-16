@@ -1528,7 +1528,7 @@ function createStudentEntry(index, data) {
     '</div>' +
     '<div class="mwg-student-grid">' +
       '<div><label>Student Name</label><input type="text" name="studentName" value="' + esc(name) + '" /></div>' +
-      '<div><label>Student Number</label><input type="text" name="studentNumber" value="' + esc(number) + '" /></div>' +
+      '<div class="mwg-number-field-wrap"><label>Student Number</label><input type="text" name="studentNumber" value="' + esc(number) + '" /></div>' +
       '<div><label>Grade Level</label><select name="grade">' + getGradeOptions(grade) + '</select></div>' +
       '<div><label>Problem Type</label><select name="problemType">' + getTypeOptions(parseInt(grade)||0, type) + '</select></div>' +
       '<div><label>Problem Count</label><select name="count">' + getCountOptions(count, isHorizType(type)) + '</select></div>' +
@@ -1593,12 +1593,14 @@ function addStudent(data) {
   if (!data.number && data.number !== 0) data.number = getNextStudentNumber();
   studentsContainer.appendChild(createStudentEntry(n, data));
   updateCounter();
+  if (removeNumberToggle) applyRemoveNumberToggle();
 }
 
 function buildDefaultStudents() {
   studentsContainer.innerHTML = "";
   for (var i = 1; i <= 3; i++) studentsContainer.appendChild(createStudentEntry(i));
   updateCounter();
+  if (removeNumberToggle) applyRemoveNumberToggle();
 }
 
 function setInputMode(mode) {
@@ -1665,6 +1667,7 @@ function applyRoster(students) {
   if (!students || !students.length) { buildDefaultStudents(); return; }
   for (var i = 0; i < students.length; i++) studentsContainer.appendChild(createStudentEntry(i + 1, students[i]));
   refreshNumbers();
+  if (removeNumberToggle) applyRemoveNumberToggle();
 }
 
 function clearCurrentRoster() {
@@ -2147,7 +2150,7 @@ function buildAnswerKeySheet(allAnswers, isLast) {
     }
     sheet.innerHTML =
       '<div class="mwg-ws-header">' +
-        '<div class="mwg-ws-header-main">' +
+        '<div class="mwg-ws-header-main" style="grid-template-columns:' + (removeNumberToggle && removeNumberToggle.checked ? '3fr 5fr' : '2fr 1fr 3fr') + '">' +
           '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(entry.name) + '</span></div>' +
           (removeNumberToggle && removeNumberToggle.checked ? '' : '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + (entry.number ? esc(entry.number) : "") + '</span></div>') +
           '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">ANSWER KEY — ' + esc(entry.desc) + (entry.copies > 1 ? " (Key " + entry.copyNum + " of " + entry.copies + ")" : "") + '</span><span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span></div>' +
@@ -2364,13 +2367,9 @@ function fallbackCopy(text, successMsg) {
 
 function applyRemoveNumberToggle() {
   var hide = removeNumberToggle && removeNumberToggle.checked;
-  var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
-  for (var i = 0; i < entries.length; i++) {
-    var numField = entries[i].querySelector('[name="studentNumber"]');
-    if (numField) {
-      var wrap = numField.parentNode;
-      wrap.style.display = hide ? "none" : "";
-    }
+  var wraps = studentsContainer.querySelectorAll(".mwg-number-field-wrap");
+  for (var i = 0; i < wraps.length; i++) {
+    wraps[i].style.display = hide ? "none" : "";
   }
 }
 
