@@ -750,26 +750,20 @@ break-after:avoid !important;
 <div id="results"></div>
 <div id="errors"></div>
 
-
-
-<div class="modal-overlay" id="advancedCodeModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div class="modal-title">Advanced Input Code</div>
-      <button type="button" class="modal-close" id="closeAdvancedCodeModal">Close</button>
-    </div>
-    <div class="modal-body">
-      <textarea id="advancedCodeOutput" readonly=""></textarea>
-      <div class="modal-help">
-        This text is formatted for the Advanced Input box. You can copy and paste it directly.
-      </div>
-      <div class="modal-actions">
-        <button type="button" id="copyAdvancedCodeButton" class="btn-small">Copy Code</button>
-        <button type="button" id="useAdvancedCodeButton" class="btn-small">Use in Advanced Input</button>
-      </div>
-    </div>
+<div id="advancedCodePanel" style="display:none;border:1px solid rgb(199,214,255);background:rgb(238,243,255);border-radius:8px;padding:12px 16px;margin-top:12px;">
+  <div style="font-weight:bold;font-size:14px;margin-bottom:8px;">Advanced Input Code</div>
+  <textarea id="advancedCodeOutput" readonly="" style="width:100%;min-height:120px;resize:vertical;font-family:Arial,sans-serif;font-size:13px;padding:8px;box-sizing:border-box;border:1px solid rgb(199,214,255);border-radius:4px;background:white;"></textarea>
+  <div style="font-size:13px;color:rgb(68,68,68);margin:8px 0;">This text is formatted for the Advanced Input box. You can copy and paste it directly.</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+    <button type="button" id="copyAdvancedCodeButton" class="btn-small">Copy Code</button>
+    <button type="button" id="useAdvancedCodeButton" class="btn-small">Use in Advanced Input</button>
+    <button type="button" id="closeAdvancedCodeModal" class="btn-small">Close</button>
   </div>
 </div>
+
+
+
+
 
 <script>
 (function () {
@@ -800,7 +794,7 @@ var worksheetsPerStudent = null;
 var levelReferenceGrid = null;
 var studentCounter = null;
 var generateAdvancedCodeButton = null;
-var advancedCodeModal = null;
+var advancedCodePanel = null;
 var closeAdvancedCodeModal = null;
 var advancedCodeOutput = null;
 var copyAdvancedCodeButton = null;
@@ -1245,10 +1239,11 @@ function openAdvancedCodeModal() {
   var output = buildAdvancedCodeFromStandardRoster();
   if (!output.trim()) { showNotice("Add at least one student with a name and level before generating advanced code."); return; }
   advancedCodeOutput.value = output;
-  advancedCodeModal.classList.add("active");
+  advancedCodePanel.style.display = "block";
+  advancedCodePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
-function closeAdvancedCodeModalFn() { advancedCodeModal.classList.remove("active"); }
+function closeAdvancedCodeModalFn() { advancedCodePanel.style.display = "none"; }
 
 function applyStandardRoster(students) {
   studentsContainer.innerHTML = "";
@@ -1549,7 +1544,7 @@ function assignDomRefs() {
   levelReferenceGrid         = document.getElementById("levelReferenceGrid");
   studentCounter             = document.getElementById("studentCounter");
   generateAdvancedCodeButton = document.getElementById("generateAdvancedCodeButton");
-  advancedCodeModal          = document.getElementById("advancedCodeModal");
+  advancedCodePanel          = document.getElementById("advancedCodePanel");
   closeAdvancedCodeModal     = document.getElementById("closeAdvancedCodeModal");
   advancedCodeOutput         = document.getElementById("advancedCodeOutput");
   copyAdvancedCodeButton     = document.getElementById("copyAdvancedCodeButton");
@@ -1583,9 +1578,6 @@ function wireButtons() {
 
   closeAdvancedCodeModal.addEventListener("click", function () { closeAdvancedCodeModalFn(); });
 
-  advancedCodeModal.addEventListener("click", function (e) {
-    if (e.target === advancedCodeModal) closeAdvancedCodeModalFn();
-  });
 
   copyAdvancedCodeButton.addEventListener("click", function () {
     try {
