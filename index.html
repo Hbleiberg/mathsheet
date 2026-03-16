@@ -149,6 +149,45 @@ body { margin: 0; padding: 12px; background: white; }
   background: #eef3ff;
   grid-column: 1 / -1;
 }
+.mwg-ops-panel {
+  display: none;
+  border: 1px solid rgb(199,214,255);
+  background: rgb(238,243,255);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-top: 6px;
+  grid-column: 1 / -1;
+}
+.mwg-ops-panel.visible { display: block; }
+.mwg-ops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 4px 16px;
+  margin-top: 6px;
+}
+.mwg-ops-grid label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.mwg-ops-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.mwg-ops-title { font-size: 13px; font-weight: bold; color: rgb(37,99,235); }
+.mwg-ops-select-all { font-size: 12px; padding: 2px 8px; cursor: pointer; font-family: Georgia, serif; }
+.mwg-mixed-frac-dec-group {
+  border: 1px solid rgb(199,214,255);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  background: rgb(248,250,255);
+}
+.mwg-mixed-frac-dec-group strong { font-size: 12px; color: rgb(37,99,235); display: block; margin-bottom: 4px; }
 .mwg-mixed-types.visible { display: block; }
 .mwg-mixed-types-label {
   font-size: 13px;
@@ -844,7 +883,18 @@ var TYPE_LABELS = {
   div4: "Division Level 4 (2-digit \u00f7 1-digit, remainder)",
   div5: "Division Level 5 (3-digit \u00f7 1-digit)",
   fractions:          "Fractions",
+  "fractions-add":    "Fractions — Addition",
+  "fractions-sub":    "Fractions — Subtraction",
+  "fractions-mul":    "Fractions — Multiplication",
+  "fractions-divf":   "Fractions — Division (frac ÷ frac)",
+  "fractions-divw":   "Fractions — Division (frac ÷ whole)",
   decimals:           "Decimals",
+  "decimals-add":     "Decimals — Addition",
+  "decimals-sub":     "Decimals — Subtraction",
+  "decimals-mulw":    "Decimals — Multiplication (dec × whole)",
+  "decimals-muld":    "Decimals — Multiplication (dec × dec)",
+  "decimals-divw":    "Decimals — Division (dec ÷ whole)",
+  "decimals-divd":    "Decimals — Division (dec ÷ dec)",
   rounding:           "Rounding",
   longdivision:       "Long Division",
   orderofoperations:  "Order of Operations",
@@ -877,7 +927,18 @@ var TYPE_SHORT = {
   div4: "Level 4 \u2014 remainder",
   div5: "Level 5 \u2014 3-digit \u00f7 1-digit",
   fractions:          "Fractions",
+  "fractions-add":    "Fractions — Addition",
+  "fractions-sub":    "Fractions — Subtraction",
+  "fractions-mul":    "Fractions — Multiplication",
+  "fractions-divf":   "Fractions — Division (frac ÷ frac)",
+  "fractions-divw":   "Fractions — Division (frac ÷ whole)",
   decimals:           "Decimals",
+  "decimals-add":     "Decimals — Addition",
+  "decimals-sub":     "Decimals — Subtraction",
+  "decimals-mulw":    "Decimals — Multiplication (dec × whole)",
+  "decimals-muld":    "Decimals — Multiplication (dec × dec)",
+  "decimals-divw":    "Decimals — Division (dec ÷ whole)",
+  "decimals-divd":    "Decimals — Division (dec ÷ dec)",
   rounding:           "Rounding",
   longdivision:       "Long Division",
   orderofoperations:  "Order of Operations",
@@ -893,10 +954,10 @@ var GRADE_TYPES = {
   2: ["add1","add2","sub1","sub2","mul1","mul2","div1","div2","mixed"],
   3: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","mixed"],
   4: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","mixed"],
-  5: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","mixed"],
-  6: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
-  7: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","integers","mixed"],
-  8: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation","mixed"]
+  5: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","mixed"],
+  6: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","mixed"],
+  7: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","integers","mixed"],
+  8: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation","mixed"]
 };
 
 var TYPE_GROUPS = [
@@ -904,7 +965,9 @@ var TYPE_GROUPS = [
   { label: "Subtraction",    types: ["sub1","sub2","sub3","sub4","sub5"] },
   { label: "Multiplication", types: ["mul1","mul2","mul3","mul4","mul5"] },
   { label: "Division",       types: ["div1","div2","div3","div4","div5"] },
-  { label: "Other",          types: ["fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"] },
+  { label: "Fractions",      types: ["fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw"] },
+  { label: "Decimals",       types: ["decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd"] },
+  { label: "Other",          types: ["rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"] },
   { label: "Mixed",          types: ["mixed"] }
 ];
 
@@ -1060,7 +1123,7 @@ function renderReference() {
 }
 
 function isHorizType(type) {
-  return ["fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"].indexOf(type) !== -1;
+  return ["fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"].indexOf(type) !== -1;
 }
 
 function isHorizTypeName(type) { return isHorizType(type); }
@@ -1123,12 +1186,95 @@ function getMixedTypesForGrade(grade) {
   return result;
 }
 
+function getMixedPoolFromEntry(entryDiv, grade) {
+  var cbs = entryDiv.querySelectorAll(".mwg-mixed-cb:checked");
+  var fracOpCbs = entryDiv.querySelectorAll(".mwg-frac-op-cb:checked");
+  var decOpCbs  = entryDiv.querySelectorAll(".mwg-dec-op-cb:checked");
+  if (!cbs.length) return getMixedTypesForGrade(grade);
+  var pool = [];
+  for (var i = 0; i < cbs.length; i++) {
+    var v = cbs[i].value;
+    if (v === "fractions" && fracOpCbs.length) {
+      for (var f = 0; f < fracOpCbs.length; f++) pool.push(fracOpCbs[f].value);
+    } else if (v === "decimals" && decOpCbs.length) {
+      for (var d = 0; d < decOpCbs.length; d++) pool.push(decOpCbs[d].value);
+    } else {
+      pool.push(v);
+    }
+  }
+  return pool.length ? pool : getMixedTypesForGrade(grade);
+}
+
 function mixedHasHorizChecked(entryDiv) {
   var cbs = entryDiv.querySelectorAll(".mwg-mixed-cb:checked");
   for (var i = 0; i < cbs.length; i++) {
     if (isHorizType(cbs[i].value)) return true;
   }
   return false;
+}
+
+var FRAC_OPS = [
+  { value: "fractions-add",  label: "Addition" },
+  { value: "fractions-sub",  label: "Subtraction" },
+  { value: "fractions-mul",  label: "Multiplication" },
+  { value: "fractions-divf", label: "Division (frac ÷ frac)" },
+  { value: "fractions-divw", label: "Division (frac ÷ whole)" }
+];
+var DEC_OPS = [
+  { value: "decimals-add",  label: "Addition" },
+  { value: "decimals-sub",  label: "Subtraction" },
+  { value: "decimals-mulw", label: "Multiplication (dec × whole)" },
+  { value: "decimals-muld", label: "Multiplication (dec × dec)" },
+  { value: "decimals-divw", label: "Division (dec ÷ whole)" },
+  { value: "decimals-divd", label: "Division (dec ÷ dec)" }
+];
+
+function renderOpsPanel(entryDiv, type, checkedFrac, checkedDec) {
+  var panel = entryDiv.querySelector(".mwg-ops-panel");
+  if (!panel) return;
+  var ops = type === "fractions" ? FRAC_OPS : DEC_OPS;
+  var checked = type === "fractions" ? (checkedFrac || ops.map(function(o){return o.value;})) : (checkedDec || ops.map(function(o){return o.value;}));
+  var cbClass = type === "fractions" ? "mwg-frac-op-cb" : "mwg-dec-op-cb";
+  var title = type === "fractions" ? "Fraction Operations" : "Decimal Operations";
+  var html = '<div class="mwg-ops-header">';
+  html += '<span class="mwg-ops-title">' + title + '</span>';
+  html += '<button type="button" class="mwg-ops-select-all">Select All Operations</button>';
+  html += '</div>';
+  html += '<div class="mwg-ops-grid">';
+  for (var i = 0; i < ops.length; i++) {
+    var op = ops[i];
+    var isChecked = checked.indexOf(op.value) !== -1 ? "checked" : "";
+    html += '<label><input type="checkbox" class="' + cbClass + '" value="' + op.value + '" ' + isChecked + '> ' + esc(op.label) + '</label>';
+  }
+  html += '</div>';
+  panel.innerHTML = html;
+  panel.querySelector(".mwg-ops-select-all").addEventListener("click", function() {
+    var cbs = panel.querySelectorAll("." + cbClass);
+    for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
+  });
+}
+
+function updateOpsPanel(entryDiv) {
+  var typeSelect = entryDiv.querySelector('[name="problemType"]');
+  var panel = entryDiv.querySelector(".mwg-ops-panel");
+  if (!typeSelect || !panel) return;
+  var type = typeSelect.value;
+  if (type === "fractions" || type === "decimals") {
+    panel.className = "mwg-ops-panel visible";
+    renderOpsPanel(entryDiv, type, null, null);
+  } else {
+    panel.className = "mwg-ops-panel";
+    panel.innerHTML = "";
+  }
+}
+
+function getSelectedOps(entryDiv, type) {
+  var cbClass = type === "fractions" ? ".mwg-frac-op-cb:checked" : ".mwg-dec-op-cb:checked";
+  var cbs = entryDiv.querySelectorAll(cbClass);
+  if (!cbs.length) return null;
+  var ops = [];
+  for (var i = 0; i < cbs.length; i++) ops.push(cbs[i].value);
+  return ops.length ? ops : null;
 }
 
 function updateCountForMixed(entryDiv) {
@@ -1158,6 +1304,43 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
       if (types.indexOf(group.types[t]) !== -1) groupTypes.push(group.types[t]);
     }
     if (!groupTypes.length) continue;
+    // Fractions and Decimals get special nested treatment
+    if (group.label === "Fractions" && groupTypes.indexOf("fractions") !== -1) {
+      var fracChecked = checked.indexOf("fractions") !== -1;
+      html += '<div class="mwg-mixed-frac-dec-group">';
+      html += '<strong>Fractions</strong>';
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">';
+      html += '<label style="font-size:12px"><input type="checkbox" class="mwg-mixed-cb" value="fractions" ' + (fracChecked?"checked":"") + '> Include Fractions (all selected ops)</label>';
+      html += '</div>';
+      html += '<div class="mwg-ops-grid">';
+      for (var fo = 0; fo < FRAC_OPS.length; fo++) {
+        var fop = FRAC_OPS[fo];
+        var foChecked = checked.indexOf(fop.value) !== -1 || fracChecked ? "checked" : "";
+        html += '<label style="font-size:12px"><input type="checkbox" class="mwg-frac-op-cb mwg-mixed-op-cb" value="' + fop.value + '" ' + foChecked + '> ' + esc(fop.label) + '</label>';
+      }
+      html += '</div>';
+      html += '<button type="button" class="mwg-ops-select-all mwg-frac-all" style="font-size:11px;padding:2px 6px;margin-top:4px;cursor:pointer;font-family:Georgia,serif;">All Fraction Ops</button>';
+      html += '</div>';
+      continue;
+    }
+    if (group.label === "Decimals" && groupTypes.indexOf("decimals") !== -1) {
+      var decChecked = checked.indexOf("decimals") !== -1;
+      html += '<div class="mwg-mixed-frac-dec-group">';
+      html += '<strong>Decimals</strong>';
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">';
+      html += '<label style="font-size:12px"><input type="checkbox" class="mwg-mixed-cb" value="decimals" ' + (decChecked?"checked":"") + '> Include Decimals (all selected ops)</label>';
+      html += '</div>';
+      html += '<div class="mwg-ops-grid">';
+      for (var fo = 0; fo < DEC_OPS.length; fo++) {
+        var dop = DEC_OPS[fo];
+        var doChecked = checked.indexOf(dop.value) !== -1 || decChecked ? "checked" : "";
+        html += '<label style="font-size:12px"><input type="checkbox" class="mwg-dec-op-cb mwg-mixed-op-cb" value="' + dop.value + '" ' + doChecked + '> ' + esc(dop.label) + '</label>';
+      }
+      html += '</div>';
+      html += '<button type="button" class="mwg-ops-select-all mwg-dec-all" style="font-size:11px;padding:2px 6px;margin-top:4px;cursor:pointer;font-family:Georgia,serif;">All Decimal Ops</button>';
+      html += '</div>';
+      continue;
+    }
     html += '<div style="margin-bottom:6px"><strong style="font-size:12px;color:rgb(85,85,85)">' + esc(group.label) + '</strong><div class="mwg-mixed-types-grid">';
     for (var t = 0; t < groupTypes.length; t++) {
       var type = groupTypes[t];
@@ -1169,16 +1352,34 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
   box.innerHTML = html;
   var entryDiv = containerEl;
   box.querySelector(".mwg-mixed-select-all").addEventListener("click", function() {
-    var cbs = box.querySelectorAll(".mwg-mixed-cb");
+    var cbs = box.querySelectorAll(".mwg-mixed-cb, .mwg-mixed-op-cb");
     for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
     updateCountForMixed(entryDiv);
   });
   box.querySelector(".mwg-mixed-deselect-all").addEventListener("click", function() {
-    var cbs = box.querySelectorAll(".mwg-mixed-cb");
+    var cbs = box.querySelectorAll(".mwg-mixed-cb, .mwg-mixed-op-cb");
     for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
     updateCountForMixed(entryDiv);
   });
-  var cbs = box.querySelectorAll(".mwg-mixed-cb");
+  var fracAllBtn = box.querySelector(".mwg-frac-all");
+  if (fracAllBtn) {
+    fracAllBtn.addEventListener("click", function() {
+      var cbs = box.querySelectorAll(".mwg-frac-op-cb");
+      for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
+      box.querySelector('.mwg-mixed-cb[value="fractions"]').checked = true;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  var decAllBtn = box.querySelector(".mwg-dec-all");
+  if (decAllBtn) {
+    decAllBtn.addEventListener("click", function() {
+      var cbs = box.querySelectorAll(".mwg-dec-op-cb");
+      for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
+      box.querySelector('.mwg-mixed-cb[value="decimals"]').checked = true;
+      updateCountForMixed(entryDiv);
+    });
+  }
+  var cbs = box.querySelectorAll(".mwg-mixed-cb, .mwg-mixed-op-cb");
   for (var i = 0; i < cbs.length; i++) {
     cbs[i].addEventListener("change", function() { updateCountForMixed(entryDiv); });
   }
@@ -1222,19 +1423,24 @@ function updateTypeOptionsForGrade(entryDiv, keepType) {
 }
 
 function readEntry(div) {
-  var mixedCbs = div.querySelectorAll(".mwg-mixed-cb:checked");
+  var typeVal = div.querySelector('[name="problemType"]') ? div.querySelector('[name="problemType"]').value : "";
+  var grade2  = div.querySelector('[name="grade"]') ? parseInt(div.querySelector('[name="grade"]').value)||1 : 1;
   var mixedTypes = null;
-  if (mixedCbs.length) {
-    mixedTypes = [];
-    for (var i = 0; i < mixedCbs.length; i++) mixedTypes.push(mixedCbs[i].value);
+  if (typeVal === "mixed") {
+    mixedTypes = getMixedPoolFromEntry(div, grade2);
   }
+  var type = div.querySelector('[name="problemType"]').value;
+  var fracOps = type === "fractions" ? getSelectedOps(div, "fractions") : null;
+  var decOps  = type === "decimals"  ? getSelectedOps(div, "decimals")  : null;
   return {
     name:       div.querySelector('[name="studentName"]').value.trim(),
     number:     div.querySelector('[name="studentNumber"]').value.trim(),
     grade:      div.querySelector('[name="grade"]').value,
-    type:       div.querySelector('[name="problemType"]').value,
+    type:       type,
     count:      div.querySelector('[name="count"]').value,
-    mixedTypes: mixedTypes
+    mixedTypes: mixedTypes,
+    fracOps:    fracOps,
+    decOps:     decOps
   };
 }
 
@@ -1263,17 +1469,22 @@ function createStudentEntry(index, data) {
       '<div><label>Grade Level</label><select name="grade">' + getGradeOptions(grade) + '</select></div>' +
       '<div><label>Problem Type</label><select name="problemType">' + getTypeOptions(parseInt(grade)||0, type) + '</select></div>' +
       '<div><label>Problem Count</label><select name="count">' + getCountOptions(count, isHorizType(type)) + '</select></div>' +
+      '<div class="mwg-ops-panel" id="ops-' + entryIdCounter + '"></div>' +
       '<div class="mwg-mixed-types"></div>' +
     '</div>';
   var gradeSelect = div.querySelector('[name="grade"]');
   var typeSelect  = div.querySelector('[name="problemType"]');
   gradeSelect.addEventListener("change", function() { updateTypeOptionsForGrade(div); });
-  typeSelect.addEventListener("change",  function() { updateMixedVisibility(div); });
+  typeSelect.addEventListener("change",  function() { updateMixedVisibility(div); updateOpsPanel(div); });
   if (type === "mixed" && mixedTypes) {
     updateMixedVisibility(div);
     setTimeout(function() { renderMixedCheckboxes(div, parseInt(grade)||1, mixedTypes); }, 0);
   } else {
     updateMixedVisibility(div);
+  }
+  updateOpsPanel(div);
+  if (data.fracOps || data.decOps) {
+    setTimeout(function() { renderOpsPanel(div, type, data.fracOps, data.decOps); }, 0);
   }
   div.querySelector(".mwg-delete-link").addEventListener("click", function() {
     div.parentNode.removeChild(div);
@@ -1556,6 +1767,58 @@ function makeDecimals(grade) {
   var hi=Math.max(a,b),lo=Math.min(a,b);
   return {html:horizHtml(hi+" \u2212 "+lo+" ="),answer:+(hi-lo).toFixed(pl),kind:"horiz"};
 }
+function makeFracAdd() {
+  var d=rand(2,12),a=rand(1,d-1),b=rand(1,d-1);
+  return {html:horizHtml(fracHtml(a,d)+" + "+fracHtml(b,d)+" ="),answer:fractionStr(a+b,d),kind:"horiz"};
+}
+function makeFracSub() {
+  var d=rand(2,12),a=rand(1,d-1),b=rand(1,d-1);
+  if(a<b){var t=a;a=b;b=t;}
+  return {html:horizHtml(fracHtml(a,d)+" − "+fracHtml(b,d)+" ="),answer:fractionStr(a-b,d),kind:"horiz"};
+}
+function makeFracMul() {
+  var d1=rand(2,9),n1=rand(1,d1-1),d2=rand(2,9),n2=rand(1,d2-1);
+  return {html:horizHtml(fracHtml(n1,d1)+" × "+fracHtml(n2,d2)+" ="),answer:fractionStr(n1*n2,d1*d2),kind:"horiz"};
+}
+function makeFracDivF() {
+  var d1=rand(2,9),n1=rand(1,d1-1),d2=rand(2,9),n2=rand(1,d2-1);
+  return {html:horizHtml(fracHtml(n1,d1)+" ÷ "+fracHtml(n2,d2)+" ="),answer:fractionStr(n1*d2,d1*n2),kind:"horiz"};
+}
+function makeFracDivW() {
+  var d=rand(2,9),n=rand(1,d-1),w=rand(2,9);
+  return {html:horizHtml(fracHtml(n,d)+" ÷ "+w+" ="),answer:fractionStr(n,d*w),kind:"horiz"};
+}
+function makeDecAdd() {
+  var pl=rand(1,2),f=Math.pow(10,pl);
+  var a=Math.round(rand(10,99*f))/f,b=Math.round(rand(10,99*f))/f;
+  return {html:horizHtml(a.toFixed(pl)+" + "+b.toFixed(pl)+" ="),answer:parseFloat((a+b).toFixed(pl)),kind:"horiz"};
+}
+function makeDecSub() {
+  var pl=rand(1,2),f=Math.pow(10,pl);
+  var a=Math.round(rand(10,99*f))/f,b=Math.round(rand(10,99*f))/f;
+  var hi=Math.max(a,b),lo=Math.min(a,b);
+  return {html:horizHtml(hi.toFixed(pl)+" − "+lo.toFixed(pl)+" ="),answer:parseFloat((hi-lo).toFixed(pl)),kind:"horiz"};
+}
+function makeDecMulW() {
+  var pl=rand(1,2),f=Math.pow(10,pl);
+  var a=Math.round(rand(10,99*f))/f,b=rand(2,9);
+  return {html:horizHtml(a.toFixed(pl)+" × "+b+" ="),answer:parseFloat((a*b).toFixed(pl)),kind:"horiz"};
+}
+function makeDecMulD() {
+  var a=Math.round(rand(10,99))/10,b=Math.round(rand(10,99))/10;
+  return {html:horizHtml(a.toFixed(1)+" × "+b.toFixed(1)+" ="),answer:parseFloat((a*b).toFixed(2)),kind:"horiz"};
+}
+function makeDecDivW() {
+  var b=rand(2,9),pl=rand(1,2),f=Math.pow(10,pl);
+  var q=Math.round(rand(10,99*f))/f;
+  var a=parseFloat((q*b).toFixed(pl));
+  return {html:horizHtml(a.toFixed(pl)+" ÷ "+b+" ="),answer:q,kind:"horiz"};
+}
+function makeDecDivD() {
+  var b=Math.round(rand(11,99))/10,q=rand(2,9);
+  var a=parseFloat((b*q).toFixed(2));
+  return {html:horizHtml(a.toFixed(2)+" ÷ "+b.toFixed(1)+" ="),answer:q,kind:"horiz"};
+}
 function makeRounding(grade) {
   var places=[10,100];
   if(grade>=5) places.push(1000);
@@ -1616,7 +1879,18 @@ function makeProblem(type, grade) {
     case "div4": return makeDiv4();
     case "div5": return makeDiv5();
     case "fractions":          return makeFractions(grade);
+    case "fractions-add":      return makeFracAdd();
+    case "fractions-sub":      return makeFracSub();
+    case "fractions-mul":      return makeFracMul();
+    case "fractions-divf":     return makeFracDivF();
+    case "fractions-divw":     return makeFracDivW();
     case "decimals":           return makeDecimals(grade);
+    case "decimals-add":       return makeDecAdd();
+    case "decimals-sub":       return makeDecSub();
+    case "decimals-mulw":      return makeDecMulW();
+    case "decimals-muld":      return makeDecMulD();
+    case "decimals-divw":      return makeDecDivW();
+    case "decimals-divd":      return makeDecDivD();
     case "rounding":           return makeRounding(grade);
     case "longdivision":       return makeLongDiv(grade);
     case "orderofoperations":  return makeOOO();
@@ -1627,12 +1901,30 @@ function makeProblem(type, grade) {
   }
 }
 
-function generateProblems(type, count, grade, mixedTypes) {
-  var horizTypes = ["fractions","decimals","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"];
+function generateProblems(type, count, grade, mixedTypes, fracOps, decOps) {
+  var horizTypes = ["fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"];
   if (horizTypes.indexOf(type) !== -1 && count > 30) count = 30;
   var problems = [];
-  if (type === "mixed") {
+  if (type === "fractions" && fracOps && fracOps.length) {
+    if (count > 30) count = 30;
+    for (var i = 0; i < count; i++) problems.push(makeProblem(fracOps[i % fracOps.length], grade));
+  } else if (type === "decimals" && decOps && decOps.length) {
+    if (count > 30) count = 30;
+    for (var i = 0; i < count; i++) problems.push(makeProblem(decOps[i % decOps.length], grade));
+  } else if (type === "mixed") {
     var pool = (mixedTypes && mixedTypes.length) ? mixedTypes : getMixedTypesForGrade(grade);
+    // Expand fractions/decimals in pool using their sub-ops if present
+    var expandedPool = [];
+    for (var h = 0; h < pool.length; h++) {
+      if (pool[h] === "fractions" && fracOps && fracOps.length) {
+        for (var fo = 0; fo < fracOps.length; fo++) expandedPool.push(fracOps[fo]);
+      } else if (pool[h] === "decimals" && decOps && decOps.length) {
+        for (var fo = 0; fo < decOps.length; fo++) expandedPool.push(decOps[fo]);
+      } else {
+        expandedPool.push(pool[h]);
+      }
+    }
+    pool = expandedPool;
     var poolHasHoriz = false;
     for (var h = 0; h < pool.length; h++) { if (horizTypes.indexOf(pool[h]) !== -1) { poolHasHoriz = true; break; } }
     if (poolHasHoriz && count > 30) count = 30;
@@ -1672,7 +1964,7 @@ function descriptionFor(type, grade, count) {
 function buildWorksheet(student, setNum, setTotal, isLast) {
   var name=student.name, number=student.number, grade=student.grade;
   var type=student.type, count=student.count, mixedTypes=student.mixedTypes;
-  var problems = generateProblems(type, count, grade, mixedTypes);
+  var problems = generateProblems(type, count, grade, mixedTypes, student.fracOps, student.decOps);
   var useHoriz = isHorizType(type) || (type === "mixed" && isMixedHoriz(problems));
   var wide = !useHoriz && isWideType(type);
   // For mixed, check if any stacked problem is wide
