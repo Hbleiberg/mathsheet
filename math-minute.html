@@ -639,16 +639,26 @@ flex:0 0 auto !important;
 
 .worksheet-body{
 flex:1 1 auto !important;
-display:flex !important;
-min-height:0 !important;
+display:block !important;
+height:auto !important;
 overflow:visible !important;
 }
 
 .problems-grid{
 width:100% !important;
-height:100% !important;
-min-height:0 !important;
 display:grid !important;
+height:auto !important;
+}
+
+.rows-3{ grid-template-rows:repeat(3,1.5in) !important; }
+.rows-4{ grid-template-rows:repeat(4,1.1in) !important; }
+.rows-5{ grid-template-rows:repeat(5,0.9in) !important; }
+.rows-6{ grid-template-rows:repeat(6,0.76in) !important; }
+
+.problem-cell{
+display:flex !important;
+align-items:center !important;
+justify-content:center !important;
 }
 
 .worksheet.print-break{
