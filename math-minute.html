@@ -1009,7 +1009,7 @@ function randomInt(min, max) {
 function getLevelMeta(level) {
   var meta = {
     1:  { description: "Thirty addition facts, sums less than ten",         rowsClass: "rows-3" },
-    2:  { description: "Thirty addition facts, sums through twenty",        rowsClass: "rows-3" },
+    2:  { description: "Thirty addition facts, sums through eighteen",        rowsClass: "rows-3" },
     3:  { description: "Thirty subtraction facts, numbers through ten",     rowsClass: "rows-3" },
     4:  { description: "Thirty subtraction facts, numbers through twenty",  rowsClass: "rows-3" },
     5:  { description: "Forty addition facts",                              rowsClass: "rows-4" },
@@ -1052,6 +1052,15 @@ function generateSubtractionProblems(maxTop, count) {
   }
   return problems;
 }
+function generateSubtractionProblemsTeens(count) {
+  var problems = [];
+  while (problems.length < count) {
+    var a = randomInt(10, 18);
+    var b = randomInt(1, a);
+    problems.push({ kind: "stack", operator: "\u2212", a: a, b: b, answer: a - b });
+  }
+  return problems;
+}
 
 function generateMultiplicationProblems(minFactor, maxFactor, count, allowZero) {
   var problems = [];
@@ -1076,7 +1085,7 @@ function generateDivisionProblems(minDivisor, maxDivisor, count) {
 function generateMixedProblems() {
   return [].concat(
     generateAdditionProblems(18, 10, true),
-    generateSubtractionProblems(20, 10),
+    generateSubtractionProblemsTeens(10),
     generateMultiplicationProblems(0, 9, 10, true),
     generateDivisionProblems(1, 9, 10)
   );
@@ -1085,15 +1094,15 @@ function generateMixedProblems() {
 function generateProblemsForLevel(level) {
   switch (level) {
     case 1:  return generateAdditionProblems(9, 30, true);
-    case 2:  return generateAdditionProblems(20, 30, true);
+    case 2:  return generateAdditionProblems(18, 30, false);
     case 3:  return generateSubtractionProblems(10, 30);
-    case 4:  return generateSubtractionProblems(20, 30);
+    case 4:  return generateSubtractionProblemsTeens(30);
     case 5:  return generateAdditionProblems(18, 40, true);
-    case 6:  return generateSubtractionProblems(20, 40);
+    case 6:  return generateSubtractionProblemsTeens(40);
     case 7:  return generateAdditionProblems(18, 50, true);
-    case 8:  return generateSubtractionProblems(20, 50);
+    case 8:  return generateSubtractionProblemsTeens(50);
     case 9:  return generateAdditionProblems(18, 60, true);
-    case 10: return generateSubtractionProblems(20, 60);
+    case 10: return generateSubtractionProblemsTeens(60);
     case 11: return generateMultiplicationProblems(0, 5, 30, true);
     case 12: return generateMultiplicationProblems(6, 9, 30, false);
     case 13: return generateMultiplicationProblems(0, 9, 40, true);
