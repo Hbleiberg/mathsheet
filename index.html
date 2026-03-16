@@ -795,23 +795,19 @@ body { margin: 0; padding: 12px; background: white; }
 <div class="mwg-results" id="mwgResults"></div>
 <div id="mwgErrors"></div>
 
-<!-- Advanced code modal -->
-<div class="mwg-modal-overlay" id="mwgCodeModal">
-  <div class="mwg-modal-box">
-    <div class="mwg-modal-header">
-      <div class="mwg-modal-title">Advanced Input Code</div>
-      <button type="button" class="mwg-modal-close" id="mwgCloseModal">Close</button>
-    </div>
-    <div class="mwg-modal-body">
-      <textarea id="mwgCodeOutput" readonly></textarea>
-      <div class="mwg-modal-help">Copy and paste this into the Advanced Input box.</div>
-      <div class="mwg-modal-actions">
-        <button type="button" id="mwgCopyCodeBtn" class="mwg-btn-small">Copy Code</button>
-        <button type="button" id="mwgUseCodeBtn" class="mwg-btn-small">Use in Advanced Input</button>
-      </div>
-    </div>
+<div id="mwgCodePanel" style="display:none;border:1px solid rgb(199,214,255);background:rgb(238,243,255);border-radius:8px;padding:12px 16px;margin-top:12px;">
+  <div style="font-weight:bold;font-size:14px;margin-bottom:8px;">Advanced Input Code</div>
+  <textarea id="mwgCodeOutput" readonly style="width:100%;min-height:120px;resize:vertical;font-family:Georgia,serif;font-size:13px;padding:8px;box-sizing:border-box;border:1px solid rgb(199,214,255);border-radius:4px;background:white;"></textarea>
+  <div style="font-size:13px;color:rgb(68,68,68);margin:8px 0;">Copy and paste this into the Advanced Input box.</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+    <button type="button" id="mwgCopyCodeBtn" class="mwg-btn-small">Copy Code</button>
+    <button type="button" id="mwgUseCodeBtn" class="mwg-btn-small">Use in Advanced Input</button>
+    <button type="button" id="mwgCloseModal" class="mwg-btn-small">Close</button>
   </div>
 </div>
+
+<!-- Advanced code modal -->
+
 
 
 </div>
@@ -926,9 +922,10 @@ var form, studentsContainer, studentCounter, standardSection,
     advancedSection, advancedBox, modeIndicator, toggleModeBtn,
     addStudentBtn, genCodeBtn, saveBtn, clearCurrentBtn, clearSavedBtn,
     generateBtn, savePdfBtn, fillDownBtn, worksheetsPerStudent, answerKeyToggle,
-    resultsDiv, statusDiv, errorsDiv, codeModal, closeModal,
+    resultsDiv, statusDiv, errorsDiv, closeModal,
     codeOutput, copyCodeBtn, useCodeBtn, referenceGrid,
-    validationBox, validationMsg, validationFix, validationGenerate;
+    validationBox, validationMsg, validationFix, validationGenerate,
+    codePanel;
 var pendingGenerateAction = null;
 
 function injectStyles() {
@@ -1021,7 +1018,7 @@ function assignDomRefs() {
   resultsDiv           = document.getElementById("mwgResults");
   statusDiv            = document.getElementById("mwgStatus");
   errorsDiv            = document.getElementById("mwgErrors");
-  codeModal            = document.getElementById("mwgCodeModal");
+  codePanel            = document.getElementById("mwgCodePanel");
   closeModal           = document.getElementById("mwgCloseModal");
   codeOutput           = document.getElementById("mwgCodeOutput");
   copyCodeBtn          = document.getElementById("mwgCopyCodeBtn");
@@ -1422,7 +1419,8 @@ function openCodeModal() {
   var code = buildAdvancedCode();
   if (!code.trim()) { showNotice("Add at least one complete student before generating code."); return; }
   codeOutput.value = code;
-  codeModal.className = "mwg-modal-overlay active";
+  codePanel.style.display = "block";
+  codePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function parseAdvancedInput() {
@@ -2029,8 +2027,7 @@ function wireButtons() {
     }
     showSuccess("Settings filled down from Student 1.");
   });
-  closeModal.addEventListener("click", function() { codeModal.className = "mwg-modal-overlay"; });
-  codeModal.addEventListener("click", function(e) { if (e.target === codeModal) codeModal.className = "mwg-modal-overlay"; });
+  closeModal.addEventListener("click", function() { codePanel.style.display = "none"; });
   copyCodeBtn.addEventListener("click", function() {
     try { navigator.clipboard.writeText(codeOutput.value).then(function() { showSuccess("Code copied."); }); }
     catch(e) { showNotice("Unable to copy automatically."); }
@@ -2038,7 +2035,7 @@ function wireButtons() {
   useCodeBtn.addEventListener("click", function() {
     advancedBox.value = codeOutput.value;
     setInputMode("advanced");
-    codeModal.className = "mwg-modal-overlay";
+    codePanel.style.display = "none";
     showSuccess("Code moved to Advanced Input.");
   });
 }
