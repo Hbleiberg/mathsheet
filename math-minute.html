@@ -1020,7 +1020,7 @@ function getLevelMeta(level) {
   var meta = {
     1:  { description: "Thirty addition facts, sums less than ten",         rowsClass: "rows-3" },
     2:  { description: "Thirty addition facts, sums through eighteen",        rowsClass: "rows-3" },
-    3:  { description: "Thirty subtraction facts, numbers through ten",     rowsClass: "rows-3" },
+    3:  { description: "Thirty subtraction facts, numbers through nine",     rowsClass: "rows-3" },
     4:  { description: "Thirty subtraction facts, numbers through twenty",  rowsClass: "rows-3" },
     5:  { description: "Forty addition facts",                              rowsClass: "rows-4" },
     6:  { description: "Forty subtraction facts",                           rowsClass: "rows-4" },
@@ -1105,7 +1105,7 @@ function generateProblemsForLevel(level) {
   switch (level) {
     case 1:  return generateAdditionProblems(9, 30, true);
     case 2:  return generateAdditionProblems(18, 30, false);
-    case 3:  return generateSubtractionProblems(10, 30);
+    case 3:  return generateSubtractionProblems(9, 30);
     case 4:  return generateSubtractionProblemsTeens(30);
     case 5:  return generateAdditionProblems(18, 40, true);
     case 6:  return generateSubtractionProblemsTeens(40);
