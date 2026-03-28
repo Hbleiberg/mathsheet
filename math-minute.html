@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Minute</title>
+</head>
+<body>
 <div id="math-minute-app">
 <style>
 
@@ -231,8 +239,6 @@ display:none;
 #results{
 margin-top:30px;
 }
-
-/* PRINT PAGE FIX */
 
 .worksheet{
 width:11in;
@@ -718,6 +724,9 @@ break-after:avoid !important;
   </div>
 
   <div id="standardInputSection">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+      <button type="button" id="fillDownButton" class="btn-small">Fill Down Settings ↓</button>
+    </div>
     <div class="student-counter" id="studentCounter">Students: 0</div>
     <div id="studentsContainer"></div>
   </div>
@@ -778,16 +787,13 @@ break-after:avoid !important;
   </div>
 </div>
 
-
-
-
-
 <script>
 (function () {
 "use strict";
 
 var studentsContainer = null;
 var addStudentButton = null;
+var fillDownButton = null;
 var saveRosterButton = null;
 var clearCurrentRosterButton = null;
 var clearSavedRosterButton = null;
@@ -981,6 +987,7 @@ function setInputMode(mode) {
     toggleInputModeButton.textContent = "Back to Standard Input";
     addStudentButton.style.display = "none";
     if (generateAdvancedCodeButton) generateAdvancedCodeButton.style.display = "none";
+    if (fillDownButton) fillDownButton.style.display = "none";
   } else {
     standardInputSection.style.display = "block";
     advancedInputSection.style.display = "none";
@@ -988,6 +995,7 @@ function setInputMode(mode) {
     toggleInputModeButton.textContent = "Advanced Input";
     addStudentButton.style.display = "inline-block";
     if (generateAdvancedCodeButton) generateAdvancedCodeButton.style.display = "inline-block";
+    if (fillDownButton) fillDownButton.style.display = "inline-block";
   }
 }
 
@@ -1073,6 +1081,7 @@ function generateSubtractionProblems(maxTop, count) {
   }
   return problems;
 }
+
 function generateSubtractionProblemsTeens(count) {
   var problems = [];
   while (problems.length < count) {
@@ -1566,6 +1575,7 @@ function doGenerateAndSavePdf() {
 function assignDomRefs() {
   studentsContainer          = document.getElementById("studentsContainer");
   addStudentButton           = document.getElementById("addStudentButton");
+  fillDownButton             = document.getElementById("fillDownButton");
   saveRosterButton           = document.getElementById("saveRosterButton");
   clearCurrentRosterButton   = document.getElementById("clearCurrentRosterButton");
   clearSavedRosterButton     = document.getElementById("clearSavedRosterButton");
@@ -1633,6 +1643,16 @@ function wireButtons() {
     refreshStudentNumbers();
   });
 
+  fillDownButton.addEventListener("click", function () {
+    var entries = studentsContainer.querySelectorAll(".student-entry");
+    if (entries.length < 2) return;
+    var firstLevel = entries[0].querySelector('select[name="level"]').value;
+    for (var i = 1; i < entries.length; i++) {
+      entries[i].querySelector('select[name="level"]').value = firstLevel;
+    }
+    showSuccess("Level filled down from Student 1.");
+  });
+
   if (generateAdvancedCodeButton) {
     generateAdvancedCodeButton.addEventListener("click", function () {
       clearStatusMessages();
@@ -1641,7 +1661,6 @@ function wireButtons() {
   }
 
   closeAdvancedCodeModal.addEventListener("click", function () { closeAdvancedCodeModalFn(); });
-
 
   copyAdvancedCodeButton.addEventListener("click", function () {
     var text = advancedCodeOutput.value;
@@ -1719,3 +1738,5 @@ if (document.readyState === "loading") {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </div>
+</body>
+</html>
