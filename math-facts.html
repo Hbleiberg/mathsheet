@@ -735,12 +735,12 @@ break-after:avoid !important;
     <div class="advanced-layout">
       <div class="advanced-input-wrap">
         <label for="advancedInputBox">Paste student data</label>
-        <textarea id="advancedInputBox" placeholder="Harrison, 2, add-plus10; Emily, 5, add-doubles; Jacob, 14, mix-plus-40;"></textarea>
+        <textarea id="advancedInputBox" placeholder="Harrison, 2, +10; Emily, 5, doubles; Jacob, 14, mix+40;"></textarea>
         <div class="advanced-help">
           Format: <strong>STUDENTNAME, NUMBER, FACTCODE; NEXTSTUDENT, NEXTNUMBER, FACTCODE;</strong><br>
           Fact codes are listed in the Level Reference to the right.<br>
           You can also paste one student per line.<br>
-          Example: <strong>Harrison, 2, add-plus10; Emily, 5, add-doubles; Jacob, 14, mix-plus-40;</strong><br>
+          Example: <strong>Harrison, 2, +10; Emily, 5, doubles; Jacob, 14, mix+40;</strong><br>
           Extra spaces are okay. Blank trailing entries are ignored. Invalid entries are skipped and listed in an error message.
         </div>
       </div>
@@ -830,42 +830,42 @@ var inputMode = "standard";
 
 var FACT_GROUPS = [
   { label: "Addition Facts", options: [
-    ["add-plus01", "+0  +1"],
-    ["add-doubles", "Doubles (up to 9+9)"],
-    ["add-doubles-plus1", "Doubles +1"],
-    ["add-plus3", "+3"],
-    ["add-plus4", "+4"],
-    ["add-plus5", "+5"],
-    ["add-plus6", "+6"],
-    ["add-plus7", "+7"],
-    ["add-plus8", "+8"],
-    ["add-plus9", "+9"],
-    ["add-plus10", "+10 (Teens Rule)"]
+    ["+0+1", "+0  +1"],
+    ["doubles", "Doubles (up to 9+9)"],
+    ["doubles+1", "Doubles +1"],
+    ["+3", "+3"],
+    ["+4", "+4"],
+    ["+5", "+5"],
+    ["+6", "+6"],
+    ["+7", "+7"],
+    ["+8", "+8"],
+    ["+9", "+9"],
+    ["+10", "+10 (Teens Rule)"]
   ]},
   { label: "Subtraction Facts", options: [
-    ["sub-self01", "-itself  -0  -1"],
-    ["sub-friends10", "-friend of 10"],
-    ["sub-minus3", "-3"],
-    ["sub-minus4", "-4"],
-    ["sub-minus5", "-5"],
-    ["sub-minus6", "-6"],
-    ["sub-minus7", "-7"],
-    ["sub-minus8", "-8"],
-    ["sub-minus9", "-9"]
+    ["-self", "-itself  -0  -1"],
+    ["-fr10", "-friend of 10"],
+    ["-3", "-3"],
+    ["-4", "-4"],
+    ["-5", "-5"],
+    ["-6", "-6"],
+    ["-7", "-7"],
+    ["-8", "-8"],
+    ["-9", "-9"]
   ]},
   { label: "Mixed Facts", options: [
-    ["mix-plus-30", "30 mixed +"],
-    ["mix-plus-40", "40 mixed +"],
-    ["mix-plus-50", "50 mixed +"],
-    ["mix-plus-60", "60 mixed +"],
-    ["mix-minus-30", "30 mixed -"],
-    ["mix-minus-40", "40 mixed -"],
-    ["mix-minus-50", "50 mixed -"],
-    ["mix-minus-60", "60 mixed -"],
-    ["mix-pm-30", "30 mixed +/-"],
-    ["mix-pm-40", "40 mixed +/-"],
-    ["mix-pm-50", "50 mixed +/-"],
-    ["mix-pm-60", "60 mixed +/-"]
+    ["mix+30", "30 mixed +"],
+    ["mix+40", "40 mixed +"],
+    ["mix+50", "50 mixed +"],
+    ["mix+60", "60 mixed +"],
+    ["mix-30", "30 mixed -"],
+    ["mix-40", "40 mixed -"],
+    ["mix-50", "50 mixed -"],
+    ["mix-60", "60 mixed -"],
+    ["mixpm30", "30 mixed +/-"],
+    ["mixpm40", "40 mixed +/-"],
+    ["mixpm50", "50 mixed +/-"],
+    ["mixpm60", "60 mixed +/-"]
   ]}
 ];
 
@@ -882,13 +882,18 @@ function renderLevelReference() {
   var html = "";
   for (var g = 0; g < FACT_GROUPS.length; g++) {
     html += '<div class="level-reference-item" style="grid-column:1 / -1;font-weight:bold;margin-top:' +
-      (g ? "6px" : "0") + ';">' + escapeHtml(FACT_GROUPS[g].label) + "</div>";
+      (g ? "8px" : "0") + ';">' + escapeHtml(FACT_GROUPS[g].label) + "</div>";
     var opts = FACT_GROUPS[g].options;
     for (var i = 0; i < opts.length; i++) {
-      html += '<div class="level-reference-item">' +
-        escapeHtml(opts[i][0]) + " \u2013 " + escapeHtml(opts[i][1]) + "</div>";
+      html += '<div class="level-reference-item"><code>' + escapeHtml(opts[i][0]) + "</code></div>";
     }
   }
+  html += '<div class="level-reference-item" style="grid-column:1 / -1;margin-top:10px;' +
+    'white-space:normal;color:#555;font-style:italic;line-height:1.45;">' +
+    '<code>+N</code> / <code>-N</code> = plus / minus N. ' +
+    '<code>-self</code> = minus itself, 0, or 1. <code>-fr10</code> = friends of ten. ' +
+    '<code>mix+NN</code> / <code>mix-NN</code> / <code>mixpmNN</code> = mixed addition / subtraction / both, NN problems.' +
+    "</div>";
   levelReferenceGrid.innerHTML = html;
 }
 
@@ -1138,30 +1143,30 @@ function defineFact(value, description, generateOne) {
     generate: function () { return buildList(generateOne, 30); }
   };
 }
-defineFact("add-plus01", "Thirty addition facts \u2014 plus zero or one", addPlusZeroOrOne);
-defineFact("add-doubles", "Thirty addition facts \u2014 doubles to 9 + 9", addDoubles);
-defineFact("add-doubles-plus1", "Thirty addition facts \u2014 doubles plus one", addDoublesPlusOne);
+defineFact("+0+1", "Thirty addition facts \u2014 plus zero or one", addPlusZeroOrOne);
+defineFact("doubles", "Thirty addition facts \u2014 doubles to 9 + 9", addDoubles);
+defineFact("doubles+1", "Thirty addition facts \u2014 doubles plus one", addDoublesPlusOne);
 for (var an = 3; an <= 10; an++) {
-  defineFact("add-plus" + an, "Thirty addition facts \u2014 plus " + FACT_WORDS[an], makeAddPlusN(an));
+  defineFact("+" + an, "Thirty addition facts \u2014 plus " + FACT_WORDS[an], makeAddPlusN(an));
 }
-defineFact("sub-self01", "Thirty subtraction facts \u2014 minus itself, zero, or one", subSelfZeroOne);
-defineFact("sub-friends10", "Thirty subtraction facts \u2014 friends of ten", subFriendsOfTen);
+defineFact("-self", "Thirty subtraction facts \u2014 minus itself, zero, or one", subSelfZeroOne);
+defineFact("-fr10", "Thirty subtraction facts \u2014 friends of ten", subFriendsOfTen);
 for (var sn = 3; sn <= 9; sn++) {
-  defineFact("sub-minus" + sn, "Thirty subtraction facts \u2014 minus " + FACT_WORDS[sn], makeSubMinusN(sn));
+  defineFact("-" + sn, "Thirty subtraction facts \u2014 minus " + FACT_WORDS[sn], makeSubMinusN(sn));
 }
 function defineMixed(prefix, pool, descNoun) {
   [30, 40, 50, 60].forEach(function (count) {
     var one = mixedFrom(pool);
-    FACTS[prefix + "-" + count] = {
+    FACTS[prefix + count] = {
       description: COUNT_WORD[count] + " mixed " + descNoun,
       count: count, rows: "rows-" + (count / 10),
       generate: function () { return buildList(one, count); }
     };
   });
 }
-defineMixed("mix-plus", additionPool, "addition facts");
-defineMixed("mix-minus", subtractionPool, "subtraction facts");
-defineMixed("mix-pm", additionPool.concat(subtractionPool), "addition and subtraction facts");
+defineMixed("mix+", additionPool, "addition facts");
+defineMixed("mix-", subtractionPool, "subtraction facts");
+defineMixed("mixpm", additionPool.concat(subtractionPool), "addition and subtraction facts");
 
 function generateProblemsForLevel(level) {
   var fact = FACTS[level];
