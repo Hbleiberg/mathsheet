@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Facts</title>
+</head>
+<body>
+<div id="math-facts-app">
+<style>
+
+#math-facts-app{
+font-family:Arial,sans-serif;
+max-width:1100px;
+margin:0 auto;
+color:#111;
+}
+
+#math-facts-app *,
+#math-facts-app *::before,
+#math-facts-app *::after{
+box-sizing:border-box;
+}
+
+#math-facts-title{
+text-align:center;
+margin:0 0 6px 0;
+}
+
+#math-facts-subtitle{
+text-align:center;
+margin:0 0 22px 0;
+color:#444;
+font-size:14px;
+}
+
+.controls-card{
+border:1px solid #ccc;
+padding:16px;
+margin-bottom:12px;
+border-radius:8px;
+background:#f9f9f9;
+}
+
+.controls-grid{
+display:grid;
+grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);
+gap:14px;
+align-items:end;
+}
+
+.control-group label{
+display:block;
+font-weight:bold;
+margin-bottom:4px;
+font-size:14px;
+}
+
+.control-group select,
+.control-group input{
+width:100%;
+padding:8px;
+font-size:14px;
+}
+
+.answer-key-row{
+margin-top:12px;
+display:flex;
+align-items:center;
+gap:8px;
+font-size:14px;
+}
+
+.answer-key-row label{
+font-weight:bold;
+cursor:pointer;
+}
+
+.primary-actions{
+margin-top:14px;
+display:flex;
+gap:12px;
+flex-wrap:wrap;
+align-items:center;
+justify-content:center;
+}
+
+.btn-large{
+padding:12px 20px;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.notice-box{
+border:1px solid #d6aa00;
+background:#fff8db;
+border-radius:8px;
+padding:10px 12px;
+margin-top:12px;
+font-size:14px;
+}
+
+#results{
+margin-top:30px;
+}
+
+.worksheet{
+width:11in;
+height:8.5in;
+margin:0 auto 12px auto;
+background:white;
+color:black;
+padding:0.25in 0.3in;
+border:1px solid #bbb;
+display:flex;
+flex-direction:column;
+overflow:hidden;
+page-break-inside:avoid;
+break-inside:avoid-page;
+}
+
+.worksheet.print-break{
+page-break-after:always;
+}
+
+.worksheet:last-child{
+page-break-after:auto;
+}
+
+.worksheet-header{
+border-top:2px solid #222;
+border-left:2px solid #222;
+border-right:2px solid #222;
+padding:7px 10px 8px 10px;
+margin-bottom:0.02in;
+flex:0 0 auto;
+}
+
+.worksheet-header-main{
+width:100%;
+display:grid;
+grid-template-columns:2fr 3fr;
+gap:14px;
+align-items:center;
+}
+
+.student-field{
+display:flex;
+align-items:center;
+gap:8px;
+min-width:0;
+}
+
+.student-field-label{
+font-size:12px;
+font-weight:bold;
+text-transform:uppercase;
+letter-spacing:.35px;
+flex-shrink:0;
+}
+
+.student-field-value{
+flex:1;
+min-height:24px;
+border-bottom:1px solid #222;
+padding:1px 3px;
+font-size:18px;
+font-weight:bold;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+}
+
+.description-box{
+min-height:24px;
+border:1px solid #222;
+padding:6px 8px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+font-size:13px;
+font-style:italic;
+line-height:1.15;
+background:#fafafa;
+}
+
+.description-text{
+min-width:0;
+flex:1 1 auto;
+}
+
+.worksheet-body{
+flex:1 1 auto;
+min-height:0;
+display:flex;
+overflow:hidden;
+}
+
+.problems-grid{
+width:100%;
+height:100%;
+display:grid;
+grid-template-columns:repeat(10,1fr);
+justify-items:center;
+align-items:center;
+padding:0;
+min-height:0;
+min-width:0;
+row-gap:0;
+}
+
+.rows-3{ grid-template-rows:repeat(3,1fr); }
+.rows-4{ grid-template-rows:repeat(4,1fr); }
+.rows-5{ grid-template-rows:repeat(5,1fr); }
+.rows-6{ grid-template-rows:repeat(6,1fr); }
+
+.problem-cell{
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+min-height:0;
+min-width:0;
+}
+
+.problem-stack{
+width:0.62in;
+text-align:right;
+font-size:23px;
+line-height:0.98;
+font-family:Arial,sans-serif;
+}
+
+.problem-top{
+display:block;
+min-height:22px;
+padding-right:1px;
+}
+
+.problem-bottom-line{
+display:flex;
+justify-content:flex-end;
+align-items:center;
+min-height:24px;
+border-bottom:2px solid #111;
+padding-bottom:1px;
+}
+
+.problem-operator{
+margin-right:2px;
+}
+
+.problem-bottom{
+min-width:18px;
+text-align:right;
+display:inline-block;
+}
+
+@media (max-width:760px){
+.controls-grid{
+grid-template-columns:1fr;
+}
+.worksheet{
+width:100%;
+height:auto;
+}
+}
+
+@page{
+size:11in 8.5in landscape;
+margin:0;
+}
+
+@media print{
+
+html, body{
+margin:0 !important;
+padding:0 !important;
+}
+
+body > *{
+display:none !important;
+}
+
+#results,
+#results-print{
+display:block !important;
+width:11in !important;
+margin:0 !important;
+padding:0 !important;
+}
+
+.worksheet{
+display:flex !important;
+flex-direction:column !important;
+border:none !important;
+box-shadow:none !important;
+margin:0 !important;
+padding:0.25in 0.3in !important;
+width:11in !important;
+height:8.5in !important;
+overflow:hidden !important;
+box-sizing:border-box !important;
+}
+
+.worksheet-header{
+flex:0 0 auto !important;
+}
+
+.worksheet-body{
+flex:1 1 auto !important;
+display:block !important;
+height:auto !important;
+overflow:visible !important;
+}
+
+.problems-grid{
+width:100% !important;
+display:grid !important;
+height:auto !important;
+grid-template-columns:repeat(10,1fr) !important;
+}
+
+.rows-3{ grid-template-rows:repeat(3,2.4in) !important; }
+.rows-4{ grid-template-rows:repeat(4,1.8in) !important; }
+.rows-5{ grid-template-rows:repeat(5,1.44in) !important; }
+.rows-6{ grid-template-rows:repeat(6,1.2in) !important; }
+
+.problem-cell{
+display:flex !important;
+align-items:center !important;
+justify-content:center !important;
+}
+
+.worksheet.print-break{
+page-break-after:always !important;
+break-after:page !important;
+}
+
+.worksheet:last-child{
+page-break-after:avoid !important;
+break-after:avoid !important;
+}
+
+}
+
+</style>
+
+<h1 id="math-facts-title">Math Facts</h1>
+<p id="math-facts-subtitle">Pick a fact set, then generate and print a Math Minute worksheet.</p>
+
+<div class="controls-card">
+  <div class="controls-grid">
+    <div class="control-group">
+      <label for="factSelect">Fact set</label>
+      <select id="factSelect">
+        <optgroup label="Addition Facts">
+          <option value="add-plus01">Plus Zero or One</option>
+          <option value="add-doubles">Doubles</option>
+          <option value="add-doubles-plus1">Doubles Plus One</option>
+          <option value="add-plus3">Plus Three</option>
+          <option value="add-plus4">Plus Four</option>
+          <option value="add-plus5">Plus Five</option>
+          <option value="add-plus6">Plus Six</option>
+          <option value="add-plus7">Plus Seven</option>
+          <option value="add-plus8">Plus Eight</option>
+          <option value="add-plus9">Plus Nine</option>
+          <option value="add-plus10">Plus Ten</option>
+        </optgroup>
+        <optgroup label="Subtraction Facts">
+          <option value="sub-self01">Minus Itself, Zero, or One</option>
+          <option value="sub-friends10">Minus Friends of Ten</option>
+          <option value="sub-minus3">Minus Three</option>
+          <option value="sub-minus4">Minus Four</option>
+          <option value="sub-minus5">Minus Five</option>
+          <option value="sub-minus6">Minus Six</option>
+          <option value="sub-minus7">Minus Seven</option>
+          <option value="sub-minus8">Minus Eight</option>
+          <option value="sub-minus9">Minus Nine</option>
+        </optgroup>
+        <optgroup label="Mixed Facts">
+          <option value="mix-plus-30">Thirty Mixed Plus</option>
+          <option value="mix-plus-40">Forty Mixed Plus</option>
+          <option value="mix-plus-50">Fifty Mixed Plus</option>
+          <option value="mix-plus-60">Sixty Mixed Plus</option>
+          <option value="mix-minus-30">Thirty Mixed Minus</option>
+          <option value="mix-minus-40">Forty Mixed Minus</option>
+          <option value="mix-minus-50">Fifty Mixed Minus</option>
+          <option value="mix-minus-60">Sixty Mixed Minus</option>
+          <option value="mix-pm-30">Thirty Mixed Plus Minus</option>
+          <option value="mix-pm-40">Forty Mixed Plus Minus</option>
+          <option value="mix-pm-50">Fifty Mixed Plus Minus</option>
+          <option value="mix-pm-60">Sixty Mixed Plus Minus</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="studentName">Student name (optional)</label>
+      <input type="text" id="studentName" placeholder="e.g. Harrison" maxlength="40">
+    </div>
+  </div>
+
+  <div class="answer-key-row">
+    <input type="checkbox" id="answerKeyToggle">
+    <label for="answerKeyToggle">Include answer key (prints a second page with answers)</label>
+  </div>
+
+  <div class="primary-actions">
+    <button type="button" id="generateButton" class="btn-large">Generate Worksheet</button>
+    <button type="button" id="printButton" class="btn-large">Print</button>
+  </div>
+</div>
+
+<div id="results"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- DOM refs ---------- */
+  var factSelect, studentName, answerKeyToggle, generateButton, printButton, results;
+  var STORAGE_KEY = "mathFactsData_v1";
+
+  /* ---------- utilities ---------- */
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#x27;");
+  }
+
+  var MINUS = "−";
+
+  /* ---------- single-problem generators ----------
+     Every problem is { kind:"stack", operator, a, b, answer }. */
+
+  function stackAdd(x, y) {
+    if (Math.random() < 0.5) { var t = x; x = y; y = t; } // randomize addend order
+    return { kind: "stack", operator: "+", a: x, b: y, answer: x + y };
+  }
+
+  function stackSub(top, bottom) {
+    return { kind: "stack", operator: MINUS, a: top, b: bottom, answer: top - bottom };
+  }
+
+  // Addition fact families (answers never exceed 18)
+  function addPlusZeroOrOne() {
+    var fixed = pick([0, 1]);
+    var other = randomInt(0, Math.min(9, 18 - fixed));
+    return stackAdd(fixed, other);
+  }
+  function addDoubles() {
+    var a = randomInt(1, 9);
+    return { kind: "stack", operator: "+", a: a, b: a, answer: a + a };
+  }
+  function addDoublesPlusOne() {
+    var a = randomInt(1, 8);          // a + (a+1); max 8 + 9 = 17
+    return stackAdd(a, a + 1);
+  }
+  function makeAddPlusN(n) {
+    return function () {
+      var other = randomInt(0, Math.min(9, 18 - n));
+      return stackAdd(n, other);
+    };
+  }
+
+  // Subtraction fact families (differences never exceed 10)
+  function subSelfZeroOne() {
+    var a = randomInt(1, 10);
+    var mode = pick(["self", "zero", "one"]);
+    if (mode === "self") return stackSub(a, a);
+    if (mode === "zero") return stackSub(a, 0);
+    return stackSub(a, 1);
+  }
+  function subFriendsOfTen() {
+    var b = randomInt(0, 10);         // 10 - friend
+    return stackSub(10, b);
+  }
+  function makeSubMinusN(n) {
+    return function () {
+      var diff = randomInt(0, 10);    // answer 0..10, minuend = diff + n
+      return stackSub(diff + n, n);
+    };
+  }
+
+  // Pools used by the Mixed options
+  var additionPool = [
+    addPlusZeroOrOne, addDoubles, addDoublesPlusOne,
+    makeAddPlusN(3), makeAddPlusN(4), makeAddPlusN(5), makeAddPlusN(6),
+    makeAddPlusN(7), makeAddPlusN(8), makeAddPlusN(9), makeAddPlusN(10)
+  ];
+  var subtractionPool = [
+    subSelfZeroOne, subFriendsOfTen,
+    makeSubMinusN(3), makeSubMinusN(4), makeSubMinusN(5), makeSubMinusN(6),
+    makeSubMinusN(7), makeSubMinusN(8), makeSubMinusN(9)
+  ];
+
+  function mixedFrom(pool) {
+    return function () { return pick(pool)(); };
+  }
+
+  function buildList(generateOne, count) {
+    var problems = [];
+    for (var i = 0; i < count; i++) problems.push(generateOne());
+    return problems;
+  }
+
+  /* ---------- fact config ----------
+     value -> { description, rows, count, generate } */
+  function rowsForCount(count) {
+    return "rows-" + (count / 10);
+  }
+
+  var WORDS = { 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten" };
+  var COUNT_WORD = { 30: "Thirty", 40: "Forty", 50: "Fifty", 60: "Sixty" };
+
+  var FACTS = {};
+
+  function defineFact(value, description, generateOne) {
+    FACTS[value] = {
+      description: description,
+      count: 30,
+      rows: "rows-3",
+      generate: function () { return buildList(generateOne, 30); }
+    };
+  }
+
+  // Addition
+  defineFact("add-plus01", "Thirty addition facts — plus zero or one", addPlusZeroOrOne);
+  defineFact("add-doubles", "Thirty addition facts — doubles to 9 + 9", addDoubles);
+  defineFact("add-doubles-plus1", "Thirty addition facts — doubles plus one", addDoublesPlusOne);
+  for (var an = 3; an <= 10; an++) {
+    defineFact("add-plus" + an, "Thirty addition facts — plus " + WORDS[an], makeAddPlusN(an));
+  }
+
+  // Subtraction
+  defineFact("sub-self01", "Thirty subtraction facts — minus itself, zero, or one", subSelfZeroOne);
+  defineFact("sub-friends10", "Thirty subtraction facts — friends of ten", subFriendsOfTen);
+  for (var sn = 3; sn <= 9; sn++) {
+    defineFact("sub-minus" + sn, "Thirty subtraction facts — minus " + WORDS[sn], makeSubMinusN(sn));
+  }
+
+  // Mixed (count drives the grid rows)
+  function defineMixed(prefix, pool, descNoun) {
+    [30, 40, 50, 60].forEach(function (count) {
+      var one = mixedFrom(pool);
+      FACTS[prefix + "-" + count] = {
+        description: COUNT_WORD[count] + " mixed " + descNoun,
+        count: count,
+        rows: rowsForCount(count),
+        generate: function () { return buildList(one, count); }
+      };
+    });
+  }
+  defineMixed("mix-plus", additionPool, "addition facts");
+  defineMixed("mix-minus", subtractionPool, "subtraction facts");
+  defineMixed("mix-pm", additionPool.concat(subtractionPool), "addition and subtraction facts");
+
+  /* ---------- rendering ---------- */
+  function renderProblem(problem) {
+    return '<div class="problem-cell">' +
+      '<div class="problem-stack">' +
+        '<span class="problem-top">' + problem.a + '</span>' +
+        '<div class="problem-bottom-line">' +
+          '<span class="problem-operator">' + problem.operator + '</span>' +
+          '<span class="problem-bottom">' + problem.b + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderAnswerProblem(problem) {
+    var redStyle = 'display:block;font-weight:bold;color:rgb(180,0,0);text-align:right;padding-top:2px;font-size:17px';
+    return '<div class="problem-cell">' +
+      '<div class="problem-stack">' +
+        '<span class="problem-top">' + problem.a + '</span>' +
+        '<div class="problem-bottom-line">' +
+          '<span class="problem-operator">' + problem.operator + '</span>' +
+          '<span class="problem-bottom">' + problem.b + '</span>' +
+        '</div>' +
+        '<span style="' + redStyle + '">' + escapeHtml(String(problem.answer)) + '</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function buildWorksheet(name, fact, problems, isAnswerKey, isLast) {
+    var worksheet = document.createElement("div");
+    worksheet.className = "worksheet" + (isLast ? "" : " print-break");
+    var descPrefix = isAnswerKey ? "ANSWER KEY — " : "";
+    var render = isAnswerKey ? renderAnswerProblem : renderProblem;
+
+    var problemsHtml = "";
+    for (var i = 0; i < problems.length; i++) problemsHtml += render(problems[i]);
+
+    worksheet.innerHTML =
+      '<div class="worksheet-header">' +
+        '<div class="worksheet-header-main">' +
+          '<div class="student-field">' +
+            '<span class="student-field-label">Student Name</span>' +
+            '<span class="student-field-value">' + escapeHtml(name || "") + '</span>' +
+          '</div>' +
+          '<div class="description-box">' +
+            '<span class="description-text">' + descPrefix + escapeHtml(fact.description) + '</span>' +
+            '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="worksheet-body">' +
+        '<div class="problems-grid ' + fact.rows + '">' +
+          problemsHtml +
+        '</div>' +
+      '</div>';
+    return worksheet;
+  }
+
+  /* ---------- actions ---------- */
+  function generateWorksheets() {
+    results.innerHTML = "";
+    var fact = FACTS[factSelect.value];
+    if (!fact) return false;
+    var name = studentName.value.trim();
+    var includeKey = answerKeyToggle.checked;
+    var problems = fact.generate();
+
+    results.appendChild(buildWorksheet(name, fact, problems, false, !includeKey));
+    if (includeKey) {
+      results.appendChild(buildWorksheet(name, fact, problems, true, true));
+    }
+    saveState();
+    return true;
+  }
+
+  function printWorksheets() {
+    if (!results.querySelector(".worksheet")) {
+      if (!generateWorksheets()) return;
+    }
+    var originalParent = results.parentNode;
+    var originalNext = results.nextSibling;
+
+    results.id = "results-print";
+    document.body.appendChild(results);
+    window.print();
+    results.id = "results";
+    if (originalNext) originalParent.insertBefore(results, originalNext);
+    else originalParent.appendChild(results);
+  }
+
+  /* ---------- persistence ---------- */
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        fact: factSelect.value,
+        name: studentName.value,
+        answerKey: answerKeyToggle.checked
+      }));
+    } catch (e) { /* ignore */ }
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      var saved = JSON.parse(raw);
+      if (saved.fact && FACTS[saved.fact]) factSelect.value = saved.fact;
+      if (typeof saved.name === "string") studentName.value = saved.name;
+      answerKeyToggle.checked = !!saved.answerKey;
+    } catch (e) { /* ignore */ }
+  }
+
+  /* ---------- init ---------- */
+  function init() {
+    factSelect       = document.getElementById("factSelect");
+    studentName      = document.getElementById("studentName");
+    answerKeyToggle  = document.getElementById("answerKeyToggle");
+    generateButton   = document.getElementById("generateButton");
+    printButton      = document.getElementById("printButton");
+    results          = document.getElementById("results");
+
+    loadState();
+
+    generateButton.addEventListener("click", generateWorksheets);
+    printButton.addEventListener("click", printWorksheets);
+    factSelect.addEventListener("change", saveState);
+    answerKeyToggle.addEventListener("change", saveState);
+    studentName.addEventListener("input", saveState);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</div>
+</body>
+</html>
