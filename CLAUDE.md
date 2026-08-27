@@ -69,7 +69,7 @@ Every generator offers a Standard form **and** an Advanced paste box. Keep both 
 
 - **Format — 3 comma fields per student, `;`- or newline-separated:**
   `Name, Number, Selector;` where **Selector** is that page's level/fact code (e.g.
-  `19` for math-minute's numeric levels, `add-plus10` for math-facts).
+  `19` for math-minute's numeric levels, `+10` for math-facts).
 - **Parsing algorithm (reuse verbatim — `getStudentsFromAdvancedInput`):**
   ```js
   var normalized = raw.trim().replace(/\n+/g, ";");   // newlines act as ";"

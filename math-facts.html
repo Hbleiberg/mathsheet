@@ -831,6 +831,7 @@ var inputMode = "standard";
 var FACT_GROUPS = [
   { label: "Addition Facts", options: [
     ["+0+1", "+0  +1"],
+    ["+2", "+2"],
     ["doubles", "Doubles (up to 9+9)"],
     ["doubles+1", "Doubles +1"],
     ["+3", "+3"],
@@ -844,6 +845,7 @@ var FACT_GROUPS = [
   ]},
   { label: "Subtraction Facts", options: [
     ["-self", "-itself  -0  -1"],
+    ["-2", "-2"],
     ["-fr10", "-friend of 10"],
     ["-3", "-3"],
     ["-4", "-4"],
@@ -1115,12 +1117,12 @@ function makeSubMinusN(n) {
 // Pools used by the Mixed options
 var additionPool = [
   addPlusZeroOrOne, addDoubles, addDoublesPlusOne,
-  makeAddPlusN(3), makeAddPlusN(4), makeAddPlusN(5), makeAddPlusN(6),
+  makeAddPlusN(2), makeAddPlusN(3), makeAddPlusN(4), makeAddPlusN(5), makeAddPlusN(6),
   makeAddPlusN(7), makeAddPlusN(8), makeAddPlusN(9), makeAddPlusN(10)
 ];
 var subtractionPool = [
   subSelfZeroOne, subFriendsOfTen,
-  makeSubMinusN(3), makeSubMinusN(4), makeSubMinusN(5), makeSubMinusN(6),
+  makeSubMinusN(2), makeSubMinusN(3), makeSubMinusN(4), makeSubMinusN(5), makeSubMinusN(6),
   makeSubMinusN(7), makeSubMinusN(8), makeSubMinusN(9)
 ];
 function mixedFrom(pool) {
@@ -1132,7 +1134,7 @@ function buildList(generateOne, count) {
   return problems;
 }
 
-var FACT_WORDS = { 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten" };
+var FACT_WORDS = { 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten" };
 var COUNT_WORD = { 30: "Thirty", 40: "Forty", 50: "Fifty", 60: "Sixty" };
 
 // value -> { description, count, rows, generate }
@@ -1146,12 +1148,12 @@ function defineFact(value, description, generateOne) {
 defineFact("+0+1", "Thirty addition facts \u2014 plus zero or one", addPlusZeroOrOne);
 defineFact("doubles", "Thirty addition facts \u2014 doubles to 9 + 9", addDoubles);
 defineFact("doubles+1", "Thirty addition facts \u2014 doubles plus one", addDoublesPlusOne);
-for (var an = 3; an <= 10; an++) {
+for (var an = 2; an <= 10; an++) {
   defineFact("+" + an, "Thirty addition facts \u2014 plus " + FACT_WORDS[an], makeAddPlusN(an));
 }
 defineFact("-self", "Thirty subtraction facts \u2014 minus itself, zero, or one", subSelfZeroOne);
 defineFact("-fr10", "Thirty subtraction facts \u2014 friends of ten", subFriendsOfTen);
-for (var sn = 3; sn <= 9; sn++) {
+for (var sn = 2; sn <= 9; sn++) {
   defineFact("-" + sn, "Thirty subtraction facts \u2014 minus " + FACT_WORDS[sn], makeSubMinusN(sn));
 }
 function defineMixed(prefix, pool, descNoun) {
