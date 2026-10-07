@@ -1061,88 +1061,146 @@ function getLevelMeta(level) {
   return meta[level] || { description: "Math facts", rowsClass: "rows-3" };
 }
 
-function generateAdditionProblems(maxSum, count, allowZero) {
-  var problems = [];
-  while (problems.length < count) {
-    var a = randomInt(allowZero ? 0 : 1, 9);
-    var b = randomInt(allowZero ? 0 : 1, 9);
-    if (a + b <= maxSum) problems.push({ kind: "stack", operator: "+", a: a, b: b, answer: a + b });
-  }
-  return problems;
+// Every problem is { kind:"stack", operator, a, b, answer } or
+// { kind:"division", divisor, dividend, answer }. Each level lists every fact in its range
+// (both stacking orders where the range allows them, so 3+5 and 5+3 count as one fact);
+// makeDeck folds that list into one card per distinct fact, and dealProblems deals a
+// worksheet from a shuffled copy of the deck, so every fact is used before any fact repeats
+// and no fact shows up more often than any other by more than one.
+function stack(op, a, b) {
+  var answer = op === "+" ? a + b : op === "\u2212" ? a - b : a * b;
+  return { kind: "stack", operator: op, a: a, b: b, answer: answer };
 }
 
-function generateSubtractionProblems(maxTop, count) {
-  var problems = [];
-  while (problems.length < count) {
-    var a = randomInt(1, maxTop);
-    var b = randomInt(0, Math.min(a, 9));
-    if (a - b > 9) continue;
-    problems.push({ kind: "stack", operator: "\u2212", a: a, b: b, answer: a - b });
+function additionFacts(maxSum, allowZero) {           // a+b with a, b = 0..9 (1..9 without zero)
+  var facts = [], low = allowZero ? 0 : 1;
+  for (var a = low; a <= 9; a++) {
+    for (var b = low; b <= 9; b++) if (a + b <= maxSum) facts.push(stack("+", a, b));
   }
-  return problems;
+  return facts;
+}
+function subtractionFacts(maxTop) {                   // a-b with a = 1..maxTop, b = 0..a, answers to 9
+  var facts = [];
+  for (var a = 1; a <= maxTop; a++) {
+    for (var b = 0; b <= Math.min(a, 9); b++) if (a - b <= 9) facts.push(stack("\u2212", a, b));
+  }
+  return facts;
+}
+function teenSubtractionFacts() {                     // a-b with a = 10..18 and a single-digit answer
+  var facts = [];
+  for (var a = 10; a <= 18; a++) {
+    for (var b = a - 9; b <= 9; b++) facts.push(stack("\u2212", a, b));
+  }
+  return facts;
+}
+function multiplicationFacts(minFactor, maxFactor, allowZero) {   // a x b with a = 0..9, b = minFactor..maxFactor
+  var facts = [];
+  for (var a = allowZero ? 0 : 1; a <= 9; a++) {
+    for (var b = Math.max(minFactor, 1); b <= maxFactor; b++) {
+      if (a * b <= 100) facts.push(stack("\u00d7", a, b));
+    }
+  }
+  return facts;
+}
+function divisionFacts(minDivisor, maxDivisor) {      // dividend / divisor with quotients 1..10
+  var facts = [];
+  for (var divisor = minDivisor; divisor <= maxDivisor; divisor++) {
+    for (var quotient = 1; quotient <= 10; quotient++) {
+      facts.push({ kind: "division", divisor: divisor, dividend: divisor * quotient, answer: quotient });
+    }
+  }
+  return facts;
 }
 
-function generateSubtractionProblemsTeens(count) {
-  var problems = [];
-  while (problems.length < count) {
-    var a = randomInt(10, 18);
-    var b = randomInt(a - 9, 9);
-    problems.push({ kind: "stack", operator: "\u2212", a: a, b: b, answer: a - b });
+// Dealing from a deck
+function shuffle(arr) {                // Fisher-Yates, in place
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
   }
-  return problems;
+  return arr;
+}
+function factKey(p) {                  // 6+8 and 8+6 are one fact; 14-8 and 8-14 are not
+  if (p.kind === "division") return p.dividend + "\u00f7" + p.divisor;
+  var commutative = p.operator === "+" || p.operator === "\u00d7";
+  var a = commutative ? Math.min(p.a, p.b) : p.a;
+  var b = commutative ? Math.max(p.a, p.b) : p.b;
+  return a + p.operator + b;
+}
+function formKey(p) {                  // one exact way of writing a problem
+  return p.kind === "division" ? factKey(p) : p.a + p.operator + p.b;
+}
+// A deck holds one card per distinct fact: { forms: [problem, ...], start }. The forms are
+// the ways that fact can be written on this level (6 over 8, and 8 over 6); exact duplicates
+// in the list (1-1 listed twice) are dropped.
+function makeDeck(problems) {
+  var cards = {}, seenForms = {}, deck = [];
+  for (var i = 0; i < problems.length; i++) {
+    var p = problems[i], key = factKey(p), form = formKey(p);
+    if (seenForms[form]) continue;
+    seenForms[form] = true;
+    if (!cards[key]) { cards[key] = { forms: [], start: randomInt(0, 1) }; deck.push(cards[key]); }
+    cards[key].forms.push(p);
+  }
+  return deck;
+}
+// Shuffle the deck and deal every card once; if more problems are needed, reshuffle and deal
+// again. The first card of a new pass is never the card just dealt, so the same fact never
+// lands twice in a row (this relies on deck.slice() being shallow: cards keep their identity
+// across passes). A card with two forms alternates between them on successive passes,
+// starting from a random side, so 6+8 dealt three times is never stacked the same way all
+// three times.
+function dealProblems(deck, count) {
+  var out = [], last = null;
+  for (var pass = 0; out.length < count && deck.length; pass++) {
+    var cards = shuffle(deck.slice());
+    if (cards.length > 1 && cards[0] === last) {
+      var k = randomInt(1, cards.length - 1);
+      cards[0] = cards[k]; cards[k] = last;
+    }
+    for (var i = 0; i < cards.length && out.length < count; i++) {
+      var card = cards[i];
+      out.push(card.forms[(card.start + pass) % card.forms.length]);
+      last = card;
+    }
+  }
+  return out;
+}
+function deal(facts, count) {
+  return dealProblems(makeDeck(facts), count);
 }
 
-function generateMultiplicationProblems(minFactor, maxFactor, count, allowZero) {
-  var problems = [];
-  while (problems.length < count) {
-    var a = randomInt(allowZero ? 0 : 1, 9);
-    var b = randomInt(Math.max(minFactor, 1), maxFactor);
-    if (a * b <= 100) problems.push({ kind: "stack", operator: "\u00d7", a: a, b: b, answer: a * b });
-  }
-  return problems;
-}
-
-function generateDivisionProblems(minDivisor, maxDivisor, count) {
-  var problems = [];
-  while (problems.length < count) {
-    var divisor  = randomInt(minDivisor, maxDivisor);
-    var quotient = randomInt(1, 10);
-    problems.push({ kind: "division", divisor: divisor, dividend: divisor * quotient, answer: quotient });
-  }
-  return problems;
-}
-
-function generateMixedProblems() {
+function generateMixedProblems() {                    // one row of each operation
   return [].concat(
-    generateAdditionProblems(18, 10, true),
-    generateSubtractionProblemsTeens(10),
-    generateMultiplicationProblems(0, 9, 10, true),
-    generateDivisionProblems(1, 9, 10)
+    deal(additionFacts(18, true), 10),
+    deal(teenSubtractionFacts(), 10),
+    deal(multiplicationFacts(0, 9, true), 10),
+    deal(divisionFacts(1, 9), 10)
   );
 }
 
 function generateProblemsForLevel(level) {
   switch (level) {
-    case 1:  return generateAdditionProblems(9, 30, true);
-    case 2:  return generateAdditionProblems(18, 30, false);
-    case 3:  return generateSubtractionProblems(9, 30);
-    case 4:  return generateSubtractionProblemsTeens(30);
-    case 5:  return generateAdditionProblems(18, 40, true);
-    case 6:  return generateSubtractionProblemsTeens(40);
-    case 7:  return generateAdditionProblems(18, 50, true);
-    case 8:  return generateSubtractionProblemsTeens(50);
-    case 9:  return generateAdditionProblems(18, 60, true);
-    case 10: return generateSubtractionProblemsTeens(60);
-    case 11: return generateMultiplicationProblems(0, 5, 30, true);
-    case 12: return generateMultiplicationProblems(6, 9, 30, false);
-    case 13: return generateMultiplicationProblems(0, 9, 40, true);
-    case 14: return generateMultiplicationProblems(0, 9, 50, true);
-    case 15: return generateMultiplicationProblems(0, 9, 60, true);
-    case 16: return generateDivisionProblems(1, 5, 30);
-    case 17: return generateDivisionProblems(6, 9, 30);
-    case 18: return generateDivisionProblems(1, 9, 40);
-    case 19: return generateDivisionProblems(1, 9, 50);
-    case 20: return generateDivisionProblems(1, 9, 60);
+    case 1:  return deal(additionFacts(9, true), 30);
+    case 2:  return deal(additionFacts(18, false), 30);
+    case 3:  return deal(subtractionFacts(9), 30);
+    case 4:  return deal(teenSubtractionFacts(), 30);
+    case 5:  return deal(additionFacts(18, true), 40);
+    case 6:  return deal(teenSubtractionFacts(), 40);
+    case 7:  return deal(additionFacts(18, true), 50);
+    case 8:  return deal(teenSubtractionFacts(), 50);
+    case 9:  return deal(additionFacts(18, true), 60);
+    case 10: return deal(teenSubtractionFacts(), 60);
+    case 11: return deal(multiplicationFacts(0, 5, true), 30);
+    case 12: return deal(multiplicationFacts(6, 9, false), 30);
+    case 13: return deal(multiplicationFacts(0, 9, true), 40);
+    case 14: return deal(multiplicationFacts(0, 9, true), 50);
+    case 15: return deal(multiplicationFacts(0, 9, true), 60);
+    case 16: return deal(divisionFacts(1, 5), 30);
+    case 17: return deal(divisionFacts(6, 9), 30);
+    case 18: return deal(divisionFacts(1, 9), 40);
+    case 19: return deal(divisionFacts(1, 9), 50);
+    case 20: return deal(divisionFacts(1, 9), 60);
     case 21: return generateMixedProblems();
     default: return [];
   }
