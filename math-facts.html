@@ -1061,77 +1061,137 @@ function getLevelMeta(level) {
   return { description: "Math facts", rowsClass: "rows-3" };
 }
 
-function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+// Every problem is { kind:"stack", operator, a, b, answer }. Each fact family lists every
+// way its facts can be written (6+8 and 8+6 both, as one fact); makeDeck folds that list
+// into one card per distinct fact, and dealProblems deals a worksheet from a shuffled copy
+// of the deck, so every fact is used before any fact repeats and no fact shows up more
+// often than any other by more than one.
+function stack(op, a, b) {
+  return { kind: "stack", operator: op, a: a, b: b, answer: op === "+" ? a + b : a - b };
 }
-
-// Every problem is { kind:"stack", operator, a, b, answer }.
-function stackAdd(x, y) {
-  if (Math.random() < 0.5) { var t = x; x = y; y = t; } // randomize addend order
-  return { kind: "stack", operator: "+", a: x, b: y, answer: x + y };
-}
-function stackSub(top, bottom) {
-  return { kind: "stack", operator: "\u2212", a: top, b: bottom, answer: top - bottom };
+function addPair(facts, x, y) {        // both stacking orders of one addition fact
+  facts.push(stack("+", x, y));
+  if (x !== y) facts.push(stack("+", y, x));
 }
 
 // Addition fact families (answers never exceed 18)
-function addPlusZeroOrOne() {
-  var fixed = pick([0, 1]);
-  var other = randomInt(0, Math.min(9, 18 - fixed));
-  return stackAdd(fixed, other);
+function plusZeroOrOneFacts() {        // 0+n and 1+n, n = 0..9
+  var facts = [];
+  for (var n = 0; n <= 9; n++) { addPair(facts, 0, n); addPair(facts, 1, n); }
+  return facts;
 }
-function addDoubles() {
-  var a = randomInt(1, 9);
-  return { kind: "stack", operator: "+", a: a, b: a, answer: a + a };
+function doublesFacts() {              // n+n, n = 1..9
+  var facts = [];
+  for (var n = 1; n <= 9; n++) addPair(facts, n, n);
+  return facts;
 }
-function addDoublesPlusOne() {
-  var a = randomInt(1, 8);            // a + (a+1); max 8 + 9 = 17
-  return stackAdd(a, a + 1);
+function doublesPlusOneFacts() {       // n+(n+1), n = 1..8; max 8 + 9 = 17
+  var facts = [];
+  for (var n = 1; n <= 8; n++) addPair(facts, n, n + 1);
+  return facts;
 }
-function makeAddPlusN(n) {
+function makePlusNFacts(n) {           // n+other, other = 0..9 (0..8 for +10)
   return function () {
-    var other = randomInt(0, Math.min(9, 18 - n));
-    return stackAdd(n, other);
+    var facts = [];
+    for (var other = 0; other <= Math.min(9, 18 - n); other++) addPair(facts, n, other);
+    return facts;
   };
 }
 
 // Subtraction fact families (differences never exceed 10)
-function subSelfZeroOne() {
-  var a = randomInt(1, 10);
-  var mode = pick(["self", "zero", "one"]);
-  if (mode === "self") return stackSub(a, a);
-  if (mode === "zero") return stackSub(a, 0);
-  return stackSub(a, 1);
+function minusSelfZeroOneFacts() {     // a-a, a-0, a-1, a = 1..10
+  var facts = [];
+  for (var a = 1; a <= 10; a++) {
+    facts.push(stack("\u2212", a, a), stack("\u2212", a, 0), stack("\u2212", a, 1));
+  }
+  return facts;
 }
-function subFriendsOfTen() {
-  var b = randomInt(0, 10);           // 10 - friend
-  return stackSub(10, b);
+function friendsOfTenFacts() {         // 10-b, b = 0..10
+  var facts = [];
+  for (var b = 0; b <= 10; b++) facts.push(stack("\u2212", 10, b));
+  return facts;
 }
-function makeSubMinusN(n) {
+function makeMinusNFacts(n) {          // (diff+n)-n, diff = 0..10, so answers run 0..10
   return function () {
-    var diff = randomInt(0, 10);      // answer 0..10, minuend = diff + n
-    return stackSub(diff + n, n);
+    var facts = [];
+    for (var diff = 0; diff <= 10; diff++) facts.push(stack("\u2212", diff + n, n));
+    return facts;
   };
 }
 
-// Pools used by the Mixed options
-var additionPool = [
-  addPlusZeroOrOne, addDoubles, addDoublesPlusOne,
-  makeAddPlusN(2), makeAddPlusN(3), makeAddPlusN(4), makeAddPlusN(5), makeAddPlusN(6),
-  makeAddPlusN(7), makeAddPlusN(8), makeAddPlusN(9), makeAddPlusN(10)
+// Families pooled by the Mixed options (64 distinct addition facts, 109 subtraction facts)
+var additionFamilies = [
+  plusZeroOrOneFacts, doublesFacts, doublesPlusOneFacts,
+  makePlusNFacts(2), makePlusNFacts(3), makePlusNFacts(4), makePlusNFacts(5), makePlusNFacts(6),
+  makePlusNFacts(7), makePlusNFacts(8), makePlusNFacts(9), makePlusNFacts(10)
 ];
-var subtractionPool = [
-  subSelfZeroOne, subFriendsOfTen,
-  makeSubMinusN(2), makeSubMinusN(3), makeSubMinusN(4), makeSubMinusN(5), makeSubMinusN(6),
-  makeSubMinusN(7), makeSubMinusN(8), makeSubMinusN(9)
+var subtractionFamilies = [
+  minusSelfZeroOneFacts, friendsOfTenFacts,
+  makeMinusNFacts(2), makeMinusNFacts(3), makeMinusNFacts(4), makeMinusNFacts(5), makeMinusNFacts(6),
+  makeMinusNFacts(7), makeMinusNFacts(8), makeMinusNFacts(9)
 ];
-function mixedFrom(pool) {
-  return function () { return pick(pool)(); };
+function unionFacts(families) {
+  var facts = [];
+  for (var i = 0; i < families.length; i++) facts = facts.concat(families[i]());
+  return facts;
 }
-function buildList(generateOne, count) {
-  var problems = [];
-  for (var i = 0; i < count; i++) problems.push(generateOne());
-  return problems;
+
+// Dealing from a deck
+function shuffle(arr) {                // Fisher-Yates, in place
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+function factKey(p) {                  // 6+8 and 8+6 are one fact; 14-8 and 8-14 are not
+  if (p.kind === "division") return p.dividend + "\u00f7" + p.divisor;
+  var commutative = p.operator === "+" || p.operator === "\u00d7";
+  var a = commutative ? Math.min(p.a, p.b) : p.a;
+  var b = commutative ? Math.max(p.a, p.b) : p.b;
+  return a + p.operator + b;
+}
+function formKey(p) {                  // one exact way of writing a problem
+  return p.kind === "division" ? factKey(p) : p.a + p.operator + p.b;
+}
+// A deck holds one card per distinct fact: { forms: [problem, ...], start }. The forms are
+// the ways that fact can be written on this level (6 over 8, and 8 over 6); exact duplicates
+// in the list (1-1 listed twice) are dropped.
+function makeDeck(problems) {
+  var cards = {}, seenForms = {}, deck = [];
+  for (var i = 0; i < problems.length; i++) {
+    var p = problems[i], key = factKey(p), form = formKey(p);
+    if (seenForms[form]) continue;
+    seenForms[form] = true;
+    if (!cards[key]) { cards[key] = { forms: [], start: randomInt(0, 1) }; deck.push(cards[key]); }
+    cards[key].forms.push(p);
+  }
+  return deck;
+}
+// Shuffle the deck and deal every card once; if more problems are needed, reshuffle and deal
+// again. The first card of a new pass is never the card just dealt, so the same fact never
+// lands twice in a row (this relies on deck.slice() being shallow: cards keep their identity
+// across passes). A card with two forms alternates between them on successive passes,
+// starting from a random side, so 6+8 dealt three times is never stacked the same way all
+// three times.
+function dealProblems(deck, count) {
+  var out = [], last = null;
+  for (var pass = 0; out.length < count && deck.length; pass++) {
+    var cards = shuffle(deck.slice());
+    if (cards.length > 1 && cards[0] === last) {
+      var k = randomInt(1, cards.length - 1);
+      cards[0] = cards[k]; cards[k] = last;
+    }
+    for (var i = 0; i < cards.length && out.length < count; i++) {
+      var card = cards[i];
+      out.push(card.forms[(card.start + pass) % card.forms.length]);
+      last = card;
+    }
+  }
+  return out;
+}
+function deal(facts, count) {
+  return dealProblems(makeDeck(facts), count);
 }
 
 var FACT_WORDS = { 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten" };
@@ -1139,36 +1199,43 @@ var COUNT_WORD = { 30: "Thirty", 40: "Forty", 50: "Fifty", 60: "Sixty" };
 
 // value -> { description, count, rows, generate }
 var FACTS = {};
-function defineFact(value, description, generateOne) {
+function defineFact(value, description, listFacts) {
   FACTS[value] = {
     description: description, count: 30, rows: "rows-3",
-    generate: function () { return buildList(generateOne, 30); }
+    generate: function () { return deal(listFacts(), 30); }
   };
 }
-defineFact("+0+1", "Thirty addition facts \u2014 plus zero or one", addPlusZeroOrOne);
-defineFact("doubles", "Thirty addition facts \u2014 doubles to 9 + 9", addDoubles);
-defineFact("doubles+1", "Thirty addition facts \u2014 doubles plus one", addDoublesPlusOne);
+defineFact("+0+1", "Thirty addition facts \u2014 plus zero or one", plusZeroOrOneFacts);
+defineFact("doubles", "Thirty addition facts \u2014 doubles to 9 + 9", doublesFacts);
+defineFact("doubles+1", "Thirty addition facts \u2014 doubles plus one", doublesPlusOneFacts);
 for (var an = 2; an <= 10; an++) {
-  defineFact("+" + an, "Thirty addition facts \u2014 plus " + FACT_WORDS[an], makeAddPlusN(an));
+  defineFact("+" + an, "Thirty addition facts \u2014 plus " + FACT_WORDS[an], makePlusNFacts(an));
 }
-defineFact("-self", "Thirty subtraction facts \u2014 minus itself, zero, or one", subSelfZeroOne);
-defineFact("-fr10", "Thirty subtraction facts \u2014 friends of ten", subFriendsOfTen);
+defineFact("-self", "Thirty subtraction facts \u2014 minus itself, zero, or one", minusSelfZeroOneFacts);
+defineFact("-fr10", "Thirty subtraction facts \u2014 friends of ten", friendsOfTenFacts);
 for (var sn = 2; sn <= 9; sn++) {
-  defineFact("-" + sn, "Thirty subtraction facts \u2014 minus " + FACT_WORDS[sn], makeSubMinusN(sn));
+  defineFact("-" + sn, "Thirty subtraction facts \u2014 minus " + FACT_WORDS[sn], makeMinusNFacts(sn));
 }
-function defineMixed(prefix, pool, descNoun) {
+function defineMixed(prefix, descNoun, dealMixed) {
   [30, 40, 50, 60].forEach(function (count) {
-    var one = mixedFrom(pool);
     FACTS[prefix + count] = {
       description: COUNT_WORD[count] + " mixed " + descNoun,
       count: count, rows: "rows-" + (count / 10),
-      generate: function () { return buildList(one, count); }
+      generate: function () { return dealMixed(count); }
     };
   });
 }
-defineMixed("mix+", additionPool, "addition facts");
-defineMixed("mix-", subtractionPool, "subtraction facts");
-defineMixed("mixpm", additionPool.concat(subtractionPool), "addition and subtraction facts");
+defineMixed("mix+", "addition facts", function (count) {
+  return deal(unionFacts(additionFamilies), count);
+});
+defineMixed("mix-", "subtraction facts", function (count) {
+  return deal(unionFacts(subtractionFamilies), count);
+});
+defineMixed("mixpm", "addition and subtraction facts", function (count) {
+  var half = count / 2;                // half addition, half subtraction, shuffled together
+  return shuffle(deal(unionFacts(additionFamilies), half)
+    .concat(deal(unionFacts(subtractionFamilies), count - half)));
+});
 
 function generateProblemsForLevel(level) {
   var fact = FACTS[level];
