@@ -720,6 +720,10 @@ break-after:avoid !important;
         <input type="checkbox" id="removeNumberToggle" style="width:16px;height:16px;cursor:pointer;" />
         <label for="removeNumberToggle" style="cursor:pointer;">Remove 'Student Number' Field</label>
       </div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
+        <input type="checkbox" id="nameBlankToggle" style="width:16px;height:16px;cursor:pointer;" />
+        <label for="nameBlankToggle" style="cursor:pointer;" title="Leave the Student Name line empty on every worksheet so students write their own name. Names become optional.">Name blank</label>
+      </div>
     </div>
   </div>
 
@@ -738,6 +742,7 @@ break-after:avoid !important;
         <textarea id="advancedInputBox" placeholder="Harrison, 2, 19; Emily, 5, 7; Jacob, 14, 21;"></textarea>
         <div class="advanced-help">
           Format: <strong>STUDENTNAME, NUMBER, LEVEL; NEXTSTUDENT, NEXTNUMBER, LEVEL;</strong><br>
+          NUMBER can be any text (e.g. 2, 14B, Blue) or left empty. With "Name blank" checked the name may be left empty too (e.g. <strong>, 2, 19;</strong>).<br>
           You can also paste one student per line.<br>
           Example: <strong>Harrison, 2, 19; Emily, 5, 7; Jacob, 14, 21;</strong><br>
           Extra spaces are okay. Blank trailing entries are ignored. Invalid entries are skipped and listed in an error message.
@@ -801,6 +806,7 @@ var generatePrintButton = null;
 var savePdfButton = null;
 var answerKeyToggle = null;
 var removeNumberToggle = null;
+var nameBlankToggle = null;
 var mmValidationBox = null;
 var mmValidationMsg = null;
 var mmValidationFix = null;
@@ -916,7 +922,7 @@ function createStudentEntry(index, studentData) {
     '</div>' +
     '<div class="student-grid">' +
       '<div><label>Student Name</label><input type="text" name="studentName" value="' + nameValue + '" /></div>' +
-      '<div class="mm-number-field-wrap"><label>Student Number</label><input type="text" name="studentNumber" value="' + numberValue + '" /></div>' +
+      '<div class="mm-number-field-wrap"><label>Student Number</label><input type="text" name="studentNumber" value="' + numberValue + '" placeholder="Any text" /></div>' +
       '<div><label>Level</label><select name="level">' + getLevelOptions(levelValue) + '</select></div>' +
     '</div>';
 
@@ -955,6 +961,7 @@ function createStudentEntry(index, studentData) {
 
 function refreshStudentNumbers() {
   applyRemoveNumberToggle();
+  applyNameBlankToggle();
   var entries = studentsContainer.querySelectorAll(".student-entry");
   for (var i = 0; i < entries.length; i++) {
     entries[i].querySelector("h3").textContent = "Student " + (i + 1);
@@ -1234,7 +1241,7 @@ function renderProblem(problem) {
 function createWorksheet(name, number, level, problems, isLast, setNumber, setTotal) {
   var worksheet = document.createElement("div");
   worksheet.className = "worksheet" + (isLast ? "" : " print-break");
-  var safeName   = name   || "";
+  var safeName   = isNameBlank() ? "" : (name || "");
   var safeNumber = number || "";
   var meta       = getLevelMeta(level);
   var setLabel   = setTotal > 1 ? "Worksheet " + setNumber + " of " + setTotal : "";
@@ -1278,7 +1285,7 @@ function getStudentsFromStandardInput() {
     var number     = entry.querySelector('input[name="studentNumber"]').value.trim();
     var levelValue = entry.querySelector('select[name="level"]').value;
     if (!name && !number && !levelValue) continue;
-    if (!name || !levelValue) continue;
+    if ((!name && !isNameBlank()) || !levelValue) continue;
     students.push({ name: name, number: number, level: parseInt(levelValue, 10) });
   }
   return { students: students, errors: [] };
@@ -1299,7 +1306,7 @@ function getStudentsFromAdvancedInput() {
     var name   = parts[0];
     var number = parts[1];
     var level  = parseInt(parts[2], 10);
-    if (!name) { parseErrors.push('Entry ' + (i+1) + ' is missing a student name: "' + entry + '"'); continue; }
+    if (!name && !isNameBlank()) { parseErrors.push('Entry ' + (i+1) + ' is missing a student name: "' + entry + '"'); continue; }
     if (!parts[2] || isNaN(level) || level < 1 || level > 21) {
       parseErrors.push('Entry ' + (i+1) + ' has an invalid level (must be 1-21): "' + entry + '"'); continue;
     }
@@ -1327,8 +1334,8 @@ function buildAdvancedCodeFromStandardRoster() {
   var lines  = [];
   for (var i = 0; i < roster.length; i++) {
     var s = roster[i];
-    if (s.name && s.level) {
-      lines.push(s.name.trim() + ", " + (s.number || "").trim() + ", " + s.level + ";");
+    if ((s.name || isNameBlank()) && s.level) {
+      lines.push((s.name || "").trim() + ", " + (s.number || "").trim() + ", " + s.level + ";");
     }
   }
   return lines.join("\n");
@@ -1363,6 +1370,7 @@ function saveRoster() {
     worksheetsPerStudent: worksheetsPerStudent.value,
     answerKey:            answerKeyToggle.checked,
     removeNumber:         removeNumberToggle.checked,
+    nameBlank:            nameBlankToggle.checked,
     advancedInput:        advancedInputBox.value,
     standardStudents:     collectStandardRoster()
   };
@@ -1401,7 +1409,9 @@ function loadRosterIfAvailable() {
     if (worksheetsPerStudent)    worksheetsPerStudent.value = saved.worksheetsPerStudent || "1";
     if (answerKeyToggle)         answerKeyToggle.checked    = saved.answerKey            || false;
     if (removeNumberToggle)      removeNumberToggle.checked = saved.removeNumber         || false;
+    if (nameBlankToggle)         nameBlankToggle.checked    = saved.nameBlank            || false;
     applyRemoveNumberToggle();
+    applyNameBlankToggle();
     setInputMode(saved.inputMode || "standard");
     showSuccess("Saved roster loaded.");
   } catch (error) { buildDefaultStudents(); }
@@ -1481,7 +1491,7 @@ function highlightInvalidEntries() {
     nameEl.style.border  = "";
     levelEl.style.border = "";
     var entryProblems = [];
-    if (!nameEl.value.trim()) {
+    if (!nameEl.value.trim() && !isNameBlank()) {
       nameEl.style.border = "2px solid rgb(204,0,0)";
       entryProblems.push("Student Name");
     }
@@ -1658,6 +1668,8 @@ function assignDomRefs() {
   answerKeyToggle            = document.getElementById("answerKeyToggle");
   removeNumberToggle         = document.getElementById("removeNumberToggle");
   removeNumberToggle.addEventListener("change", function() { applyRemoveNumberToggle(); });
+  nameBlankToggle            = document.getElementById("nameBlankToggle");
+  nameBlankToggle.addEventListener("change", function() { applyNameBlankToggle(); });
   savePdfButton              = document.getElementById("savePdfButton");
   mmValidationBox            = document.getElementById("mmValidationBox");
   mmValidationMsg            = document.getElementById("mmValidationMsg");
@@ -1679,6 +1691,19 @@ function fallbackCopy(text, successMsg) {
     showNotice("Unable to copy. Please select the text and copy manually.");
   }
   document.body.removeChild(ta);
+}
+
+function isNameBlank() {
+  return !!(nameBlankToggle && nameBlankToggle.checked);
+}
+
+function applyNameBlankToggle() {
+  var blank = isNameBlank();
+  var inputs = studentsContainer.querySelectorAll('input[name="studentName"]');
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].placeholder = blank ? "Optional (prints blank)" : "";
+    if (blank) inputs[i].style.border = "";
+  }
 }
 
 function applyRemoveNumberToggle() {

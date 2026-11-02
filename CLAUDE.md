@@ -177,11 +177,15 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   <span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span>
   ```
 - **Settings & toggles** (shared labels): "Worksheets per student" (1–5), "Print Answer
-  Key", "Remove 'Student Number' Field", "Fill Down Settings".
+  Key", "Remove 'Student Number' Field", "Name blank", "Fill Down Settings".
+  - **"Name blank"** (`nameBlankToggle`, helper `isNameBlank()`): prints an empty Student
+    Name line on every worksheet (answer keys still show the name) and makes the name
+    optional in both Standard and Advanced input (an advanced entry may start with an empty
+    field: `, 2, +10;`). Student Number is always free text — never validate it as numeric.
 - **localStorage:** one key per page, named `"<page>RosterData_v<N>"` (e.g.
   `mathFactsRosterData_v1`, `mathMinuteRosterData_v2`). Saved payload:
   ```js
-  { inputMode, worksheetsPerStudent, answerKey, removeNumber, advancedInput, standardStudents }
+  { inputMode, worksheetsPerStudent, answerKey, removeNumber, nameBlank, advancedInput, standardStudents }
   ```
 
 ## Known exceptions (recognize, don't copy)
