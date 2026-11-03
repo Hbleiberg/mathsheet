@@ -800,7 +800,7 @@ body { margin: 0; padding: 12px; background: white; }
       </div>
       <div class="mwg-answer-key-row">
         <input type="checkbox" id="mwgNameBlankToggle" />
-        <label for="mwgNameBlankToggle" style="font-size:14px;cursor:pointer;" title="Leave the Student Name line empty on every worksheet so students write their own name. Names become optional.">Name blank</label>
+        <label for="mwgNameBlankToggle" style="font-size:14px;cursor:pointer;" title="Leave the Student Name line empty on every worksheet so students write their own name.">Name blank</label>
       </div>
     </div>
   </div>
@@ -822,7 +822,7 @@ body { margin: 0; padding: 12px; background: white; }
         <textarea id="mwgAdvancedBox" placeholder="Harrison, 1, addition, 30, 3; Emily, 2, mixed, 40, 5;"></textarea>
         <div class="mwg-advanced-help">
           Format: <strong>Name, Number, ProblemType, Count, Grade;</strong><br>
-          Number can be any text (e.g. 2, 14B, Blue) or left empty. With "Name blank" checked the name may be left empty too (e.g. <strong>, 2, addition, 30, 3;</strong>).<br>
+          Number can be any text (e.g. 2, 14B, Blue) or left empty. The name may be left empty too — it prints a blank Name line (e.g. <strong>, 2, addition, 30, 3;</strong>).<br>
           Example: <strong>Harrison, 1, addition, 30, 3; Emily, 2, mixed, 40, 5;</strong><br>
           Problem types: addition, subtraction, multiplication, division, fractions, fractions[add|sub|mul|divf|divw], decimals, decimals[add|sub|mulw|muld|divw|divd], rounding, longdivision, orderofoperations, integers, exponents, scientificnotation, mixed, mixed[type1|type2|...]<br>
           Counts: 30, 40, 50, 60 — Grades: 1–8
@@ -1704,7 +1704,7 @@ function buildAdvancedCode() {
   var lines = [];
   for (var i = 0; i < roster.length; i++) {
     var s = roster[i];
-    if ((!s.name && !isNameBlank()) || !s.grade || !s.type || !s.count) continue;
+    if (!s.grade || !s.type || !s.count) continue;
     var type = s.type;
     if (type === "mixed" && s.mixedTypes && s.mixedTypes.length) type = "mixed[" + s.mixedTypes.join("|") + "]";
     if (type === "fractions" && s.fracOps && s.fracOps.length) type = "fractions[" + s.fracOps.join("|") + "]";
@@ -1733,7 +1733,6 @@ function parseAdvancedInput() {
     var parts = entry.split(",");
     for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
     if (parts.length !== 5) { errors.push("Entry " + (i+1) + " needs 5 fields: " + entry); continue; }
-    if (!parts[0] && !isNameBlank()) { errors.push("Entry " + (i+1) + " is missing a student name: " + entry); continue; }
     var grade = parseInt(parts[4]);
     if (isNaN(grade) || grade < 1 || grade > 8) { errors.push("Entry " + (i+1) + " invalid grade: " + entry); continue; }
     var count = parseInt(parts[3]);
@@ -1770,7 +1769,7 @@ function getStudentsFromStandard() {
   for (var i = 0; i < entries.length; i++) {
     var d = readEntry(entries[i]);
     if (!d.name && !d.grade && !d.type && !d.count) continue;
-    if ((!d.name && !isNameBlank()) || !d.grade || !d.type || !d.count) continue;
+    if (!d.grade || !d.type || !d.count) continue;
     students.push({ name: d.name, number: d.number, grade: parseInt(d.grade), type: d.type, count: parseInt(d.count), mixedTypes: d.mixedTypes, fracOps: d.fracOps, decOps: d.decOps });
   }
   return { students: students, errors: [] };
@@ -2333,10 +2332,6 @@ function highlightInvalidEntries() {
     gradeEl.style.border = "";
     typeEl.style.border  = "";
     countEl.style.border = "";
-    if (!nameEl.value.trim() && !isNameBlank()) {
-      nameEl.style.border = "2px solid rgb(204,0,0)";
-      entryProblems.push("Student Name");
-    }
     if (!gradeEl.value) {
       gradeEl.style.border = "2px solid rgb(204,0,0)";
       entryProblems.push("Grade Level");
@@ -2387,7 +2382,7 @@ function applyNameBlankToggle() {
   var blank = isNameBlank();
   var inputs = studentsContainer.querySelectorAll('[name="studentName"]');
   for (var i = 0; i < inputs.length; i++) {
-    inputs[i].placeholder = blank ? "Optional (prints blank)" : "";
+    inputs[i].placeholder = blank ? "Prints blank" : "Optional";
     if (blank) inputs[i].style.border = "";
   }
 }

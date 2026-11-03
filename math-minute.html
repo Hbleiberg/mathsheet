@@ -722,7 +722,7 @@ break-after:avoid !important;
       </div>
       <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
         <input type="checkbox" id="nameBlankToggle" style="width:16px;height:16px;cursor:pointer;" />
-        <label for="nameBlankToggle" style="cursor:pointer;" title="Leave the Student Name line empty on every worksheet so students write their own name. Names become optional.">Name blank</label>
+        <label for="nameBlankToggle" style="cursor:pointer;" title="Leave the Student Name line empty on every worksheet so students write their own name.">Name blank</label>
       </div>
     </div>
   </div>
@@ -742,7 +742,7 @@ break-after:avoid !important;
         <textarea id="advancedInputBox" placeholder="Harrison, 2, 19; Emily, 5, 7; Jacob, 14, 21;"></textarea>
         <div class="advanced-help">
           Format: <strong>STUDENTNAME, NUMBER, LEVEL; NEXTSTUDENT, NEXTNUMBER, LEVEL;</strong><br>
-          NUMBER can be any text (e.g. 2, 14B, Blue) or left empty. With "Name blank" checked the name may be left empty too (e.g. <strong>, 2, 19;</strong>).<br>
+          NUMBER can be any text (e.g. 2, 14B, Blue) or left empty. The name may be left empty too — it prints a blank Name line (e.g. <strong>, 2, 19;</strong>).<br>
           You can also paste one student per line.<br>
           Example: <strong>Harrison, 2, 19; Emily, 5, 7; Jacob, 14, 21;</strong><br>
           Extra spaces are okay. Blank trailing entries are ignored. Invalid entries are skipped and listed in an error message.
@@ -1285,7 +1285,7 @@ function getStudentsFromStandardInput() {
     var number     = entry.querySelector('input[name="studentNumber"]').value.trim();
     var levelValue = entry.querySelector('select[name="level"]').value;
     if (!name && !number && !levelValue) continue;
-    if ((!name && !isNameBlank()) || !levelValue) continue;
+    if (!levelValue) continue;
     students.push({ name: name, number: number, level: parseInt(levelValue, 10) });
   }
   return { students: students, errors: [] };
@@ -1306,7 +1306,6 @@ function getStudentsFromAdvancedInput() {
     var name   = parts[0];
     var number = parts[1];
     var level  = parseInt(parts[2], 10);
-    if (!name && !isNameBlank()) { parseErrors.push('Entry ' + (i+1) + ' is missing a student name: "' + entry + '"'); continue; }
     if (!parts[2] || isNaN(level) || level < 1 || level > 21) {
       parseErrors.push('Entry ' + (i+1) + ' has an invalid level (must be 1-21): "' + entry + '"'); continue;
     }
@@ -1334,7 +1333,7 @@ function buildAdvancedCodeFromStandardRoster() {
   var lines  = [];
   for (var i = 0; i < roster.length; i++) {
     var s = roster[i];
-    if ((s.name || isNameBlank()) && s.level) {
+    if (s.level) {
       lines.push((s.name || "").trim() + ", " + (s.number || "").trim() + ", " + s.level + ";");
     }
   }
@@ -1491,10 +1490,6 @@ function highlightInvalidEntries() {
     nameEl.style.border  = "";
     levelEl.style.border = "";
     var entryProblems = [];
-    if (!nameEl.value.trim() && !isNameBlank()) {
-      nameEl.style.border = "2px solid rgb(204,0,0)";
-      entryProblems.push("Student Name");
-    }
     if (!levelEl.value) {
       levelEl.style.border = "2px solid rgb(204,0,0)";
       entryProblems.push("Level");
@@ -1701,7 +1696,7 @@ function applyNameBlankToggle() {
   var blank = isNameBlank();
   var inputs = studentsContainer.querySelectorAll('input[name="studentName"]');
   for (var i = 0; i < inputs.length; i++) {
-    inputs[i].placeholder = blank ? "Optional (prints blank)" : "";
+    inputs[i].placeholder = blank ? "Prints blank" : "Optional";
     if (blank) inputs[i].style.border = "";
   }
 }
