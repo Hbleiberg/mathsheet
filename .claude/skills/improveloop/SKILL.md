@@ -44,10 +44,10 @@ Tooling: `scripts/loop/` (`harness.mjs`, `smoke.mjs`, `check-inline-js.mjs`, `ch
 4. **Regression arm R.** `node scripts/loop/smoke.mjs` on HEAD, then any `scripts/loop/probes/` from
    the last two sessions. A failure is a P2 ahead of the pass. Compare its `--json` numbers against
    the findings file only when a pass needs them; never trust a previous close-out's numbers unread.
-5. **Git.** CLAUDE.md's rule is commit and push straight to `main`, one commit per iteration. A cloud
-   session that was assigned a `claude/*` branch works there instead, pushes it and opens or updates a
-   draft PR, and says so in the close-out; never push to a branch you were not given. (The ledger's
-   *Awaiting* question settles the default once the maintainer answers.)
+5. **Git.** Commit and push straight to `main`, one commit per iteration (CLAUDE.md's rule, ratified
+   by the maintainer in S1 for the loop). A cloud session assigned a `claude/*` branch first
+   fast-forwards `main` to it (or merges it) and then works on `main`; it never leaves loop commits
+   only on a side branch.
 6. **Pick the pass:** `node scripts/loop/coverage.mjs` names the stalest cell; enter the iteration
    protocol.
 
@@ -67,16 +67,15 @@ as `coverage.mjs` computes it: a never-run cell outranks everything, then the lo
 number; the handoff's `⚑ next:` note breaks ties and may override with a one-line reason (the
 maintainer's priorities A, B, C outrank an equally stale D). **A clean surface buys a second** — a
 surface pass that finds nothing by mid-session takes the next-stalest surface in the same session,
-recording both in the coverage table. **L runs only after the hosting question in *Awaiting* is
-answered**; until then its row records `last — (blocked: hosting)` and it is skipped in the pick.
-Skip the pass only on explicit user direction, recording `pass run: — (skipped; <X> stays stalest)`.
+recording both in the coverage table. A suite row whose note says `blocked: <why>` is skipped in the
+pick until the note is cleared (L was, until the maintainer confirmed the pages are standalone). Skip the pass only on explicit user direction, recording `pass run: — (skipped; <X> stays stalest)`.
 
 **Roster** (full definitions and arms: `docs/loop-passes.md`):
 A performance & speed (surface) · B print & export (surface) · C aesthetics (surface) · D
 accessibility (surface) · E errors & robustness (suite; every selector generates) · F cross-page
 consistency (suite; against the CLAUDE.md standard) · G math correctness & pedagogy (surface; the
 numbers themselves) · H teacher walkthrough (surface; the feature-seed intake) · I first load, saved
-data & safety (suite; escaping, the saved payload) · L metadata & discoverability (suite; hosting-gated)
+data & safety (suite; escaping, the saved payload) · L metadata & discoverability (suite)
 · M mobile & touch (surface) · R regression re-run (standing arm at session start, not a letter).
 
 ## Decision gates — ask the maintainer (AskUserQuestion, concise options, a recommended default)
@@ -168,7 +167,7 @@ archive or the findings file, never the ledger line.
 2. **`node scripts/loop/closeout.mjs`** (`--cdn` when a PDF or print path changed) — inline-JS check,
    ledger check, coverage check, the smoke — must come back clean. If CLAUDE.md's standard moved
    (a new shared convention), update CLAUDE.md in the same session, one sentence.
-3. **Push** (`main`, or the assigned branch with its draft PR — session-start step 5).
+3. **Push** `main` (session-start step 5).
 4. **Summary**: iterations, the pass and its result, fixes shipped with their proofs, the
    micro-feature shipped or split, screenshots delivered (C/M rules), gates asked → answers,
    deferrals, protocol divergences to fold into this skill, and what a human must do (merge, answer

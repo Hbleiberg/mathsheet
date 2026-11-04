@@ -41,9 +41,7 @@ classroom) wins, (4) smallest diff.
 
 ## Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
 
-- [ ] Hosting: are the three pages served standalone at mathsheet.io, or pasted into a host page (a CMS block)? The in-body `<style>` and the polling init suggest embedding. Decides whether pass L (metadata) applies, whether a `<head>` edit, favicon or meta description ever reaches production, and whether the smoke's standalone load is the real first paint | since S0
 - [ ] index.html convergence (gate 5): should the loop move `index.html` toward the standard (Arial UI, unprefixed classes, a static `<style>`), piece by piece, or leave it as CLAUDE.md's documented exception? | since S0
-- [ ] Git: CLAUDE.md says commit and push to `main`; cloud sessions are assigned a `claude/*` branch and open a draft PR. Which is the loop's default? Until answered, a session uses the branch it was given and says so | since S0
 
 ## In progress
 
@@ -51,7 +49,8 @@ _(empty — never leave the tree mid-change)_
 
 ## Done (last 5 sessions; older rows move to the archive)
 
-- [x] S0 | 2026-11-04 | — | .claude/skills/improveloop/, docs/, scripts/loop/ | bootstrap: the skill, the ledger, the passes reference, the findings file, the harness, the smoke, the ledger checks | smoke 0 failing on 3 pages (7 arms each, PDF arm on math-facts); planted escapeHtml defect fails 2 arms; check-inline-js 3/3
+- [x] S1 | 2026-11-04 | — | docs/IMPROVEMENT_LOG.md, .claude/skills/improveloop/SKILL.md | maintainer answered two Awaiting questions: the pages are standalone files (pass L unblocked; `<head>` edits reach production) and the loop pushes straight to `main` (S0's branch fast-forwarded into main) | ledger + skill updated, check-ledger ok
+- [x] S0 | 2026-11-04 | e64166f | .claude/skills/improveloop/, docs/, scripts/loop/ | bootstrap: the skill, the ledger, the passes reference, the findings file, the harness, the smoke, the ledger checks | smoke 0 failing on 3 pages (7 arms each, PDF arm on math-facts); planted escapeHtml defect fails 2 arms; check-inline-js 3/3
 
 ## Metrics
 
@@ -82,7 +81,7 @@ _(empty — never leave the tree mid-change)_
 - G math correctness & pedagogy (surface): last —
 - H teacher walkthrough (surface): last —
 - I first load, saved data & safety (suite): last —
-- L metadata & discoverability (suite): last — (blocked: hosting — see Awaiting)
+- L metadata & discoverability (suite): last — (unblocked S1: the pages are standalone files)
 - M mobile & touch (surface): last —
 
 **Next session (S1):** the first real session. Everything is never-run, so the pointer breaks the tie toward the maintainer's first priority.

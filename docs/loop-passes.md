@@ -125,12 +125,12 @@ read by another; every user-entered value escaped on its way into HTML (`escapeH
 every `innerHTML =` and `+= '<` site for an unescaped variable); `JSON.parse` of the saved payload
 inside a `try` with a defaults fallback; no inline event handler built from user text.
 
-## L — Metadata & discoverability (suite; **confirm hosting first**)
+## L — Metadata & discoverability (suite)
 
-Titles, meta descriptions, `lang`, a favicon, `rel=canonical`, OG tags, one `h1` per page. The pages'
-in-body `<style>` and polling init suggest they may be pasted into a host page (then the `<head>` never
-reaches production and L is the host's job): the ledger's *Awaiting the maintainer* holds the question;
-until it is answered L audits and logs, never edits a `<head>`. Any title or description text is gate 2.
+Titles, meta descriptions, `lang`, a favicon, `rel=canonical`, OG tags, one `h1` per page, a
+`robots`/sitemap only if the maintainer wants one. The pages are standalone files (maintainer, S1), so a
+`<head>` edit reaches production. Any title or description text is gate 2; L audits and batches the
+questions, then ships what was approved.
 
 ## M — Mobile & touch (surface)
 
