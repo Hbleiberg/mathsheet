@@ -1467,7 +1467,7 @@ function updateCountForType(entryDiv) {
   countSelect.innerHTML = getCountOptions(countSelect.value, capAt30);
 }
 
-function updateMixedVisibility(entryDiv) {
+function updateMixedVisibility(entryDiv, checkedTypes) {
   var typeSelect  = entryDiv.querySelector('[name="problemType"]');
   var gradeSelect = entryDiv.querySelector('[name="grade"]');
   var mixedBox    = entryDiv.querySelector(".mwg-mixed-types");
@@ -1475,14 +1475,14 @@ function updateMixedVisibility(entryDiv) {
   var grade = parseInt(gradeSelect.value) || 1;
   if (typeSelect.value === "mixed") {
     mixedBox.className = "mwg-mixed-types visible";
-    renderMixedCheckboxes(entryDiv, grade);
+    renderMixedCheckboxes(entryDiv, grade, checkedTypes);
   } else {
     mixedBox.className = "mwg-mixed-types";
   }
   updateCountForType(entryDiv);
 }
 
-function updateTypeOptionsForGrade(entryDiv, keepType) {
+function updateTypeOptionsForGrade(entryDiv, keepType, checkedTypes) {
   var gradeSelect = entryDiv.querySelector('[name="grade"]');
   var typeSelect  = entryDiv.querySelector('[name="problemType"]');
   if (!gradeSelect || !typeSelect) return;
@@ -1491,7 +1491,7 @@ function updateTypeOptionsForGrade(entryDiv, keepType) {
   var types = GRADE_TYPES[grade] || GRADE_TYPES[1];
   var validType = types.indexOf(currentType) !== -1 ? currentType : "";
   typeSelect.innerHTML = getTypeOptions(grade, validType);
-  updateMixedVisibility(entryDiv);
+  updateMixedVisibility(entryDiv, checkedTypes);
 }
 
 function readEntry(div) {
@@ -1548,16 +1548,9 @@ function createStudentEntry(index, data) {
   var typeSelect  = div.querySelector('[name="problemType"]');
   gradeSelect.addEventListener("change", function() { updateTypeOptionsForGrade(div); });
   typeSelect.addEventListener("change",  function() { updateMixedVisibility(div); updateOpsPanel(div); });
-  if (type === "mixed" && mixedTypes) {
-    updateMixedVisibility(div);
-    setTimeout(function() { renderMixedCheckboxes(div, parseInt(grade)||1, mixedTypes); }, 0);
-  } else {
-    updateMixedVisibility(div);
-  }
+  updateMixedVisibility(div, type === "mixed" ? mixedTypes : null);
   updateOpsPanel(div);
-  if (data.fracOps || data.decOps) {
-    setTimeout(function() { renderOpsPanel(div, type, data.fracOps, data.decOps); }, 0);
-  }
+  if (data.fracOps || data.decOps) renderOpsPanel(div, type, data.fracOps, data.decOps);
   div.querySelector(".mwg-delete-link").addEventListener("click", function() {
     div.parentNode.removeChild(div);
     if (!studentsContainer.querySelector(".mwg-student-entry")) buildDefaultStudents();
@@ -2452,10 +2445,10 @@ function wireButtons() {
     for (var i = 1; i < entries.length; i++) {
       var e = entries[i];
       e.querySelector('[name="grade"]').value = first.grade;
-      updateTypeOptionsForGrade(e, first.type);
-      e.querySelector('[name="problemType"]').value = first.type;
+      updateTypeOptionsForGrade(e, first.type, first.mixedTypes);
+      updateOpsPanel(e);
+      if (first.fracOps || first.decOps) renderOpsPanel(e, first.type, first.fracOps, first.decOps);
       e.querySelector('[name="count"]').value = first.count;
-      updateMixedVisibility(e);
     }
     showSuccess("Settings filled down from Student 1.");
   });
