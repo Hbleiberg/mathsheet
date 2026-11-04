@@ -23,3 +23,53 @@
   and the saved-roster reload arm (the restored value differs once the markup is live).
 - Print geometry under the pages' own move-to-body trick: all sheets and key sheets 1056×816 on all
   three pages (6 of 6 each).
+
+## S1 (2026-11-04) — pass A (performance & speed) on index.html
+
+Method unless stated: the loop harness (local HTTP, foreign origins aborted, print stubbed), fresh
+context per run, medians of 3; throttling by CDP `Network.emulateNetworkConditions` (1.5 Mbps / 10 Mbps,
+40 ms RTT) and `Emulation.setCPUThrottlingRate(4)` (which slowed a JS busy loop only ×2.3 here — read
+"cpu4" as a slower-machine order of magnitude, not a calibrated 4×). The "+CDN" runs went through the
+sandbox proxy. Scripts lived in the session scratchpad; the methods are recorded here instead.
+
+**Load.** S0's "563 KB" for the two PDF libraries is the decoded size; on the wire they are 38,648 +
+96,409 B brotli = 135 KB (whole page 239,779 B with the CDN vs 104,708 without). As parser-blocking
+tags they delayed the first roster entry 615 → 1,372 ms at 1.5 Mbps, 141 → 340 ms at 10 Mbps, ~57 →
+248 ms unthrottled, while first paint stayed the same (the form looked ready but every button was
+inert) — fixed in 9304f31 (after: 624 / 372 / 398 ms on the three pages at 1.5 Mbps). Parse+execute of
+the libraries ≈ 35 ms (derived, ±15). **Refuted:** the `waitAndInit` 50 ms poll never runs (0 polls in
+12 runs; the container exists at DOMContentLoaded; DCL → init 4–11 ms); `injectStyles()` costs 0.1–0.2
+ms of JS, 0.7 ms with the recalc — its defect is duplication (0 of 1,493 elements change any computed
+style when the injected sheet is removed; one rule, `.mwg-delete-link:hover`, has no static twin).
+
+**Generate (150 sheets, 30 advanced students × 5).** Click-handler 178 ms (add2) to 413 ms
+(fractions@g5), ≈85 % of it one forced layout inside `scrollIntoView` plus a second layout in the next
+frame; two long tasks of 150–660 ms per generate. With `content-visibility:auto` on the sheets (served
+copy): fractions 345 → 39 ms, add2 178 → 31 ms, long tasks gone, geometry / scrollY / printBoxes / PDF
+bytes identical. The fixed 200 ms timer before `window.print` is 196–216 ms of every generate and
+settles nothing (rAF frames tick throughout). Critic's extras on HEAD: cpu4 add2 handler 838 ms,
+fractions 1.6 s, key-on (300 sheets) 2.3 s; count 60 ≈ 1.5× count 30 (linear in cells); the
+print-media layout a real `window.print()` forces (move-to-body + one layout) is 274 ms at 150 sheets,
+355 ms at 300, 0.7–1.7 s at cpu4, and is **not** removed by content-visibility (the print rule keeps
+the sheets visible) — the bound on that fix. **Refuted:** no node or heap retention across 10 generates
+(CDP Nodes flat at 44,646; a planted retention control grows by 43,800 per cycle); roster-form
+responsiveness is unchanged with 150 or 300 sheets in the DOM (Add Student 1.5 ms, grade change 2 ms,
+typing 16–40 ms per keystroke, 0 long tasks). The standard pages measured the same shape in S1
+(handler 156 / 162 ms → 26 / 24 ms with the rule, commit 0ff238e).
+
+**PDF.** html2canvas clones the whole document per page: 3 pages 1.6 s, 24 pages ~12 s, 150 pages 114
+s (~42 s if linear). The 50 ms inter-page timer is ~24 % of a 150-page export; a bare rAF replacement
+failed a paint probe (the clone must still paint before capture). JPEG 0.92 → 0.8 cuts the file ~20 %
+with no visible difference at 300 dpi; a lower scale is not recommended. The stage's bottom ~108 px
+are in the desktop viewport (clones flicker there). No re-entrancy guard (a second click runs a second
+pipeline). The "please wait" box is static for the whole export.
+
+**Roster / saved data.** Fill Down lost Student 1's subsets and left the ops panel dead; saved or
+duplicated grade ≥ 5 mixed entries at 40/50/60 came back at 30 (the all-checked first render capped
+the select before the deferred re-render) — both fixed in 62e6338 (probe `roster-subset.mjs`). Fill
+Down on a mixed Student 1 is a ~100 ms single task at 30 students, mostly style/layout of the rebuilt
+boxes (not a defect at that size). Restored fraction/decimal entries still render their ops panel
+twice (candidate). A corrupt saved roster falls back silently and is never cleared (candidate). A slow
+CDN delayed a saved roster's first paint one-for-one before 9304f31. `esc()`'s apostrophe step is a
+no-op — audited: all 21 call sites land in text nodes or double-quoted attributes, so no exploitable
+sink today (candidate, P3).

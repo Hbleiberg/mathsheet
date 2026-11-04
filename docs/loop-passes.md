@@ -96,6 +96,9 @@ parser, the toggle UI, the settings labels, the saved payload shape, the notice 
 description and branding snippet, the print CSS block, the PDF pipeline constants, the button copy.
 Converge on the standard. `index.html`'s known exceptions (`mwg-` classes, Georgia, 5-field advanced
 input) are **not** drift to fix autonomously — they are gate 5; F logs each divergence once and asks.
+Settled in S1: the convergence happens in one dedicated, maintainer-approved session outside the
+loop (screenshots before anything ships), so F only records `index.html` divergences and never
+converges that page itself.
 
 ## G — Math correctness & pedagogy (surface)
 
