@@ -253,6 +253,9 @@ flex-direction:column;
 overflow:hidden;
 page-break-inside:avoid;
 break-inside:avoid-page;
+/* Sheets below the fold are laid out only when scrolled near: a 150-sheet class set otherwise
+   costs two full layouts per Generate (loop S1). The print block turns this back off. */
+content-visibility:auto;
 }
 
 .worksheet.print-break{
@@ -647,6 +650,7 @@ width:11in !important;
 height:8.5in !important;
 overflow:hidden !important;
 box-sizing:border-box !important;
+content-visibility:visible !important;
 }
 
 .worksheet-header{
