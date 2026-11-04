@@ -23,6 +23,8 @@ jsPDF) used for PDF export.
 | `math-minute.html` | Roster-based timed "Math Minute" generator (21 numeric levels). |
 | `math-facts.html` | Fact-family "Math Minute" generator (Addition / Subtraction / Mixed). |
 | `mwg.js` | **Legacy, unused.** Orphaned precursor to `index.html`'s inline script — not referenced by any page. Reference only; do not wire it into a page. |
+| `scripts/loop/` | Dev-only tooling (Node 22 + the preinstalled Playwright): `smoke.mjs` is the regression floor for all three pages; `closeout.mjs` runs every check. Nothing here is loaded by a page. |
+| `docs/` | The improvement loop's files: `IMPROVEMENT_LOG.md` (live state), `IMPROVEMENT_ARCHIVE.md` (history), `loop-passes.md` (pass definitions), `loop-findings.md` (measurements). |
 
 Each page embeds everything: a `<style>` block (or JS-injected styles), the markup, and a
 single IIFE `<script>`. When adding a feature, edit the relevant page in place.
@@ -204,6 +206,16 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   problem objects and `esc`/`rand`/`randFrom` helpers and key `mwgRosterData_v1`. Treat it
   as historical reference only.
 
+## Improvement loop (`/improveloop`)
+
+`.claude/skills/improveloop/SKILL.md` runs one bounded session: the stalest discovery pass (A
+performance, B print & export, C aesthetics, D accessibility, E errors, F consistency, G math
+correctness, H teacher walkthrough, I saved data & safety, L metadata, M mobile), up to four small
+verified fixes, optionally one micro-feature from the ledger's seeds. State lives in
+`docs/IMPROVEMENT_LOG.md`; the loop never starts a new page. **After editing any page, run
+`node scripts/loop/smoke.mjs`** (all three pages: load, generate, answer key, print geometry,
+advanced input, saved roster, an XSS control) — it must stay green; `--cdn` adds the PDF arm.
+
 ## Adding a new generator page (checklist)
 
 1. Start from `math-facts.html` (the cleanest standard implementation) and rename the root
@@ -216,4 +228,7 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
 4. Reuse the style constants and the branding snippet above.
 5. Sanity-check: generate each option (correct count and 10-col grid), toggle the answer
    key, run Print (landscape 11×8.5), and Save PDF.
-6. Commit and **push to `main`**.
+6. Add the page to `PAGES` in `scripts/loop/harness.mjs` and to `SURFACES` in
+   `scripts/loop/ledger-rules.mjs` (plus a column in the ledger's Surface coverage table), so the smoke
+   and the loop cover it.
+7. Commit and **push to `main`**.

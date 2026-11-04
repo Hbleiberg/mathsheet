@@ -1,0 +1,171 @@
+# Improvement loop — the discovery passes (reference)
+
+> Read only *Probe rules*, *Surfaces* and the section of the pass you are about to run. The protocol
+> that chooses the pass (roster, rotation, budget, gates) is `.claude/skills/improveloop/SKILL.md`;
+> which pass ran when, and on what, is the ledger (`docs/IMPROVEMENT_LOG.md`) read by
+> `node scripts/loop/coverage.mjs`. Measurements and refutations already made: `docs/loop-findings.md`
+> — grep it for the page and the pass before re-deriving anything.
+
+## Probe rules (every pass, every fix)
+
+Verify with the harness (`scripts/loop/harness.mjs`): serve the repo root over local HTTP, abort every
+foreign origin (the two cdnjs libraries only when the arm needs the PDF), stub `window.print`, drive
+the page by real clicks. Every fix runs `node scripts/loop/smoke.mjs` (all three pages, even when one
+changed — the pages share conventions and copy-pasted blocks) plus an issue-specific check designed
+*before* coding. A print or PDF change is proved on the artifact itself: `printBoxes()` under emulated
+print for geometry, a real `--cdn` PDF opened and page-counted for export, a rendered screenshot for
+anything visual. Screenshots a person will see at `deviceScaleFactor: 2`.
+
+Three measurement rules:
+1. **Fire a control before trusting a zero** — plant the defect (break `escapeHtml`, drop a `rows-`
+   class, remove `print-break`), see the probe fail, restore (`git checkout -- <file>`).
+2. **A silent control means diagnose, not discard.**
+3. **Assert the probe's handle resolves before its result counts** — a non-null selector, a counted
+   side effect (`window.__prints`), a sheet count > 0.
+
+Recorded traps: the pages render nothing until a generate, so "0 problems found" on a fresh load is
+not a result; `index.html`'s default entries carry no grade/type/count and the standard pages' no
+level — the harness's `prepare` fills them (pass `{ raw: true }` to audit the untouched first paint);
+the grid class is `rows-N` on the standard pages but `mwg-cols-N mwg-rows-N` on `index.html`, so a
+count expectation from the rows class alone is wrong there; under emulated print the results sit
+inside the hidden app until the page's own move-to-body trick runs (`printBoxes()` re-applies it).
+
+## Surfaces
+
+Three: `index.html` (Custom Math Sheet Generator, grades 1–8), `math-minute.html` (21 numeric levels),
+`math-facts.html` (fact codes). A **surface** pass (A, B, C, D, G, H, M) takes one per run, the
+least-recently-audited as `coverage.mjs` reports it; a **suite** pass (E, F, I, L) takes all three over
+the commit delta since its last run. A clean surface buys a second in the same session. `mwg.js` is
+legacy and loaded by nothing — never a surface; a pass that finds it referenced files a P2.
+
+## A — Performance & speed (surface)
+
+Cold load bytes and time; the eager cost of the two cdnjs libraries (563 KB, needed only by Save PDF);
+a 30-student × 5-copies generate (150 sheets) timed by `smoke.mjs --json`'s method, with DOM node
+count; main-thread blocks > 200 ms during generate and during the PDF capture (one page's
+`html2canvas` at scale 1.5 is the heavy step — measure per page, never guess); `innerHTML` churn and
+layout thrash in the roster form (Add Student × 30, Fill Down, Duplicate); the roster-load path on a
+saved 30-student roster. Baselines: `docs/loop-findings.md` → S0. A fix is proved by the same
+measurement repeated on HEAD and on the fix, three runs each, medians.
+
+## B — Print & export (surface)
+
+The artifact a student holds. Print: every sheet exactly one landscape Letter page (`printBoxes()`
+1056×816, `print-break` on all but the last, the key sheets included), header rows and the ruled lines
+intact, nothing clipped at the 10-column grid for the widest problems (3–5 digit stacks, long division,
+fractions, decimals), the blank-name line and the removed-number field, the answer key's red answers,
+A4 behaviour (the `@page` is Letter — record how Chromium scales it, propose only if a student sheet
+breaks). PDF (`--cdn`): file name, page count = sheet count, the raster's legibility at scale 1.5
+(zoom a problem cell in the opened PDF), file size per page, parity with print (same sheet, same
+place). Also the Advanced Code export/paste round-trip and the saved-roster payload. Divergences
+between print and PDF are usually P2.
+
+## C — Aesthetics (surface)
+
+Two audiences, judged separately. **The UI** (teacher, desktop): typography scale and hierarchy,
+spacing rhythm, button hierarchy (`.btn-large` for the two generate actions only), alignment of the
+roster grid, the modal, the notices; consistency judged against the suite's best existing page
+(convergence beats invention — `math-facts.html` is the reference). **The worksheet** (student,
+paper): problem spacing for young handwriting, line weights, the header's balance, the description
+box, the branding tag. Small refinements ship as iterations; palette, font, layout restructuring or a
+redesign is gate 3. **Screenshot rule:** BEFORE and AFTER at 1280 and ~800 px for the UI, plus a
+rendered sheet (print emulation) for the worksheet, saved in the scratchpad and delivered at close-out.
+
+## D — Accessibility (surface)
+
+Keyboard-only walkthrough of the whole flow (add, fill, fill-down, duplicate, delete, mode toggle,
+generate, the Advanced Code modal: focus moves in, Escape closes, focus returns); every field named
+(label, `aria-label` or `aria-labelledby`); visible focus; contrast of text and of the red/yellow/green
+notices; touch-target size (44 px floor) on the small links; `aria-live` on the notice containers;
+`prefers-reduced-motion` for the smooth scrolls. The worksheet is paper, out of D's scope except
+the answer key's red on white.
+
+## E — Errors & robustness (suite)
+
+`node scripts/loop/smoke.mjs` plus: every selector option of every page generates (loop the level /
+fact / type lists by selecting each and generating — count sheets and cells, 0 page errors); malformed
+advanced input (wrong field count, unknown selector, empty name, stray semicolons, Windows line ends,
+a 500-entry paste) is reported and skipped, never fatal; the CDN-absent path shows the notice and does
+not throw; `localStorage` disabled or full (a quota throw) degrades to defaults; a saved payload from
+the previous key version (`_v1` → `_v2`) does not crash the load.
+
+## F — Cross-page consistency (suite)
+
+One affordance per run compared across the three pages against the CLAUDE.md standard: the advanced
+parser, the toggle UI, the settings labels, the saved payload shape, the notice boxes, the header
+description and branding snippet, the print CSS block, the PDF pipeline constants, the button copy.
+Converge on the standard. `index.html`'s known exceptions (`mwg-` classes, Georgia, 5-field advanced
+input) are **not** drift to fix autonomously — they are gate 5; F logs each divergence once and asks.
+
+## G — Math correctness & pedagogy (surface)
+
+The numbers themselves. For every selector of the surface, generate ≥ 200 sheets headless and assert
+the invariants its description promises: operand ranges ("sums less than ten"), no negative
+differences, exact division, the stated count, no duplicate fact on one sheet where a deck is dealt,
+the mixed levels' operator share, decimals' place alignment, fractions in lowest terms where the key
+says so; the answer key's answers equal to the problems' (recompute independently). A description
+that overstates or understates what the generator does is a P2 (silently wrong output); a level that
+is pedagogically off for its grade is a P3 with the reasoning, never changed without gate 2.
+
+## H — Teacher walkthrough (surface)
+
+Role-play preparing a real class set end-to-end: a new class of 22, a Friday Math Minute, two students
+on different levels, one on an IEP, the answer key for a parent helper, a substitute's blank sheets,
+Hebrew names in the roster. Log every friction (extra clicks, missing defaults, unclear copy, dead
+ends, data re-entered that another page already has). Frictions → P3 Candidates; missing small
+affordances → Feature seeds; a whole new kind of worksheet → Page seeds. Never re-log a seed the
+maintainer struck.
+
+## I — First load, saved data & safety (suite)
+
+A fresh context (empty localStorage): the default roster, no crash on absent keys, the mode pill and
+toggles in their defaults. Then the saved-data contract: Save → reload → identical roster and
+settings; Clear Current vs Clear Saved confirm and do only what they say; the payload of one page never
+read by another; every user-entered value escaped on its way into HTML (`escapeHtml` / `esc` — grep
+every `innerHTML =` and `+= '<` site for an unescaped variable); `JSON.parse` of the saved payload
+inside a `try` with a defaults fallback; no inline event handler built from user text.
+
+## L — Metadata & discoverability (suite; **confirm hosting first**)
+
+Titles, meta descriptions, `lang`, a favicon, `rel=canonical`, OG tags, one `h1` per page. The pages'
+in-body `<style>` and polling init suggest they may be pasted into a host page (then the `<head>` never
+reaches production and L is the host's job): the ledger's *Awaiting the maintainer* holds the question;
+until it is answered L audits and logs, never edits a `<head>`. Any title or description text is gate 2.
+
+## M — Mobile & touch (surface)
+
+A real device descriptor (`devices['iPhone 13']`, `devices['iPad Mini']`), both orientations: the
+roster form reflows without horizontal scroll (`scrollWidth <= clientWidth`), the button row's
+overflow is reachable, the number-field wrap and selects are tappable, the modal fits with its close
+reachable, the keyboard does not hide the focused field, `inputmode` on numeric-looking fields is not
+forced (student number is free text by rule). Print from mobile is Chromium's print preview — record,
+don't fix. A fix inside a phone-width media query is autonomous; anything that changes the desktop is
+gate 4. **Screenshot rule:** a phone contact sheet every run, BEFORE/AFTER per fix.
+
+## Standing arm R — Regression (session start)
+
+`node scripts/loop/smoke.mjs` on HEAD before anything else; then every probe under
+`scripts/loop/probes/` from the last two sessions. A failure is a P2 ahead of the rotation pass. A fix
+commits its probe (`S<N>-<slug>.mjs`, built on `harness.mjs`) only when the smoke does not already
+cover it.
+
+## Micro-feature track (an iteration type, not a pass)
+- **Source:** the ledger's Feature seeds only (from H or the maintainer). Never invent one in-session.
+- **Micro:** one page (the declared Math Minute ↔ Math Facts roster handshake is the sole two-page
+  exception), ≤ ~150 lines of diff, no dependency, no build step, single-file conventions, both the
+  Standard and Advanced paths if it touches input, the saved payload extended in the same commit (new
+  field read with `??`-style defaults so an old payload still loads), `escapeHtml` on every new
+  user-entered value, the smoke green, and the printed artifact re-proved if the header or grid changed.
+- **Budget:** max 1 per session, costs 2 iterations. Skip when a P1 exists. Selection is gate 1;
+  unattended default is skip and log.
+- **Dual audience:** prefer seeds that serve the Jewish day school and the secular classroom alike at
+  equal size (a free-text header line beats a parasha dropdown).
+- **Abort:** diff trending past ~150 lines or outside the declared scope → revert, split the seed in
+  the ledger, log "attempted, split".
+
+## Page-seed track (never built inside the loop)
+A new generator page is the maintainer's decision and a session of its own (CLAUDE.md → *Adding a new
+generator page*). The loop only keeps the list current: H adds a seed with the audience, the grade
+band and the selector idea in one line; a session may, when asked at gate 1, write a one-page brief for
+one seed into `docs/page-briefs/<page>.md` (selectors, problem objects, rows classes, open questions)
+— that brief is the whole deliverable, no page is started.
