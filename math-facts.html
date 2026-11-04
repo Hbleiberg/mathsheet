@@ -739,13 +739,13 @@ break-after:avoid !important;
     <div class="advanced-layout">
       <div class="advanced-input-wrap">
         <label for="advancedInputBox">Paste student data</label>
-        <textarea id="advancedInputBox" placeholder="Harrison, 2, +10; Emily, 5, doubles; Jacob, 14, mix+40;"></textarea>
+        <textarea id="advancedInputBox" placeholder="Harrison, 2, +10; Emily, 5, x7; Jacob, 14, mix/40;"></textarea>
         <div class="advanced-help">
           Format: <strong>STUDENTNAME, NUMBER, FACTCODE; NEXTSTUDENT, NEXTNUMBER, FACTCODE;</strong><br>
           Fact codes are listed in the Level Reference to the right.<br>
           NUMBER can be any text (e.g. 2, 14B, Blue) or left empty. The name may be left empty too — it prints a blank Name line (e.g. <strong>, 2, +10;</strong>).<br>
           You can also paste one student per line.<br>
-          Example: <strong>Harrison, 2, +10; Emily, 5, doubles; Jacob, 14, mix+40;</strong><br>
+          Example: <strong>Harrison, 2, +10; Emily, 5, x7; Jacob, 14, mix/40;</strong><br>
           Extra spaces are okay. Blank trailing entries are ignored. Invalid entries are skipped and listed in an error message.
         </div>
       </div>
@@ -861,6 +861,17 @@ var FACT_GROUPS = [
     ["-8", "-8"],
     ["-9", "-9"]
   ]},
+  { label: "Multiplication Facts", options: [
+    ["x0", "\u00d70"], ["x1", "\u00d71"], ["x2", "\u00d72"], ["x3", "\u00d73"],
+    ["x4", "\u00d74"], ["x5", "\u00d75"], ["x6", "\u00d76"], ["x7", "\u00d77"],
+    ["x8", "\u00d78"], ["x9", "\u00d79"], ["x10", "\u00d710"], ["x11", "\u00d711"],
+    ["x12", "\u00d712"]
+  ]},
+  { label: "Division Facts", options: [
+    ["/1", "\u00f71"], ["/2", "\u00f72"], ["/3", "\u00f73"], ["/4", "\u00f74"],
+    ["/5", "\u00f75"], ["/6", "\u00f76"], ["/7", "\u00f77"], ["/8", "\u00f78"],
+    ["/9", "\u00f79"], ["/10", "\u00f710"], ["/11", "\u00f711"], ["/12", "\u00f712"]
+  ]},
   { label: "Mixed Facts", options: [
     ["mix+30", "30 mixed +"],
     ["mix+40", "40 mixed +"],
@@ -873,7 +884,19 @@ var FACT_GROUPS = [
     ["mixpm30", "30 mixed +/-"],
     ["mixpm40", "40 mixed +/-"],
     ["mixpm50", "50 mixed +/-"],
-    ["mixpm60", "60 mixed +/-"]
+    ["mixpm60", "60 mixed +/-"],
+    ["mixx30", "30 mixed \u00d7"],
+    ["mixx40", "40 mixed \u00d7"],
+    ["mixx50", "50 mixed \u00d7"],
+    ["mixx60", "60 mixed \u00d7"],
+    ["mix/30", "30 mixed \u00f7"],
+    ["mix/40", "40 mixed \u00f7"],
+    ["mix/50", "50 mixed \u00f7"],
+    ["mix/60", "60 mixed \u00f7"],
+    ["mixmd30", "30 mixed \u00d7/\u00f7"],
+    ["mixmd40", "40 mixed \u00d7/\u00f7"],
+    ["mixmd50", "50 mixed \u00d7/\u00f7"],
+    ["mixmd60", "60 mixed \u00d7/\u00f7"]
   ]}
 ];
 
@@ -900,7 +923,9 @@ function renderLevelReference() {
     'white-space:normal;color:#555;font-style:italic;line-height:1.45;">' +
     '<code>+N</code> / <code>-N</code> = plus / minus N. ' +
     '<code>-self</code> = minus itself, 0, or 1. <code>-fr10</code> = friends of ten. ' +
-    '<code>mix+NN</code> / <code>mix-NN</code> / <code>mixpmNN</code> = mixed addition / subtraction / both, NN problems.' +
+    '<code>mix+NN</code> / <code>mix-NN</code> / <code>mixpmNN</code> = mixed addition / subtraction / both, NN problems. ' +
+    '<code>xN</code> / <code>/N</code> = times / divided by N (<code>\u00d7N</code>, <code>*N</code> and <code>\u00f7N</code> also work). ' +
+    '<code>mixxNN</code> / <code>mix/NN</code> / <code>mixmdNN</code> = mixed multiplication / division / both, NN problems.' +
     "</div>";
   levelReferenceGrid.innerHTML = html;
 }
@@ -1074,11 +1099,19 @@ function getLevelMeta(level) {
 // of the deck, so every fact is used before any fact repeats and no fact shows up more
 // often than any other by more than one.
 function stack(op, a, b) {
-  return { kind: "stack", operator: op, a: a, b: b, answer: op === "+" ? a + b : a - b };
+  var answer = op === "+" ? a + b : op === "\u00d7" ? a * b : a - b;
+  return { kind: "stack", operator: op, a: a, b: b, answer: answer };
+}
+function divide(divisor, quotient) {   // long-division bracket: divisor ) dividend
+  return { kind: "division", divisor: divisor, dividend: divisor * quotient, answer: quotient };
 }
 function addPair(facts, x, y) {        // both stacking orders of one addition fact
   facts.push(stack("+", x, y));
   if (x !== y) facts.push(stack("+", y, x));
+}
+function mulPair(facts, x, y) {        // both stacking orders of one multiplication fact
+  facts.push(stack("\u00d7", x, y));
+  if (x !== y) facts.push(stack("\u00d7", y, x));
 }
 
 // Addition fact families (answers never exceed 18)
@@ -1126,7 +1159,26 @@ function makeMinusNFacts(n) {          // (diff+n)-n, diff = 0..10, so answers r
   };
 }
 
-// Families pooled by the Mixed options (64 distinct addition facts, 109 subtraction facts)
+// Multiplication fact families: n x other, other = 0..12
+function makeTimesNFacts(n) {
+  return function () {
+    var facts = [];
+    for (var other = 0; other <= 12; other++) mulPair(facts, n, other);
+    return facts;
+  };
+}
+
+// Division fact families: (n*q) / n, q = 0..12, so quotients run 0..12 (no dividing by 0)
+function makeDivideByNFacts(n) {
+  return function () {
+    var facts = [];
+    for (var q = 0; q <= 12; q++) facts.push(divide(n, q));
+    return facts;
+  };
+}
+
+// Families pooled by the Mixed options (64 distinct addition facts, 109 subtraction facts,
+// 91 multiplication facts, 156 division facts)
 var additionFamilies = [
   plusZeroOrOneFacts, doublesFacts, doublesPlusOneFacts,
   makePlusNFacts(2), makePlusNFacts(3), makePlusNFacts(4), makePlusNFacts(5), makePlusNFacts(6),
@@ -1137,6 +1189,10 @@ var subtractionFamilies = [
   makeMinusNFacts(2), makeMinusNFacts(3), makeMinusNFacts(4), makeMinusNFacts(5), makeMinusNFacts(6),
   makeMinusNFacts(7), makeMinusNFacts(8), makeMinusNFacts(9)
 ];
+var multiplicationFamilies = [];
+for (var mf = 0; mf <= 12; mf++) multiplicationFamilies.push(makeTimesNFacts(mf));
+var divisionFamilies = [];
+for (var df = 1; df <= 12; df++) divisionFamilies.push(makeDivideByNFacts(df));
 function unionFacts(families) {
   var facts = [];
   for (var i = 0; i < families.length; i++) facts = facts.concat(families[i]());
@@ -1201,7 +1257,7 @@ function deal(facts, count) {
   return dealProblems(makeDeck(facts), count);
 }
 
-var FACT_WORDS = { 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten" };
+var FACT_WORDS = { 0: "zero", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve" };
 var COUNT_WORD = { 30: "Thirty", 40: "Forty", 50: "Fifty", 60: "Sixty" };
 
 // value -> { description, count, rows, generate }
@@ -1223,6 +1279,12 @@ defineFact("-fr10", "Thirty subtraction facts \u2014 friends of ten", friendsOfT
 for (var sn = 2; sn <= 9; sn++) {
   defineFact("-" + sn, "Thirty subtraction facts \u2014 minus " + FACT_WORDS[sn], makeMinusNFacts(sn));
 }
+for (var mn = 0; mn <= 12; mn++) {
+  defineFact("x" + mn, "Thirty multiplication facts \u2014 times " + FACT_WORDS[mn], makeTimesNFacts(mn));
+}
+for (var dn = 1; dn <= 12; dn++) {
+  defineFact("/" + dn, "Thirty division facts \u2014 divided by " + FACT_WORDS[dn], makeDivideByNFacts(dn));
+}
 function defineMixed(prefix, descNoun, dealMixed) {
   [30, 40, 50, 60].forEach(function (count) {
     FACTS[prefix + count] = {
@@ -1243,6 +1305,23 @@ defineMixed("mixpm", "addition and subtraction facts", function (count) {
   return shuffle(deal(unionFacts(additionFamilies), half)
     .concat(deal(unionFacts(subtractionFamilies), count - half)));
 });
+defineMixed("mixx", "multiplication facts", function (count) {
+  return deal(unionFacts(multiplicationFamilies), count);
+});
+defineMixed("mix/", "division facts", function (count) {
+  return deal(unionFacts(divisionFamilies), count);
+});
+defineMixed("mixmd", "multiplication and division facts", function (count) {
+  var half = count / 2;                // half multiplication, half division, shuffled together
+  return shuffle(deal(unionFacts(multiplicationFamilies), half)
+    .concat(deal(unionFacts(divisionFamilies), count - half)));
+});
+
+// Advanced input may write the operator as a symbol: x7, X7, *7 and \u00d77 all mean x7;
+// /7 and \u00f77 both mean /7.
+function normalizeFactCode(code) {
+  return String(code || "").replace(/[\u00d7*X]/g, "x").replace(/\u00f7/g, "/");
+}
 
 function generateProblemsForLevel(level) {
   var fact = FACTS[level];
@@ -1341,7 +1420,7 @@ function getStudentsFromAdvancedInput() {
     if (parts.length !== 3) { parseErrors.push('Entry ' + (i+1) + ' is invalid: "' + entry + '"'); continue; }
     var name   = parts[0];
     var number = parts[1];
-    var level  = parts[2];
+    var level  = normalizeFactCode(parts[2]);
     if (!level || !FACTS[level]) {
       parseErrors.push('Entry ' + (i+1) + ' has an invalid fact code (see Level Reference): "' + entry + '"'); continue;
     }
