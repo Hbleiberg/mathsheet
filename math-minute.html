@@ -1578,61 +1578,97 @@ function doGenerateAndPrint() {
   }, 200);
 }
 
+// The two PDF libraries (html2canvas + jsPDF, from cdnjs) are fetched on the first Save PDF click,
+// never with the page: only Save PDF uses them, and as parser-blocking tags they held back the roster
+// and every button for the whole download. A failed fetch is forgotten, so the next click retries it.
+var PDF_LIB_URLS = [
+  "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+];
+var pdfLibLoads = {};
+function loadScriptOnce(url) {
+  if (!pdfLibLoads[url]) {
+    pdfLibLoads[url] = new Promise(function (resolve) {
+      var s = document.createElement("script");
+      s.src = url;
+      s.onload = function () { resolve(true); };
+      s.onerror = function () {
+        delete pdfLibLoads[url];
+        if (s.parentNode) s.parentNode.removeChild(s);
+        resolve(false);
+      };
+      document.head.appendChild(s);
+    });
+  }
+  return pdfLibLoads[url];
+}
+// Resolves true once both libraries are present, false if either failed to load.
+function loadPdfLibs() {
+  return Promise.all([loadScriptOnce(PDF_LIB_URLS[0]), loadScriptOnce(PDF_LIB_URLS[1])]).then(function () {
+    return typeof html2canvas !== "undefined" && typeof window.jspdf !== "undefined";
+  });
+}
+
 function doGenerateAndSavePdf() {
   clearStatusMessages();
+  var libsReady = loadPdfLibs();   // the download runs while the worksheets build
   generateWorksheets();
   setTimeout(function() {
     var sheets = results.querySelectorAll(".worksheet");
     if (!sheets.length) return;
-    if (typeof html2canvas === "undefined" || typeof window.jspdf === "undefined") {
-      showNotice("PDF library not loaded yet. Please try again in a moment.");
+    libsReady.then(function (loaded) {
+      if (!loaded) { showNotice("PDF library not loaded yet. Please try again in a moment."); return; }
+      capturePdf(sheets);
+    });
+  }, 300);
+}
+
+// Rasterize each sheet with html2canvas into one landscape-Letter jsPDF (CLAUDE.md -> PDF saving).
+function capturePdf(sheets) {
+  var jsPDFCtor = window.jspdf.jsPDF;
+  showSuccess("Generating PDF, please wait...");
+  var PAGE_W_PX = 1056;
+  var PAGE_H_PX = 816;
+  var stage = document.createElement("div");
+  stage.style.cssText = "position:absolute;top:0;left:0;width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;z-index:-1000;pointer-events:none;background:white;";
+  document.body.appendChild(stage);
+  var jsPDFObj = null;
+  var sheetArray = [];
+  for (var i = 0; i < sheets.length; i++) sheetArray.push(sheets[i]);
+  function captureNext(idx) {
+    if (idx >= sheetArray.length) {
+      document.body.removeChild(stage);
+      jsPDFObj.save("math-minute-worksheets.pdf");
+      showSuccess("PDF saved!");
       return;
     }
-    var jsPDFCtor = window.jspdf.jsPDF;
-    showSuccess("Generating PDF, please wait...");
-    var PAGE_W_PX = 1056;
-    var PAGE_H_PX = 816;
-    var stage = document.createElement("div");
-    stage.style.cssText = "position:absolute;top:0;left:0;width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;z-index:-1000;pointer-events:none;background:white;";
-    document.body.appendChild(stage);
-    var jsPDFObj = null;
-    var sheetArray = [];
-    for (var i = 0; i < sheets.length; i++) sheetArray.push(sheets[i]);
-    function captureNext(idx) {
-      if (idx >= sheetArray.length) {
+    var clone = sheetArray[idx].cloneNode(true);
+    clone.style.cssText = "width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;margin:0;padding:24px 29px;background:white;box-sizing:border-box;display:flex;flex-direction:column;";
+    clone.classList.remove("print-break");
+    stage.innerHTML = "";
+    stage.appendChild(clone);
+    setTimeout(function() {
+      html2canvas(clone, {
+        scale: 1.5, useCORS: true, allowTaint: true,
+        width: PAGE_W_PX, height: PAGE_H_PX,
+        windowWidth: PAGE_W_PX, windowHeight: PAGE_H_PX,
+        logging: false, backgroundColor: "white", x: 0, y: 0
+      }).then(function(canvas) {
+        var imgData = canvas.toDataURL("image/jpeg", 0.92);
+        if (!jsPDFObj) {
+          jsPDFObj = new jsPDFCtor({ orientation: "landscape", unit: "px", format: [PAGE_W_PX, PAGE_H_PX], hotfixes: ["px_scaling"] });
+        } else {
+          jsPDFObj.addPage([PAGE_W_PX, PAGE_H_PX], "landscape");
+        }
+        jsPDFObj.addImage(imgData, "JPEG", 0, 0, PAGE_W_PX, PAGE_H_PX, "", "FAST");
+        captureNext(idx + 1);
+      }).catch(function() {
         document.body.removeChild(stage);
-        jsPDFObj.save("math-minute-worksheets.pdf");
-        showSuccess("PDF saved!");
-        return;
-      }
-      var clone = sheetArray[idx].cloneNode(true);
-      clone.style.cssText = "width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;margin:0;padding:24px 29px;background:white;box-sizing:border-box;display:flex;flex-direction:column;";
-      clone.classList.remove("print-break");
-      stage.innerHTML = "";
-      stage.appendChild(clone);
-      setTimeout(function() {
-        html2canvas(clone, {
-          scale: 1.5, useCORS: true, allowTaint: true,
-          width: PAGE_W_PX, height: PAGE_H_PX,
-          windowWidth: PAGE_W_PX, windowHeight: PAGE_H_PX,
-          logging: false, backgroundColor: "white", x: 0, y: 0
-        }).then(function(canvas) {
-          var imgData = canvas.toDataURL("image/jpeg", 0.92);
-          if (!jsPDFObj) {
-            jsPDFObj = new jsPDFCtor({ orientation: "landscape", unit: "px", format: [PAGE_W_PX, PAGE_H_PX], hotfixes: ["px_scaling"] });
-          } else {
-            jsPDFObj.addPage([PAGE_W_PX, PAGE_H_PX], "landscape");
-          }
-          jsPDFObj.addImage(imgData, "JPEG", 0, 0, PAGE_W_PX, PAGE_H_PX, "", "FAST");
-          captureNext(idx + 1);
-        }).catch(function() {
-          document.body.removeChild(stage);
-          showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
-        });
-      }, 50);
-    }
-    captureNext(0);
-  }, 300);
+        showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
+      });
+    }, 50);
+  }
+  captureNext(0);
 }
 
 function assignDomRefs() {
@@ -1813,8 +1849,6 @@ if (document.readyState === "loading") {
 
 })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </div>
 </body>
 </html>

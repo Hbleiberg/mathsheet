@@ -15,7 +15,7 @@ Make focused commits with clear messages and push to `main`.
 MathSheet.io is a set of **self-contained, static HTML worksheet generators**. There is no
 build step, no framework, and no bundler — each page is one `.html` file you can open
 directly in a browser. The only external dependencies are two CDN scripts (html2canvas +
-jsPDF) used for PDF export.
+jsPDF) used for PDF export, fetched on the first Save PDF click rather than with the page.
 
 | File | Purpose |
 |------|---------|
@@ -125,13 +125,19 @@ Worksheets print as **landscape US Letter (11in × 8.5in)**, one worksheet per p
 
 PDF is a rasterized mirror of the print layout (so output matches print exactly).
 
-- **Libraries** (load once at the end of `<body>`):
-  ```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+- **Libraries — loaded lazily, never with the page.** No `<script src>` tags: `PDF_LIB_URLS` names
+  the two cdnjs files and `loadPdfLibs()` (per-URL cached `loadScriptOnce`) injects them on the first
+  Save PDF click, resolving `true` when both are present and `false` on a failed fetch (which is
+  forgotten so the next click retries). Only Save PDF needs them; as blocking tags they delayed the
+  roster and every button by the whole download (loop S1).
+  ```js
+  "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+  "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
   ```
-- **Pipeline (`doGenerateAndSavePdf`):**
-  1. Guard: if `html2canvas`/`window.jspdf` are undefined, show a notice and bail.
+- **Pipeline (`doGenerateAndSavePdf` → `capturePdf(sheets)`):**
+  1. Guard: `doGenerateAndSavePdf` calls `loadPdfLibs()` before generating, waits for it after the
+     300 ms settle, and on `false` shows the "PDF library not loaded yet" notice and bails;
+     `capturePdf` runs only once both libraries exist.
   2. Build an off-screen **stage** `div`: `position:absolute; top:0; left:0;
      width:1056px; height:816px; overflow:hidden; z-index:-1000; pointer-events:none;
      background:white;` (1056 × 816 = 11in × 8.5in @ 96 dpi).

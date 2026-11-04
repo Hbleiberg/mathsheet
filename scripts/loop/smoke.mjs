@@ -108,8 +108,9 @@ try {
     // 9. PDF arm (opt-in: needs the two cdnjs libraries)
     if (flag('--cdn')) {
       p = await openPage(browser, srv.base, file, { cdn: true });
-      const libs = await p.page.evaluate(() => typeof html2canvas === 'function' && !!(window.jspdf && window.jspdf.jsPDF));
-      if (!libs) { console.log('  SKIP PDF arm: cdnjs unreachable from here (html2canvas/jsPDF undefined)'); }
+      // The libraries load on the first Save PDF click, so reachability is probed, not read off the page.
+      const reach = await p.page.evaluate(() => fetch('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', { method: 'HEAD' }).then(r => r.ok, () => false));
+      if (!reach) { console.log('  SKIP PDF arm: cdnjs unreachable from here'); }
       else {
         const t1 = Date.now();
         const [dl] = await Promise.all([
@@ -124,6 +125,9 @@ try {
         m.pdfBytes = bytes.length; m.pdfPages = pages;
         ok(dl.suggestedFilename() === p.spec.pdfName, `pdf: saved as ${dl.suggestedFilename()}`);
         ok(bytes.subarray(0, 5).toString() === '%PDF-' && pages > 0, `pdf: ${pages} pages, ${bytes.length} bytes`);
+        const libs = await p.page.evaluate(() => typeof html2canvas === 'function' && !!(window.jspdf && window.jspdf.jsPDF));
+        const fetched = p.requests.filter(r => /cdnjs/.test(r.url) && r.status === 200).length;
+        ok(libs && fetched >= 2, `pdf: both libraries fetched on the click (${fetched} cdnjs responses) and present afterwards`);
       }
       await p.close();
     }
