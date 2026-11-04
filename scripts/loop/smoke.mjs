@@ -94,7 +94,18 @@ try {
     ok(xss === undefined && literal.includes('<img'), `escapeHtml: hostile name printed literally, handler never ran`);
     await p.close();
 
-    // 8. PDF arm (opt-in: needs the two cdnjs libraries)
+    // 8. PDF libraries are fetched on the first Save PDF click, never on load; offline they fail soft
+    p = await openPage(browser, srv.base, file);
+    const eager = p.aborted.filter(u => /cdnjs/.test(u));
+    ok(eager.length === 0, `no PDF-library request before the first Save PDF click (${eager.length} on load)`);
+    await p.page.click(p.spec.pdf);
+    await p.page.waitForTimeout(1500);
+    const tried = p.aborted.filter(u => /cdnjs/.test(u)).length;
+    const notice = (await p.page.locator(p.spec.errors).allInnerTexts().catch(() => [])).join(' | ');
+    ok(tried > 0 && /PDF/i.test(notice) && p.errors.length === 0, `offline Save PDF: ${tried} library request(s) attempted, notice shown (${JSON.stringify(notice.slice(0, 60))}), ${p.errors.length} page errors`);
+    await p.close();
+
+    // 9. PDF arm (opt-in: needs the two cdnjs libraries)
     if (flag('--cdn')) {
       p = await openPage(browser, srv.base, file, { cdn: true });
       const libs = await p.page.evaluate(() => typeof html2canvas === 'function' && !!(window.jspdf && window.jspdf.jsPDF));

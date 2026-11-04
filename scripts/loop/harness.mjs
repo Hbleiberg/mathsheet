@@ -116,11 +116,12 @@ export async function openPage(browser, base, file, opts = {}) {
     acceptDownloads: true,
     ...(opts.device || {}),
   });
-  const errors = [], failed = [], requests = [];
+  const errors = [], failed = [], requests = [], aborted = [];
   await context.route('**/*', route => {
     const u = route.request().url();
     if (u.startsWith(base) || u.startsWith('data:') || u.startsWith('blob:')) return route.continue();
     if (opts.cdn && /^https:\/\/cdnjs\.cloudflare\.com\//.test(u)) return route.continue();
+    aborted.push(u);   // every foreign request the page tried (the eager-CDN census reads this)
     return route.abort();
   });
   await context.addInitScript(seed => {
@@ -138,7 +139,7 @@ export async function openPage(browser, base, file, opts = {}) {
   const loadMs = Date.now() - t0;
   if (spec.prepare && !opts.raw) await spec.prepare(page);
   return {
-    context, page, spec, file, errors, failed, requests, loadMs,
+    context, page, spec, file, errors, failed, requests, aborted, loadMs,
     prints: () => page.evaluate(() => window.__prints),
     close: () => context.close(),
   };
