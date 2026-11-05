@@ -93,6 +93,9 @@ const LATER = [
   // S8: fraction keys write whole and mixed numbers (Mixed at grades 5-8 holds fractions).
   ['function fractionStr(n, d) { var g = gcd(Math.abs(n), Math.abs(d)); return (n/g) + "/" + (d/g); }',
    'function fractionStr(n, d) { var g = gcd(Math.abs(n), Math.abs(d)); n = n / g; d = d / g; var whole = Math.floor(n / d), rest = n - whole * d; return rest === 0 ? String(whole) : (whole ? whole + " " : "") + rest + "/" + d; }'],
+  // S10: rounding problems stay on one line (a nowrap span; Mixed at grades 5-8 holds rounding).
+  ['  return {html:horizHtml("Round "+n+" to nearest "+label),answer:Math.round(n/place)*place,kind:"horiz"};',
+   '  return {html:horizHtml(\'<span style="white-space:nowrap">Round \'+n+\' to nearest \'+label+\'</span>\'),answer:Math.round(n/place)*place,kind:"horiz"};'],
 ];
 const replay = body => LATER.reduce((b, [from, to]) => {
   if (!b.includes(from)) throw new Error(`replay anchor missing: ${from}`); return b.replace(from, to); }, body);

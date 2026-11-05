@@ -1964,7 +1964,9 @@ function makeRounding(grade) {
   if(grade>=5) places.push(1000);
   var place=randFrom(places),max=grade<=4?999:9999,n=rand(1,max);
   var label=place===10?"tens":place===100?"hundreds":"thousands";
-  return {html:horizHtml("Round "+n+" to nearest "+label),answer:Math.round(n/place)*place,kind:"horiz"};
+  // One line per problem: the text does not wrap, so the answer blank beside it gives way instead (it took 60 %
+  // of the cell and every problem broke in two, the 15 rows running to the paper's edge; S10, approved S4).
+  return {html:horizHtml('<span style="white-space:nowrap">Round '+n+' to nearest '+label+'</span>'),answer:Math.round(n/place)*place,kind:"horiz"};
 }
 function makeLongDiv(grade) {
   var d=rand(2,grade<=5?9:12),q=rand(10,grade<=5?99:999);

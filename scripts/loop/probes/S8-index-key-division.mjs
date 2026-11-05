@@ -20,7 +20,13 @@ const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.arg
 const control = process.argv.includes('--control'), REF = arg('--ref') || 'd3ef5c6';
 const fails = [];
 const check = (ok, msg) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg); };
-const OLD = execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8' });
+// Later approved changes to what the sheets hold, replayed onto the reference so the identity arms still isolate S8's change.
+const LATER = [
+  // S10: rounding problems stay on one line (a nowrap span; Mixed at grades 5-8 holds rounding).
+  ['  return {html:horizHtml("Round "+n+" to nearest "+label),answer:Math.round(n/place)*place,kind:"horiz"};',
+   '  return {html:horizHtml(\'<span style="white-space:nowrap">Round \'+n+\' to nearest \'+label+\'</span>\'),answer:Math.round(n/place)*place,kind:"horiz"};'],
+];
+const OLD = LATER.reduce((b, [from, to]) => b.includes(from) ? b.replace(from, to) : b, execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8' }));
 const SEED = `(() => { let s = 4242; Math.random = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646; })();`;
 const SETS = [
   ...['div1', 'div2', 'div3', 'div4', 'div5'].flatMap(t => [[t, 30, 5], [t, 60, 5]]),

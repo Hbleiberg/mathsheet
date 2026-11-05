@@ -16,10 +16,13 @@ const control = process.argv.includes('--control'), REF = arg('--ref') || 'cfa5c
 const fails = [];
 const check = (ok, msg) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg); };
 // Later approved changes to what valid entries print, replayed onto the reference (S8: fraction keys as
-// whole and mixed numbers), so the identity arm still isolates the bracket check.
+// whole and mixed numbers; S10: rounding on one line), so the identity arm still isolates the bracket check.
 const LATER = [
   ['function fractionStr(n, d) { var g = gcd(Math.abs(n), Math.abs(d)); return (n/g) + "/" + (d/g); }',
    'function fractionStr(n, d) { var g = gcd(Math.abs(n), Math.abs(d)); n = n / g; d = d / g; var whole = Math.floor(n / d), rest = n - whole * d; return rest === 0 ? String(whole) : (whole ? whole + " " : "") + rest + "/" + d; }'],
+  // S10: rounding problems stay on one line (a nowrap span; Mixed at grades 5-8 holds rounding).
+  ['  return {html:horizHtml("Round "+n+" to nearest "+label),answer:Math.round(n/place)*place,kind:"horiz"};',
+   '  return {html:horizHtml(\'<span style="white-space:nowrap">Round \'+n+\' to nearest \'+label+\'</span>\'),answer:Math.round(n/place)*place,kind:"horiz"};'],
 ];
 const replay = body => LATER.reduce((b, [from, to]) => b.includes(from) ? b.replace(from, to) : b, body);
 const OLD = replay(execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8' }));
