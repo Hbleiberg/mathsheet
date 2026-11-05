@@ -30,7 +30,9 @@ the grid class is `rows-N` on the standard pages but `mwg-cols-N mwg-rows-N` on 
 count expectation from the rows class alone is wrong there; under emulated print the results sit
 inside the hidden app until the page's own move-to-body trick runs (`printBoxes()` re-applies it).
 `page.pdf()` renders screen CSS when `emulateMedia({ media: 'screen' })` ran last (`printBoxes()` ends
-there) — emulate print first, or the page count is wrong (S2).
+there) — emulate print first, or the page count is wrong (S2). A wrapper put on `window.html2canvas`
+before the first Save PDF click is overwritten when the page loads the library itself — hook it with an
+`Object.defineProperty` setter; compare two PDFs only with `Math.random` seeded by an init script (S3).
 
 ## Surfaces
 

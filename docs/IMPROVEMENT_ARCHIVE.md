@@ -46,3 +46,26 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   ⚑ The variety governor ended S1 at three fixes: with three pages and a cap of two iterations per page, a fix shipped on all three pages at once spends one touch on each. Plan the fourth fix's page before the second.
   ⚑ Pass A's measurements and refutations for index.html (no memory leak, the 50 ms poll never runs, the form stays responsive with 300 sheets, the print-media layout bound) are in `docs/loop-findings.md` → S1; do not re-measure them.
   ⚑ Gate answers on file: no micro-feature was wanted in S1 (ask again at S2's selection moment); index.html convergence is a dedicated session (see Awaiting) — F never converges it.
+
+## S3 (2026-11-05) — pass A on math-minute.html; three fixes (on a branch)
+- Worked on branch `claude/fervent-lovelace-urwaob` again: the S2 instruction ("don't push to main until
+  I say") stands, and no word came; main is still at 6b0503a.
+- Pass A ran as scratch probes (node census against math-facts at equal cell counts, 150-sheet generate
+  per level shape at cpu1 / cpu4, the roster form at 30 students with and without 150 sheets, cold and
+  saved-roster load, retention over 6 generates, Save PDF per page to 150 pages with html2canvas's own
+  phase log). Fixes: comma names on the standard pages (ad456d2) and on index.html (3575eed), the Save PDF
+  document-copy scope on all three pages (6ada9ea, an S1 candidate).
+- Struck as refuted (S0 candidate, verbatim): `- [ ] P3 | math-minute.html | for the same 150-sheet roster Math Minute builds 38,467 DOM nodes in 870 ms where Math Facts builds 29,774 in 617 ms: find what it renders extra per cell or per sheet and trim it (measure first: `smoke.mjs --json` method, 3 runs, medians) | found S0`
+  — why: S0 compared level 5 (40 problems a sheet) with `+3` (30). At equal counts both pages build 292
+  nodes per 30-cell sheet and 382 per 40-cell sheet (9 per stacked cell, 7 per division cell).
+- Gates (one call at the selection moment): micro-feature → skip (every page's two touches were planned
+  for the fixes); PDF progress wording → approved; fraction answer keys → whole and mixed numbers. No
+  screenshots this session (no visual change: the PDFs are pixel-identical, the names fix is input-side).
+- Previous handoff (S2 → S3), verbatim:
+  **Next session (S3):** S2's commits (48a610d, fb36ea5, 7e0e32f and the close-out) are on branch `claude/fervent-lovelace-urwaob`, NOT on `main`: the maintainer asked that nothing reach `main` until they say. Check `git log origin/main` first; if main still lacks them and no word has come, work on a branch again and do not push to main.
+  ⚑ next: A on math-minute.html
+  ⚑ Four Candidates carry the maintainer's S2 approval (comma names, long-name shrink-to-fit, offline PDF wording, JPEG 0.8): no gate needed. The comma-name P2 is the top fix and changes CLAUDE.md's "exactly 3 fields" sentence in the same commit.
+  ⚑ The smoke gained two arms in S2: paper (Chromium's print PDF is one 792×612 pt page per sheet, also on A4) and font (every worksheet text is Arial in print and in a PDF-stage clone). Probe trap: `page.pdf()` renders screen CSS after `emulateMedia('screen')` — re-emulate print first.
+  ⚑ The apostrophe, offline-wording and JPEG fixes are each the same diff on three pages: one commit spends one touch per page. S1 and S2 both ended on the cap — plan the page budget before the second fix.
+  ⚑ Pass B's math-facts measurements (geometry per level class, print vs PDF parity, raster legibility, A4) are in `docs/loop-findings.md` → S2; B is still never-run on index.html and math-minute.html, though the new smoke arms already cover paper size and font there.
+  ⚑ Micro-feature: none offered in S2 (caps); ask gate 1 at S3's selection moment.

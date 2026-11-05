@@ -119,3 +119,42 @@ empty chunks a newline after `;` makes ("Entry 10" for the 6th line). Apostrophe
 end / → next frame: add2 220 / 267 → 33 / 46 ms; fractions@g5 433 / 530 → 47 / 67; with the key (300
 sheets) add2 675 / 792 → 71 / 87, fractions 862 / 1,024 → 69 / 89. Side observation: the fraction
 key prints whole-number results as "0/1" and "1/1" (candidate for G).
+
+## S3 (2026-11-05) — pass A (performance & speed) on math-minute.html
+
+Method: the loop harness, fresh context per run, medians of 3 unless stated; 30 advanced students × 5
+copies = 150 sheets; long tasks by `PerformanceObserver('longtask')`; cpu4 by CDP
+`Emulation.setCPUThrottlingRate(4)` (an order of magnitude, as in S1). Scratch probes, not committed.
+
+**Refuted: the S0 node-count lead.** S0 timed level 5 (40 problems a sheet) against math-facts `+3` (30).
+At equal counts the pages are identical: 292 nodes per 30-cell sheet, 382 per 40-cell sheet, 19 in the
+header, 9 per stacked cell and 7 per division cell on both. 150 sheets: L1 44,257 nodes (math-facts `+3`
+44,800), L5 57,757 (`mix+40` 58,300).
+
+**Generate (150 sheets).** Click-handler / next frame: L9 (60 addition) 44 / 59 ms, L20 (60 division) 45 /
+60, L21 mixed 67 / 81 (one 64–76 ms long task: four decks built per sheet), L9 with the key (300 sheets)
+87 / 102 (one 85–108 ms task). Click to `window.print` 264–337 ms, of which 200 ms is the fixed timer (the
+open P4). cpu4: L9 212 / 281 ms (long tasks 164–226 + 53–69), with the key 377 / 463 (361–420).
+
+**Fine as is.** Roster form at 30 students, click to the next frame: Add Student 17 ms, Fill Down 24,
+Duplicate 10, Delete 11, a keystroke 15, Save 17, Generate Advanced Code 16; the same with 150 sheets on
+the page; 0 long tasks. Load: DCL 26 ms, load event 38, first paint 56 (59,293 B); a saved 30-student
+roster restores in 56 / 80 ms. Memory: 187,201 DOM nodes after each of 6 generates (key on), no growth.
+
+**Save PDF.** Before 6ada9ea: ~400 ms a page up to 30 pages (html2canvas 205–312 ms: its whole-document
+copy 84–212 ms, then the render; `toDataURL` 25 ms), but 150 pages took 127–158 s (849–1,053 ms a page,
+the copy 777 ms of 885), because every page's copy includes all 150 on-screen sheets. Two long tasks per
+page (110–230 ms) keep the page sluggish during any export (inherent to html2canvas). With
+`ignoreElements` on the results container: copy 71 ms, page 163 ms; wall clock, page's own code,
+libraries pre-fetched: math-minute 3 pages 1,256 → 1,171 ms, 30 pages 11.6 → 7.7 s (medians of 3),
+150 pages 127 → 36 s; math-facts 107 → 35 s; index.html 123 → 35 s (one run each). Output identity:
+`Math.random` seeded by an init script (mulberry32), 10 mixed students + keys = 20 pages per page, rasters
+at 72 dpi compared with ImageMagick `compare -metric AE`: 0 differing pixels on every page of all three,
+also with the window scrolled to the bottom throughout the export; controls: two seeded HEAD runs 0, two
+different PDFs 46,000–87,000 per page.
+
+**Advanced input after ad456d2 / 3575eed.** "Cohen, Avi", "Ben-David,  Rivka Leah" (inner spacing kept)
+and "Levi, Dana, Bat-Sheva" print whole on all pages; a 2-field line is still reported; index.html's
+bracket types (`mixed[add2|sub2]`, `fractions[add|sub]`, `decimals[add]`) still parse, and a bracket typed
+with commas (`mixed[add2, sub2]`) fails type validation (reported, never misread). Side effect of the
+approved rule: a Student Number holding a comma ("12, B") now reads as part of the name.
