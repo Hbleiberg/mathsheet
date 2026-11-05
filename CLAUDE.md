@@ -146,6 +146,8 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   3. For each `.worksheet` (and answer-key sheet): clone it, size the clone
      `width:1056px; height:816px; padding:24px 29px; background:white;
      box-sizing:border-box; display:flex; flex-direction:column;`, remove `print-break`,
+     give its `.problems-grid` print's fixed rows (`rows-3` → `repeat(3,2.4in)` … `rows-6` →
+     `repeat(6,1.2in)`; the screen's `1fr` set every PDF problem up to 19 px lower than on paper, S4),
      place it in the stage.
   4. `html2canvas(clone, { scale: 1.5, useCORS: true, allowTaint: true, width: 1056,
      height: 816, windowWidth: 1056, windowHeight: 816, backgroundColor: "white",

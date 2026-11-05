@@ -1653,6 +1653,11 @@ function capturePdf(sheets) {
     var clone = sheetArray[idx].cloneNode(true);
     clone.style.cssText = "width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;margin:0;padding:24px 29px;background:white;box-sizing:border-box;display:flex;flex-direction:column;";
     clone.classList.remove("print-break");
+    // Print fixes the row heights; on screen the rows stretch (1fr), which set every PDF problem
+    // 11-19 px lower than on paper (S4). Give the clone print's rows: the PDF mirrors print.
+    var cloneGrid = clone.querySelector(".problems-grid");
+    var printRows = { "rows-3": "repeat(3,2.4in)", "rows-4": "repeat(4,1.8in)", "rows-5": "repeat(5,1.44in)", "rows-6": "repeat(6,1.2in)" };
+    for (var rc in printRows) if (cloneGrid && cloneGrid.classList.contains(rc)) cloneGrid.style.gridTemplateRows = printRows[rc];
     stage.innerHTML = "";
     stage.appendChild(clone);
     setTimeout(function() {
