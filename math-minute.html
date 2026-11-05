@@ -409,11 +409,12 @@ padding-bottom:1px;
 }
 
 .problem-operator{
-margin-right:2px;
+/* One gap for every bottom number: a one-digit number's 18px box left 7.2px, so "×12" sat 2px from
+   its sign while "× 7" sat 7.2px (S5). The gap is the sign's now; one-digit problems are unchanged. */
+margin-right:7.2px;
 }
 
 .problem-bottom{
-min-width:18px;
 text-align:right;
 display:inline-block;
 }
