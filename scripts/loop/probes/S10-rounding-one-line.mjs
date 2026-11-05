@@ -3,12 +3,13 @@
 // (the page's own move-to-body trick): Rounding at grades 5–8 with keys, Mixed at 5 and 8 (rounding in the pool),
 // and Decimals and a stacked level as identity controls. Every rounding problem is one line on sheets and keys,
 // its answer blank still ≥ 150 px, the rounding sheets' last row ends ≤ 793 px (as the other across types'); the control
-// sheets are byte-identical to the reference. `--ref <commit>` (HEAD); `--control` runs the reference as the page
+// sheets are byte-identical to the reference. `--ref <commit>` (2b678e1, the commit before the fix); `--control` runs the reference as the page
 // under test, which must fail.
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 const args = process.argv.slice(2), flag = f => args.includes(f), opt = f => { const i = args.indexOf(f); return i >= 0 ? args[i + 1] : null; };
-const REF = opt('--ref') || 'HEAD', CONTROL = flag('--control');
+// The reference defaults to 2b678e1, the commit before the fix: HEAD once a32d3fa landed, so "wrapped before" read 0 (S11).
+const REF = opt('--ref') || '2b678e1', CONTROL = flag('--control');
 const SEED = `(() => { let s = 4040; Math.random = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646; })();`;
 const ROSTER = ['R5, 1, rounding, 30, 5;', 'R6, 2, rounding, 30, 6;', 'R7, 3, rounding, 30, 7;', 'R8, 4, rounding, 30, 8;',
   'M5, 5, mixed, 40, 5;', 'M8, 6, mixed, 30, 8;', 'D6, 7, decimals, 30, 6;', 'A2, 8, add2, 60, 2;'].join('\n');
