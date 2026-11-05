@@ -2405,12 +2405,15 @@ function capturePdf(sheets) {
     }
 
     var clone = sheetArray[idx].cloneNode(true);
+    // Print's own box: its padding and no border. The screen sheet's 1px #bbb border framed every PDF page and,
+    // with 29px for 0.3in, narrowed the header 2.4 px (S9; the standard pages since S8).
     clone.style.cssText = [
       "width:" + PAGE_W_PX + "px",
       "height:" + PAGE_H_PX + "px",
       "overflow:hidden",
       "margin:0",
-      "padding:24px 29px",
+      "padding:0.25in 0.3in",
+      "border:none",
       "background:white",
       "box-sizing:border-box",
       "display:flex",
