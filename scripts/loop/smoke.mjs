@@ -65,6 +65,19 @@ try {
     const boxes = await printBoxes(p);
     const offPage = boxes.filter(b => Math.abs(b.w - 1056) > 2 || Math.abs(b.h - 816) > 2);
     ok(boxes.length > 0 && offPage.length === 0, `print: ${boxes.length} sheets at 1056×816 (${offPage.length} off: ${JSON.stringify(offPage.slice(0, 2))})`);
+
+    // 4b. Paper — Chromium's own print path (results still moved to body by printBoxes): the @page
+    //     rule must name landscape Letter, one page per sheet. An invalid `size` is dropped without
+    //     a word, so the dialog falls back to portrait and an A4-landscape sheet splits in two (S2).
+    const pdfInfo = buf => { const s = buf.toString('latin1');
+      return { pages: (s.match(/\/Type\s*\/Page[^s]/g) || []).length, media: [...new Set(s.match(/\/MediaBox \[[^\]]*\]/g) || [])] }; };
+    await p.page.emulateMedia({ media: 'print' });   // page.pdf() renders screen CSS after emulateMedia('screen')
+    const letter = pdfInfo(await p.page.pdf({ preferCSSPageSize: true }));
+    ok(letter.pages === boxes.length && letter.media.join() === '/MediaBox [0 0 792 612]',
+      `paper: print path makes ${letter.pages} page(s) for ${boxes.length} sheets at ${letter.media.join(' ')} (landscape Letter = 0 0 792 612)`);
+    const a4 = pdfInfo(await p.page.pdf({ format: 'A4', landscape: true }));
+    await p.page.emulateMedia({ media: 'screen' });
+    ok(a4.pages === boxes.length, `paper: on A4 landscape every sheet still fits one page (${a4.pages} pages for ${boxes.length} sheets)`);
     await p.close();
 
     // 5. Advanced input — a blank name is allowed, each entry one sheet

@@ -92,9 +92,10 @@ Every generator offers a Standard form **and** an Advanced paste box. Keep both 
 
 Worksheets print as **landscape US Letter (11in × 8.5in)**, one worksheet per page.
 
-- **CSS** (copy as-is):
+- **CSS** (copy as-is; two lengths already mean landscape — `11in 8.5in landscape` is invalid
+  CSS that browsers drop silently, so the dialog fell back to portrait and A4 split every sheet, S2):
   ```css
-  @page { size: 11in 8.5in landscape; margin: 0; }
+  @page { size: 11in 8.5in; margin: 0; }
   @media print {
     html, body { margin: 0 !important; padding: 0 !important; }
     body > * { display: none !important; }                 /* hide the app UI */
