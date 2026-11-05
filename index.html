@@ -863,8 +863,8 @@ body { margin: 0; padding: 12px; background: white; }
 </form>
 
 <div id="mwgStatus"></div>
-<div class="mwg-results" id="mwgResults"></div>
 <div id="mwgErrors"></div>
+<div class="mwg-results" id="mwgResults"></div>
 
 <div id="mwgCodePanel" style="display:none;border:1px solid rgb(199,214,255);background:rgb(238,243,255);border-radius:8px;padding:12px 16px;margin-top:12px;">
   <div style="font-weight:bold;font-size:14px;margin-bottom:8px;">Advanced Input Code</div>
@@ -2213,7 +2213,8 @@ function generate() {
     }
   }
   if (doKey && allAnswers.length) resultsDiv.appendChild(buildAnswerKeySheet(allAnswers, !doKey));
-  resultsDiv.scrollIntoView({ behavior: "smooth", block: "start" });
+  // The skipped-entries box stands above the sheets: land on it, so a missing student is explained (S7).
+  (parsed.errors.length ? errorsDiv : resultsDiv).scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function generateAndPrint() {

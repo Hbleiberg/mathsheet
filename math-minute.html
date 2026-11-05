@@ -802,8 +802,8 @@ break-after:avoid !important;
 </form>
 
 <div id="statusMessages"></div>
-<div id="results"></div>
 <div id="errors"></div>
+<div id="results"></div>
 
 <div id="advancedCodePanel" style="display:none;border:1px solid rgb(199,214,255);background:rgb(238,243,255);border-radius:8px;padding:12px 16px;margin-top:12px;">
   <div style="font-weight:bold;font-size:14px;margin-bottom:8px;">Advanced Input Code</div>
@@ -1597,7 +1597,8 @@ function generateWorksheets() {
     }
   }
   if (parsed.students.length > 0) {
-    results.scrollIntoView({ behavior: "smooth", block: "start" });
+    // The skipped-entries box stands above the sheets: land on it, so a missing student is explained (S7).
+    (parsed.errors.length ? errors : results).scrollIntoView({ behavior: "smooth", block: "start" });
   } else {
     showNotice("No valid students found to generate worksheets.");
   }
