@@ -1,23 +1,31 @@
-// Probe (loop S6, micro-feature on math-minute.html): the optional "Header line" — free text printed under
-// the header row of every sheet and answer key (a week, a unit, a parasha).
+// Probe (loop S6, micro-feature on math-minute.html; S7 added math-facts.html with `--page`): the optional
+// "Header line" — free text printed under the header row of every sheet and answer key (a week, a unit, a parasha).
 //   - left blank (the default) the sheets and keys are byte-identical to the pre-feature page's (seeded);
 //   - a line with Hebrew, markup and quotes prints literally, once per sheet and key, dir="auto";
 //   - under emulated print with the move trick every sheet stays 1056×816, the line is one row, and the
 //     lowest problem of every row count (rows-3…rows-6) still ends on the paper; an 80-character line fits;
 //   - Save PDF's clones (cdnjs stubbed) carry the line and put every cell where print does;
 //   - the line is saved with the roster and restored; a payload saved before the feature loads blank.
-// Fails on the pre-feature page (`--control` serves math-minute.html from `git show dd8609a:math-minute.html`).
-//   node scripts/loop/probes/S6-header-line.mjs [--control]
+// Fails on the pre-feature page (`--control` serves the page from its CONF reference: dd8609a for math-minute,
+// f48b8db for math-facts).
+//   node scripts/loop/probes/S6-header-line.mjs [--page math-facts.html] [--control]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
 const control = process.argv.includes('--control');
+const pageArg = process.argv.indexOf('--page');
 const fails = [];
 const check = (ok, msg) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg); };
-const FILE = 'math-minute.html';
-const BEFORE = execSync(`git show dd8609a:${FILE}`, { cwd: ROOT, encoding: 'utf8' });
+// Per page: the last commit before the feature, a roster that prints rows-3 … rows-6, the storage key, a level.
+const CONF = {
+  'math-minute.html': { ref: 'dd8609a', roster: 'A, 1, 1;\nB, 2, 5;\nC, 3, 7;\nD, 4, 9;', storage: 'mathMinuteRosterData_v2', level: '3' },
+  'math-facts.html': { ref: 'f48b8db', roster: 'A, 1, +2;\nB, 2, mix+40;\nC, 3, mix-50;\nD, 4, mixmd60;', storage: 'mathFactsRosterData_v1', level: '+2' },
+};
+const FILE = pageArg > 0 ? process.argv[pageArg + 1] : 'math-minute.html';
+if (!CONF[FILE]) throw new Error(`no header-line config for ${FILE}`);
+const BEFORE = execSync(`git show ${CONF[FILE].ref}:${FILE}`, { cwd: ROOT, encoding: 'utf8' });
 const SEED = `(() => { let s = 20261105; Math.random = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646; })();`;
-const ROSTER = 'A, 1, 1;\nB, 2, 5;\nC, 3, 7;\nD, 4, 9;';                 // rows-3 .. rows-6
+const ROSTER = CONF[FILE].roster;                                    // rows-3 .. rows-6
 const LINE = 'Unit 3 review · פרשת נח <b>x</b> & "q"';
 const LONG = 'WEEK OF 12 NOVEMBER — UNIT 3 REVIEW: ADDITION AND SUBTRACTION FACTS TO 20, TIMED'.padEnd(80, 'W');   // 80 wide characters
 const H2C_STUB = `window.html2canvas = function (clone) {
@@ -32,7 +40,7 @@ const JSPDF_STUB = `window.jspdf = { jsPDF: function () { return { addPage: func
 async function open(browser, base, body, storage) {
   const p = await openPage(browser, base, FILE, { raw: true, storage });
   await p.context.addInitScript(SEED);
-  if (body) await p.page.route(/\/math-minute\.html$/, r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body }));
+  if (body) await p.page.route(new RegExp(`/${FILE.replace('.', '\\.')}$`), r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body }));
   await p.page.route(/cdnjs\.cloudflare\.com\/.*html2canvas/, r => r.fulfill({ contentType: 'text/javascript', body: H2C_STUB }));
   await p.page.route(/cdnjs\.cloudflare\.com\/.*jspdf/, r => r.fulfill({ contentType: 'text/javascript', body: JSPDF_STUB }));
   await p.page.reload({ waitUntil: 'load' });
@@ -115,15 +123,15 @@ try {
   // 6. Saved with the roster, restored on reload; a pre-feature payload loads blank.
   await p.page.fill('#headerLineInput', LINE);
   await p.page.click('#saveRosterButton');
-  const saved = JSON.parse(await p.page.evaluate(() => localStorage.getItem('mathMinuteRosterData_v2')));
+  const saved = JSON.parse(await p.page.evaluate(k => localStorage.getItem(k), CONF[FILE].storage));
   check(saved.headerLine === LINE, `Save Roster stores headerLine (${JSON.stringify(saved.headerLine)})`);
   await p.page.reload({ waitUntil: 'load' }); await p.page.waitForSelector('#studentsContainer .student-entry', { state: 'attached' });
   check(await p.page.$eval('#headerLineInput', i => i.value) === LINE, 'reload restores the line');
   check(p.errors.length === 0, `0 page errors (${p.errors.join(' | ')})`);
   await p.close();
   const oldPayload = JSON.stringify({ inputMode: 'standard', worksheetsPerStudent: '1', answerKey: false, removeNumber: false, nameBlank: false,
-    advancedInput: '', standardStudents: [{ name: 'Avi', number: '1', level: '3' }] });
-  const o = await open(browser, srv.base, control ? BEFORE : null, { mathMinuteRosterData_v2: oldPayload });
+    advancedInput: '', standardStudents: [{ name: 'Avi', number: '1', level: CONF[FILE].level }] });
+  const o = await open(browser, srv.base, control ? BEFORE : null, { [CONF[FILE].storage]: oldPayload });
   check(await o.page.$eval('#headerLineInput', i => i.value) === '' && await o.page.$eval('input[name="studentName"]', i => i.value) === 'Avi',
     'a roster saved before the feature loads, its line blank');
   check(o.errors.length === 0, `0 page errors on the old payload (${o.errors.join(' | ')})`);
