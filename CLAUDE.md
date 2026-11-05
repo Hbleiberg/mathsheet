@@ -200,6 +200,9 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   - **"Name blank"** (`nameBlankToggle`, helper `isNameBlank()`): prints an empty Student
     Name line on every worksheet even when a name is entered (answer keys still show the
     name). Student Number is always free text — never validate it as numeric.
+  - **"Header line (optional)"** (`headerLineInput`, math-minute so far; saved as `headerLine`): free text
+    (≤ 80 characters, `dir="auto"`, escaped) printed as one line under the header row of every sheet and
+    key; blank prints nothing, so the sheets stay byte-identical (S6).
 - **localStorage:** one key per page, named `"<page>RosterData_v<N>"` (e.g.
   `mathFactsRosterData_v1`, `mathMinuteRosterData_v2`). Saved payload:
   ```js

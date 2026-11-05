@@ -102,7 +102,8 @@ font-size:14px;
 .student-grid input,
 .student-grid select,
 .advanced-input-wrap textarea,
-.setting-group select{
+.setting-group select,
+.setting-group input{
 width:100%;
 padding:8px;
 font-size:14px;
@@ -213,6 +214,7 @@ margin:10px 0 8px 0;
 }
 
 .settings-left{
+flex:1 1 auto;
 display:flex;
 gap:14px;
 flex-wrap:wrap;
@@ -337,6 +339,17 @@ padding-left:10px;
 font-style:normal;
 font-weight:bold;
 white-space:nowrap;
+}
+
+.worksheet-header-line{
+margin-top:5px;
+font-size:13px;
+font-weight:bold;
+line-height:16px;
+text-align:center;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
 
 .worksheet-body{
@@ -717,6 +730,10 @@ break-after:avoid !important;
           <option value="5">5</option>
         </select>
       </div>
+      <div class="setting-group">
+        <label for="headerLineInput">Header line (optional)</label>
+        <input type="text" id="headerLineInput" maxlength="80" dir="auto" autocomplete="off" placeholder="e.g. Unit 3 review · Parashat Noach" title="Printed under the header of every worksheet and answer key." />
+      </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
       <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
@@ -814,6 +831,7 @@ var savePdfButton = null;
 var answerKeyToggle = null;
 var removeNumberToggle = null;
 var nameBlankToggle = null;
+var headerLineInput = null;
 var mmValidationBox = null;
 var mmValidationMsg = null;
 var mmValidationFix = null;
@@ -1245,6 +1263,13 @@ function renderProblem(problem) {
   return '<div class="problem-cell"></div>';
 }
 
+// The optional "Header line" (a week, a unit, a parasha): one line under the header row of every sheet and
+// key, escaped; nothing at all when blank, so a blank line leaves the sheets as they were.
+function headerLineHtml() {
+  var text = headerLineInput ? headerLineInput.value.trim() : "";
+  return text ? '<div class="worksheet-header-line" dir="auto">' + escapeHtml(text) + '</div>' : "";
+}
+
 function createWorksheet(name, number, level, problems, isLast, setNumber, setTotal) {
   var worksheet = document.createElement("div");
   worksheet.className = "worksheet" + (isLast ? "" : " print-break");
@@ -1274,6 +1299,7 @@ function createWorksheet(name, number, level, problems, isLast, setNumber, setTo
           '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span>' +
         '</div>' +
       '</div>' +
+      headerLineHtml() +
     '</div>' +
     '<div class="worksheet-body">' +
       '<div class="problems-grid ' + meta.rowsClass + '">' +
@@ -1379,6 +1405,7 @@ function saveRoster() {
     answerKey:            answerKeyToggle.checked,
     removeNumber:         removeNumberToggle.checked,
     nameBlank:            nameBlankToggle.checked,
+    headerLine:           headerLineInput.value,
     advancedInput:        advancedInputBox.value,
     standardStudents:     collectStandardRoster()
   };
@@ -1418,6 +1445,7 @@ function loadRosterIfAvailable() {
     if (answerKeyToggle)         answerKeyToggle.checked    = saved.answerKey            || false;
     if (removeNumberToggle)      removeNumberToggle.checked = saved.removeNumber         || false;
     if (nameBlankToggle)         nameBlankToggle.checked    = saved.nameBlank            || false;
+    if (headerLineInput)         headerLineInput.value      = saved.headerLine           || "";
     applyRemoveNumberToggle();
     applyNameBlankToggle();
     setInputMode(saved.inputMode || "standard");
@@ -1484,6 +1512,7 @@ function buildAnswerKeySheet(student, problems, isLast, copyNum, copies) {
           '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span>' +
         '</div>' +
       '</div>' +
+      headerLineHtml() +
     '</div>' +
     '<div class="worksheet-body">' +
       '<div class="problems-grid ' + meta.rowsClass + '">' +
@@ -1722,6 +1751,7 @@ function assignDomRefs() {
   removeNumberToggle.addEventListener("change", function() { applyRemoveNumberToggle(); });
   nameBlankToggle            = document.getElementById("nameBlankToggle");
   nameBlankToggle.addEventListener("change", function() { applyNameBlankToggle(); });
+  headerLineInput            = document.getElementById("headerLineInput");
   savePdfButton              = document.getElementById("savePdfButton");
   mmValidationBox            = document.getElementById("mmValidationBox");
   mmValidationMsg            = document.getElementById("mmValidationMsg");
