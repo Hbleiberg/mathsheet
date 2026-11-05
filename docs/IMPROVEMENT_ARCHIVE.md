@@ -114,3 +114,29 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   ⚑ `node scripts/loop/probes/S4-pdf-print-parity.mjs` guards S4's PDF fixes offline (stubbed libraries); the Mixed-ops click sequence and every S4 measurement are in `docs/loop-findings.md` → S4.
   ⚑ C rules: BEFORE / AFTER screenshots at 1280 and ~800 px plus a rendered sheet, delivered at close-out; palette, font or layout restructuring is gate 3.
   ⚑ Micro-feature: skipped in S1, S3 and S4 (S4: to keep the session for fixes); ask gate 1 again at S5's selection moment.
+
+## S6 (2026-11-05) — pass G on index.html; two fixes and a micro-feature (on a branch)
+
+- The maintainer invoked the loop "on a new branch - don't push to main yet": S6 committed to
+  `claude/clever-davinci-hhh4iz` (from main d52bf7d) and did not touch `main`.
+- Pass G as a committed probe (`S6-math-audit.mjs`): 51 selectors × 200 sheets through Advanced Input with
+  the key on; 378,000 problems; every key answer equal to the problem recomputed with exact rationals; every
+  key problem its sheet's own. Fixes: Division Levels 3–4 2-digit dividends (b1e456f; a first version with
+  an evenly drawn divisor made 35 % of problems ÷ to 10 or 11 and was redrawn before commit), the header's
+  count (dd8609a). Micro-feature: Custom header line on math-minute (4f7d68c).
+- Gates (one call at the selection moment): Division 3–4 → 2-digit dividends; count → the real count;
+  fraction subtraction → no zero answers (approved, queued); micro-feature → Custom header line.
+- Screenshots delivered (scratchpad): `before-div3-key`, `after-div3-key`, `after-div4-key`, `before-hl-settings-1280`,
+  `after-hl-settings-{1280,800}`, `after-hl-rows6-sheet`, `after-hl-hebrew-key`.
+- Done rows aged out of the ledger (S1), verbatim:
+  - [x] S1 | 2026-11-04 | 0ff238e | math-minute.html, math-facts.html | `content-visibility:auto` on the worksheets: the 150-sheet Generate handler 156 → 26 ms / 162 → 24 ms, the two 150–210 ms long tasks gone; the print block forces `visible` | printBoxes 150 sheets at 1056×816 (0 off), page.pdf 150 pages, scroll position and Save PDF size unchanged, screenshots 1280 / 800 px, smoke + `--cdn`
+  - [x] S1 | 2026-11-04 | 9304f31 | index.html, math-minute.html, math-facts.html, scripts/loop/smoke.mjs, CLAUDE.md | the two PDF libraries (135 KB wire) load on the first Save PDF click, not with the page: first roster entry at 1.5 Mbps 906 → 624 / 895 → 372 / 896 → 398 ms, 0 cdnjs requests on load | smoke arm 8 green on all pages (it failed before), `--cdn` saves a real 3-page PDF on each, offline click → notice → online click → PDF
+  - [x] S1 | 2026-11-04 | 62e6338 | index.html, scripts/loop/probes/roster-subset.mjs | two P2s: Fill Down dropped Student 1's fraction/decimal ops and mixed subset (the filled entries' ops panel was dead, sheets printed every operation), and a saved or duplicated grade ≥ 5 mixed student came back at count 30 instead of 40/50/60 | probe green; its `--control` run of the old page fails 6 of 9 checks; smoke
+  - [x] S1 | 2026-11-04 | — | docs/IMPROVEMENT_LOG.md | gates: micro-feature skipped (maintainer's answer); index.html convergence = one dedicated approved session (Awaiting item rewritten); fourth fix withheld — every page had taken its two iterations | ledger
+  - [x] S1 | 2026-11-04 | — | docs/IMPROVEMENT_LOG.md, .claude/skills/improveloop/SKILL.md | maintainer answered two Awaiting questions: the pages are standalone files (pass L unblocked; `<head>` edits reach production) and the loop pushes straight to `main` (S0's branch fast-forwarded into main) | ledger + skill updated, check-ledger ok
+- Previous handoff (S5 → S6), verbatim:
+  **Next session (S6):** S2–S5's commits reached `main` on the maintainer's word after S5 ("Push to main"; `main` fast-forwarded from 6b0503a to the branch `claude/fervent-lovelace-urwaob`), which lifts the S2 branch-only instruction: from S6 the loop commits and pushes straight to `main` again (skill, session-start step 5). Check `git log origin/main` first.
+  ⚑ next: G on index.html — every cell left is a never-run tie and each of A, B and C has now run; A or B on the remaining pages would re-audit twins (S2 measured math-minute's 21 levels on paper, S3 equal nodes per cell, S4 both PDFs) and C's shared CSS was audited on math-facts in S5 (index's UI waits on its convergence session), while G has never run, a wrong key answer is a P1, and index holds the suite's hardest arithmetic (fractions, decimals, rounding, order of operations) with a fraction-key candidate already queued.
+  ⚑ Top of the queue: the skipped-entries list hidden under the sheets (P2, all three pages, one touch each) and index's key division (P3, the S5 "match the sheet" answer; the shape is in 2a74f54). Both spend an index touch, as would Rounding one line and the long headers (approved S4): plan index's two touches first.
+  ⚑ New probes (S5): `S5-key-division`, `S5-sign-gap`, `S5-mixed-ops`, `S5-key-rows12`; with `S4-pdf-print-parity` they are arm R's set. Ink is measured from the glyphs (canvas `measureText`), not text rects: S4's "8.4 px" overprint was −3.4 px of real ink (`docs/loop-findings.md` → S5).
+  ⚑ Micro-feature: skipped in S1, S3, S4 and S5 (S5: to keep the session for fixes); ask gate 1 again at S6's selection moment.

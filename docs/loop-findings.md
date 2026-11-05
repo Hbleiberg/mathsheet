@@ -249,3 +249,40 @@ reloaded sheet has 0 ÷ / − (15 before). b981031: rows-12 keys (44 keys, 2,640
 stacked type and Mixed at 60): smallest glyph gap under an answer −3.4 → 2.6 px (S4's 8.4 px was text
 rects, which include the font's leading); ink to 790 of 816 px; the 152 other sheets byte-identical with
 `Math.random` seeded.
+
+## S6 (2026-11-05) — pass G (math correctness & pedagogy) on index.html
+
+Method: `scripts/loop/probes/S6-math-audit.mjs` — Advanced Input, 51 selectors (the 20 levels; Fractions and
+Decimals at grades 5 and 6 and each of their 11 operations; Rounding, Long Division 5/6, Order of Operations,
+Integers 7/8, Exponents, Scientific Notation; Mixed at grades 1–8) × 200 sheets, counts rotating 30/40/50/60,
+answer key on. Sheets and keys are read back from the DOM (fractions as `[n/d]`, powers as `^e`, brackets as
+`DIV d n`) and every key answer recomputed with BigInt rationals. 378,000 problems, ~60 s. `--control` plants a
+wrong Level 3 quotient, a wrong fraction denominator and the asked count: 2 checks fail.
+
+**Refuted / clean.** Every key answer is right (0 of 378,000 wrong), every key problem is its sheet's own,
+no negative difference anywhere (subtraction levels, fraction and decimal subtraction), every Order of
+Operations, Integers, Exponents and Scientific Notation key right. Addition / Subtraction / Multiplication
+Levels 1–5 and Division 1, 2, 5 keep their labels; Division 1–2 exact with quotients 1–10.
+
+**Defects.** (1) Division Levels 3–4 ("2-digit ÷ 1-digit") had 3-digit dividends in 7,635 / 7,713 of 9,000
+(quotient drawn 10–99) — fixed b1e456f. An evenly drawn divisor with a 2-digit dividend makes 35 % of
+problems ÷ to 10 or 11 (99 ÷ 9, 66 ÷ 6) and 23 distinct problems per 30; drawing evenly over all 106 valid
+problems gives 15 % and 26.3 distinct, with ÷2 38 %, ÷3 23 %, ÷9 2 % — the shape shipped. (2) The header
+stated the count asked: 4,050 of 10,200 sheets (every across type at 40–60; Mixed 5–8) — fixed dd8609a;
+also reachable from the Standard form via Mixed → Deselect All → 60. (3) Advanced bracket names are never
+validated: `fractions[fractions-ad]` → "Fractions" header over "2 + 3 =", `mixed[foo]` → Addition Level 1,
+`mixed[scientificnotation]` at grade 1 runs; no error (queued P2).
+
+**Pedagogy measured (queued).** Fraction keys at grade 5: 0/x 1,009, n/1 1,051, improper 1,005 of 6,000.
+Fraction subtraction x − x = 0 in 1,612 of 6,000 (27 %); addition sums to exactly 1 in 1,632 (27 %); d = 2
+always ½ ± ½. Operands not in lowest terms ~20 % (normal for like denominators; no candidate). Decimals type:
+1,082 of 11,864 grade-5 numbers have no decimal point, 68 problems all-whole; the grade-6 level shows 2
+places on 10,817 of 12,000 numbers. Integers: hyphen-minus in 74 % of problems and every negative key.
+Rounding: 232 of 6,000 ask a number below the place, 131 round to 0; "to nearest tens" wording. Addition
+Level 2 sums 10–18 (label 10–20); Level 5 / Subtraction 5 never take a 1-digit number. Grade 1–2 Mixed
+includes × and ÷ by default (GRADE_TYPES; a product choice, no candidate).
+
+**Micro-feature (math-minute, Header line).** Print with the line: lowest problem 104 / 75 / 58 / 46 px
+above the paper's bottom for rows-3…rows-6 (the line costs ~21 px); an 80-character all-caps line fits one
+row; PDF clones within 1.0 px of print. The settings row's left block sized itself from the fields'
+min-widths (434 px for two 260 px fields) and wrapped the second: `.settings-left{flex:1 1 auto}`.
