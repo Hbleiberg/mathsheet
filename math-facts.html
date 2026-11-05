@@ -1713,12 +1713,53 @@ function generateWorksheets() {
       results.appendChild(buildAnswerKeySheet(allAnswers[k].student, allAnswers[k].problems, isLastKey, allAnswers[k].copyNum, allAnswers[k].copies));
     }
   }
+  fitLongNames();
   if (parsed.students.length > 0) {
     // The skipped-entries box stands above the sheets: land on it, so a missing student is explained (S7).
     (parsed.errors.length ? errors : results).scrollIntoView({ behavior: "smooth", block: "start" });
   } else {
     showNotice("No valid students found to generate worksheets.");
   }
+}
+
+// A long name shrinks to fit its line instead of being cut with "…" (S9, approved S2). Every name line in one
+// header layout has one width, so one line is measured (the other sheets stay unlaid out: content-visibility,
+// S1) and each name by canvas; the screen sheet's border leaves the line ~1 px narrower than paper, so a size
+// that fits here fits in print and the PDF. A name that fits gets no style; below 11 px the "…" returns.
+function fitLongNames() {
+  var fields = results.querySelectorAll(".worksheet-header-main > .student-field:first-child > .student-field-value");
+  var ctx = document.createElement("canvas").getContext("2d"), lines = {};
+  for (var i = 0; i < fields.length; i++) {
+    var field = fields[i], key = field.parentNode.parentNode.style.gridTemplateColumns;
+    if (!field.textContent) continue;
+    if (!lines[key]) {
+      var cs = getComputedStyle(field);
+      lines[key] = { room: field.getBoundingClientRect().width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight),
+                     size: parseFloat(cs.fontSize), field: field, heights: {} };
+      ctx.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
+    }
+    var line = lines[key], width = ctx.measureText(field.textContent).width;
+    if (width <= line.room) continue;
+    var size = Math.max(11, Math.floor(line.size * line.room / width * 2) / 2);
+    if (!line.heights[size]) line.heights[size] = nameLineHeight(line.field, size);
+    field.style.fontSize = size + "px";
+    field.style.lineHeight = line.heights[size] + "px";
+  }
+}
+// The line height that rests a smaller name on the 18 px name's baseline, so it sits on its line, not above it:
+// a baseline moves half as far as its line height. Measured once per size on an empty copy of a name line.
+function nameLineHeight(field, size) {
+  var copy = document.createElement("span"), mark = document.createElement("span");
+  copy.className = field.className;
+  mark.style.cssText = "display:inline-block;width:0;height:0";
+  copy.appendChild(mark);
+  field.parentNode.appendChild(copy);
+  var at18 = mark.getBoundingClientRect().top - copy.getBoundingClientRect().top;
+  copy.style.fontSize = size + "px";
+  copy.style.lineHeight = "0";
+  var at0 = mark.getBoundingClientRect().top - copy.getBoundingClientRect().top;
+  field.parentNode.removeChild(copy);
+  return 2 * (at18 - at0);
 }
 
 function doGenerateAndPrint() {
