@@ -1125,19 +1125,19 @@ function teenSubtractionFacts() {                     // a-b with a = 10..18 and
   }
   return facts;
 }
-function multiplicationFacts(minFactor, maxFactor, allowZero) {   // a x b with a = 0..9, b = minFactor..maxFactor
+function multiplicationFacts(minFactor, maxFactor, allowZero, minTop) {   // a x b with a = 0..9 (minTop..9), b = minFactor..maxFactor
   var facts = [];
-  for (var a = allowZero ? 0 : 1; a <= 9; a++) {
+  for (var a = minTop || (allowZero ? 0 : 1); a <= 9; a++) {
     for (var b = Math.max(minFactor, 1); b <= maxFactor; b++) {
       if (a * b <= 100) facts.push(stack("\u00d7", a, b));
     }
   }
   return facts;
 }
-function divisionFacts(minDivisor, maxDivisor) {      // dividend / divisor with quotients 1..10
+function divisionFacts(minDivisor, maxDivisor, minQuotient, maxQuotient) {   // dividend / divisor with quotients 1..10 (min..max)
   var facts = [];
   for (var divisor = minDivisor; divisor <= maxDivisor; divisor++) {
-    for (var quotient = 1; quotient <= 10; quotient++) {
+    for (var quotient = minQuotient || 1; quotient <= (maxQuotient || 10); quotient++) {
       facts.push({ kind: "division", divisor: divisor, dividend: divisor * quotient, answer: quotient });
     }
   }
@@ -1224,12 +1224,12 @@ function generateProblemsForLevel(level) {
     case 9:  return deal(additionFacts(18, true), 60);
     case 10: return deal(teenSubtractionFacts(), 60);
     case 11: return deal(multiplicationFacts(0, 5, true), 30);
-    case 12: return deal(multiplicationFacts(6, 9, false), 30);
+    case 12: return deal(multiplicationFacts(6, 9, false, 3), 30);   // "hard": 3..9 x 6..9, no x1 or x2 (S9, gate 2)
     case 13: return deal(multiplicationFacts(0, 9, true), 40);
     case 14: return deal(multiplicationFacts(0, 9, true), 50);
     case 15: return deal(multiplicationFacts(0, 9, true), 60);
     case 16: return deal(divisionFacts(1, 5), 30);
-    case 17: return deal(divisionFacts(6, 9), 30);
+    case 17: return deal(divisionFacts(6, 9, 2, 9), 30);             // "hard": quotients 2..9, never 1 or 10 (S9, gate 2)
     case 18: return deal(divisionFacts(1, 9), 40);
     case 19: return deal(divisionFacts(1, 9), 50);
     case 20: return deal(divisionFacts(1, 9), 60);

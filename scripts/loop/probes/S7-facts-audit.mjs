@@ -78,12 +78,13 @@ if (FILE === 'math-facts.html') {
     c => ({ shuffled: true, parts: [[[MUL], c / 2, allMul], [[DIV], c / 2, allDiv]] }));
 } else if (FILE === 'math-minute.html') {
   // The page's documented ranges (its comments): additionFacts(maxSum, allowZero), subtractionFacts(maxTop),
-  // teenSubtractionFacts(), multiplicationFacts(minFactor, maxFactor, allowZero), divisionFacts(lo, hi).
+  // teenSubtractionFacts(), multiplicationFacts(minFactor, maxFactor, allowZero, minTop), divisionFacts(lo, hi, qlo, qhi).
+  // S9 (gate 2): the "hard" levels drop their easiest facts — Level 12 has no x1 or x2, Level 17 no quotient 1 or 10.
   const add = (maxSum, zero) => range(zero ? 0 : 1, 9).flatMap(a => range(zero ? 0 : 1, 9).filter(b => a + b <= maxSum).map(b => form(ADD, a, b)));
   const sub9 = range(1, 9).flatMap(a => range(0, a).map(b => form(SUB, a, b)));
   const teen = range(10, 18).flatMap(a => range(a - 9, 9).map(b => form(SUB, a, b)));
-  const mul = (lo, hi, zero) => range(zero ? 0 : 1, 9).flatMap(a => range(Math.max(lo, 1), hi).map(b => form(MUL, a, b)));
-  const div = (lo, hi) => range(lo, hi).flatMap(d => range(1, 10).map(q => form(DIV, d * q, d)));
+  const mul = (lo, hi, zero, top) => range(top || (zero ? 0 : 1), 9).flatMap(a => range(Math.max(lo, 1), hi).map(b => form(MUL, a, b)));
+  const div = (lo, hi, qlo = 1, qhi = 10) => range(lo, hi).flatMap(d => range(qlo, qhi).map(q => form(DIV, d * q, d)));
   const L = (code, count, desc, family, promise, split) => LEVELS.push({ code: String(code), count, desc, family, promise, split });
   const isAdd = ([o]) => o === ADD, isSub = ([o, a, b]) => o === SUB && a >= b, isMul = ([o]) => o === MUL, isDiv = ([o, a, b]) => o === DIV && a % b === 0;
   L(1, 30, 'Thirty addition facts, sums less than ten', add(9, true), f => isAdd(f) && value(f) < 10);
@@ -93,10 +94,10 @@ if (FILE === 'math-facts.html') {
   [[5, 40, 'Forty'], [7, 50, 'Fifty'], [9, 60, 'Sixty']].forEach(([c, n, w]) => L(c, n, `${w} addition facts`, add(18, true), isAdd));
   [[6, 40, 'Forty'], [8, 50, 'Fifty'], [10, 60, 'Sixty']].forEach(([c, n, w]) => L(c, n, `${w} subtraction facts`, teen, isSub));
   L(11, 30, 'Thirty easy multiplication facts', mul(0, 5, true), f => isMul(f) && Math.min(f[1], f[2]) <= 5);
-  L(12, 30, 'Thirty hard multiplication facts', mul(6, 9, false), f => isMul(f) && Math.max(f[1], f[2]) >= 6);
+  L(12, 30, 'Thirty hard multiplication facts', mul(6, 9, false, 3), f => isMul(f) && Math.min(f[1], f[2]) >= 3 && Math.max(f[1], f[2]) >= 6);
   [[13, 40, 'Forty'], [14, 50, 'Fifty'], [15, 60, 'Sixty']].forEach(([c, n, w]) => L(c, n, `${w} multiplication facts`, mul(0, 9, true), isMul));
   L(16, 30, 'Thirty easy division facts', div(1, 5), f => isDiv(f) && f[2] <= 5);
-  L(17, 30, 'Thirty hard division facts', div(6, 9), f => isDiv(f) && f[2] >= 6);
+  L(17, 30, 'Thirty hard division facts', div(6, 9, 2, 9), f => isDiv(f) && f[2] >= 6 && f[1] / f[2] >= 2 && f[1] / f[2] <= 9);
   [[18, 40, 'Forty'], [19, 50, 'Fifty'], [20, 60, 'Sixty']].forEach(([c, n, w]) => L(c, n, `${w} division facts`, div(1, 9), isDiv));
   const mixFam = [add(18, true), teen, mul(0, 9, true), div(1, 9)];
   L(21, 40, 'Mixed facts: addition, subtraction, multiplication, division', mixFam.flat(),
