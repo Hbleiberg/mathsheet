@@ -10,6 +10,10 @@ classroom) wins, (4) smallest diff.
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P2 | index.html | a Mixed entry with only some fraction / decimal operations ticked comes back with all 11 ticked after Duplicate or a saved-roster reload (the payload is right; `renderMixedCheckboxes` ticks an op `|| fracChecked` / `|| decChecked`): tick an op only when the list holds it or the bare "fractions" / "decimals" | found S4
+- [ ] P2 | index.html | answer keys of 60 wide problems (rows-12: Level 3–5 add/sub/mul, Grade 3–4 Mixed at 60): each red answer overprints the top number below it by ~8 px; approved S4 (gate 6): tighten only the key's stack spacing so it clears, worksheets unchanged | found S4
+- [ ] P3 | index.html | Rounding wraps every problem to two lines (the answer blank takes 60 % of the cell), so its 15 rows run to 806 px, 0.1 in from the paper's edge; approved S4 (gate 6): one line per problem (a shorter answer blank) | found S4
+- [ ] P3 | index.html | with 2–5 copies a long description runs under "Worksheet 3 of 5", and a key's "(Key 3 of 5)" is cut by its box (160 of 500 Grade 5 keys); approved S4 (gate 6): shrink the description's font to fit, as for long names | found S4
 - [ ] P3 | index.html, math-minute.html, math-facts.html | `escapeHtml` / `esc()` never escapes the apostrophe on any page (the step replaces `'` with `\u0027`, itself): emit `&#x27;` as CLAUDE.md shows; no exploitable sink today (user values land in text nodes or double-quoted attributes), but the smoke's XSS arm cannot see the gap | found S1
 - [ ] P3 | index.html, math-minute.html, math-facts.html | the printed Student Name holds ~22 characters (18 px bold Arial, ~207 px field) and cuts longer names with "…" ("Bat-Sheva Rivka Gol…"); approved S2 (gate 6): shrink the font to fit the line, short names unchanged; prove with printBoxes and before/after screenshots | found S2
 - [ ] P3 | index.html | fraction answer keys write whole-number results as "0/1" and "1/1" and leave improper results unconverted ("4/3" at grade 5); approved S3 (gate 2): whole and mixed numbers on the key (1/1 → 1, 0/1 → 0, 4/3 → 1 1/3); check whether the printed problems share the helper before changing it | found S2
@@ -18,7 +22,7 @@ classroom) wins, (4) smallest diff.
 - [ ] P3 | index.html, math-minute.html, math-facts.html | no progress during an export (~35 s for 150 pages since S3): one static "Generating PDF, please wait..." box, half scrolled off, until "PDF saved!"; approved S3 (gate 2): "Making your PDF: page 12 of 150..." updated per page, kept in view | found S1
 - [ ] P3 | index.html, math-minute.html, math-facts.html | Save PDF has no re-entrancy guard: a second click during a capture starts a second full pipeline and the button never disables; disable it (or ignore clicks) until "PDF saved!" or the failure notice, re-enabling on both paths | found S1
 - [ ] P3 | index.html, math-minute.html, math-facts.html | advanced-input errors number the raw `;` chunks, and a newline after `;` makes an empty one, so the 6th line of a pasted roster is reported as "Entry 10": number the non-empty entries | found S2
-- [ ] P4 | math-minute.html, math-facts.html | Save PDF lays the rows out at 1fr while print uses fixed rows (2.4 / 1.8 / 1.44 / 1.2 in), so every problem sits 11–18 px lower in the PDF than on paper and print leaves ~20 px blank at the bottom: give the PDF clone the print row heights (CLAUDE.md: the PDF mirrors print) | found S2
+- [ ] P4 | index.html | Save PDF lays the stacked grids at `minmax(…, 1fr)` while print fixes rows-6…12 (rows-3/4/5 are not fixed in index's print block at all): PDF problems sit 5–6 px lower; give the clone print's rows as b8d2304 did on the standard pages | found S4
 - [ ] P4 | index.html | restored fraction/decimal entries still render their ops panel twice (`updateOpsPanel`'s defaults, then `renderOpsPanel` with the saved ops — synchronous since S1): pass the saved ops into `updateOpsPanel` | found S1
 - [ ] P4 | index.html, math-minute.html, math-facts.html | the fixed 200 ms `setTimeout` before `window.print` is ~200 ms of every Generate & Print and settles nothing (a rAF + `setTimeout(0)` shape measured −120 to −185 ms on index.html); CLAUDE.md documents the 200 ms as the print-flow convention, so the change updates that sentence too | found S1
 - [ ] P4 | index.html, math-minute.html, math-facts.html | the PDF stage (`position:absolute; top:0; z-index:-1000`) is on screen: its bottom ~108 px sit in the desktop viewport and the clones flicker there for the whole export; move it off-screen (e.g. `top:-10000px`) and re-prove the PDF bytes | found S1
@@ -64,6 +68,11 @@ _(empty — never leave the tree mid-change)_
 
 ## Done (last 5 sessions; older rows move to the archive)
 
+- [x] S4 | 2026-11-05 | 7774975 | index.html | Grade 5–8 Mixed sheets (any pool with fractions, decimals, rounding …) write their stacked problems across ("844 × 6 =") on the sheet and the key; stacked, they overprinted each other in the 2-column grid (gate 6, approved) | seeded: 218 stacks in the across grid → 0; 46 Mixed sheets 0 overlaps (7–25 each before); 266 other sheets byte-identical; before/after screenshots; probe
+- [x] S4 | 2026-11-05 | 2d59570 | index.html | Save PDF lets a full written-across page run past the body as print does: Rounding's problems 29–30 and Long Division's last dividends were cut from the PDF | seeded 16-page export: pixels change only below y 792, Rounding bottom band 0 → 738 dark px (print 785), 7 pages identical, print path identical; probe; smoke `--cdn`
+- [x] S4 | 2026-11-05 | b8d2304 | math-minute.html, math-facts.html, CLAUDE.md | Save PDF lays the rows at print's fixed heights (the clone's 1fr rows set problems 4–19 px low, the S2 P4); CLAUDE.md's PDF step 3 says so | ruled lines 1–2 px from print on every row (was 4–19, growing); print path identical; probe; smoke `--cdn`
+- [x] S4 | 2026-11-05 | 5c70de2 | scripts/loop/probes/S4-pdf-print-parity.mjs | offline probe (stubbed cdnjs libraries): Save PDF mirrors print on all three pages, Mixed writes stacks across | green on HEAD; `--control` (the pre-S4 pages) fails 4 checks
+- [x] S4 | 2026-11-05 | — | docs/IMPROVEMENT_LOG.md | gates: Mixed 5–8 → write across (shipped); key spacing, Rounding one line, long-header shrink → approved Candidates; micro-feature skipped; 4th slot unused (every remaining candidate touches index.html, on its cap) | ledger
 - [x] S3 | 2026-11-05 | ad456d2 | math-facts.html, math-minute.html, CLAUDE.md, scripts/loop/harness.mjs, scripts/loop/smoke.mjs | Advanced Input reads "Last, First" names: a line with more than 3 fields takes all but the last two as the name (the S2 rule), so "Cohen, Avi" survives the Generate Advanced Code round trip | scratch probe: 6 paste cases + the round trip on both pages, failing 6 of 8 checks on the old pages; the smoke's advanced arm now prints "Cohen, Avi" (2 failing on the old page)
 - [x] S3 | 2026-11-05 | 6ada9ea | index.html, math-minute.html, math-facts.html, CLAUDE.md | Save PDF skips the results container in html2canvas's per-page document copy (`ignoreElements`): 150 pages 127 → 36 s (math-minute), 107 → 35 s (math-facts), 123 → 35 s (index); 30 pages 11.6 → 7.7 s | seeded problems, 20 pages with keys per page: every page raster pixel-identical to HEAD's, also scrolled to the bottom mid-export; smoke `--cdn`
 - [x] S3 | 2026-11-05 | 3575eed | index.html, CLAUDE.md, scripts/loop/harness.mjs | the same comma-name rule on the 5-field parser (all but the last four fields); bracket lists are `|`-separated and still parse, a bracket typed with commas is still reported | scratch probe on index (the round trip, mixed/fractions/decimals brackets); smoke advanced arm fails on the old page, passes now; roster-subset probe green
@@ -84,6 +93,7 @@ _(empty — never leave the tree mid-change)_
 
 ### Per-session log (one line per session; last 20)
 
+- S4 | 2026-11-05 | pass B on index.html (geometry of 2,208 sheets, seeded Save PDF vs print rasters, Advanced Code round trip, saved payload, header toggles) | fixes 3 + a probe (two P2, one P4; on branch claude/fervent-lovelace-urwaob, not main) | smoke 3/3 green + `--cdn`; probe green | index.html ended on its cap with two P2s queued
 - S3 | 2026-11-05 | pass A on math-minute.html (node census vs math-facts, 150-sheet generate per level and cpu4, roster form, load, retention, PDF per page to 150 pages) | fixes 3 (one P2 in two commits, one P3; on branch claude/fervent-lovelace-urwaob, not main) | smoke 3/3 green + `--cdn` | every page ended on its two-touch cap again
 - S2 | 2026-11-05 | pass B on math-facts.html (geometry 100 sheets, real PDF rasters, A4, font census, advanced round trip) | fixes 3 (two P2 print defects, one P3; on branch claude/fervent-lovelace-urwaob, not main) | smoke 3/3 green + `--cdn` | every page ended on its two-touch cap
 - S1 | 2026-11-04 | pass A on index.html (6 measured arms + a critic; 24 findings, all verified real) | fixes 3 (two P2 + two P3 in 3 commits, all pushed to main) | smoke 3/3 green + `--cdn` | 4th fix blocked by the 2-per-page cap
@@ -94,7 +104,7 @@ _(empty — never leave the tree mid-change)_
 | pass | index.html | math-minute.html | math-facts.html |
 |---|---|---|---|
 | A | S1 | S3 | — |
-| B | — | — | S2 |
+| B | S4 | — | S2 |
 | C | — | — | — |
 | D | — | — | — |
 | G | — | — | — |
@@ -104,7 +114,7 @@ _(empty — never leave the tree mid-change)_
 ### Discovery-pass rotation (one per session, stalest first; `node scripts/loop/coverage.mjs` picks)
 
 - A performance & speed (surface): last S3 (math-minute.html: the S0 node-count lead refuted; generate, form, load and memory fine; Save PDF 127 s for 150 pages → 36 s, fixed on all pages; A-next: math-facts.html, the twin of math-minute)
-- B print & export (surface): last S2 (math-facts.html: 2 P2 shipped — the invalid @page size on all pages, the serif print header on both standard pages; 7 candidates filed)
+- B print & export (surface): last S4 (index.html: Mixed 5–8 overprint, the PDF's cut last row and the standard pages' PDF rows fixed; queued: Mixed ops lost on reload and the 60-problem key overprint (P2), Rounding one line, long headers)
 - C aesthetics (surface): last —
 - D accessibility (surface): last —
 - E errors & robustness (suite): last —
@@ -115,9 +125,9 @@ _(empty — never leave the tree mid-change)_
 - L metadata & discoverability (suite): last — (runnable since S1: the pages are standalone files)
 - M mobile & touch (surface): last —
 
-**Next session (S4):** S2's and S3's commits are on branch `claude/fervent-lovelace-urwaob`, NOT on `main`: the maintainer asked that nothing reach `main` until they say, and no word came in S3. Check `git log origin/main` first; if main still lacks them and no word has come, work on that branch again and do not push to main.
-⚑ next: B on index.html — a never-run tie; chosen over A on math-facts.html because that page is math-minute's twin (S3 measured equal nodes per cell, the same generate and PDF path), while index.html's variable grid has never had its print geometry audited.
-⚑ Approved, no gate needed: long-name shrink-to-fit, offline PDF wording, JPEG 0.8 (S2); the PDF progress message and whole/mixed numbers on fraction keys (S3). Each three-page fix spends one touch per page, so two of them fill every cap: plan the page budget before the second fix.
-⚑ Save PDF is now ~35 s for 150 pages on every page (S3's `ignoreElements`); what is left per page is html2canvas's render (~90 ms), the 50 ms timer and toDataURL (~25 ms). The re-entrancy guard is still open.
-⚑ The smoke's advanced arm now pastes a comma name ("Cohen, Avi") on every page. Seed `Math.random` (an init script) to compare two PDFs pixel for pixel; S3's method is in `docs/loop-findings.md`.
-⚑ Micro-feature: the maintainer skipped it in S1 and again in S3 (there, to keep the caps for fixes); ask gate 1 again at S4's selection moment.
+**Next session (S5):** S2–S4's commits are on branch `claude/fervent-lovelace-urwaob`, NOT on `main` (main is still 6b0503a): the maintainer asked that nothing reach `main` until they say, and no word came in S4. Check `git log origin/main` first; if main still lacks them and no word has come, work on that branch again and do not push to main.
+⚑ next: C on math-facts.html — every cell left is a never-run tie; the maintainer's priorities are A, B, C, and A or B on the remaining pages would re-audit twins of audited pages, while C has never run; math-facts.html is the reference page CLAUDE.md names, so a C fix there carries to math-minute.html.
+⚑ index.html has two P2s queued (Mixed ops lost on Duplicate / reload — a two-line fix in `renderMixedCheckboxes`; the 60-problem key overprint, approved) and two approved P3s (Rounding one line, long headers shrink-to-fit): spend index's two touches on the P2s. Any three-page approved item (offline wording, JPEG 0.8, PDF progress, long names) also spends an index touch.
+⚑ `node scripts/loop/probes/S4-pdf-print-parity.mjs` guards S4's PDF fixes offline (stubbed libraries); the Mixed-ops click sequence and every S4 measurement are in `docs/loop-findings.md` → S4.
+⚑ C rules: BEFORE / AFTER screenshots at 1280 and ~800 px plus a rendered sheet, delivered at close-out; palette, font or layout restructuring is gate 3.
+⚑ Micro-feature: skipped in S1, S3 and S4 (S4: to keep the session for fixes); ask gate 1 again at S5's selection moment.

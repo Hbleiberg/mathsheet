@@ -69,3 +69,25 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   ⚑ The apostrophe, offline-wording and JPEG fixes are each the same diff on three pages: one commit spends one touch per page. S1 and S2 both ended on the cap — plan the page budget before the second fix.
   ⚑ Pass B's math-facts measurements (geometry per level class, print vs PDF parity, raster legibility, A4) are in `docs/loop-findings.md` → S2; B is still never-run on index.html and math-minute.html, though the new smoke arms already cover paper size and font there.
   ⚑ Micro-feature: none offered in S2 (caps); ask gate 1 at S3's selection moment.
+
+## S4 (2026-11-05) — pass B on index.html; three fixes (on a branch)
+- Worked on branch `claude/fervent-lovelace-urwaob` again: the S2 instruction ("don't push to main until
+  I say") stands, and no word came; main is still at 6b0503a.
+- Pass B ran as scratch probes: print geometry of every grade × type × count with keys (1,208 sheets, then
+  1,000 at 5 copies), seeded Save PDF against the print path rasterized, the Advanced Code round trip and
+  the saved payload, the Remove-number / Name-blank headers, then a click-driven Mixed-ops check. Fixes:
+  Grade 5–8 Mixed sheets write stacked problems across (7774975, gate 6), index's PDF keeps a full
+  written-across page's last row (2d59570), the standard pages' PDF rows at print's heights (b8d2304, the
+  S2 P4), and a committed probe for all three (5c70de2). The fourth slot went unused: every remaining
+  candidate touches index.html, which had spent its two.
+- Gates (one call at the selection moment): Mixed 5–8 → write them across (shipped); key spacing and
+  rounding one-line → both approved (Candidates); long headers → shrink to fit (Candidate); micro-feature
+  → skip. Screenshots delivered: the Grade 5 Mixed sheet and key before / after (scratchpad `shots/v1-1,
+  v1-7` and `v1after-1, v1after-7`).
+- Previous handoff (S3 → S4), verbatim:
+  **Next session (S4):** S2's and S3's commits are on branch `claude/fervent-lovelace-urwaob`, NOT on `main`: the maintainer asked that nothing reach `main` until they say, and no word came in S3. Check `git log origin/main` first; if main still lacks them and no word has come, work on that branch again and do not push to main.
+  ⚑ next: B on index.html — a never-run tie; chosen over A on math-facts.html because that page is math-minute's twin (S3 measured equal nodes per cell, the same generate and PDF path), while index.html's variable grid has never had its print geometry audited.
+  ⚑ Approved, no gate needed: long-name shrink-to-fit, offline PDF wording, JPEG 0.8 (S2); the PDF progress message and whole/mixed numbers on fraction keys (S3). Each three-page fix spends one touch per page, so two of them fill every cap: plan the page budget before the second fix.
+  ⚑ Save PDF is now ~35 s for 150 pages on every page (S3's `ignoreElements`); what is left per page is html2canvas's render (~90 ms), the 50 ms timer and toDataURL (~25 ms). The re-entrancy guard is still open.
+  ⚑ The smoke's advanced arm now pastes a comma name ("Cohen, Avi") on every page. Seed `Math.random` (an init script) to compare two PDFs pixel for pixel; S3's method is in `docs/loop-findings.md`.
+  ⚑ Micro-feature: the maintainer skipped it in S1 and again in S3 (there, to keep the caps for fixes); ask gate 1 again at S4's selection moment.

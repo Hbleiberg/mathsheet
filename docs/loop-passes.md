@@ -33,6 +33,10 @@ inside the hidden app until the page's own move-to-body trick runs (`printBoxes(
 there) — emulate print first, or the page count is wrong (S2). A wrapper put on `window.html2canvas`
 before the first Save PDF click is overwritten when the page loads the library itself — hook it with an
 `Object.defineProperty` setter; compare two PDFs only with `Math.random` seeded by an init script (S3).
+Pass plain fields, never the harness `spec`, into `page.evaluate` (its `prepare` function cannot be
+serialized). A header text that overflows inside its box can sit under a sibling without making the box
+scroll: measure the text span, not the box. To see what Save PDF captures without the network, stub the
+two cdnjs files as `probes/S4-pdf-print-parity.mjs` does (S4).
 
 ## Surfaces
 

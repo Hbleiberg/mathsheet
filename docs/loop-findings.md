@@ -158,3 +158,54 @@ and "Levi, Dana, Bat-Sheva" print whole on all pages; a 2-field line is still re
 bracket types (`mixed[add2|sub2]`, `fractions[add|sub]`, `decimals[add]`) still parse, and a bracket typed
 with commas (`mixed[add2, sub2]`) fails type validation (reported, never misread). Side effect of the
 approved rule: a Student Number holding a comma ("12, B") now reads as part of the name.
+
+## S4 (2026-11-05) — pass B (print & export) on index.html
+
+Method: the loop harness; scratch probes; `Math.random` seeded by an init script wherever two runs are
+compared; PDFs rasterized at 96 dpi with `pdftoppm`; "ink" = text-node client rects plus the ruled
+lines, brackets and answer blanks of each grid cell, measured under emulated print after the page's own
+move-to-body trick.
+
+**Geometry (1,208 sheets: every grade 1–8 × every type × 30/40/50/60, keys on).** Every sheet 1056×816,
+header 55 px, `print-break` on all but the last worksheet. Stacked grids (cols-10 rows-3…6, cols-4/5/6
+rows-6…12) fit: bottom-most ink 693–785 px on worksheets, 700–790 on keys, no clipped or out-of-cell
+problem, wide division (min-width 1.3 in in a 1.04 in column) never touches its neighbour. Defects: (1)
+Grade 5–8 Mixed (any pool holding a written-across type, the default included) dropped its stacks into
+the 2-column across grid: 7–25 overlapping problems a sheet, 23–25 on the key, ink to 814 px; (2) keys of
+60 wide problems (rows-12: Level 3–5 add/sub/mul, Grade 3–4 Mixed at 60): every red answer overprints the
+top number below by 8.4 px (rows are 62 px, stack + answer ~66); (3) Rounding wraps every problem to two
+lines (the answer blank is 60 % of the cell): ink 806 px, 0.1 in from the paper's edge; Long Division keys
+799, Fractions 793. Pure across types otherwise fit (Decimals, Order of Operations, Integers, Exponents,
+Scientific Notation ≤ 771).
+
+**Headers.** At 5 copies the description runs under "Worksheet 3 of 5" (the text span overflows inside the
+box, so the box's own scrollWidth does not show it) and a key's "(Key 3 of 5)" is cut by the box, the
+branding tag on top of it: 160 of 500 keys at Grade 5 (Subtraction 1–4, Multiplication 3–5, Division 4),
+every long-description worksheet. Remove Number and Name blank render cleanly. The last answer-key sheet
+carries `print-break` (`buildAnswerKeySheet(allAnswers, !doKey)` is always false with keys), harmless:
+`.mwg-answer-key-sheet:last-child` comes later in the print block with the same specificity.
+
+**Save PDF vs print (seeded, 16 pages).** `worksheets.pdf`, page count = sheet count, ~170 KB a page.
+The clone's `.mwg-ws-body` / `.mwg-ak-body` clip (screen CSS) while print lets them overflow: Rounding lost
+the second line of problems 29–30 ("nearest thousands"), Long Division keys the bottom half of the last
+dividends, Mixed problem 29's second line. After 2d59570 the PDF changes only below y 792 and matches
+print there (Rounding bottom-band ink 0 → 738 / 620 dark px, print 785 / 669); the 7 pages that did not
+overflow are pixel-identical. index's stacked grids sit 5–6 px lower in the PDF than in print
+(`minmax(…, 1fr)` vs print's fixed rows-6…12; rows-3/4/5 are not fixed in index's print block at all).
+
+**Standard pages' PDF rows (b8d2304).** Before: ruled lines 4 → 17 px low down a rows-3 page, 3 → 19 on
+rows-6 (the clone's `1fr` rows); after: 1–2 px everywhere, the same constant offset the header's top
+border already had (rasterization). Print path pixel-identical; PDF bytes −0.4 / −0.8 %.
+
+**Advanced Code round trip and saved payload.** Six students (fraction and decimal op subsets, a Mixed
+subset, a Mixed with fraction/decimal ops, "Cohen, Avi", `O'Brien "Bo"`): Standard generate and Generate
+Advanced Code → Use code → generate give byte-identical sheets (seeded). The saved payload keeps the
+standard keys (`students` for `standardStudents`, the known index exception). Defect: a Mixed entry with
+only some fraction / decimal operations ticked (clicks: fractions × and decimals + only) saves exactly
+that (`mul4 fractions-mul decimals-add`) but Duplicate and a reload tick all 11 operations:
+`renderMixedCheckboxes` checks an op when `checked` holds it `|| fracChecked` (true whenever any
+`fractions-*` is saved). Also seen: a horizontal type's count is capped to 30 on save (by design).
+
+**Fix A (7774975).** Seeded 7 Mixed rosters at Grades 5–8: 218 stacks in the across grid → 0; 46 Mixed
+sheets and keys: 0 overlapping problems, 0 lost, ink ≤ 805 (Rounding's two-line rows remain); the 133
+other rosters (every type at Grades 3/5/8, subsets; 266 sheets) byte-identical.
