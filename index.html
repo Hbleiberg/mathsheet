@@ -1722,6 +1722,29 @@ function openCodeModal() {
   codePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
+// The names inside an advanced entry's brackets ("add1 | sub1"), trimmed; a stray "|" is ignored (S7).
+function bracketList(text) {
+  var names = [], parts = text.split("|");
+  for (var k = 0; k < parts.length; k++) { var v = parts[k].trim(); if (v) names.push(v); }
+  return names;
+}
+// The first bracket name the entry's grade cannot print, or null. Mixed takes the grade's types and, where the
+// grade has fractions or decimals, their single operations (as its checkboxes do). An unknown name printed
+// Addition Level 1 under the entry's label, and a type the grade lacks ran anyway (S7).
+function unknownBracketName(grade, mixedTypes, fracOps, decOps) {
+  var types = GRADE_TYPES[grade] || [], k;
+  var fracNames = FRAC_OPS.map(function (o) { return o.value; }), decNames = DEC_OPS.map(function (o) { return o.value; });
+  for (k = 0; mixedTypes && k < mixedTypes.length; k++) {
+    var t = mixedTypes[k];
+    if (!((t !== "mixed" && types.indexOf(t) !== -1) ||
+          (types.indexOf("fractions") !== -1 && fracNames.indexOf(t) !== -1) ||
+          (types.indexOf("decimals") !== -1 && decNames.indexOf(t) !== -1))) return t;
+  }
+  for (k = 0; fracOps && k < fracOps.length; k++) if (fracNames.indexOf(fracOps[k]) === -1) return fracOps[k];
+  for (k = 0; decOps && k < decOps.length; k++) if (decNames.indexOf(decOps[k]) === -1) return decOps[k];
+  return null;
+}
+
 function parseAdvancedInput() {
   var raw = advancedBox.value.trim();
   var students = [], errors = [];
@@ -1743,23 +1766,22 @@ function parseAdvancedInput() {
     var mixedMatch = type.match(/^mixed\[([^\]]+)\]$/);
     if (mixedMatch) {
       type = "mixed";
-      mixedTypes = mixedMatch[1].split("|");
-      for (var m = 0; m < mixedTypes.length; m++) mixedTypes[m] = mixedTypes[m].trim();
+      mixedTypes = bracketList(mixedMatch[1]);
     }
     var fracMatch = type.match(/^fractions\[([^\]]+)\]$/);
     if (fracMatch) {
       type = "fractions";
-      fracOps = fracMatch[1].split("|");
-      for (var m = 0; m < fracOps.length; m++) fracOps[m] = fracOps[m].trim();
+      fracOps = bracketList(fracMatch[1]);
     }
     var decMatch = type.match(/^decimals\[([^\]]+)\]$/);
     if (decMatch) {
       type = "decimals";
-      decOps = decMatch[1].split("|");
-      for (var m = 0; m < decOps.length; m++) decOps[m] = decOps[m].trim();
+      decOps = bracketList(decMatch[1]);
     }
     var validTypes = GRADE_TYPES[grade] || [];
     if (validTypes.indexOf(type) === -1) { errors.push("Entry " + (i+1) + " invalid type for grade " + grade + ": " + type); continue; }
+    var badName = unknownBracketName(grade, mixedTypes, fracOps, decOps);
+    if (badName !== null) { errors.push("Entry " + (i+1) + " invalid type for grade " + grade + ": " + badName); continue; }
     students.push({ name: parts[0], number: parts[1], grade: grade, type: type, count: count, mixedTypes: mixedTypes, fracOps: fracOps, decOps: decOps });
   }
   return { students: students, errors: errors };
