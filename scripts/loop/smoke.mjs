@@ -106,6 +106,8 @@ try {
     await p.page.selectOption(p.spec.perStudent, '1');
     const adv = await generate(p);
     ok(adv === 2, `advanced input: 2 entries (one nameless) → ${adv} sheets`);
+    const advName = await p.page.locator(p.spec.sheet).first().innerText();
+    ok(advName.includes(p.spec.advancedName), `advanced input: the first entry prints as "${p.spec.advancedName}"`);
     ok(p.errors.length === 0, `0 page errors in advanced mode`);
     await p.close();
 

@@ -50,7 +50,7 @@ export const PAGES = {
     perStudent: '#mwgWorksheetsPerStudent', fixedGrid: false, name: 'input[name="studentName"]',
     modeToggle: '#mwgToggleModeBtn', advanced: '#mwgAdvancedBox', save: '#mwgSaveBtn',
     storageKey: 'mwgRosterData_v2', pdfName: 'worksheets.pdf',
-    advancedSample: 'Avi, 1, add1, 30, 2;\n, 2, sub2, 30, 2;',
+    advancedSample: 'Avi, 1, add1, 30, 2;\n, 2, sub2, 30, 2;', advancedName: 'Avi',
     errors: '#mwgErrors, #mwgStatus',
     // The default entries carry no grade/type/count; the smoke fills each before generating.
     prepare: async page => {
@@ -74,7 +74,7 @@ export const PAGES = {
     modeToggle: '#toggleInputModeButton', advanced: '#advancedInputBox', save: '#saveRosterButton',
     errors: '#errors, #statusMessages',
     storageKey: 'mathMinuteRosterData_v2', pdfName: 'math-minute-worksheets.pdf',
-    advancedSample: 'Avi, 1, 1;\n, 2, 19;',
+    advancedSample: 'Cohen, Avi, 1, 1;\n, 2, 19;', advancedName: 'Cohen, Avi',   // a comma in a name (S3)
     // The default entries carry no level; the smoke picks each entry's first real option.
     prepare: page => page.evaluate(() => {
       for (const sel of document.querySelectorAll('#studentsContainer .student-entry select[name="level"]')) {
@@ -90,7 +90,7 @@ export const PAGES = {
     modeToggle: '#toggleInputModeButton', advanced: '#advancedInputBox', save: '#saveRosterButton',
     errors: '#errors, #statusMessages',
     storageKey: 'mathFactsRosterData_v1', pdfName: 'math-facts-worksheets.pdf',
-    advancedSample: 'Avi, 1, +2;\n, 2, x3;',
+    advancedSample: 'Cohen, Avi, 1, +2;\n, 2, x3;', advancedName: 'Cohen, Avi',   // a comma in a name (S3)
     // The default entries carry no level; the smoke picks each entry's first real option.
     prepare: page => page.evaluate(() => {
       for (const sel of document.querySelectorAll('#studentsContainer .student-entry select[name="level"]')) {

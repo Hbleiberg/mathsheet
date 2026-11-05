@@ -1307,6 +1307,8 @@ function getStudentsFromAdvancedInput() {
     var entry = chunks[i].trim();
     if (!entry) continue;
     var parts = entry.split(",");
+    // A name may hold commas ("Cohen, Avi"): everything before the last two fields is the name (S3).
+    if (parts.length > 3) parts = [parts.slice(0, -2).join(",")].concat(parts.slice(-2));
     for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
     if (parts.length !== 3) { parseErrors.push('Entry ' + (i+1) + ' is invalid: "' + entry + '"'); continue; }
     var name   = parts[0];
