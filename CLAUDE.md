@@ -63,7 +63,9 @@ single IIFE `<script>`. When adding a feature, edit the relevant page in place.
   { kind: "division", divisor, dividend, answer }              // long-division bracket
   ```
   The minus sign is U+2212 (`"−"`), not a hyphen. Render with `renderProblem(problem)` and,
-  for keys, `renderAnswerProblem(problem)` (answers in red `rgb(180,0,0)`).
+  for keys, `renderAnswerProblem(problem)` (answers in red `rgb(180,0,0)`). A key problem is the
+  sheet's own markup plus its answer, so it sits where the student's does: a division key keeps the
+  sheet's bracket and puts the quotient over the bar (S5).
 
 ## Advanced input (standard)
 

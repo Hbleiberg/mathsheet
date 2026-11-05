@@ -91,3 +91,26 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   ⚑ Save PDF is now ~35 s for 150 pages on every page (S3's `ignoreElements`); what is left per page is html2canvas's render (~90 ms), the 50 ms timer and toDataURL (~25 ms). The re-entrancy guard is still open.
   ⚑ The smoke's advanced arm now pastes a comma name ("Cohen, Avi") on every page. Seed `Math.random` (an init script) to compare two PDFs pixel for pixel; S3's method is in `docs/loop-findings.md`.
   ⚑ Micro-feature: the maintainer skipped it in S1 and again in S3 (there, to keep the caps for fixes); ask gate 1 again at S4's selection moment.
+
+## S5 (2026-11-05) — pass C on math-facts.html; four fixes (on a branch)
+- Worked on branch `claude/fervent-lovelace-urwaob` again: the S2 instruction ("don't push to main until
+  I say") stands, and no word came; main is still at 6b0503a.
+- Pass C ran as scratch probes: the UI at 1280 and 800 px (first paint, a filled roster, after Generate,
+  Advanced mode, the Advanced Code panel), where the error list and the code panel land after a generate on
+  all three pages, and rendered sheets and keys of every level class under print emulation. Fixes: the
+  answer-key division on both standard pages (2a74f54, gate 6), one sign-to-number gap on both standard
+  pages (6011727, gate 6), index's Mixed operations kept on Duplicate / reload (5c3b01a, the S4 P2) and
+  index's rows-12 key overprint (b981031, the S4 P2 approved at S4's gate 6). Every page ended on its cap.
+- Gates (one call at the selection moment): key division → match the sheet; sign spacing → same gap;
+  micro-feature → skip. Screenshots delivered: UI before (scratchpad `c5/before-math-facts-{1280,800}-*`;
+  no UI change shipped, so no UI after), `c5/S5-key-division-before-after.png`,
+  `c5/S5-operator-spacing-before-after.png`, `c5/S5-index-key60-before-after.png`.
+- Done row aged out of the ledger (S0), verbatim:
+  - [x] S0 | 2026-11-04 | e64166f | .claude/skills/improveloop/, docs/, scripts/loop/ | bootstrap: the skill, the ledger, the passes reference, the findings file, the harness, the smoke, the ledger checks | smoke 0 failing on 3 pages (7 arms each, PDF arm on math-facts); planted escapeHtml defect fails 2 arms; check-inline-js 3/3
+- Previous handoff (S4 → S5), verbatim:
+  **Next session (S5):** S2–S4's commits are on branch `claude/fervent-lovelace-urwaob`, NOT on `main` (main is still 6b0503a): the maintainer asked that nothing reach `main` until they say, and no word came in S4. Check `git log origin/main` first; if main still lacks them and no word has come, work on that branch again and do not push to main.
+  ⚑ next: C on math-facts.html — every cell left is a never-run tie; the maintainer's priorities are A, B, C, and A or B on the remaining pages would re-audit twins of audited pages, while C has never run; math-facts.html is the reference page CLAUDE.md names, so a C fix there carries to math-minute.html.
+  ⚑ index.html has two P2s queued (Mixed ops lost on Duplicate / reload — a two-line fix in `renderMixedCheckboxes`; the 60-problem key overprint, approved) and two approved P3s (Rounding one line, long headers shrink-to-fit): spend index's two touches on the P2s. Any three-page approved item (offline wording, JPEG 0.8, PDF progress, long names) also spends an index touch.
+  ⚑ `node scripts/loop/probes/S4-pdf-print-parity.mjs` guards S4's PDF fixes offline (stubbed libraries); the Mixed-ops click sequence and every S4 measurement are in `docs/loop-findings.md` → S4.
+  ⚑ C rules: BEFORE / AFTER screenshots at 1280 and ~800 px plus a rendered sheet, delivered at close-out; palette, font or layout restructuring is gate 3.
+  ⚑ Micro-feature: skipped in S1, S3 and S4 (S4: to keep the session for fixes); ask gate 1 again at S5's selection moment.

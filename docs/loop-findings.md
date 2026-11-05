@@ -209,3 +209,43 @@ that (`mul4 fractions-mul decimals-add`) but Duplicate and a reload tick all 11 
 **Fix A (7774975).** Seeded 7 Mixed rosters at Grades 5–8: 218 stacks in the across grid → 0; 46 Mixed
 sheets and keys: 0 overlapping problems, 0 lost, ink ≤ 805 (Rounding's two-line rows remain); the 133
 other rosters (every type at Grades 3/5/8, subsets; 266 sheets) byte-identical.
+
+## S5 (2026-11-05) — pass C (aesthetics) on math-facts.html
+
+Method: the loop harness; scratch screenshot probes (UI at 1280 / 800 px, rendered sheets at DSF 2 under
+emulated print with the move trick); committed probes for each fix (`S5-*.mjs`). Ink = the glyphs' own box
+(canvas `measureText` on each text node: `actualBoundingBox*` against the baseline from the text rect)
+plus ruled lines.
+
+**UI (teacher, desktop).** Type scale consistent (entry titles 18 px, labels 14 px bold, inputs and small
+buttons 14 px, the two `.btn-large` actions 17 px bold, mode pill 13 px); spacing and the roster grid
+aligned; no horizontal overflow at 800 px (the button row fits at 800, scrolls below ~770 — M's). The
+page has no heading (`#student-form-title` styles an element that does not exist) — L's question, not C's.
+Refuted lead: the Advanced-mode Level Reference shows bare codes (`-self`, `-fr10`), but its legend under
+the grid explains them. Defects: (1) on all three pages the "Some entries were skipped" box renders after
+`#results`: 20 sheets put it at y 9,735 px (math-minute 8,945, index 8,988) while the page scrolls to the
+results' top (1,455 / 665 / 708); (2) the Advanced Code panel is an inline div after the results and the
+error box, so it opens under every generated sheet (3,400 px down after 3 sheets) and scrolls there; the
+`.modal-*` rules (~75 lines) style nothing.
+
+**Worksheet (student, paper).** The header frame (top, left and right borders, open at the bottom) is the
+same on all three pages — a design, not a defect (gate 3 if ever changed). Sign gap: one-digit bottom
+numbers sit 7.2 px from the sign (an 18 px box around a 12.8 px digit plus a 2 px margin), two-digit 2.0 px
+("×12", "+10" crowded; math-facts only — math-minute has no two-digit bottom number). Worksheet division:
+the divisor's baseline is 3.0 px below the dividend's. Long names truncate with "…" (S2's candidate).
+
+**Answer keys.** Both standard pages drew key division as its own construction: a bar under the red
+quotient, the bracket's stroke through it, the divisor beside the quotient, the bracket's width set by the
+quotient (different from the sheet's). index.html's key division has the same shape (queued). A long key
+description ("ANSWER KEY — Mixed facts: …") wraps and lowers the whole grid 5.9 px (S2): compare a key
+problem with its sheet within the cell.
+
+**Fixes.** 2a74f54: 805 division cells (every division level, both pages) match the sheet within 0.00 px
+in their cells, quotients right, above the bar, right edge on the dividend's, inside the cell; real Save
+PDFs (math-facts /7, math-minute 20 at rows-6) rasterized: quotients over the bar. 6011727: 5,040 stacks,
+every gap 7.2 px, one-digit signs within 0.1 px of before (20.0 px from the stack's right edge).
+5c3b01a: the S4 click sequence keeps "fractions-mul decimals-add" through Duplicate and Save → reload; the
+reloaded sheet has 0 ÷ / − (15 before). b981031: rows-12 keys (44 keys, 2,640 cells at every grade ×
+stacked type and Mixed at 60): smallest glyph gap under an answer −3.4 → 2.6 px (S4's 8.4 px was text
+rects, which include the font's leading); ink to 790 of 816 px; the 152 other sheets byte-identical with
+`Math.random` seeded.

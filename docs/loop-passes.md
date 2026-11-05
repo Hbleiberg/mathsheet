@@ -36,7 +36,10 @@ before the first Save PDF click is overwritten when the page loads the library i
 Pass plain fields, never the harness `spec`, into `page.evaluate` (its `prepare` function cannot be
 serialized). A header text that overflows inside its box can sit under a sibling without making the box
 scroll: measure the text span, not the box. To see what Save PDF captures without the network, stub the
-two cdnjs files as `probes/S4-pdf-print-parity.mjs` does (S4).
+two cdnjs files as `probes/S4-pdf-print-parity.mjs` does (S4). Measure overprint with glyph ink (canvas
+`measureText` on each text node, as `probes/S5-key-rows12.mjs` does), not text rects, which carry the
+font's leading; compare a key problem with its sheet within the cell, since a long key description wraps
+and lowers the whole grid (S5).
 
 ## Surfaces
 
