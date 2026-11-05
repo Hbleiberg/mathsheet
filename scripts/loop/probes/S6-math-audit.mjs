@@ -108,6 +108,9 @@ function extract() {
     const dv = c.querySelector('.mwg-division-problem');
     if (dv) { const divisor = dv.querySelector('.mwg-division-divisor').textContent.trim();
       const dd = dv.querySelector('.mwg-division-dividend');
+      // A key's division is the sheet's own since S8: its quotient a red span over the dividend (" r3" nested in it).
+      const q = dd && dd.querySelector('span');
+      if (q) return { t: `DIV ${divisor} ${dd.firstChild.textContent.trim()}`, ans: q.textContent.replace(/\u00a0/g, ' ').trim() };
       if (dd) return { t: `DIV ${divisor} ${dd.textContent.trim()}` };
       const col = dv.children[1]; return { t: `DIV ${divisor} ${col.children[1].textContent.trim()}`, ans: col.children[0].textContent }; }
     const st = c.querySelector('.mwg-problem-stack');

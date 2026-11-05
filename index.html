@@ -2148,7 +2148,7 @@ function buildWorksheet(student, setNum, setTotal, isLast) {
   return { el: ws, problems: problems, useHoriz: useHoriz, grid: grid };
 }
 
-function renderAnswerProblem(problem, answer, inHorizGrid, tight) {
+function renderAnswerProblem(problem, answer, inHorizGrid, tight, shortRows) {
   var ansStr = esc(String(answer));
   var ansStyle = 'display:block;font-weight:bold;color:rgb(180,0,0);text-align:right;padding-top:2px';
   if (problem.kind === "stack" && !inHorizGrid) {
@@ -2165,16 +2165,37 @@ function renderAnswerProblem(problem, answer, inHorizGrid, tight) {
       '<span style="' + ansStyle + ';font-size:' + (wide || tight ? "15px" : "17px") + (tight ? ';padding-top:1px' : '') + '">' + ansStr + '</span>' +
     '</div></div>';
   }
-  if (problem.kind === "division") {
+  if (problem.kind === "division" && !shortRows && !inHorizGrid) {
     var wide = String(problem.html).indexOf("1.3in") !== -1 || String(problem.html).indexOf("1.02in") === -1;
     var minW = wide ? "1.3in" : "1.02in";
     var divFontSize = wide ? "18px" : "20px";
-    // Answer sits above the bracket line, right-aligned inside the bracket (like a real quotient)
+    // The sheet's own problem with the quotient in red over the bar, its digits ending over the dividend's last
+    // digit and a remainder ("r3") after them, as on the twins since S5 (approved for index, S5 gate 6). The key
+    // drew its own bar under the answer: the bracket's stroke ran up through it and the divisor sat beside it.
+    var quot = String(answer).split(" r");
+    var remHtml = quot.length > 1 ? '<span style="position:absolute;left:100%;bottom:0">&nbsp;r' + esc(quot[1]) + '</span>' : '';
     return '<div class="mwg-problem-cell">' +
-      '<div class="mwg-division-problem" style="min-width:' + minW + ';font-size:' + divFontSize + ';align-items:flex-start">' +
+      '<div class="mwg-division-problem" style="min-width:' + minW + ';font-size:' + divFontSize + '">' +
+        '<span class="mwg-division-divisor">' + problem.divisor + '</span>' +
+        '<div class="mwg-division-bracket">' +
+          '<span class="mwg-division-dividend" style="position:relative">' + problem.dividend +
+            '<span style="position:absolute;right:0;bottom:100%;margin-bottom:6px;font-weight:bold;color:rgb(180,0,0);line-height:1;white-space:nowrap">' + esc(quot[0]) + remHtml + '</span>' +
+          '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+  if (problem.kind === "division") {
+    // Mixed keys of 0.6-0.72in rows (rows-10 / rows-12) and the written-across Mixed keys have no room for a
+    // quotient over the sheet's bar (it overprinted the problem above by 3-11 px, S8): there the key keeps its
+    // own bar, answer above it.
+    var wideS = String(problem.html).indexOf("1.3in") !== -1 || String(problem.html).indexOf("1.02in") === -1;
+    var sizeS = wideS ? "18px" : "20px";
+    return '<div class="mwg-problem-cell">' +
+      '<div class="mwg-division-problem" style="min-width:' + (wideS ? "1.3in" : "1.02in") + ';font-size:' + sizeS + ';align-items:flex-start">' +
         '<span class="mwg-division-divisor">' + problem.divisor + '</span>' +
         '<div style="display:flex;flex-direction:column;border-left:2px solid rgb(17,17,17)">' +
-          '<span style="display:block;font-weight:bold;color:rgb(180,0,0);font-size:' + divFontSize + ';text-align:right;padding:0 4px 0 6px;border-bottom:2px solid rgb(17,17,17);line-height:1.2">' + ansStr + '</span>' +
+          '<span style="display:block;font-weight:bold;color:rgb(180,0,0);font-size:' + sizeS + ';text-align:right;padding:0 4px 0 6px;border-bottom:2px solid rgb(17,17,17);line-height:1.2">' + ansStr + '</span>' +
           '<span style="display:block;padding:2px 4px 0 6px;line-height:1.2">' + problem.dividend + '</span>' +
         '</div>' +
       '</div>' +
@@ -2203,7 +2224,7 @@ function buildAnswerKeySheet(allAnswers, isLast) {
       bodyHtml += '</div>';
     } else {
       bodyHtml = '<div class="mwg-problems-grid ' + entry.grid.colClass + ' ' + entry.grid.rowClass + '">';
-      for (var j = 0; j < problems.length; j++) bodyHtml += renderAnswerProblem(problems[j], problems[j].answer, false, entry.grid.rowClass === "mwg-rows-12");
+      for (var j = 0; j < problems.length; j++) bodyHtml += renderAnswerProblem(problems[j], problems[j].answer, false, entry.grid.rowClass === "mwg-rows-12", /mwg-rows-1[02]/.test(entry.grid.rowClass));
       bodyHtml += '</div>';
     }
     sheet.innerHTML =
