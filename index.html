@@ -396,6 +396,9 @@ body { margin: 0; padding: 12px; background: white; }
   page-break-inside: avoid;
   break-inside: avoid-page;
   font-family: Arial, sans-serif;
+  /* Sheets below the fold are laid out only when scrolled near (loop S2; the standard pages since
+     S1). The print block turns this back off. */
+  content-visibility: auto;
 }
 .mwg-worksheet.print-break { page-break-after: always; }
 .mwg-worksheet:last-child { page-break-after: auto; }
@@ -637,6 +640,7 @@ body { margin: 0; padding: 12px; background: white; }
   font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
+  content-visibility: auto;
 }
 .mwg-ak-body {
   flex: 1 1 auto;
@@ -712,6 +716,7 @@ body { margin: 0; padding: 12px; background: white; }
     height: 8.5in !important;
     overflow: hidden !important;
     box-sizing: border-box !important;
+    content-visibility: visible !important;
   }
   .mwg-ws-header {
     flex: 0 0 auto !important;
@@ -753,6 +758,7 @@ body { margin: 0; padding: 12px; background: white; }
     height: 8.5in !important;
     overflow: hidden !important;
     box-sizing: border-box !important;
+    content-visibility: visible !important;
   }
   .mwg-ak-body {
     flex: 1 1 auto !important;
