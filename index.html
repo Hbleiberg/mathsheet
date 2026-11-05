@@ -1817,6 +1817,13 @@ function divisionHtml(divisor, dividend, wide) {
 }
 
 function horizHtml(expr) { return "__HORIZ__" + expr; }
+// A problem as one line of the written-across grid. A Mixed sheet that holds fractions, decimals or
+// rounding uses that grid, so its stacked problems are written across too ("844 × 6 ="): stacked, they
+// overprinted the next row (S4, maintainer-approved). Division keeps its bracket.
+function horizExpr(problem) {
+  if (problem.kind === "stack") return problem.a + " " + problem.operator + " " + problem.b + " =";
+  return String(problem.html).replace("__HORIZ__", "");
+}
 
 // Addition levels
 function makeAdd1() { var a,b; do{a=rand(0,9);b=rand(0,9);}while(a+b>=10||a+b===0); return {html:stackHtml("+",a,b,false),answer:a+b,kind:"stack",operator:"+",a:a,b:b}; }
@@ -2087,7 +2094,7 @@ function buildWorksheet(student, setNum, setTotal, isLast) {
   if (useHoriz) {
     bodyHtml = '<div class="mwg-horiz-grid">';
     for (var i = 0; i < problems.length; i++) {
-      var expr = String(problems[i].html).replace("__HORIZ__", "");
+      var expr = horizExpr(problems[i]);
       bodyHtml += '<div class="mwg-horiz-cell"><div class="mwg-horiz-num">' + (i+1) + '.</div><div class="mwg-horiz-problem">' + expr + '</div><div class="mwg-horiz-answer"></div></div>';
     }
     bodyHtml += '</div>';
@@ -2106,10 +2113,10 @@ function buildWorksheet(student, setNum, setTotal, isLast) {
   return { el: ws, problems: problems, useHoriz: useHoriz, grid: grid };
 }
 
-function renderAnswerProblem(problem, answer) {
+function renderAnswerProblem(problem, answer, inHorizGrid) {
   var ansStr = esc(String(answer));
   var ansStyle = 'display:block;font-weight:bold;color:rgb(180,0,0);text-align:right;padding-top:2px';
-  if (problem.kind === "stack") {
+  if (problem.kind === "stack" && !inHorizGrid) {
     var wide = String(problem.html).indexOf("1.1in") !== -1;
     var width = wide ? "1.1in" : "0.75in";
     var fontSize = wide ? "18px" : "20px";
@@ -2135,7 +2142,7 @@ function renderAnswerProblem(problem, answer) {
     '</div>';
   }
   // Horiz
-  var expr = String(problem.html).replace("__HORIZ__", "");
+  var expr = horizExpr(problem);
   return '<div class="mwg-horiz-cell">' +
     '<div class="mwg-horiz-problem">' + expr + '</div>' +
     '<span style="font-size:15px;font-weight:bold;color:rgb(180,0,0);margin-left:8px;flex-shrink:0">' + ansStr + '</span>' +
@@ -2153,7 +2160,7 @@ function buildAnswerKeySheet(allAnswers, isLast) {
     var bodyHtml = "";
     if (entry.useHoriz) {
       bodyHtml = '<div class="mwg-horiz-grid">';
-      for (var j = 0; j < problems.length; j++) bodyHtml += renderAnswerProblem(problems[j], problems[j].answer);
+      for (var j = 0; j < problems.length; j++) bodyHtml += renderAnswerProblem(problems[j], problems[j].answer, true);
       bodyHtml += '</div>';
     } else {
       bodyHtml = '<div class="mwg-problems-grid ' + entry.grid.colClass + ' ' + entry.grid.rowClass + '">';
