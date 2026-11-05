@@ -1327,23 +1327,24 @@ function getStudentsFromStandardInput() {
 
 function getStudentsFromAdvancedInput() {
   var raw = advancedInputBox.value.trim();
-  var parsedStudents = [], parseErrors = [];
+  var parsedStudents = [], parseErrors = [], n = 0;
   if (!raw) return { students: [], errors: [] };
   var normalized = raw.replace(/\n+/g, ";");
   var chunks = normalized.split(";");
   for (var i = 0; i < chunks.length; i++) {
     var entry = chunks[i].trim();
     if (!entry) continue;
+    n++;   // numbered as a teacher counts the entries: an empty chunk (a newline after ";") took a number, so the 6th line read "Entry 10" (S2; fixed S11)
     var parts = entry.split(",");
     // A name may hold commas ("Cohen, Avi"): everything before the last two fields is the name (S3).
     if (parts.length > 3) parts = [parts.slice(0, -2).join(",")].concat(parts.slice(-2));
     for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
-    if (parts.length !== 3) { parseErrors.push('Entry ' + (i+1) + ' is invalid: "' + entry + '"'); continue; }
+    if (parts.length !== 3) { parseErrors.push('Entry ' + n + ' is invalid: "' + entry + '"'); continue; }
     var name   = parts[0];
     var number = parts[1];
     var level  = parseInt(parts[2], 10);
     if (!parts[2] || isNaN(level) || level < 1 || level > 21) {
-      parseErrors.push('Entry ' + (i+1) + ' has an invalid level (must be 1-21): "' + entry + '"'); continue;
+      parseErrors.push('Entry ' + n + ' has an invalid level (must be 1-21): "' + entry + '"'); continue;
     }
     parsedStudents.push({ name: name, number: number, level: level });
   }

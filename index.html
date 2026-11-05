@@ -1747,21 +1747,22 @@ function unknownBracketName(grade, mixedTypes, fracOps, decOps) {
 
 function parseAdvancedInput() {
   var raw = advancedBox.value.trim();
-  var students = [], errors = [];
+  var students = [], errors = [], n = 0;
   if (!raw) return { students: students, errors: errors };
   var chunks = raw.replace(/\n+/g, ";").split(";");
   for (var i = 0; i < chunks.length; i++) {
     var entry = chunks[i].trim();
     if (!entry) continue;
+    n++;   // numbered as a teacher counts the entries: an empty chunk (a newline after ";") took a number, so the 6th line read "Entry 10" (S2; fixed S11)
     var parts = entry.split(",");
     // A name may hold commas ("Cohen, Avi"): everything before the last four fields is the name (S3).
     if (parts.length > 5) parts = [parts.slice(0, -4).join(",")].concat(parts.slice(-4));
     for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
-    if (parts.length !== 5) { errors.push("Entry " + (i+1) + " needs 5 fields: " + entry); continue; }
+    if (parts.length !== 5) { errors.push("Entry " + n + " needs 5 fields: " + entry); continue; }
     var grade = parseInt(parts[4]);
-    if (isNaN(grade) || grade < 1 || grade > 8) { errors.push("Entry " + (i+1) + " invalid grade: " + entry); continue; }
+    if (isNaN(grade) || grade < 1 || grade > 8) { errors.push("Entry " + n + " invalid grade: " + entry); continue; }
     var count = parseInt(parts[3]);
-    if (VALID_COUNTS.indexOf(count) === -1) { errors.push("Entry " + (i+1) + " invalid count: " + entry); continue; }
+    if (VALID_COUNTS.indexOf(count) === -1) { errors.push("Entry " + n + " invalid count: " + entry); continue; }
     var type = parts[2], mixedTypes = null, fracOps = null, decOps = null;
     var mixedMatch = type.match(/^mixed\[([^\]]+)\]$/);
     if (mixedMatch) {
@@ -1779,9 +1780,9 @@ function parseAdvancedInput() {
       decOps = bracketList(decMatch[1]);
     }
     var validTypes = GRADE_TYPES[grade] || [];
-    if (validTypes.indexOf(type) === -1) { errors.push("Entry " + (i+1) + " invalid type for grade " + grade + ": " + type); continue; }
+    if (validTypes.indexOf(type) === -1) { errors.push("Entry " + n + " invalid type for grade " + grade + ": " + type); continue; }
     var badName = unknownBracketName(grade, mixedTypes, fracOps, decOps);
-    if (badName !== null) { errors.push("Entry " + (i+1) + " invalid type for grade " + grade + ": " + badName); continue; }
+    if (badName !== null) { errors.push("Entry " + n + " invalid type for grade " + grade + ": " + badName); continue; }
     students.push({ name: parts[0], number: parts[1], grade: grade, type: type, count: count, mixedTypes: mixedTypes, fracOps: fracOps, decOps: decOps });
   }
   return { students: students, errors: errors };
