@@ -1348,7 +1348,10 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
       html += '<div class="mwg-ops-grid">';
       for (var fo = 0; fo < FRAC_OPS.length; fo++) {
         var fop = FRAC_OPS[fo];
-        var foChecked = checked.indexOf(fop.value) !== -1 || fracChecked ? "checked" : "";
+        // An operation is ticked when the list names it, or holds the bare "fractions" (every operation: the
+        // grade default, an older roster). It was ticked whenever any was, so a saved or duplicated subset
+        // came back with all of them (S4).
+        var foChecked = checked.indexOf(fop.value) !== -1 || checked.indexOf("fractions") !== -1 ? "checked" : "";
         html += '<label style="font-size:12px"><input type="checkbox" class="mwg-frac-op-cb mwg-mixed-op-cb" value="' + fop.value + '" ' + foChecked + '> ' + esc(fop.label) + '</label>';
       }
       html += '</div>';
@@ -1365,7 +1368,7 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
       html += '<div class="mwg-ops-grid">';
       for (var fo = 0; fo < DEC_OPS.length; fo++) {
         var dop = DEC_OPS[fo];
-        var doChecked = checked.indexOf(dop.value) !== -1 || decChecked ? "checked" : "";
+        var doChecked = checked.indexOf(dop.value) !== -1 || checked.indexOf("decimals") !== -1 ? "checked" : "";
         html += '<label style="font-size:12px"><input type="checkbox" class="mwg-dec-op-cb mwg-mixed-op-cb" value="' + dop.value + '" ' + doChecked + '> ' + esc(dop.label) + '</label>';
       }
       html += '</div>';
