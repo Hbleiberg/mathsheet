@@ -80,7 +80,7 @@ Every generator offers a Standard form **and** an Advanced paste box. Keep both 
   var chunks = normalized.split(";");
   // for each chunk: trim; skip if empty; split(",");
   // more than 3 parts: rejoin all but the last two with "," as the name ("Cohen, Avi", S3);
-  // trim each part; require 3 fields; require name; validate the selector;
+  // trim each part; require 3 fields (the name may be empty); validate the selector;
   // on any failure push a human-readable message to errors[] and `continue`
   // (invalid entries are SKIPPED, never fatal, and listed back to the user).
   ```
