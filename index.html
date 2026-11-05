@@ -2320,7 +2320,10 @@ function capturePdf(sheets) {
         logging:         false,
         backgroundColor: "white",
         x:               0,
-        y:               0
+        y:               0,
+        // html2canvas copies the whole document for every page: leave the on-screen sheets out of
+        // that copy (the clone sits in the stage), or a 150-page export takes 4x as long (S3).
+        ignoreElements:  function (el) { return el === resultsDiv; }
       }).then(function(canvas) {
         var imgData = canvas.toDataURL("image/jpeg", 0.92);
 

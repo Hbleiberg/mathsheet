@@ -1660,7 +1660,10 @@ function capturePdf(sheets) {
         scale: 1.5, useCORS: true, allowTaint: true,
         width: PAGE_W_PX, height: PAGE_H_PX,
         windowWidth: PAGE_W_PX, windowHeight: PAGE_H_PX,
-        logging: false, backgroundColor: "white", x: 0, y: 0
+        logging: false, backgroundColor: "white", x: 0, y: 0,
+        // html2canvas copies the whole document for every page: leave the on-screen sheets out of
+        // that copy (the clone sits in the stage), or a 150-page export takes 4x as long (S3).
+        ignoreElements: function (el) { return el === results; }
       }).then(function(canvas) {
         var imgData = canvas.toDataURL("image/jpeg", 0.92);
         if (!jsPDFObj) {

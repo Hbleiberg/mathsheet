@@ -148,8 +148,10 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
      box-sizing:border-box; display:flex; flex-direction:column;`, remove `print-break`,
      place it in the stage.
   4. `html2canvas(clone, { scale: 1.5, useCORS: true, allowTaint: true, width: 1056,
-     height: 816, windowWidth: 1056, windowHeight: 816, backgroundColor: "white" })` →
-     `canvas.toDataURL("image/jpeg", 0.92)`.
+     height: 816, windowWidth: 1056, windowHeight: 816, backgroundColor: "white",
+     ignoreElements: function (el) { return el === results; } })` →
+     `canvas.toDataURL("image/jpeg", 0.92)`. (html2canvas copies the whole document per page;
+     skipping the results container cut a 150-page export from ~2 min to ~35 s, S3.)
   5. First page: `new jsPDF({ orientation: "landscape", unit: "px", format: [1056, 816],
      hotfixes: ["px_scaling"] })`; later pages `addPage([1056, 816], "landscape")`; add with
      `addImage(imgData, "JPEG", 0, 0, 1056, 816, "", "FAST")`.
