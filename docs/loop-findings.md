@@ -362,3 +362,48 @@ bracket and divisor 0.00 px from the sheet, quotients ≥ 14 px clear of the pro
 remainder, "49 r1"). In rows-10 / rows-12 Mixed keys the new drawing overprinted the problem above by
 3.3–11.3 px where the old one kept 2.1–10.1 px, and written-across rows are as tall as their text: both keep
 the old drawing. f0ba0e8 (Teens Rule): +10 deals 10 unordered facts to 19; mix+ keeps 64, max 18.
+
+## S9 (2026-11-05) — pass A (performance & speed) on math-facts.html, then C (aesthetics) on math-minute.html
+
+Method (A): the loop harness, fresh context per run, medians of 3; 30 advanced students × 5 copies; click →
+handler return → next frame (rAF + setTimeout 0); long tasks by `PerformanceObserver('longtask')`; cpu4 by CDP.
+Scratch probes, not committed. Measured with nothing else running (an overlapping arm-R run was stopped first).
+
+**Load.** DCL 22 ms, load event 31, first contentful paint 44; 66,848 B; 525 nodes, 221 `<option>`s for 3
+students (73 a level menu). No foreign request at load (the smoke's eager-CDN check).
+
+**Generate, 150 sheets (300 with keys).** Handler / next frame: `+3` 21 / 27 ms (key 49 / 58), `x7` 22 / 28
+(44 / 52), `/7` 18 / 23 (41 / 47), `mix+60` 44 / 53 (81 / 90), `mixpm60` 52 / 60 (98 / 107), `mixmd60` 54 / 62
+(100 / 112); one long task of 50–127 ms on the 60-problem and keyed runs. cpu4: `+3` 100 / 128, `mixmd60` with
+keys 484 / 526 (math-minute S3: 377 / 463 for L9 with keys). Cost is linear in problems (the deck is rebuilt per
+sheet but the HTML dominates). Nodes: 29,250 for 150 thirty-problem sheets, 112,350 for 300 sixty-problem.
+
+**Fine as is.** Roster form at 30 students, frame after click: Add Student 6 ms, Fill Down 28, Duplicate 6,
+Delete 4, a keystroke 15, Save 15, Generate Advanced Code 4; the mode toggle 30 a flip (style recalc of the 30
+menus, under 50 ms, no long task); the same with 300 sheets on the page. A saved 30-student roster restores by
+DCL 32 / load 72 ms. Memory: 112,875 nodes after each of 6 keyed generates, no growth; 10 MB heap.
+
+**Save PDF (real cdnjs, libraries warmed).** 3 pages 969 ms; 30 pages 6.7 s (222 ms a page); 150 pages 30.7 s
+(205 ms a page: html2canvas 124–143, the 50 ms timer, `toDataURL`); one 71–161 ms long task a page (inherent).
+The 50 ms timer is ~24 % of a long export: the open P4.
+
+Method (C): screenshots at 1280 / 800 px (load, the code panel, Advanced with a bad entry, after a Generate);
+all 21 levels' sheets and keys under print with a header line and a 24-character name; cell geometry.
+
+**math-minute = math-facts.** The two pages' `<style>` blocks differ only in the root id; the markup only in the
+Advanced help text. S5's C findings carry over. Writing room under each ruled line: rows-3 180 px, rows-4 123,
+rows-5 88, rows-6 65 (keys 162 / 105 / 70 / 47); division 15 px more. The Mixed key's description wraps to two
+lines (grid 6 px lower, 17 px of paper left). Known: long names cut (fixed, f98327b), the divisor 3 px low.
+Copy nits: the menu says "11 - Easy X" with a letter X beside "16 - Easy ÷" (the maintainer keeps X, S9) and
+"01 - Easy Addition" where the Level Reference says "1 – Easy Addition". **For M:** at 800 px the on-screen
+sheets (11 in wide by design) make the page scroll sideways (scrollWidth 1,064); print is unaffected.
+
+**Fixes.** f98327b: in print and the PDF the sheets sit outside the app wrapper, so the name line is
+content-box (27 px tall); a baseline kept by padding-top dropped the underline up to 6.4 px there, so the fix
+sets a line height measured per size (a baseline moves half as far as its line height): 0.00 px. Chrome rounds
+a size's ascent to a whole pixel (an em-ratio model was off by up to 0.8 px). `removeAttribute("style")` after
+CSSOM writes can serialize as `style=""` (a lazily synced attribute; a MutationObserver hides it), so the measure
+runs on an empty copy of the line. Screen headers stay 45.9 px with 16 and 11 px names. ae14c70: index PDF pages
+framed 16 / 16 → 0; the S9-index-pdf "worst cell" (~387 px on fraction sheets, before and after) is the thin grey
+answer line crossing the ink threshold in print but not after JPEG — not a layout difference (rasters checked).
+936850d: Level 12 deals 22 facts (was 30), Level 17 32 (was 40); 0 % one-operand problems on Level 12.

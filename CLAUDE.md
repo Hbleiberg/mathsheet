@@ -198,6 +198,8 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   - **Student Name is always optional** in both Standard and Advanced input (an advanced
     entry may start with an empty field: `, 2, +10;`). A blank name just prints an empty
     Student Name line — never skip a student or flag them as invalid for a missing name.
+  - **A long Student Name shrinks to fit its line** (`fitLongNames()` at the end of every generate, S9):
+    down to 11 px (then "…"), on the 18 px name's baseline; a name that fits gets no style.
   - **"Name blank"** (`nameBlankToggle`, helper `isNameBlank()`): prints an empty Student
     Name line on every worksheet even when a name is entered (answer keys still show the
     name). Student Number is always free text — never validate it as numeric.

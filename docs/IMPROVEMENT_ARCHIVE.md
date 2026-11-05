@@ -196,3 +196,32 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   ⚑ Queues: index.html's two touches went to S7's fixes; its approved P3s wait (fraction keys as whole / mixed numbers, no zero fraction differences, key division like the sheet, Rounding one line, long headers shrink). math-facts: the approved Teens Rule 10 + 9 (one touch).
   ⚑ New probes (S7): `S7-facts-audit` (`--page math-minute.html`, `--n`, `--only`, `--control`; ~2 min at 200 a level), `S7-skipped-list`, `S7-bracket-names`; `S6-header-line` takes `--page math-facts.html`. With S6's they are arm R's set. The blank / valid-bracket identity arms compare with fixed commits (S6-header-line: dd8609a, f48b8db; S7-bracket-names: cfa5cd6): a session that changes what those sheets hold moves the ref or replays the change, as `S5-key-rows12`'s LATER list does.
   ⚑ Micro-feature: the "Custom header line" seed is done on both standard pages (index.html's waits for its convergence session). Dual-audience seeds next: the Date line, `dir="auto"` on names. Ask gate 1 at S8's selection moment.
+
+## S9 (2026-11-05) — pass A on math-facts.html, then C on math-minute.html; four fixes (on a branch)
+
+- Run without arguments while the S6–S8 draft PR (Hbleiberg/mathsheet#5) was open and unmerged: S9 stacked its
+  commits on `claude/clever-davinci-hhh4iz` as S8's handoff said, and did not touch `main`.
+- Pass A on math-facts.html came back clean (numbers in loop-findings S9), so it bought C on math-minute.html,
+  whose CSS is math-facts' line for line: clean but for items already queued (long names cut, the divisor 3 px
+  low, the Mixed key's two-line header) and one copy nit.
+- Gate call (three questions after the pass): micro-feature → skipped for the hard levels; Levels 12 / 17 →
+  "drop only the easiest" (936850d); "Easy X" in math-minute's menu → keep X. Struck from the ledger: the
+  P4 on "Easy X" vs "Easy ÷" (the maintainer keeps the letter X, S9).
+- f98327b first moved the baseline with padding-top: the probe caught the underline dropping 6 px in print,
+  where the sheets sit outside the app wrapper (content-box). A measured line height keeps both. Measuring on a
+  real field left an empty `style=""` (Chrome's lazily-synced style attribute after `removeAttribute`); the
+  measure now runs on an empty copy of the line.
+- Screenshots (scratchpad): `s9-name-{math-minute,index}-{before,after}`, `s9-namefit-pdf-facts-crop` (the PDF),
+  `s9-index-pdf-frame-before-after`, `c/` (math-minute UI and every level's sheet and key).
+- Done rows aged out of the ledger (S4), verbatim:
+  - [x] S4 | 2026-11-05 | 7774975 | index.html | Grade 5–8 Mixed sheets (any pool with fractions, decimals, rounding …) write their stacked problems across ("844 × 6 =") on the sheet and the key; stacked, they overprinted each other in the 2-column grid (gate 6, approved) | seeded: 218 stacks in the across grid → 0; 46 Mixed sheets 0 overlaps (7–25 each before); 266 other sheets byte-identical; before/after screenshots; probe
+  - [x] S4 | 2026-11-05 | 2d59570 | index.html | Save PDF lets a full written-across page run past the body as print does: Rounding's problems 29–30 and Long Division's last dividends were cut from the PDF | seeded 16-page export: pixels change only below y 792, Rounding bottom band 0 → 738 dark px (print 785), 7 pages identical, print path identical; probe; smoke `--cdn`
+  - [x] S4 | 2026-11-05 | b8d2304 | math-minute.html, math-facts.html, CLAUDE.md | Save PDF lays the rows at print's fixed heights (the clone's 1fr rows set problems 4–19 px low, the S2 P4); CLAUDE.md's PDF step 3 says so | ruled lines 1–2 px from print on every row (was 4–19, growing); print path identical; probe; smoke `--cdn`
+  - [x] S4 | 2026-11-05 | 5c70de2 | scripts/loop/probes/S4-pdf-print-parity.mjs | offline probe (stubbed cdnjs libraries): Save PDF mirrors print on all three pages, Mixed writes stacks across | green on HEAD; `--control` (the pre-S4 pages) fails 4 checks
+  - [x] S4 | 2026-11-05 | — | docs/IMPROVEMENT_LOG.md | gates: Mixed 5–8 → write across (shipped); key spacing, Rounding one line, long-header shrink → approved Candidates; micro-feature skipped; 4th slot unused (every remaining candidate touches index.html, on its cap) | ledger
+- Previous handoff (S8 → S9), verbatim:
+  **Next session (S9):** S6's, S7's and S8's commits are on branch `claude/clever-davinci-hhh4iz` (draft PR Hbleiberg/mathsheet#5), NOT on `main`: the maintainer ran S6 "on a new branch - don't push to main yet" and S7–S8 stacked on it. Check `git log origin/main` and the PR first; until it is merged, S9 builds on that branch (never re-apply its commits on `main`); once it is merged, restart the branch from `main`.
+  ⚑ next: A on math-facts.html — every cell left is a never-run tie and the maintainer's order puts A first; math-facts is math-minute's twin (A in S3: the PDF export fixed on all pages), so expect it clean and buy a second surface (C on math-minute.html, whose header changed in S5, S6 and S8). E is the strongest never-run suite cell.
+  ⚑ Queues: index.html — approved P3s (Rounding one line, long headers shrink, no zero fraction differences) and S8's PDF frame (the twins' 6bebbdb, a different block there); its short / across Mixed key division is a gate-6 P4. Three-page approved P3s wait for a session with a touch free on every page: the offline PDF notice, JPEG 0.8, the PDF progress line, the name shrink.
+  ⚑ New probes (S8): `S8-minute-print` (`--only`, `--a4`, `--control`), `S8-minute-pdf` (real cdnjs; needs the network the smoke's `--cdn` uses; `--ref`, `--control`), `S8-index-key-division` (ref d3ef5c6). With S7's they are arm R's set. `S6-math-audit` now holds fraction keys to whole / mixed form and reads the key's new division cell; `S5-key-rows12` and `S7-bracket-names` replay S8's fraction-key change onto their references.
+  ⚑ Micro-feature: S8 skipped it at gate 1 (the maintainer chose two index fixes). Open dual-audience seeds: the Time / Score strip and the Date line on math-minute, `dir="auto"` on names. Ask gate 1 at S9's selection moment.
