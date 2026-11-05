@@ -2095,7 +2095,8 @@ function buildWorksheet(student, setNum, setTotal, isLast) {
   var ws = document.createElement("div");
   ws.className = "mwg-worksheet" + (isLast ? "" : " print-break");
   var setLabel = setTotal > 1 ? "Worksheet " + setNum + " of " + setTotal : "";
-  var desc = descriptionFor(type, grade, count);
+  // The count printed, not the count asked: an across sheet holds at most 30 (S6, approved).
+  var desc = descriptionFor(type, grade, problems.length);
   var bodyHtml = "";
   if (useHoriz) {
     bodyHtml = '<div class="mwg-horiz-grid">';
@@ -2207,7 +2208,7 @@ function generate() {
       var result = buildWorksheet(student, c, copies, isLast);
       resultsDiv.appendChild(result.el);
       if (doKey) {
-        allAnswers.push({ name:student.name, number:student.number, desc:descriptionFor(student.type,student.grade,student.count), problems:result.problems.slice(), useHoriz:result.useHoriz, grid:result.grid, copyNum:c, copies:copies });
+        allAnswers.push({ name:student.name, number:student.number, desc:descriptionFor(student.type,student.grade,result.problems.length), problems:result.problems.slice(), useHoriz:result.useHoriz, grid:result.grid, copyNum:c, copies:copies });
       }
     }
   }

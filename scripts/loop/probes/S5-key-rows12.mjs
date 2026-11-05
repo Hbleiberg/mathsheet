@@ -4,7 +4,8 @@
 // with the page's move trick. Ink is the glyphs' own box (canvas measureText on each text node) plus the
 // ruled line:
 //   - on every rows-12 key, the ink of a cell ends >= 2 px above the ink of the cell below it;
-//   - every key and worksheet that is not a rows-12 key is byte-identical to the control's.
+//   - every key and worksheet that is not a rows-12 key is byte-identical to the control's (the pre-S5 page
+//     with later approved generator changes replayed, LATER).
 // Fails on the pre-fix page (`--control` serves index.html from `git show 5c3b01a:index.html`).
 //   node scripts/loop/probes/S5-key-rows12.mjs [--control]
 import { execSync } from 'node:child_process';
@@ -81,11 +82,23 @@ async function measure(browser, base, page) {
   return r;
 }
 
+// Later approved changes to what the sheets hold, replayed onto the reference page so the identity arm
+// still isolates S5's change (one generator change shifts the seeded stream for every sheet after it).
+const LATER = [
+  // S6: Division Levels 3-4 draw 2-digit dividends; the header states the count printed.
+  ['function makeDiv3() { var d=rand(2,9),q=rand(10,99);', 'function makeDiv3() { var d,q; do{d=rand(2,9);q=rand(10,49);}while(d*q>99);'],
+  ['var d=rand(2,9),q=rand(10,99),r=rand(1,d-1);', 'var d,q,r; do{d=rand(2,9);q=rand(10,49);r=rand(1,d-1);}while(d*q+r>99);'],
+  ['var desc = descriptionFor(type, grade, count);', 'var desc = descriptionFor(type, grade, problems.length);'],
+  ['desc:descriptionFor(student.type,student.grade,student.count)', 'desc:descriptionFor(student.type,student.grade,result.problems.length)'],
+];
+const replay = body => LATER.reduce((b, [from, to]) => {
+  if (!b.includes(from)) throw new Error(`replay anchor missing: ${from}`); return b.replace(from, to); }, body);
+
 const srv = await serve(); const browser = await launch();
 try {
   const old = execSync('git show 5c3b01a:index.html', { cwd: ROOT, encoding: 'utf8' });
   const r = await measure(browser, srv.base, control ? old : null);
-  const ref = control ? r : await measure(browser, srv.base, old);
+  const ref = control ? r : await measure(browser, srv.base, replay(old));
   check(r.keys12 > 0 && r.cells12 > 0, `${r.students} students at 60: ${r.keys12} rows-12 key(s), ${r.cells12} cells measured`);
   check(r.close === 0, `every red answer >= 2 px clear of the problem below (${r.close} closer; min gap ${r.minGap.toFixed(1)} px)`);
   check(r.inkBottom <= 816, `rows-12 key ink ends on the paper (${r.inkBottom.toFixed(0)} of 816 px)`);
