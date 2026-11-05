@@ -1852,9 +1852,12 @@ function makeMul5() { var a=rand(100,999),b=rand(2,9); return {html:stackHtml("\
 // Division levels
 function makeDiv1() { var d=rand(1,5),q=rand(1,10); return {html:divisionHtml(d,d*q,false),answer:q,kind:"division",divisor:d,dividend:d*q}; }
 function makeDiv2() { var d=rand(6,9),q=rand(1,10); return {html:divisionHtml(d,d*q,false),answer:q,kind:"division",divisor:d,dividend:d*q}; }
-function makeDiv3() { var d=rand(2,9),q=rand(10,99); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+// Levels 3-4 keep their "2-digit ÷ 1-digit" label: a 2-digit dividend over a 2-digit quotient (84 ÷ 4 = 21,
+// 87 ÷ 4 = 21 r3), every such problem equally likely. The quotient was drawn from 10-99, so 85 % of dividends
+// had three digits (S6, approved); Long Division still makes that shape.
+function makeDiv3() { var d,q; do{d=rand(2,9);q=rand(10,49);}while(d*q>99); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
 function makeDiv4() {
-  var d=rand(2,9),q=rand(10,99),r=rand(1,d-1);
+  var d,q,r; do{d=rand(2,9);q=rand(10,49);r=rand(1,d-1);}while(d*q+r>99);
   var dividend=d*q+r;
   return {html:divisionHtml(d,dividend,true),answer:q+" r"+r,kind:"division",divisor:d,dividend:dividend};
 }
