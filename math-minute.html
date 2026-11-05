@@ -1694,15 +1694,25 @@ function loadPdfLibs() {
   });
 }
 
+// One export at a time: a second click mid-export started a second full pipeline (S1). The button is disabled
+// from the click until "PDF saved!" or a notice, and enabled again on every path (S10).
+var pdfBusy = false;
+function pdfDone() { pdfBusy = false; savePdfButton.disabled = false; }
+
 function doGenerateAndSavePdf() {
+  if (pdfBusy) return;
+  pdfBusy = true;
+  savePdfButton.disabled = true;
   clearStatusMessages();
   var libsReady = loadPdfLibs();   // the download runs while the worksheets build
   generateWorksheets();
+  // The progress line (one per page, below) stays in view: an export runs half a minute for a class set (S3, approved).
+  statusMessages.scrollIntoView({ behavior: "smooth", block: "start" });
   setTimeout(function() {
     var sheets = results.querySelectorAll(".worksheet");
-    if (!sheets.length) return;
+    if (!sheets.length) { pdfDone(); return; }
     libsReady.then(function (loaded) {
-      if (!loaded) { showNotice("PDF library not loaded yet. Please try again in a moment."); return; }
+      if (!loaded) { showNotice("PDF library not loaded yet. Please try again in a moment."); pdfDone(); return; }
       capturePdf(sheets);
     });
   }, 300);
@@ -1711,7 +1721,6 @@ function doGenerateAndSavePdf() {
 // Rasterize each sheet with html2canvas into one landscape-Letter jsPDF (CLAUDE.md -> PDF saving).
 function capturePdf(sheets) {
   var jsPDFCtor = window.jspdf.jsPDF;
-  showSuccess("Generating PDF, please wait...");
   var PAGE_W_PX = 1056;
   var PAGE_H_PX = 816;
   var stage = document.createElement("div");
@@ -1725,8 +1734,10 @@ function capturePdf(sheets) {
       document.body.removeChild(stage);
       jsPDFObj.save("math-minute-worksheets.pdf");
       showSuccess("PDF saved!");
+      pdfDone();
       return;
     }
+    showSuccess("Making your PDF: page " + (idx + 1) + " of " + sheetArray.length + "...");
     var clone = sheetArray[idx].cloneNode(true);
     // Print's own box: its padding and no border. The screen sheet's 1px #bbb border framed every PDF page and
     // narrowed the header 2.4 px, so a description that fits on paper wrapped in the PDF (S8).
@@ -1760,6 +1771,7 @@ function capturePdf(sheets) {
       }).catch(function() {
         document.body.removeChild(stage);
         showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
+        pdfDone();
       });
     }, 50);
   }
