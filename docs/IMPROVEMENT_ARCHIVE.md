@@ -167,3 +167,32 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   ⚑ index.html's queue (plan its two touches first): P2 bracket names unchecked (`fractions[fractions-ad]` prints sums), P2 the skipped-entries list under the sheets (three pages); approved P3s: fraction keys as whole / mixed numbers, no zero fraction differences, key division like the sheet, Rounding one line, long headers shrink.
   ⚑ New probes (S6): `S6-math-audit` (`--n`, `--only type@grade`, `--control`; ~60 s at 200 sheets per selector) and `S6-header-line`; with S5's they are arm R's set. `S5-key-rows12`'s identity arm now replays later generator changes (`LATER`) onto its pre-S5 reference: add to that list whenever a session changes what index's sheets hold.
   ⚑ Micro-feature: S6 built the Custom header line on math-minute; its math-facts half is the open seed (ask gate 1 at S7's selection moment).
+
+## S8 (2026-11-05) — pass B on math-minute.html; four fixes (on a branch)
+
+- Run without arguments while the S6–S7 draft PR (Hbleiberg/mathsheet#5) was open and unmerged: S8 stacked its
+  commits on `claude/clever-davinci-hhh4iz` as S7's handoff said, and did not touch `main`.
+- Pass B as two committed probes: `S8-minute-print.mjs` (every level × 3 configurations, 378 sheets, Chromium's
+  print-to-PDF on Letter and A4) — clean; `S8-minute-pdf.mjs` (a real cdnjs Save PDF of 42 pages rasterized
+  against print) — every PDF page framed by the screen sheet's 1px #bbb border, and one key's header wrapping in
+  the PDF only. Fixed on both standard pages (6bebbdb); index.html's clone is a different block (Candidate).
+- Gate 1 (one call after the pass): the maintainer skipped the micro-feature for two approved index fixes —
+  fraction keys as whole / mixed numbers (d3ef5c6) and the key's division drawn like the sheet (8e46ade). The
+  fourth slot took the approved Teens Rule on math-facts (f0ba0e8).
+- 8e46ade shipped split: the quotient over the sheet's bar needs ~24 px above the bar that rows-10 / rows-12 and
+  written-across Mixed keys lack (3–11 px overprint measured), so those keep the old drawing byte for byte; the
+  short-row shape is a gate-6 P4.
+- A worker restart before the gate question; nothing was lost (the question was asked after it).
+- Screenshots (scratchpad): `s8-p25-compare` (the Level 4 key, print vs PDF, before the fix), `s8-zoom-div60`,
+  `s8-fraction-key-{before,after}`, `s8-idx-div4-compare` (sheet / old key / new key), `s8-idx-real-crop{3,4}`.
+- Done rows aged out of the ledger (S3), verbatim:
+  - [x] S3 | 2026-11-05 | ad456d2 | math-facts.html, math-minute.html, CLAUDE.md, scripts/loop/harness.mjs, scripts/loop/smoke.mjs | Advanced Input reads "Last, First" names: a line with more than 3 fields takes all but the last two as the name (the S2 rule), so "Cohen, Avi" survives the Generate Advanced Code round trip | scratch probe: 6 paste cases + the round trip on both pages, failing 6 of 8 checks on the old pages; the smoke's advanced arm now prints "Cohen, Avi" (2 failing on the old page)
+  - [x] S3 | 2026-11-05 | 6ada9ea | index.html, math-minute.html, math-facts.html, CLAUDE.md | Save PDF skips the results container in html2canvas's per-page document copy (`ignoreElements`): 150 pages 127 → 36 s (math-minute), 107 → 35 s (math-facts), 123 → 35 s (index); 30 pages 11.6 → 7.7 s | seeded problems, 20 pages with keys per page: every page raster pixel-identical to HEAD's, also scrolled to the bottom mid-export; smoke `--cdn`
+  - [x] S3 | 2026-11-05 | 3575eed | index.html, CLAUDE.md, scripts/loop/harness.mjs | the same comma-name rule on the 5-field parser (all but the last four fields); bracket lists are `|`-separated and still parse, a bracket typed with commas is still reported | scratch probe on index (the round trip, mixed/fractions/decimals brackets); smoke advanced arm fails on the old page, passes now; roster-subset probe green
+  - [x] S3 | 2026-11-05 | — | docs/IMPROVEMENT_LOG.md, docs/IMPROVEMENT_ARCHIVE.md | gates: micro-feature skipped (every page's two touches went to the fixes); PDF progress wording approved; fraction keys → whole and mixed numbers; the S0 "Math Minute builds 9,000 extra nodes" candidate struck as refuted (archive) | ledger
+- Previous handoff (S7 → S8), verbatim:
+  **Next session (S8):** S6's and S7's commits are on branch `claude/clever-davinci-hhh4iz` (draft PR Hbleiberg/mathsheet#5), NOT on `main`: the maintainer ran S6 "on a new branch - don't push to main yet" and S7 stacked on it. Check `git log origin/main` and the PR first; until it is merged, S8 builds on that branch (never re-apply its commits on `main`); once it is merged, restart the branch from `main`.
+  ⚑ next: B on math-minute.html — every cell left is a never-run tie and the maintainer's priorities rank B first; math-minute is the one page B has never audited, and its header changed in S5 (key division) and S6 (header line). A on math-facts would re-measure math-minute's twin (S3); E is the strongest never-run suite cell.
+  ⚑ Queues: index.html's two touches went to S7's fixes; its approved P3s wait (fraction keys as whole / mixed numbers, no zero fraction differences, key division like the sheet, Rounding one line, long headers shrink). math-facts: the approved Teens Rule 10 + 9 (one touch).
+  ⚑ New probes (S7): `S7-facts-audit` (`--page math-minute.html`, `--n`, `--only`, `--control`; ~2 min at 200 a level), `S7-skipped-list`, `S7-bracket-names`; `S6-header-line` takes `--page math-facts.html`. With S6's they are arm R's set. The blank / valid-bracket identity arms compare with fixed commits (S6-header-line: dd8609a, f48b8db; S7-bracket-names: cfa5cd6): a session that changes what those sheets hold moves the ref or replays the change, as `S5-key-rows12`'s LATER list does.
+  ⚑ Micro-feature: the "Custom header line" seed is done on both standard pages (index.html's waits for its convergence session). Dual-audience seeds next: the Date line, `dir="auto"` on names. Ask gate 1 at S8's selection moment.

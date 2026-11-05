@@ -10,14 +10,14 @@
 //   - Mixed keys of 0.6-0.72in rows (rows-10 / rows-12) and written-across Mixed keys (grades 5-8) have no room
 //     above the bar (the quotient overprinted the problem above by 3-11 px): they keep the old drawing,
 //     byte-identical to `--ref`;
-//   - seeded, the worksheets are byte-identical to `--ref` (default HEAD): only the keys change.
+//   - seeded, the worksheets are byte-identical to `--ref` (default d3ef5c6, the page before the fix): only the keys change.
 // `--control` serves index.html from `--ref` and must fail.
 //   node scripts/loop/probes/S8-index-key-division.mjs [--control] [--ref <commit>]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
-const control = process.argv.includes('--control'), REF = arg('--ref') || 'HEAD';
+const control = process.argv.includes('--control'), REF = arg('--ref') || 'd3ef5c6';
 const fails = [];
 const check = (ok, msg) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg); };
 const OLD = execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8' });

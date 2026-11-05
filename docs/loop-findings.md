@@ -322,3 +322,43 @@ has them, single fraction / decimal operations (`mixed[fractions-add]` at grade 
 fraction additions on a grade-4 sheet). Header line on math-facts: the same geometry as math-minute's
 (104 / 75 / 58 / 46 px of paper left, rows-3…rows-6 with divisions on rows-6); settings row 82 px at 1280
 and 800 (unchanged), +70 px at 390 where the field stacks, no horizontal scroll.
+
+## S8 (2026-11-05) — pass B (print & export) on math-minute.html
+
+Method: `probes/S8-minute-print.mjs` (emulated print with the page's move trick, element rects per cell;
+Chromium's `page.pdf` for the page count), `probes/S8-minute-pdf.mjs` (a real Save PDF through cdnjs, both
+PDFs rasterized with `pdftoppm -r 96`, dark-pixel boxes per cell), scratch probes for the clone's DOM against
+print (html2canvas stubbed, both standard pages, 1–5 copies), the Advanced Code round trip and the payload.
+
+**Print.** Three configurations × 21 levels with keys: plain (1 copy), heavy (5 copies, an 80-character
+Hebrew / Latin header line, 31-character names) and bare (3 copies, line, no Number, Name blank) — 378 sheets,
+every one 1056 × 816 with `print-break` on all but the last, 0 problems' ink outside its cell or under the
+paper's inner bottom, the closest pair of problems 47 px apart. Paper left under the lowest ink, plain:
+rows-3…6 110 / 82 / 64 / 53 px (keys 101 / 72 / 55 / 43); heavy: down to 32 (keys 22) at rows-6. Header
+55–61 px, 76–82 with the line (the grid's 691 px then runs 7 px past the body, ink clear). Print-to-PDF one
+Letter page (792 × 612) per sheet; an A4 request, landscape or portrait, gives one 842.88 × 595.92 page per
+sheet (Chromium keeps the CSS orientation and scales). Names of 31 characters end in "…" on every sheet (the
+S2 P3); the 80-character line prints whole.
+
+**Save PDF.** `math-minute-worksheets.pdf`, 42 pages for 42 sheets, one 1584 × 1224 JPEG a page, 116 KB a
+page, 9.0 s from the click; scrolled to the bottom mid-export every page carries every problem; red answers
+legible at 144 ppi. Before 6bebbdb every page had a 1px #bbb frame (the clone kept the screen `.worksheet`
+border; print sets none) and the clone's content box was 996 px against print's 998.4 (border 2 + padding
+29 vs 28.8), so "ANSWER KEY — Thirty subtraction facts, numbers through twenty" wrapped in the PDF only
+(header 55 → 61 px, its problems 7–9 px lower); with 1–5 copies no other header wrapped differently, every
+other cell sat 1 px off. After: clone = print 0.0 px on every sheet of both standard pages, no frame, 4,887 →
+4,520 KB. html2canvas draws digits about 3 px lower at their top edge than Chromium's print (0–4 by glyph,
+the same layout), so raster parity is measured against that common offset. index.html's clone has the same
+border (Candidate).
+
+**Round trip and payload.** Ten Standard students → Generate Advanced Code → Use → Generate: eight
+identical; "Levi; Dana" splits (S2 P4) and a Number "12, B" turns into the name "Noa, 12" and Number "B" with
+no error (new, folded into that P4); the error list says "Entry 13" for the 7th line (S2 P3). Save → reload
+restores every setting, the header line and Advanced mode; payload keys = CLAUDE.md's plus `headerLine`.
+
+**Fix measurements.** d3ef5c6 (fraction keys): grade 5 keys 1,024 mixed, 1,991 whole, 2,985 proper of
+6,000; grade 6 660 / 1,365 / 3,975. 8e46ade (index key division): 582 division cells on 16 keys (rows-3…8),
+bracket and divisor 0.00 px from the sheet, quotients ≥ 14 px clear of the problem above (100 with a
+remainder, "49 r1"). In rows-10 / rows-12 Mixed keys the new drawing overprinted the problem above by
+3.3–11.3 px where the old one kept 2.1–10.1 px, and written-across rows are as tall as their text: both keep
+the old drawing. f0ba0e8 (Teens Rule): +10 deals 10 unordered facts to 19; mix+ keeps 64, max 18.
