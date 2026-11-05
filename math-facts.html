@@ -1155,10 +1155,11 @@ function doublesPlusOneFacts() {       // n+(n+1), n = 1..8; max 8 + 9 = 17
   for (var n = 1; n <= 8; n++) addPair(facts, n, n + 1);
   return facts;
 }
-function makePlusNFacts(n) {           // n+other, other = 0..9 (0..8 for +10)
+function makePlusNFacts(n, top) {      // n+other, other = 0..top (default 0..9, 0..8 for +10: sums to 18)
+  if (top === undefined) top = Math.min(9, 18 - n);
   return function () {
     var facts = [];
-    for (var other = 0; other <= Math.min(9, 18 - n); other++) addPair(facts, n, other);
+    for (var other = 0; other <= top; other++) addPair(facts, n, other);
     return facts;
   };
 }
@@ -1296,8 +1297,9 @@ function defineFact(value, description, listFacts) {
 defineFact("+0+1", "Thirty addition facts \u2014 plus zero or one", plusZeroOrOneFacts);
 defineFact("doubles", "Thirty addition facts \u2014 doubles to 9 + 9", doublesFacts);
 defineFact("doubles+1", "Thirty addition facts \u2014 doubles plus one", doublesPlusOneFacts);
+// "+10 (Teens Rule)" runs to 10 + 9 = 19 (gate 2, S7); every other level and the Mixed pools keep sums to 18.
 for (var an = 2; an <= 10; an++) {
-  defineFact("+" + an, "Thirty addition facts \u2014 plus " + FACT_WORDS[an], makePlusNFacts(an));
+  defineFact("+" + an, "Thirty addition facts \u2014 plus " + FACT_WORDS[an], makePlusNFacts(an, an === 10 ? 9 : undefined));
 }
 defineFact("-self", "Thirty subtraction facts \u2014 minus itself, zero, or one", minusSelfZeroOneFacts);
 defineFact("-fr10", "Thirty subtraction facts \u2014 friends of ten", friendsOfTenFacts);

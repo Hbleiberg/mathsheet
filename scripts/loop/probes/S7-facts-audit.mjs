@@ -43,6 +43,8 @@ if (FILE === 'math-facts.html') {
     'doubles+1': range(1, 8).flatMap(n => both(ADD, n, n + 1)),
   };
   for (let n = 2; n <= 10; n++) addFam['+' + n] = range(0, Math.min(9, 18 - n)).flatMap(o => both(ADD, n, o));
+  // "+10 (Teens Rule)" runs to 10 + 9 = 19 since S8 (approved S7); the Mixed pools keep sums to 18.
+  const teens = range(0, 9).flatMap(o => both(ADD, 10, o));
   const subFam = {
     '-self': range(1, 10).flatMap(a => [form(SUB, a, a), form(SUB, a, 0), form(SUB, a, 1)]),
     '-fr10': range(0, 10).map(b => form(SUB, 10, b)),
@@ -55,7 +57,7 @@ if (FILE === 'math-facts.html') {
   one('+0+1', 'Thirty addition facts — plus zero or one', addFam['+0+1'], ([o, a, b]) => o === ADD && (a <= 1 || b <= 1));
   one('doubles', 'Thirty addition facts — doubles to 9 + 9', addFam.doubles, ([o, a, b]) => o === ADD && a === b && a <= 9);
   one('doubles+1', 'Thirty addition facts — doubles plus one', addFam['doubles+1'], ([o, a, b]) => o === ADD && Math.abs(a - b) === 1);
-  for (let n = 2; n <= 10; n++) one('+' + n, `Thirty addition facts — plus ${WORD[n]}`, addFam['+' + n], ([o, a, b]) => o === ADD && (a === n || b === n));
+  for (let n = 2; n <= 10; n++) one('+' + n, `Thirty addition facts — plus ${WORD[n]}`, n === 10 ? teens : addFam['+' + n], ([o, a, b]) => o === ADD && (a === n || b === n));
   one('-self', 'Thirty subtraction facts — minus itself, zero, or one', subFam['-self'], ([o, a, b]) => o === SUB && (b === a || b === 0 || b === 1));
   one('-fr10', 'Thirty subtraction facts — friends of ten', subFam['-fr10'], ([o, a, b]) => o === SUB && a === 10 && b <= 10);
   for (let n = 2; n <= 9; n++) one('-' + n, `Thirty subtraction facts — minus ${WORD[n]}`, subFam['-' + n], ([o, a, b]) => o === SUB && b === n && a >= b);
