@@ -10,8 +10,7 @@ classroom) wins, (4) smallest diff.
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P2 | index.html | Advanced Input never checks the names inside brackets: `fractions[fractions-ad]` prints a "Fractions" sheet of whole-number sums ("2 + 3 ="), `mixed[foo]` Addition Level 1 labelled Mixed, `mixed[scientificnotation]` runs at grade 1, no error shown: validate each name against the grade's types / ops and skip with a message | found S6
-- [ ] P2 | index.html, math-minute.html, math-facts.html | the "Some entries were skipped" list (`#errors` / `#mwgErrors`) sits below every generated sheet: after 20 sheets it is at y 9,735 px while the page scrolls to the results' top (1,455), so a skipped student is missing from the class set with the reason out of sight: show the box above the results (and in view) | found S5
+- [ ] P3 | math-facts.html | "+10 (Teens Rule)" deals 10 + 0 to 10 + 8 and never 10 + 9 = 19 (`makePlusNFacts` caps every addition fact at 18); approved S7 (gate 2): the +10 level runs to 10 + 9, the other levels keep the cap (decide whether `mix+` and its "64 distinct addition facts" comment take 10 + 9 too) | found S7
 - [ ] P3 | index.html | the answer key's division draws its own bar under the red answer, the bracket's stroke running up through it and the divisor beside the answer (the shape 2a74f54 fixed on the standard pages): use the sheet's `mwg-division-problem` with the quotient over the bar, as approved for the twins in S5 (gate 6, "match the sheet") | found S5
 - [ ] P3 | index.html | Rounding wraps every problem to two lines (the answer blank takes 60 % of the cell), so its 15 rows run to 806 px, 0.1 in from the paper's edge; approved S4 (gate 6): one line per problem (a shorter answer blank) | found S4
 - [ ] P3 | index.html | with 2–5 copies a long description runs under "Worksheet 3 of 5", and a key's "(Key 3 of 5)" is cut by its box (160 of 500 Grade 5 keys; S6: one copy is enough for Division Level 4's key, "— Grade 5" under the branding tag); approved S4 (gate 6): shrink the description's font to fit, as for long names | found S4
@@ -42,10 +41,12 @@ classroom) wins, (4) smallest diff.
 - [ ] P4 | CLAUDE.md | the Advanced-input parsing comment says "require name" while the standard (and every page) keeps Student Name optional: drop the two words | found S3
 - [ ] P4 | math-facts.html, math-minute.html | the worksheet's division divisor sits 3.0 px below the dividend's baseline (`.division-divisor` padding-top 8px): align the baselines (printed layout: gate 6) | found S5
 - [ ] P4 | math-facts.html, math-minute.html | dead CSS: `#student-form-title` (no such element) and the `.modal-*` rules (~75 lines; the Advanced Code panel is an inline div): remove | found S5
+- [ ] P4 | math-minute.html | Level 12 "Thirty hard multiplication facts" is 1–9 × 6–9: 20 of its 30 facts have a factor 1–5 and 4 are ×1 (13 % of problems); Level 17 "hard division" deals ÷ 6–9 with quotients 1 and 10 (6 ÷ 6, 60 ÷ 6): the word or the range is gate 2 | found S7
+- [ ] P4 | math-minute.html | a zero factor always stands on top (0 × 7, never 7 × 0: `multiplicationFacts` starts the second factor at 1), every zero on Levels 11 and 13–15 (13–17 % of problems): start it at 0 where zero is allowed (gate 6) | found S7
+- [ ] P4 | math-minute.html | Level 4 "numbers through twenty" never passes 18 (minuends 10–18, single-digit answers), as index's Addition Level 2 stops at 18: wording is gate 2 | found S7
 
 ## Feature seeds (micro-features: one page, ≤ ~150 lines, no dependency; selection is gate 1)
 
-- [ ] seed | math-facts.html | "Custom header line" as math-minute has it since S6 (4f7d68c; CLAUDE.md → Settings): copy the field, `headerLineHtml()`, the CSS, the payload field and `probes/S6-header-line.mjs` | from S0
 - [ ] seed | math-minute.html | "Time / Score" strip in the header (toggle): `Time: ____  Score: ____ / N`, N from the level's count | from S0
 - [ ] seed | index.html, math-minute.html, math-facts.html | `dir="auto"` on the name inputs and the printed name, so Hebrew names keep their punctuation and alignment | from S0
 - [ ] seed | index.html, math-minute.html, math-facts.html | a "Date: ________" line in the header (toggle, off by default) | from S0
@@ -78,6 +79,10 @@ _(empty — never leave the tree mid-change)_
 
 ## Done (last 5 sessions; older rows move to the archive)
 
+- [x] S7 | 2026-11-05 | cfa5cd6 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S7-skipped-list.mjs | the "Some entries were skipped" box stands above the sheets and a Generate that skipped an entry lands on it (it sat 16,560 px down after 20 sheets, below the scroll target) | probe at 1280 / 390 px on each page: in view, above the first sheet, still before the results after print; 18 checks fail on the old pages; smoke
+- [x] S7 | 2026-11-05 | f48b8db | index.html, scripts/loop/probes/S7-bracket-names.mjs | Advanced Input checks the names inside brackets: an unknown operation or a type the grade lacks skips the entry with "invalid type for grade G: <name>"; a stray "|" is ignored | probe: 6 bad entries skipped and named, 7 valid brackets byte-identical to the old page (seeded); control fails 2; roster-subset, S5-mixed-ops, S6-math-audit, smoke
+- [x] S7 | 2026-11-05 | 8c9bfd3 | math-facts.html, CLAUDE.md, scripts/loop/probes/S6-header-line.mjs | micro-feature (gate 1): the optional "Header line" on math-facts, line for line math-minute's (S6); the probe takes `--page` | probe on math-facts: blank byte-identical to f48b8db, 8 of 8 carry it escaped, print 1056×816 with 46+ px paper left, PDF clones within 1.0 px, old payload loads; control fails; settings and sheet screenshots
+- [x] S7 | 2026-11-05 | — | scripts/loop/probes/S7-facts-audit.mjs, docs/IMPROVEMENT_LOG.md | pass G on math-facts, then math-minute (clean, so it bought the second): 674,000 problems, every key right, every deck dealt as documented; gates: micro-feature → header line on math-facts (shipped); Teens Rule → include 10 + 9 (approved Candidate) | probe green on both pages; `--control` fails 7 checks on each
 - [x] S6 | 2026-11-05 | b1e456f | index.html | Division Levels 3–4 ("2-digit ÷ 1-digit") print 2-digit dividends over 2-digit quotients, every such problem equally likely (85 % had 3-digit dividends; gate 2/6, approved) | S6-math-audit: off its label 7,589 + 7,696 of 9,000 → 0, keys recompute; before/after key screenshots; smoke
 - [x] S6 | 2026-11-05 | dd8609a | index.html, scripts/loop/probes/ | the header and key state the count printed: "60 Fractions" over 30 problems (Advanced, or Mixed → Deselect All → 60) now reads 30 (gate 2, approved); adds `S6-math-audit`; `S5-key-rows12` replays S6's generator changes onto its reference | count ≠ description 4,050 of 10,200 audit sheets → 0; control fails 2 checks; S5-key-rows12 0 of 152 differ; smoke
 - [x] S6 | 2026-11-05 | 4f7d68c | math-minute.html, CLAUDE.md, scripts/loop/probes/S6-header-line.mjs | micro-feature (gate 1): optional "Header line" (≤ 80 chars, dir=auto, escaped, saved as `headerLine`) printed under the header of every sheet and key; blank prints nothing | probe: blank byte-identical to dd8609a, print 1056×816 with 46+ px paper left, PDF clones within 1.0 px, old payload loads; control fails; UI 1280/800 and sheet screenshots
@@ -96,16 +101,12 @@ _(empty — never leave the tree mid-change)_
 - [x] S3 | 2026-11-05 | 6ada9ea | index.html, math-minute.html, math-facts.html, CLAUDE.md | Save PDF skips the results container in html2canvas's per-page document copy (`ignoreElements`): 150 pages 127 → 36 s (math-minute), 107 → 35 s (math-facts), 123 → 35 s (index); 30 pages 11.6 → 7.7 s | seeded problems, 20 pages with keys per page: every page raster pixel-identical to HEAD's, also scrolled to the bottom mid-export; smoke `--cdn`
 - [x] S3 | 2026-11-05 | 3575eed | index.html, CLAUDE.md, scripts/loop/harness.mjs | the same comma-name rule on the 5-field parser (all but the last four fields); bracket lists are `|`-separated and still parse, a bracket typed with commas is still reported | scratch probe on index (the round trip, mixed/fractions/decimals brackets); smoke advanced arm fails on the old page, passes now; roster-subset probe green
 - [x] S3 | 2026-11-05 | — | docs/IMPROVEMENT_LOG.md, docs/IMPROVEMENT_ARCHIVE.md | gates: micro-feature skipped (every page's two touches went to the fixes); PDF progress wording approved; fraction keys → whole and mixed numbers; the S0 "Math Minute builds 9,000 extra nodes" candidate struck as refuted (archive) | ledger
-- [x] S2 | 2026-11-05 | 48a610d | index.html, math-minute.html, math-facts.html, scripts/loop/smoke.mjs, CLAUDE.md | `@page{size:11in 8.5in landscape}` is invalid CSS and every page's rule was dropped (Chrome's dialog fell back to portrait; on A4 landscape each sheet split in two, its problems lost): now `size:11in 8.5in` | smoke paper arm fails on the old pages (612×792; A4 12 pages for 6 sheets), passes now (792×612; 6 for 6); rendered print, A4 and Save PDF pages
-- [x] S2 | 2026-11-05 | fb36ea5 | math-minute.html, math-facts.html, scripts/loop/smoke.mjs | the printed and PDF'd header (labels, name, description) was Times New Roman: the font lived on the app wrapper the sheets leave for print and the PDF stage; `.worksheet` now carries Arial | smoke font arm fails on both pages before, passes on all three; geometry audit 100 + 104 sheets, 0 clipped; before/after header screenshots
-- [x] S2 | 2026-11-05 | 7e0e32f | index.html | `content-visibility:auto` on the sheets: 150-sheet Generate handler add2 220 → 33 ms, fractions 433 → 47 ms (300 with the key: 675 → 71, 862 → 69) | medians of 3; scrollY, printBoxes, print PDF 150 pages, Save PDF 24 pages with the same per-page ink, last sheet renders at 1280 / 800 px; smoke
-- [x] S2 | 2026-11-05 | — | docs/IMPROVEMENT_LOG.md | gates answered: comma names → read extra fields as the name; long names → shrink to fit; offline PDF wording and JPEG 0.8 approved (the two S1 Awaiting items resolved); all four are approved Candidates; no micro-feature offered (every page on its cap) | ledger
-- [x] S2 | 2026-11-05 | — | docs/IMPROVEMENT_LOG.md | `esc()` apostrophe candidate withheld: the standard pages' `escapeHtml` carries the same no-op, so it is a three-page fix the caps did not allow; rewritten as one | ledger
 
 ## Metrics
 
 ### Per-session log (one line per session; last 20)
 
+- S7 | 2026-11-05 | pass G on math-facts.html, then math-minute.html (clean, so it bought a second: 71 + 21 levels × 200 sheets, 674,000 problems recomputed; every key right, every deck as documented) | fixes 2 + micro-feature (on branch claude/clever-davinci-hhh4iz, not main, after S6) | smoke 3/3 green + `--cdn`; probes green | index.html and math-facts.html ended on their caps
 - S6 | 2026-11-05 | pass G on index.html (51 selectors × 200 sheets, 378,000 problems recomputed with exact rationals; every key right) | fixes 2 + micro-feature (on branch claude/clever-davinci-hhh4iz, not main, per the maintainer) | smoke 3/3 green; probes green | index.html ended on its cap with 3 P2s queued
 - S5 | 2026-11-05 | pass C on math-facts.html (UI at 1280 / 800 px, Advanced mode, the code panel, the error list; rendered sheets and keys of every level class) | fixes 4 (two gated print changes on both standard pages, two index P2s; on branch claude/fervent-lovelace-urwaob, not main) | smoke 3/3 green + `--cdn`; probes green | every page ended on its two-touch cap
 - S4 | 2026-11-05 | pass B on index.html (geometry of 2,208 sheets, seeded Save PDF vs print rasters, Advanced Code round trip, saved payload, header toggles) | fixes 3 + a probe (two P2, one P4; on branch claude/fervent-lovelace-urwaob, not main) | smoke 3/3 green + `--cdn`; probe green | index.html ended on its cap with two P2s queued
@@ -122,7 +123,7 @@ _(empty — never leave the tree mid-change)_
 | B | S4 | — | S2 |
 | C | — | — | S5 |
 | D | — | — | — |
-| G | S6 | — | — |
+| G | S6 | S7 | S7 |
 | H | — | — | — |
 | M | — | — | — |
 
@@ -134,14 +135,14 @@ _(empty — never leave the tree mid-change)_
 - D accessibility (surface): last —
 - E errors & robustness (suite): last —
 - F cross-page consistency (suite): last —
-- G math correctness & pedagogy (surface): last S6 (index.html: 378,000 key answers all right; Division 3–4 off their label and the header count fixed; bracket names unchecked (P2), fraction zero differences (approved), decimals without a point, integer hyphens, rounding wording queued)
+- G math correctness & pedagogy (surface): last S7 (math-facts.html then math-minute.html: every key right, every deck dealt as documented; Teens Rule 10 + 9 approved; math-minute's "hard" levels, the zero always on top and Level 4's wording queued; G has run on every page)
 - H teacher walkthrough (surface): last —
 - I first load, saved data & safety (suite): last —
 - L metadata & discoverability (suite): last — (runnable since S1: the pages are standalone files)
 - M mobile & touch (surface): last —
 
-**Next session (S7):** S6's commits (b1e456f, dd8609a, 4f7d68c and the close-out) are on branch `claude/clever-davinci-hhh4iz`, NOT on `main`: the maintainer ran S6 with "on a new branch - don't push to main yet". Check `git log origin/main` and the branch first; until the maintainer merges it, S7 builds on that branch (fast-forward it, never re-apply its commits on `main`).
-⚑ next: G on math-facts.html — G found S6's two P2s on index by recomputing every key, the standard pages deal a deck (no duplicate fact) that no probe checks yet, and `probes/S6-math-audit.mjs` already parses stacks and divisions; math-facts has the most selectors. Then math-minute. E is the other strong never-run cell (S6's bracket-name P2 is its kind).
-⚑ index.html's queue (plan its two touches first): P2 bracket names unchecked (`fractions[fractions-ad]` prints sums), P2 the skipped-entries list under the sheets (three pages); approved P3s: fraction keys as whole / mixed numbers, no zero fraction differences, key division like the sheet, Rounding one line, long headers shrink.
-⚑ New probes (S6): `S6-math-audit` (`--n`, `--only type@grade`, `--control`; ~60 s at 200 sheets per selector) and `S6-header-line`; with S5's they are arm R's set. `S5-key-rows12`'s identity arm now replays later generator changes (`LATER`) onto its pre-S5 reference: add to that list whenever a session changes what index's sheets hold.
-⚑ Micro-feature: S6 built the Custom header line on math-minute; its math-facts half is the open seed (ask gate 1 at S7's selection moment).
+**Next session (S8):** S6's and S7's commits are on branch `claude/clever-davinci-hhh4iz` (draft PR Hbleiberg/mathsheet#5), NOT on `main`: the maintainer ran S6 "on a new branch - don't push to main yet" and S7 stacked on it. Check `git log origin/main` and the PR first; until it is merged, S8 builds on that branch (never re-apply its commits on `main`); once it is merged, restart the branch from `main`.
+⚑ next: B on math-minute.html — every cell left is a never-run tie and the maintainer's priorities rank B first; math-minute is the one page B has never audited, and its header changed in S5 (key division) and S6 (header line). A on math-facts would re-measure math-minute's twin (S3); E is the strongest never-run suite cell.
+⚑ Queues: index.html's two touches went to S7's fixes; its approved P3s wait (fraction keys as whole / mixed numbers, no zero fraction differences, key division like the sheet, Rounding one line, long headers shrink). math-facts: the approved Teens Rule 10 + 9 (one touch).
+⚑ New probes (S7): `S7-facts-audit` (`--page math-minute.html`, `--n`, `--only`, `--control`; ~2 min at 200 a level), `S7-skipped-list`, `S7-bracket-names`; `S6-header-line` takes `--page math-facts.html`. With S6's they are arm R's set. The blank / valid-bracket identity arms compare with fixed commits (S6-header-line: dd8609a, f48b8db; S7-bracket-names: cfa5cd6): a session that changes what those sheets hold moves the ref or replays the change, as `S5-key-rows12`'s LATER list does.
+⚑ Micro-feature: the "Custom header line" seed is done on both standard pages (index.html's waits for its convergence session). Dual-audience seeds next: the Date line, `dir="auto"` on names. Ask gate 1 at S8's selection moment.

@@ -286,3 +286,39 @@ includes × and ÷ by default (GRADE_TYPES; a product choice, no candidate).
 above the paper's bottom for rows-3…rows-6 (the line costs ~21 px); an 80-character all-caps line fits one
 row; PDF clones within 1.0 px of print. The settings row's left block sized itself from the fields'
 min-widths (434 px for two 260 px fields) and wrapped the second: `.settings-left{flex:1 1 auto}`.
+
+## S7 (2026-11-05) — pass G (math correctness & pedagogy) on math-facts.html, then math-minute.html
+
+Method: `scripts/loop/probes/S7-facts-audit.mjs` — every level the dropdown offers (71 on math-facts, 21 on
+math-minute) × 200 students through Advanced Input, key on, read back from the DOM. Per level: count and rows
+class, description, key problem = sheet problem, key answer recomputed, the description's promise (PROMISE),
+membership in the documented family (re-enumerated from the page's comments), the deck (min(count, family)
+distinct facts a sheet, each floor/ceil(count / family) times, no fact twice in a row, a fact dealt twice
+written both ways when it can be, every family fact dealt somewhere), the split levels (mixpm / mixmd half
+and half; math-minute Level 21 one row per operation). `--control` (a ×7 key off by one, a deal with
+replacement, a family outside its promise) fails 7 checks on each page. ~2 min (math-facts) at 200 a level.
+
+**Clean.** math-facts 498,000 problems, math-minute 176,000: 0 wrong keys, 0 outside a family or a promise,
+0 negative answers, every deck as documented, every split exact. The comments' fact counts hold (64
+addition, 109 subtraction, 91 multiplication, 156 division facts in the Mixed pools).
+
+**Pedagogy measured (math-facts).** "+10 (Teens Rule)" deals 9 facts, 10 + 0 … 10 + 8 (the page caps
+addition at 18): approved S7, include 10 + 9. "-self" answers 0 on 34 % (a − a is 10 of its 29 facts, by
+design). "+0+1" has 19 facts, each 1–2 times a sheet. Mixed ×: 14 % ×0 and 14 % ×1 (25 of 91 facts); Mixed ÷:
+8 % 0 ÷ n; Mixed +: 17 % +0 (no candidate: the pools are the families' union, as the comment says). The
+operator's own number stands on top ~55 % on +N / ×N (both orders dealt).
+
+**Pedagogy measured (math-minute).** Level 12 "hard multiplication" is 1–9 × 6–9: tops 1…9 at 13 % each, 4 of
+30 facts ×1. Level 17 "hard division" includes ÷ to 1 and 10. Levels 11 and 13–15: every zero factor on top
+(0 × b only; 17 % of 13–15). Level 4 "numbers through twenty": minuends 10–18. Level 1: 33 % have a 0 addend
+(10 of 30 facts with 0 + n / n + 0, by design). Levels 6/8/10 (Forty–Sixty subtraction) are all teen
+subtraction, the same 45 facts as Level 4.
+
+**Fixes.** Skipped-entries box: at 1280 px after 20 sheets it was at y 16,560 on every page while the page
+scrolled to the first sheet (S5 measured 9,735 with fewer sheets); now top 0 (flush) with the first sheet
+30 px below, at 1280 and 390 px. The probe's 11th line reads "Entry 21" on all three pages (the queued P3:
+the error count numbers raw chunks). Bracket names: Mixed accepts the grade's types plus, where the grade
+has them, single fraction / decimal operations (`mixed[fractions-add]` at grade 4 is now refused; it printed
+fraction additions on a grade-4 sheet). Header line on math-facts: the same geometry as math-minute's
+(104 / 75 / 58 / 46 px of paper left, rows-3…rows-6 with divisions on rows-6); settings row 82 px at 1280
+and 800 (unchanged), +70 px at 390 where the field stacks, no horizontal scroll.
