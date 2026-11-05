@@ -76,6 +76,25 @@ try {
     ok(letter.pages === boxes.length && letter.media.join() === '/MediaBox [0 0 792 612]',
       `paper: print path makes ${letter.pages} page(s) for ${boxes.length} sheets at ${letter.media.join(' ')} (landscape Letter = 0 0 792 612)`);
     const a4 = pdfInfo(await p.page.pdf({ format: 'A4', landscape: true }));
+    // 4c. Font — worksheets are always Arial (CLAUDE.md), also once they leave the app wrapper:
+    //     in print (moved to body) and in the PDF stage (a clone on body). S2 found the headers in
+    //     the browser's default serif on both standard pages.
+    const fonts = await p.page.evaluate(({ sheet }) => {
+      const stage = document.createElement('div');
+      stage.appendChild(document.querySelector(sheet).cloneNode(true));
+      document.body.appendChild(stage);
+      const bad = new Set();
+      for (const root of [...document.querySelectorAll(sheet)]) {
+        const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        while (w.nextNode()) {
+          const el = w.currentNode.parentElement;
+          if (w.currentNode.textContent.trim() && !/^Arial\b/i.test(getComputedStyle(el).fontFamily)) bad.add(`${el.className || el.tagName}: ${getComputedStyle(el).fontFamily}`);
+        }
+      }
+      stage.remove();
+      return [...bad];
+    }, { sheet: p.spec.sheet });
+    ok(fonts.length === 0, `print + PDF stage: every worksheet text is Arial (${fonts.length} other: ${JSON.stringify(fonts.slice(0, 2))})`);
     await p.page.emulateMedia({ media: 'screen' });
     ok(a4.pages === boxes.length, `paper: on A4 landscape every sheet still fits one page (${a4.pages} pages for ${boxes.length} sheets)`);
     await p.close();
