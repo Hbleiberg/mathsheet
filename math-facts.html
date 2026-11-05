@@ -1555,12 +1555,16 @@ function renderAnswerProblem(problem, answer) {
     '</div>';
   }
   if (problem.kind === "division") {
+    // The student sheet's own bracket, the quotient in red over the bar, right-aligned over the dividend:
+    // the key lays over the sheet problem for problem. It drew its own bar under the answer, the
+    // bracket's stroke ran up through the answer and the divisor sat beside it (S5).
     return '<div class="problem-cell">' +
       '<div class="division-problem">' +
         '<span class="division-divisor">' + problem.divisor + '</span>' +
-        '<div style="display:flex;flex-direction:column;border-left:2px solid rgb(17,17,17)">' +
-          '<span style="display:block;font-weight:bold;color:rgb(180,0,0);font-size:20px;text-align:right;padding:0 4px 0 6px;border-bottom:2px solid rgb(17,17,17);line-height:1.2">' + ansStr + '</span>' +
-          '<span style="display:block;padding:2px 4px 0 6px;line-height:1.2">' + problem.dividend + '</span>' +
+        '<div class="division-bracket">' +
+          '<span class="division-dividend" style="position:relative">' + problem.dividend +
+            '<span style="position:absolute;right:0;bottom:100%;margin-bottom:6px;font-weight:bold;color:rgb(180,0,0);font-size:20px;line-height:1;white-space:nowrap">' + ansStr + '</span>' +
+          '</span>' +
         '</div>' +
       '</div>' +
     '</div>';
