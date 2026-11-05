@@ -2313,6 +2313,11 @@ function capturePdf(sheets) {
       "flex-direction:column"
     ].join(";");
     clone.classList.remove("print-break");
+    // Print lets a full written-across grid run on past the body (the print block's overflow:visible);
+    // on screen the body clips it, which cut the last row of rounding and long-division pages out of
+    // the PDF (S4). Mirror print.
+    var cloneBody = clone.querySelector(".mwg-ws-body, .mwg-ak-body");
+    if (cloneBody) cloneBody.style.overflow = "visible";
     stage.innerHTML = "";
     stage.appendChild(clone);
 
