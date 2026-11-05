@@ -146,8 +146,9 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
      width:1056px; height:816px; overflow:hidden; z-index:-1000; pointer-events:none;
      background:white;` (1056 × 816 = 11in × 8.5in @ 96 dpi).
   3. For each `.worksheet` (and answer-key sheet): clone it, size the clone
-     `width:1056px; height:816px; padding:24px 29px; background:white;
-     box-sizing:border-box; display:flex; flex-direction:column;`, remove `print-break`,
+     `width:1056px; height:816px; padding:0.25in 0.3in; border:none; background:white;
+     box-sizing:border-box; display:flex; flex-direction:column;` (print's own box: the screen's 1px
+     border framed every PDF page and could wrap a header that fits on paper, S8), remove `print-break`,
      give its `.problems-grid` print's fixed rows (`rows-3` → `repeat(3,2.4in)` … `rows-6` →
      `repeat(6,1.2in)`; the screen's `1fr` set every PDF problem up to 19 px lower than on paper, S4),
      place it in the stage.
