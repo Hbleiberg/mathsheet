@@ -29,6 +29,8 @@ level — the harness's `prepare` fills them (pass `{ raw: true }` to audit the 
 the grid class is `rows-N` on the standard pages but `mwg-cols-N mwg-rows-N` on `index.html`, so a
 count expectation from the rows class alone is wrong there; under emulated print the results sit
 inside the hidden app until the page's own move-to-body trick runs (`printBoxes()` re-applies it).
+`page.pdf()` renders screen CSS when `emulateMedia({ media: 'screen' })` ran last (`printBoxes()` ends
+there) — emulate print first, or the page count is wrong (S2).
 
 ## Surfaces
 

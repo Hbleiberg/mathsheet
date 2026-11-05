@@ -73,3 +73,49 @@ twice (candidate). A corrupt saved roster falls back silently and is never clear
 CDN delayed a saved roster's first paint one-for-one before 9304f31. `esc()`'s apostrophe step is a
 no-op — audited: all 21 call sites land in text nodes or double-quoted attributes, so no exploitable
 sink today (candidate, P3).
+
+## S2 (2026-11-05) — pass B (print & export) on math-facts.html
+
+Method: the loop harness; scratch probes (not committed — the smoke's new paper and font arms carry the
+regressions). PDFs rasterized with `pdftoppm`, page sizes from `pdfinfo`.
+
+**Paper.** `@page{size:11in 8.5in landscape}` is invalid (lengths and an orientation keyword cannot be
+combined): Chromium's CSSOM keeps only `margin:0`, so `page.pdf({preferCSSPageSize:true})` came out
+612×792 pt (portrait Letter; the 11 in sheet shrunk onto the top of the page) and A4 landscape made 24
+pages for 12 sheets (page 1 the header alone, page 2 blank). `size:11in 8.5in` and `letter landscape`
+both parse; after 48a610d: 792×612, 12 pages for 12 sheets, A4 landscape scaled to fit (12 for 12), and
+an A4-portrait request still comes out landscape (Chromium honours the CSS orientation).
+
+**Font.** On both standard pages the header labels, name and description printed and PDF'd in Times New
+Roman (the app wrapper holds `font-family`; print moves the results to body and the PDF stage clones onto
+body). index.html sets Arial on its sheet classes and was clean. After fb36ea5 every worksheet text node is
+Arial on screen, in print and in a stage clone; Arial is wider, so a long description can wrap to two lines
+(header 55 → 61 px) — the bottom-most ink stays ≥ 73 px above the sheet's inner bottom.
+
+**Geometry (math-facts, 100 sheets: every rows class, stacks and long division, keys, 5 copies, removed
+number, long names; math-minute 104 sheets, all 21 levels).** Every sheet 1056×816, `print-break` on all
+but the last, 0 clipped cells, 0 horizontal overflow at the widest problems (×12, ÷12 with 3-digit
+dividends, 3-digit key answers); bottom-most ink 674–754 of 792 px. Header 55 px, 61 when a key description
+wraps ("ANSWER KEY — … (Key 3 of 5)").
+
+**Print vs PDF.** Print rows are fixed (2.4 / 1.8 / 1.44 / 1.2 in, grid 81–772 px, ~20 px unused at the
+bottom); the PDF clone is under screen CSS, rows 1fr (grid 82–791 px): problems sit 11–18 px lower in the
+PDF, dx ≤ 2 px (P4 candidate). One math-minute key description wraps in the clone but not in print
+(sub-pixel width difference; harmless).
+
+**Save PDF.** `math-facts-worksheets.pdf`, page count = sheet count (12), one 1584×1224 JPEG per page
+(144 ppi at scale 1.5), ~122 KB per page; zoomed cells crisp, answer-key red legible. Refuted: the S1
+`content-visibility:auto` on the sheets does not blank PDF pages captured while the page is scrolled to
+the results (scrollY 1455 and 760; every page carries ink, also on index.html after 7e0e32f).
+
+**Advanced Code round trip.** "Cohen, Avi" exports as 4 fields and is skipped on paste; "Levi; Dana"
+splits and prints as "Dana" with no error for it; a number "12, B" is skipped; the error list counts the
+empty chunks a newline after `;` makes ("Entry 10" for the 6th line). Apostrophes and quotes survive.
+
+**Long names.** The Student Name field is ~207 px at 18 px bold: ~22 characters, then "…"
+("Bat-Sheva Rivka Gol…", "Yehonatan Avraham …"); same `text-overflow:ellipsis` on index.html.
+
+**index.html (fix 3, 7e0e32f).** 150 sheets (30 advanced students × 5), medians of 3, click → handler
+end / → next frame: add2 220 / 267 → 33 / 46 ms; fractions@g5 433 / 530 → 47 / 67; with the key (300
+sheets) add2 675 / 792 → 71 / 87, fractions 862 / 1,024 → 69 / 89. Side observation: the fraction
+key prints whole-number results as "0/1" and "1/1" (candidate for G).
