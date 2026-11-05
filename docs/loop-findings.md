@@ -407,3 +407,41 @@ runs on an empty copy of the line. Screen headers stay 45.9 px with 16 and 11 px
 framed 16 / 16 → 0; the S9-index-pdf "worst cell" (~387 px on fraction sheets, before and after) is the thin grey
 answer line crossing the ink threshold in print but not after JPEG — not a layout difference (rasters checked).
 936850d: Level 12 deals 22 facts (was 30), Level 17 32 (was 40); 0 % one-operand problems on Level 12.
+
+## S10 (2026-11-05) — pass C (aesthetics) on index.html
+
+Method: screenshots at 1280 / 800 px (load, a filled roster with the Grade 5 Mixed panel and a Fractions ops panel,
+the Advanced Code panel, Advanced with a bad entry, after a Generate, the validation box); 29 type × grade × count
+rows with keys under print (seeded); cell geometry per sheet. Scratch probes, not committed.
+
+**UI (teacher, desktop).** Type scale: labels 14 px bold, entry titles 18 px, links 13 px, pill 13 px bold, small
+buttons 14 px, the two large 17 px bold — the standard's scale, in Georgia (the font and the `mwg-` names are the
+convergence session's, not C's). Button hierarchy right (`.mwg-btn-large` on the two generate actions only);
+notices the standard colours; the three toggles stacked right of the settings row with Fill Down under them; the
+Grade 5 Mixed panel lists 20 levels, two sub-groups and Other with Select / Deselect All. 800 px: the five form
+columns hold (a closed Problem Type select clips its text, as selects do), the Mixed panel wraps to four and three
+a row, no horizontal overflow before a Generate (after one, the 11 in sheets: M's). The validation box ("Fix" /
+"Generate Anyway") and the skipped-entries box (above the sheets since S7) read well. **Defect:** in the Fractions
+/ Decimals ops panels, and the Mixed panel's fraction / decimal groups, each checkbox sits on its own line above
+a bold label: `.mwg-ops-grid label{display:flex;…}` loses to the injected `.mwg-setting-group label,.mwg-student-grid
+label,…{display:block;font-weight:bold;margin-bottom:4px}` (same specificity, appended after the static sheet),
+while `.mwg-mixed-types-grid label` survives on `font-weight:normal!important` / `margin-bottom:0!important`
+(computed: ops label `block 700 4px`, mixed label `flex 400`). **Refuted lead:** a blank Problem Count after
+choosing Mixed at Grade 5 was the probe's doing (it set 40 where the only option is "30 problems (max for this
+type)"); real selections leave "30" selected.
+
+**Worksheet (student, paper).** Header 55 px, description box 384 px; stacked problems 20 px at grades 1–2 and
+18 px from grade 3 ("wide"), across problems 16 px with 12 px grey numbers, fractions 14 px. Writing room under
+each ruled line: cols-5 rows-6 (30 problems) 69 px, rows-8 40, rows-10 23, rows-12 11 (the standard pages' 10 × 3
+grid gives 180 at 30 — a design, gate 3). Keys: rows-6 50–52 px, rows-8 21, rows-10 4–6 (S5's b981031 handled
+rows-12 only; nothing overprints), rows-12 3. Division cells 196 / 138 / 81 px. Across grids: the grid box always
+ends at 800 px (`height:100%`); the cells end 760–771 for Decimals, Order of Operations, Integers, Exponents and
+Scientific Notation, 793 Fractions, 807 Long Division, 816 Rounding (fixed: 780). Grade 5+ Mixed (across):
+brackets take two rows' height, so the two columns' rows drift apart; a Rounding problem wrapped there too (fixed).
+
+**Fixes.** 291903c: the progress line per page on all three pages, the status box scrolled into view at the
+click (the Generate's own scroll to the sheets is overridden in the same task), the button disabled until "PDF
+saved!" or a notice; on HEAD a second click mid-export did start a second pipeline (16 captures, 2 downloads for
+8 sheets). a32d3fa: 244 rounding problems (grades 5–8, Mixed 5 and 8, keys) 0 wrap (122 before); blanks 203–256 px
+(286); the last row 780 px (816). 2b678e1: 860 brackets, divisor and dividend baselines 0.00 px (3.00) on both
+twins; index's `.mwg-division-divisor` has the same 8 px (queued).

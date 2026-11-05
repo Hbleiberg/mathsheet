@@ -225,3 +225,35 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   ⚑ Queues: index.html — approved P3s (Rounding one line, long headers shrink, no zero fraction differences) and S8's PDF frame (the twins' 6bebbdb, a different block there); its short / across Mixed key division is a gate-6 P4. Three-page approved P3s wait for a session with a touch free on every page: the offline PDF notice, JPEG 0.8, the PDF progress line, the name shrink.
   ⚑ New probes (S8): `S8-minute-print` (`--only`, `--a4`, `--control`), `S8-minute-pdf` (real cdnjs; needs the network the smoke's `--cdn` uses; `--ref`, `--control`), `S8-index-key-division` (ref d3ef5c6). With S7's they are arm R's set. `S6-math-audit` now holds fraction keys to whole / mixed form and reads the key's new division cell; `S5-key-rows12` and `S7-bracket-names` replay S8's fraction-key change onto their references.
   ⚑ Micro-feature: S8 skipped it at gate 1 (the maintainer chose two index fixes). Open dual-audience seeds: the Time / Score strip and the Date line on math-minute, `dir="auto"` on names. Ask gate 1 at S9's selection moment.
+
+## S10 (2026-11-05) — pass C on index.html; three fixes (on a branch)
+
+- Run without arguments while the S6–S9 draft PR (Hbleiberg/mathsheet#5) was open and unmerged: S10 stacked its
+  commits on `claude/clever-davinci-hhh4iz` as S9's handoff said, and did not touch `main`.
+- Pass C on index.html: the UI's type scale, button hierarchy, notices, Mixed panel and 800 px layout match the
+  standard apart from Georgia and the `mwg-` names (the Awaiting convergence session); one defect, the Fraction /
+  Decimal Operations checkboxes above their labels (an injected rule overrides the static one). The sheets' known
+  items stood (Rounding fixed here; long headers, fraction zeros and the short-row Mixed key division queued).
+- Gate call (four questions after the pass): micro-feature → skipped (third session running); Level 4's label →
+  leave (struck); zero × both ways → approved (queued: math-minute's second touch went to the divisor); divisor →
+  align (2b678e1). A worker restart between the question and its answer lost nothing.
+- The fourth slot stayed unused: after the three-page PDF fix every remaining approved item needed a page on its
+  cap (zero both ways on math-minute; the ops panel and the header shrink on index).
+- The S10-rounding-one-line probe first took the grid box's bottom for the ink (always 800 px: `.mwg-horiz-grid`
+  is `height:100%`); it measures the cells now.
+- Screenshots (scratchpad `s10/`): `c/` (index UI at 1280 / 800 in five states, every type's sheet and key),
+  `s10-rounding-{before,after}`, `s10-divisor-before-after` (DSF 3 cells), `s10-progress-{math-minute,index}`.
+- Struck Candidate (the maintainer keeps the label, S10, gate 2):
+  - [ ] P4 | math-minute.html | Level 4 "numbers through twenty" never passes 18 (minuends 10–18, single-digit answers), as index's Addition Level 2 stops at 18: wording is gate 2 | found S7
+- Done rows aged out of the ledger (S5), verbatim:
+  - [x] S5 | 2026-11-05 | 2a74f54 | math-facts.html, math-minute.html | the answer key's division is the sheet's own problem (same bracket, same place in the cell) with the quotient in red over the bar; it drew a bar under the answer, the bracket's stroke through it and the divisor beside it (gate 6, approved) | probe: 805 cells on every division level match the sheet within 0.5 px, quotients right and above the bar; control fails; real Save PDF rasters; before/after screenshots
+  - [x] S5 | 2026-11-05 | 6011727 | math-facts.html, math-minute.html | one 7.2 px gap between the sign and any bottom number ("×12" sat 2 px from its sign, "× 7" 7.2 px); one-digit problems unchanged (gate 6, approved) | probe: every level of both pages with keys, 5,040 stacks, every gap 7.2 px, one-digit signs within 0.1 px; control fails; before/after screenshot
+  - [x] S5 | 2026-11-05 | 5c3b01a | index.html | a Mixed entry keeps its chosen fraction / decimal operations after Duplicate and a saved-roster reload (all eleven came back ticked and printed); a bare "fractions" / "decimals" still means every operation | probe by real clicks: subset kept, reloaded sheet 0 ÷/− (15 before); control fails 3; roster-subset and S4 probes, smoke
+  - [x] S5 | 2026-11-05 | b981031 | index.html | answer keys of 60 wide problems (rows-12): the key drops its lines' minimum heights and sets answers at 15 px, so no answer overprints the number below; worksheets and other keys unchanged (S4 gate 6) | probe (seeded, glyph ink): 2,640 cells, smallest gap −3.4 → 2.6 px, ink to 790 of 816; 152 other sheets byte-identical; control fails; before/after screenshot
+  - [x] S5 | 2026-11-05 | — | docs/IMPROVEMENT_LOG.md | gates: key division → match the sheet; sign spacing → same gap (both shipped); micro-feature skipped; the hidden error list (P2, three pages) and index's key division wait on index's two-touch cap | ledger
+- Previous handoff (S9 → S10), verbatim:
+  **Next session (S10):** S6–S9's commits are on branch `claude/clever-davinci-hhh4iz` (draft PR Hbleiberg/mathsheet#5), NOT on `main`: the maintainer ran S6 "on a new branch - don't push to main yet" and S7–S9 stacked on it. Check `git log origin/main` and the PR first; until it is merged, S10 builds on that branch (never re-apply its commits on `main`); once it is merged, restart the branch from `main`.
+  ⚑ next: C on index.html — every cell left is a never-run tie and the maintainer's order puts C next; it is C's last unaudited page. index.html's UI differs by design (Georgia, `mwg-`, injected styles): log those under the Awaiting convergence session, never fix them in C. If it comes back clean, buy D on math-facts.html. E is the strongest never-run suite cell.
+  ⚑ Queues: index.html — approved P3s (Rounding one line, long headers shrink, no zero fraction differences); its short / across Mixed key division is a gate-6 P4. Three-page approved P3s wait for a session with a touch free on every page: the offline PDF notice, JPEG 0.8, the PDF progress line (the re-entrancy guard is the same block).
+  ⚑ New probes (S9): `S9-name-fit` (`--only`, `--control`, `--ref`), `S9-index-pdf` (real cdnjs, as S8-minute-pdf; `--ref`; its problem-drift check only holds the line on the open S4 P4). `S7-facts-audit` now expects Levels 12 and 17's new decks. The M pass should know: at 800 px the on-screen sheets (11 in wide) scroll sideways; print is unaffected.
+  ⚑ Micro-feature: S9 skipped it at gate 1 (the maintainer chose the hard levels). Open dual-audience seeds: the Time / Score strip and the Date line on math-minute, `dir="auto"` on names. Ask gate 1 at S10's selection moment.
