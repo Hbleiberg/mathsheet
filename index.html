@@ -2116,17 +2116,21 @@ function buildWorksheet(student, setNum, setTotal, isLast) {
   return { el: ws, problems: problems, useHoriz: useHoriz, grid: grid };
 }
 
-function renderAnswerProblem(problem, answer, inHorizGrid) {
+function renderAnswerProblem(problem, answer, inHorizGrid, tight) {
   var ansStr = esc(String(answer));
   var ansStyle = 'display:block;font-weight:bold;color:rgb(180,0,0);text-align:right;padding-top:2px';
   if (problem.kind === "stack" && !inHorizGrid) {
     var wide = String(problem.html).indexOf("1.1in") !== -1;
     var width = wide ? "1.1in" : "0.75in";
     var fontSize = wide ? "18px" : "20px";
+    // A key's 0.6in rows (rows-12) cannot hold a stack and its answer at the sheet's line heights: each
+    // answer overprinted the number below it (S4). There the key drops the lines' minimum heights and
+    // sets every answer at the wide keys' 15px (approved, S4 gate 6); worksheets and other keys unchanged.
+    var lineFit = tight ? ' style="min-height:0"' : '';
     return '<div class="mwg-problem-cell"><div class="mwg-problem-stack" style="width:' + width + ';font-size:' + fontSize + '">' +
-      '<span class="mwg-problem-top">' + problem.a + '</span>' +
-      '<div class="mwg-problem-bottom-line"><span class="mwg-problem-operator">' + problem.operator + '</span><span class="mwg-problem-bottom">' + problem.b + '</span></div>' +
-      '<span style="' + ansStyle + ';font-size:' + (wide?"15px":"17px") + '">' + ansStr + '</span>' +
+      '<span class="mwg-problem-top"' + lineFit + '>' + problem.a + '</span>' +
+      '<div class="mwg-problem-bottom-line"' + lineFit + '><span class="mwg-problem-operator">' + problem.operator + '</span><span class="mwg-problem-bottom">' + problem.b + '</span></div>' +
+      '<span style="' + ansStyle + ';font-size:' + (wide || tight ? "15px" : "17px") + (tight ? ';padding-top:1px' : '') + '">' + ansStr + '</span>' +
     '</div></div>';
   }
   if (problem.kind === "division") {
@@ -2167,7 +2171,7 @@ function buildAnswerKeySheet(allAnswers, isLast) {
       bodyHtml += '</div>';
     } else {
       bodyHtml = '<div class="mwg-problems-grid ' + entry.grid.colClass + ' ' + entry.grid.rowClass + '">';
-      for (var j = 0; j < problems.length; j++) bodyHtml += renderAnswerProblem(problems[j], problems[j].answer);
+      for (var j = 0; j < problems.length; j++) bodyHtml += renderAnswerProblem(problems[j], problems[j].answer, false, entry.grid.rowClass === "mwg-rows-12");
       bodyHtml += '</div>';
     }
     sheet.innerHTML =
