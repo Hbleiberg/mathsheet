@@ -15,7 +15,14 @@ const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.arg
 const control = process.argv.includes('--control'), REF = arg('--ref') || 'cfa5cd6';
 const fails = [];
 const check = (ok, msg) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg); };
-const OLD = execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8' });
+// Later approved changes to what valid entries print, replayed onto the reference (S8: fraction keys as
+// whole and mixed numbers), so the identity arm still isolates the bracket check.
+const LATER = [
+  ['function fractionStr(n, d) { var g = gcd(Math.abs(n), Math.abs(d)); return (n/g) + "/" + (d/g); }',
+   'function fractionStr(n, d) { var g = gcd(Math.abs(n), Math.abs(d)); n = n / g; d = d / g; var whole = Math.floor(n / d), rest = n - whole * d; return rest === 0 ? String(whole) : (whole ? whole + " " : "") + rest + "/" + d; }'],
+];
+const replay = body => LATER.reduce((b, [from, to]) => b.includes(from) ? b.replace(from, to) : b, body);
+const OLD = replay(execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8' }));
 const SEED = `(() => { let s = 20261105; Math.random = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646; })();`;
 
 const BAD = [

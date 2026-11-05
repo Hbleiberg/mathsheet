@@ -9,7 +9,8 @@
 //     remainder, no negative differences).
 // It reports what it measured per selector; `--n <k>` changes the sheets per selector, `--only <sel>`
 // runs one ("div3@5"), `--control` serves a page with three planted defects (Division Level 3's key off by one,
-// fraction keys over a wrong denominator, the header's count the one asked) and must fail two checks.
+// fraction keys over a wrong denominator, the header's count the one asked) and must fail three checks.
+// Since S8 fraction keys are whole / mixed numbers in lowest terms ("1", "1 1/3"), and a check holds them to it.
 //   node scripts/loop/probes/S6-math-audit.mjs [--n 200] [--only div3@5] [--control]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -75,6 +76,15 @@ function solve(t) {
   }
   return { kind: 'expr', value: evalExpr(t) };
 }
+// A fraction key's written form (S8): "whole" 3, "mixed" 1 1/3, "proper" 2/5 (both in lowest terms, the
+// fractional part proper), or what is wrong with it.
+function fractionForm(a) {
+  let m;
+  if (/^\d+$/.test(a)) return 'whole';
+  if ((m = a.match(/^(\d+) (\d+)\/(\d+)$/))) return +m[1] > 0 && +m[2] > 0 && +m[2] < +m[3] && gcd(BigInt(m[2]), BigInt(m[3])) === 1n ? 'mixed' : `bad mixed ${a}`;
+  if ((m = a.match(/^(\d+)\/(\d+)$/))) return +m[1] === 0 ? '0/x' : +m[2] === 1 ? 'n/1' : +m[1] >= +m[2] ? 'improper' : gcd(BigInt(m[1]), BigInt(m[2])) === 1n ? 'proper' : 'not lowest';
+  return `other ${a}`;
+}
 function answerOk(p, ans) {
   const a = ans.trim();
   if (p.kind === 'div') { const want = p.r ? `${p.q} r${p.r}` : `${p.q}`; return a === want; }
@@ -82,6 +92,7 @@ function answerOk(p, ans) {
     const c = dec(m[1]); return Number(c.n) / Number(c.d) >= 1 && Number(c.n) / Number(c.d) < 10 && eq(mul(c, R(10n ** BigInt(m[2]))), p.value); }
   let v;
   if (/^-?\d+\/\d+$/.test(a)) { const [n, d] = a.split('/'); v = R(BigInt(n), BigInt(d)); }
+  else if (/^\d+ \d+\/\d+$/.test(a)) { const [w, f] = a.split(' '); const [n, d] = f.split('/'); v = R(BigInt(w) * BigInt(d) + BigInt(n), BigInt(d)); }
   else if (/^[−-]?[\d,]+(\.\d+)?$/.test(a)) v = dec(a);
   else return false;
   return eq(v, p.value);
@@ -136,7 +147,7 @@ try {
     const plant = (from, to) => { if (!body.includes(from)) throw new Error(`control anchor missing: ${from}`); body = body.replace(from, to); };
     plant('while(d*q>99); return {html:divisionHtml(d,d*q,true),answer:q,', 'while(d*q>99); return {html:divisionHtml(d,d*q,true),answer:q+1,');
     plant('var desc = descriptionFor(type, grade, problems.length);', 'var desc = descriptionFor(type, grade, count);');
-    plant('return (n/g) + "/" + (d/g); }', 'return (n/g) + "/" + (d/g + 1); }');
+    plant('(whole ? whole + " " : "") + rest + "/" + d;', '(whole ? whole + " " : "") + rest + "/" + (d + 1);');
     await p.page.route(/\/index\.html$/, r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body }));
     await p.page.reload({ waitUntil: 'load' });
     await p.page.waitForSelector(`${p.spec.students} ${p.spec.entry}`);
@@ -151,7 +162,7 @@ try {
     await p.page.click(p.spec.generate);
     await p.page.waitForFunction(n => window.__prints > n, before, { timeout: 60000 });
     const r = await p.page.evaluate(extract);
-    const st = report[sel] = { sheets: r.sheets.length, keys: r.keys.length, problems: 0, wrongKey: [], mismatch: 0, badCount: [], broken: [], notes: {} };
+    const st = report[sel] = { sheets: r.sheets.length, keys: r.keys.length, problems: 0, wrongKey: [], mismatch: 0, badCount: [], broken: [], badForm: [], notes: {} };
     const promise = PROMISE[type];
     const note = (k, v) => { (st.notes[k] ??= new Map()).set(v, ((st.notes[k].get(v)) || 0) + 1); };
     if (r.errors) st.pageErrors = r.errors;
@@ -177,7 +188,8 @@ try {
         if (pr.kind === 'div') { note('dividend digits', digits(pr.dd)); note('divisor', pr.d); note('quotient digits', digits(pr.q)); note('remainder', pr.r > 0); }
         if (pr.kind === 'round') { note('n < place', pr.n < pr.place); note('rounds to 0', pr.value.n === 0n); }
         if (pr.kind === 'expr' || pr.kind === 'sci?') { const v = pr.value; note('value<0', v.n < 0n);
-          if (/\[/.test(it.t)) { const ka = (ans || '').trim(); note('key form', /^0\//.test(ka) ? '0/x' : /\/1$/.test(ka) ? 'n/1' : /^(\d+)\/(\d+)$/.test(ka) && +ka.split('/')[0] > +ka.split('/')[1] ? 'improper' : 'proper'); }
+          if (/\[/.test(it.t)) { const ka = (ans || '').trim(); const form = fractionForm(ka); note('key form', form);
+            if (form !== (v.d === 1n ? 'whole' : v.n > v.d ? 'mixed' : 'proper')) st.badForm.push(`${it.t} → key "${ka}"`); }
           if (/-/.test(it.t)) note('hyphen-minus in problem', true);
           for (const f of it.t.match(/\[\d+\/\d+\]/g) || []) { const [n, d] = f.slice(1, -1).split('/').map(BigInt); note('operand in lowest terms', gcd(n, d) === 1n); }
           if (sel.startsWith('decimals')) for (const x of it.t.replace(/\[[^\]]*\]/g, '').match(/\d+(?:\.\d+)?/g) || []) note('places shown', (x.split('.')[1] || '').length);
@@ -198,6 +210,8 @@ try {
   check(all.every(s => !s.wrongKey.length), `every key answer recomputes (${all.reduce((a, s) => a + s.wrongKey.length, 0)} wrong)`);
   check(all.every(s => !s.broken.length), `every level keeps its label's promise (${Object.entries(report).filter(([, s]) => s.broken.length).map(([k, s]) => `${k} ${s.broken.length}/${s.problems}`).join(', ') || 'all'})`);
   check(all.every(s => !s.badCount.length), `every description's count is the sheet's (${all.reduce((a, s) => a + s.badCount.length, 0)} differ)`);
+  const badForm = all.flatMap(s => s.badForm);
+  check(badForm.length === 0, `every fraction key is a whole number, a mixed number or a proper fraction, in lowest terms (${badForm.length} not; ${badForm.slice(0, 3).join(' | ')})`);
   check(!p.errors.length, `0 page errors (${p.errors.join('; ')})`);
   await p.close();
 } finally { await browser.close(); await srv.close(); }

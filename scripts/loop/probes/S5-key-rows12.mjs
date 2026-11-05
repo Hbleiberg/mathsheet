@@ -90,6 +90,9 @@ const LATER = [
   ['var d=rand(2,9),q=rand(10,99),r=rand(1,d-1);', 'var d,q,r; do{d=rand(2,9);q=rand(10,49);r=rand(1,d-1);}while(d*q+r>99);'],
   ['var desc = descriptionFor(type, grade, count);', 'var desc = descriptionFor(type, grade, problems.length);'],
   ['desc:descriptionFor(student.type,student.grade,student.count)', 'desc:descriptionFor(student.type,student.grade,result.problems.length)'],
+  // S8: fraction keys write whole and mixed numbers (Mixed at grades 5-8 holds fractions).
+  ['function fractionStr(n, d) { var g = gcd(Math.abs(n), Math.abs(d)); return (n/g) + "/" + (d/g); }',
+   'function fractionStr(n, d) { var g = gcd(Math.abs(n), Math.abs(d)); n = n / g; d = d / g; var whole = Math.floor(n / d), rest = n - whole * d; return rest === 0 ? String(whole) : (whole ? whole + " " : "") + rest + "/" + d; }'],
 ];
 const replay = body => LATER.reduce((b, [from, to]) => {
   if (!b.includes(from)) throw new Error(`replay anchor missing: ${from}`); return b.replace(from, to); }, body);
