@@ -1728,6 +1728,8 @@ function parseAdvancedInput() {
     var entry = chunks[i].trim();
     if (!entry) continue;
     var parts = entry.split(",");
+    // A name may hold commas ("Cohen, Avi"): everything before the last four fields is the name (S3).
+    if (parts.length > 5) parts = [parts.slice(0, -4).join(",")].concat(parts.slice(-4));
     for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
     if (parts.length !== 5) { errors.push("Entry " + (i+1) + " needs 5 fields: " + entry); continue; }
     var grade = parseInt(parts[4]);

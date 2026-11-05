@@ -50,7 +50,7 @@ export const PAGES = {
     perStudent: '#mwgWorksheetsPerStudent', fixedGrid: false, name: 'input[name="studentName"]',
     modeToggle: '#mwgToggleModeBtn', advanced: '#mwgAdvancedBox', save: '#mwgSaveBtn',
     storageKey: 'mwgRosterData_v2', pdfName: 'worksheets.pdf',
-    advancedSample: 'Avi, 1, add1, 30, 2;\n, 2, sub2, 30, 2;', advancedName: 'Avi',
+    advancedSample: 'Cohen, Avi, 1, add1, 30, 2;\n, 2, sub2, 30, 2;', advancedName: 'Cohen, Avi',   // a comma in a name (S3)
     errors: '#mwgErrors, #mwgStatus',
     // The default entries carry no grade/type/count; the smoke fills each before generating.
     prepare: async page => {
