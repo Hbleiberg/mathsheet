@@ -257,3 +257,34 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   ⚑ Queues: index.html — approved P3s (Rounding one line, long headers shrink, no zero fraction differences); its short / across Mixed key division is a gate-6 P4. Three-page approved P3s wait for a session with a touch free on every page: the offline PDF notice, JPEG 0.8, the PDF progress line (the re-entrancy guard is the same block).
   ⚑ New probes (S9): `S9-name-fit` (`--only`, `--control`, `--ref`), `S9-index-pdf` (real cdnjs, as S8-minute-pdf; `--ref`; its problem-drift check only holds the line on the open S4 P4). `S7-facts-audit` now expects Levels 12 and 17's new decks. The M pass should know: at 800 px the on-screen sheets (11 in wide) scroll sideways; print is unaffected.
   ⚑ Micro-feature: S9 skipped it at gate 1 (the maintainer chose the hard levels). Open dual-audience seeds: the Time / Score strip and the Date line on math-minute, `dir="auto"` on names. Ask gate 1 at S10's selection moment.
+
+## S11 (2026-11-06) — pass E (errors & robustness), the suite, on all three pages; three fixes (on a branch)
+
+- Run without arguments while the S6–S10 draft PR (Hbleiberg/mathsheet#5) was open and unmerged: S11 stacked its
+  commits on `claude/clever-davinci-hhh4iz` as S10's handoff said, and did not touch `main`.
+- Arm R: the smoke and every S9 / S10 probe green; `S10-rounding-one-line` failed only by its own default reference
+  (HEAD, which carries the fix): re-pointed to 2b678e1 (bd961ee), the one tooling commit of the session.
+- Pass E (`S11-robustness`): every option the forms offer generates (523 / 21 / 71 combinations) with its count and
+  key; malformed pastes are reported entry by entry and skipped; 500-entry pastes print in under half a second;
+  storage denied or full degrades to defaults with the notices; 13 bad saved payloads load to a usable roster; every
+  control fires without a page error. Found: the known "Entry 10" numbering (fixed), a lenient `parseInt` level /
+  grade ("1O" → Level 1), index's silent 30 cap on Advanced counts for one-line types, the per-operation decimal
+  keys' dropped zeros. Probe traps: nested long-division cells, Level 21's count-less description, math-facts'
+  Mixed codes carry their count ("mix+30").
+- Gate call (three questions after the pass): micro-feature → skipped (fourth session running; the question now
+  rests under Awaiting); Decimals full places → yes (11fd4ee); the 30 cap → print 30 and say so (approved Candidate).
+- The fourth slot stayed unused: after the three-page numbering fix, index (Decimals) and math-minute (zero both
+  ways) took their second touches, and nothing open belongs to math-facts alone.
+- Scratch (scratchpad `s11/`): `armR.log`, `E-full.log`, `E-head.log` (the probe and its control against HEAD's
+  pages, run from a snapshot so the fixes could land meanwhile), `zero-identity.mjs`.
+- Done rows aged out of the ledger (S6), verbatim:
+  - [x] S6 | 2026-11-05 | b1e456f | index.html | Division Levels 3–4 ("2-digit ÷ 1-digit") print 2-digit dividends over 2-digit quotients, every such problem equally likely (85 % had 3-digit dividends; gate 2/6, approved) | S6-math-audit: off its label 7,589 + 7,696 of 9,000 → 0, keys recompute; before/after key screenshots; smoke
+  - [x] S6 | 2026-11-05 | dd8609a | index.html, scripts/loop/probes/ | the header and key state the count printed: "60 Fractions" over 30 problems (Advanced, or Mixed → Deselect All → 60) now reads 30 (gate 2, approved); adds `S6-math-audit`; `S5-key-rows12` replays S6's generator changes onto its reference | count ≠ description 4,050 of 10,200 audit sheets → 0; control fails 2 checks; S5-key-rows12 0 of 152 differ; smoke
+  - [x] S6 | 2026-11-05 | 4f7d68c | math-minute.html, CLAUDE.md, scripts/loop/probes/S6-header-line.mjs | micro-feature (gate 1): optional "Header line" (≤ 80 chars, dir=auto, escaped, saved as `headerLine`) printed under the header of every sheet and key; blank prints nothing | probe: blank byte-identical to dd8609a, print 1056×816 with 46+ px paper left, PDF clones within 1.0 px, old payload loads; control fails; UI 1280/800 and sheet screenshots
+  - [x] S6 | 2026-11-05 | — | docs/IMPROVEMENT_LOG.md | gates: Division 3–4 → 2-digit dividends; header count → the real count (both shipped); fraction subtraction → no zero answers (approved Candidate); micro-feature → Custom header line on math-minute (shipped; seed split to math-facts) | ledger
+- Previous handoff (S10 → S11), verbatim:
+  **Next session (S11):** S6–S10's commits are on branch `claude/clever-davinci-hhh4iz` (draft PR Hbleiberg/mathsheet#5), NOT on `main`: the maintainer ran S6 "on a new branch - don't push to main yet" and S7–S10 stacked on it. Check `git log origin/main` and the PR first; until it is merged, S11 builds on that branch (never re-apply its commits on `main`); once it is merged, restart the branch from `main`.
+  ⚑ next: E — A, B and C have now run on every page; every cell left is a never-run tie, and E (every selector generates, all three pages) is the strongest check after five sessions of generator changes (S6–S10). The surface never-runs (D, H, M) follow; D on math-facts.html next among them.
+  ⚑ Queues: math-minute — zero × both ways (approved S10, gate 6). index.html — the ops-panel labels (C, S10), its divisor 3 px low (the twins' 2b678e1 shape, approved S10), the approved long-header shrink and no zero fraction differences, the short / across Mixed key division (gate 6 P4). Three-page approved P3s still waiting: the offline PDF notice wording, JPEG 0.8.
+  ⚑ New probes (S10): `S10-pdf-progress` (real cdnjs; `--ref`), `S10-rounding-one-line` (`--ref`, `--control`), `S10-divisor-baseline` (`--only`, `--ref`, `--control`). `S5-key-rows12`, `S7-bracket-names` and `S8-index-key-division` replay S10's rounding span onto their references. With S9's they are arm R's set.
+  ⚑ Micro-feature: skipped at gate 1 for the third session running (S8–S10; the maintainer chose fixes each time). Open dual-audience seeds: the Time / Score strip and the Date line on math-minute, `dir="auto"` on names. Ask once more at S11's selection moment; if skipped again, record that under Awaiting so the seeds stop costing a question.

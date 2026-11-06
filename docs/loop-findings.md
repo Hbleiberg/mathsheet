@@ -445,3 +445,57 @@ saved!" or a notice; on HEAD a second click mid-export did start a second pipeli
 8 sheets). a32d3fa: 244 rounding problems (grades 5–8, Mixed 5 and 8, keys) 0 wrap (122 before); blanks 203–256 px
 (286); the last row 780 px (816). 2b678e1: 860 brackets, divisor and dividend baselines 0.00 px (3.00) on both
 twins; index's `.mwg-division-divisor` has the same 8 px (queued).
+
+## S11 (2026-11-06) — pass E (errors & robustness), the suite: all three pages
+
+Method: `scripts/loop/probes/S11-robustness.mjs` (committed; `--only`, `--skip-selectors`, `--control`), six arms
+per page by real clicks, every foreign origin aborted, `window.print` stubbed, dialogs accepted. Arm R first: the
+smoke and every S9 / S10 probe green, but `S10-rounding-one-line` failed its own "wrapped before" check because its
+reference defaulted to HEAD, which has carried the fix since a32d3fa — a probe defect (fixed, bd961ee: the default
+is 2b678e1, as `S9-index-pdf` pins its base).
+
+**Every selector through the Standard form.** One entry, the answer key on, each option selected and Generate
+clicked: index 523 combinations (8 grades × their types × the counts the dropdown offers; 191 s), math-minute 21,
+math-facts 71. Every one printed one sheet and one key with the count asked, the description's count and the key's
+cells equal, 0 page errors, 0 console errors. Probe traps: index's long-division cell nests a second cell element
+(count top-level cells only); math-minute's Level 21 description names no count (fall back to the rows class).
+
+**Malformed pastes** (Windows line ends, `;;`, blank lines, tabs, spaces, no trailing `;`, an empty name, a comma
+in a name, a wrong field count, an unknown selector, an empty selector, an out-of-range level / grade / count, a
+type the grade lacks, a bad bracket name): every bad entry reported with its text and skipped, every good one
+printed, nothing thrown. **Lenient reads (new):** math-minute's `parseInt` accepts "7.5" as Level 7 and "1O" (a
+letter O) as Level 1; index's grade "2.5" reads 2 (its count "3O" reads 3, an invalid count, so it is reported);
+math-facts looks codes up exactly and accepts "X3", "×3", "*5", "÷4" by design. A 4-field line on the twins reads
+as a name with a comma ("Dov, 12", the known P4). **Silent cap (new):** index's Advanced "rounding, 60" prints 30
+under a header that says 30 (S6 made the header honest) with no message; the form itself offers only "30 problems
+(max for this type)". Reports were numbered by raw `;` chunk (7, 9, 11, 13 for the 4th–7th lines: the known P3,
+fixed 2abc2e3; now 4, 5, 6, 7).
+
+**500-entry pastes** with Windows line ends and Hebrew names: 500 sheets in 462 / 452 / 351 ms (index / minute /
+facts), nothing skipped, 0 errors (one probe draft used "mix+" where math-facts' Mixed codes carry their count,
+"mix+30": 71 entries rightly skipped).
+
+**Storage.** `localStorage` denied (the accessor throws SecurityError): the page loads its 3 defaults, Save says
+"Unable to save roster in this browser.", Clear Saved says "Unable to clear saved roster[ in this browser].",
+Generate prints. Full (setItem throws QuotaExceededError): the same, Clear Saved succeeds. **Bad saved payloads**
+(13 shapes under each page's key: `null`, a bare string, not JSON, `[]`, `{}`, a roster that is a string, a null
+student, an unknown level / a type the grade lacks, an out-of-range grade and count, every setting out of range,
+the legacy v1 shape under the current key, a v1 key beside no current one, 1 MB of advanced text): every one loads
+to a usable roster with 0 page errors and Generate prints or says "No valid students found". Notes: a roster that
+is a string yields one blank entry per character (10 for "Avi, 1, 5;"), harmless; index loads mwg.js's v1 shape
+(same `students` field) while the twins' v1 shape falls to defaults; an unknown saved level leaves its select blank
+and the validation box names it.
+
+**Every control** (Generate with blanks → "No valid students"; a name without a level → the validation box, Fix,
+Generate Anyway; Add, Duplicate, Delete to empty → defaults return; Fill Down; Advanced Code open / copy / use /
+close; Save, Clear current, Clear saved; every toggle and the header line; index's Mixed Select / Deselect All, the
+fraction and decimal "All Operations", one box, the ops panels with one, all and no operation): 0 page errors, 0
+console errors on each page. Fractions / Decimals with every operation unchecked print the type's default mix.
+
+**Controls.** `--control` serves each page with three plants (one level's generator throws, the parser throws on a
+bad entry, the storage read unguarded): see the probe's run log in the ledger row. The numbering check fails on the
+pre-fix pages (7, 9, 11, 13, 15, 26 on index). HEAD's Decimals: `S6-math-audit` "places shown" {0: 1,016, 1: 10,872}
+of 12,000 grade-5 numbers, 1,579 problems short including keys ("89.2 + 82.8 → 172"); fixed: 12,000 of 12,000 at
+each grade. HEAD's zero factor: Level 11 19 on top / 0 below of 150 seeded problems; fixed 11 / 20 (0 × 0: 2);
+Levels 13–15 16/14, 22/20, 37/25; Levels 1–10, 12, 16–20 byte-identical seeded, 21 (Mixed, multiplication too)
+differs as expected.
