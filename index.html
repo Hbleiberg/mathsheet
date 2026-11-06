@@ -1904,9 +1904,11 @@ function makeDecimals(grade) {
   var pl=grade<=5?1:2,factor=Math.pow(10,pl);
   var a=(rand(1,99*factor))/factor,b=(rand(1,99*factor))/factor;
   var op=randFrom(["+","\u2212"]);
-  if(op==="+") return {html:horizHtml(a+" + "+b+" ="),answer:+(a+b).toFixed(pl),kind:"horiz"};
+  // Every number shows the level's places ("45.0 + 7.0 =", "3.50 + 12.25 = 15.75"): written as JavaScript writes
+  // them, 9 % of the numbers lost their trailing zero, some the point itself (S6; approved S11, gate 6).
+  if(op==="+") return {html:horizHtml(a.toFixed(pl)+" + "+b.toFixed(pl)+" ="),answer:(a+b).toFixed(pl),kind:"horiz"};
   var hi=Math.max(a,b),lo=Math.min(a,b);
-  return {html:horizHtml(hi+" \u2212 "+lo+" ="),answer:+(hi-lo).toFixed(pl),kind:"horiz"};
+  return {html:horizHtml(hi.toFixed(pl)+" \u2212 "+lo.toFixed(pl)+" ="),answer:(hi-lo).toFixed(pl),kind:"horiz"};
 }
 function makeFracAdd() {
   var d=rand(2,12),a=rand(1,d-1),b=rand(1,d-1);

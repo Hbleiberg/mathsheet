@@ -43,7 +43,15 @@ async function run(body) {
   await p.close(); return out;
 }
 
-const ref = execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8' });
+// Later approved changes to what the sheets hold, replayed onto the reference so the identity arm still isolates S10's change.
+const LATER = [
+  // S11: the Decimals type shows the level's places on every number, sheet and key (the D6 control sheet).
+  ["  if(op===\"+\") return {html:horizHtml(a+\" + \"+b+\" =\"),answer:+(a+b).toFixed(pl),kind:\"horiz\"};",
+   "  if(op===\"+\") return {html:horizHtml(a.toFixed(pl)+\" + \"+b.toFixed(pl)+\" =\"),answer:(a+b).toFixed(pl),kind:\"horiz\"};"],
+  ["  return {html:horizHtml(hi+\" \\u2212 \"+lo+\" =\"),answer:+(hi-lo).toFixed(pl),kind:\"horiz\"};",
+   "  return {html:horizHtml(hi.toFixed(pl)+\" \\u2212 \"+lo.toFixed(pl)+\" =\"),answer:(hi-lo).toFixed(pl),kind:\"horiz\"};"],
+];
+const ref = LATER.reduce((b, [from, to]) => b.includes(from) ? b.replace(from, to) : b, execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8' }));
 const now = await run(CONTROL ? ref : null), before = await run(ref);
 console.log(`index.html${CONTROL ? ` (control: ${REF})` : ''}`);
 const cells = now.flatMap(s => s.rounding), refCells = before.flatMap(s => s.rounding);

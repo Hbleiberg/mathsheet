@@ -25,6 +25,11 @@ const LATER = [
   // S10: rounding problems stay on one line (a nowrap span; Mixed at grades 5-8 holds rounding).
   ['  return {html:horizHtml("Round "+n+" to nearest "+label),answer:Math.round(n/place)*place,kind:"horiz"};',
    '  return {html:horizHtml(\'<span style="white-space:nowrap">Round \'+n+\' to nearest \'+label+\'</span>\'),answer:Math.round(n/place)*place,kind:"horiz"};'],
+  // S11: the Decimals type shows the level's places on every number, sheet and key (Mixed at grades 5-8 holds decimals).
+  ["  if(op===\"+\") return {html:horizHtml(a+\" + \"+b+\" =\"),answer:+(a+b).toFixed(pl),kind:\"horiz\"};",
+   "  if(op===\"+\") return {html:horizHtml(a.toFixed(pl)+\" + \"+b.toFixed(pl)+\" =\"),answer:(a+b).toFixed(pl),kind:\"horiz\"};"],
+  ["  return {html:horizHtml(hi+\" \\u2212 \"+lo+\" =\"),answer:+(hi-lo).toFixed(pl),kind:\"horiz\"};",
+   "  return {html:horizHtml(hi.toFixed(pl)+\" \\u2212 \"+lo.toFixed(pl)+\" =\"),answer:(hi-lo).toFixed(pl),kind:\"horiz\"};"],
 ];
 const OLD = LATER.reduce((b, [from, to]) => b.includes(from) ? b.replace(from, to) : b, execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8' }));
 const SEED = `(() => { let s = 4242; Math.random = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646; })();`;

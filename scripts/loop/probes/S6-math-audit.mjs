@@ -165,7 +165,7 @@ try {
     await p.page.click(p.spec.generate);
     await p.page.waitForFunction(n => window.__prints > n, before, { timeout: 60000 });
     const r = await p.page.evaluate(extract);
-    const st = report[sel] = { sheets: r.sheets.length, keys: r.keys.length, problems: 0, wrongKey: [], mismatch: 0, badCount: [], broken: [], badForm: [], notes: {} };
+    const st = report[sel] = { sheets: r.sheets.length, keys: r.keys.length, problems: 0, wrongKey: [], mismatch: 0, badCount: [], broken: [], badForm: [], badPlaces: [], notes: {} };
     const promise = PROMISE[type];
     const note = (k, v) => { (st.notes[k] ??= new Map()).set(v, ((st.notes[k].get(v)) || 0) + 1); };
     if (r.errors) st.pageErrors = r.errors;
@@ -196,6 +196,10 @@ try {
           if (/-/.test(it.t)) note('hyphen-minus in problem', true);
           for (const f of it.t.match(/\[\d+\/\d+\]/g) || []) { const [n, d] = f.slice(1, -1).split('/').map(BigInt); note('operand in lowest terms', gcd(n, d) === 1n); }
           if (sel.startsWith('decimals')) for (const x of it.t.replace(/\[[^\]]*\]/g, '').match(/\d+(?:\.\d+)?/g) || []) note('places shown', (x.split('.')[1] || '').length);
+          // the Decimals type shows the level's places on every number, sheet and key (S11, gate 6): "45.0 + 7.0 = 52.0"
+          if (type === 'decimals') { const want = +grade <= 5 ? 1 : 2, re = new RegExp(`^\\d+\\.\\d{${want}}$`);
+            for (const x of it.t.replace(/=\s*$/, '').match(/\d+(?:\.\d+)?/g) || []) if (!re.test(x)) { st.badPlaces.push(`${it.t}`); break; }
+            if (ans !== undefined && ans !== null && !re.test(ans.trim())) st.badPlaces.push(`${it.t} → key "${ans.trim()}"`); }
           if (/^-/.test((ans || '').trim())) note('hyphen-minus in key', true); }
       });
     });
@@ -213,6 +217,8 @@ try {
   check(all.every(s => !s.wrongKey.length), `every key answer recomputes (${all.reduce((a, s) => a + s.wrongKey.length, 0)} wrong)`);
   check(all.every(s => !s.broken.length), `every level keeps its label's promise (${Object.entries(report).filter(([, s]) => s.broken.length).map(([k, s]) => `${k} ${s.broken.length}/${s.problems}`).join(', ') || 'all'})`);
   check(all.every(s => !s.badCount.length), `every description's count is the sheet's (${all.reduce((a, s) => a + s.badCount.length, 0)} differ)`);
+  const badPlaces = all.flatMap(s => s.badPlaces);
+  check(badPlaces.length === 0, `every Decimals number shows the level's places, sheet and key (${badPlaces.length} not; ${badPlaces.slice(0, 3).join(' | ')})`);
   const badForm = all.flatMap(s => s.badForm);
   check(badForm.length === 0, `every fraction key is a whole number, a mixed number or a proper fraction, in lowest terms (${badForm.length} not; ${badForm.slice(0, 3).join(' | ')})`);
   check(!p.errors.length, `0 page errors (${p.errors.join('; ')})`);
