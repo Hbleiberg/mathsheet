@@ -645,3 +645,44 @@ both folded into the one P4. Nothing else to fix: the session's three slots went
 
 **Controls** for the fixes: `S14-index-copy --ref 9030fbe` fails 4; S11-robustness on math-minute with the new
 paste expectations fails 3 on the old parse (9 sheets, 4 reports) and is green after (7 sheets, 6 reports).
+
+## S15 (2026-11-06) — pass L (metadata & discoverability), the suite: all three pages, and how they are deployed
+
+Method: the three `<head>`s read from the live document over the harness (scratchpad `s15/l-audit.mjs`), the repo
+root listed, and the public site fetched: mathsheet.io, its robots.txt and sitemaps, the pages the sitemap
+names, and the GitHub Pages copies (`curl`, logs in `s15/`). Arm R first: the smoke (60 checks), the two S13
+probes and S14-index-copy green (`s15/armR-*.log`).
+
+**Deployment (new to the loop).** mathsheet.io is a WordPress site (Yoast SEO, Site Kit, AdSense). Its pages
+`/custom-math-sheet-generator/`, `/math-minute-elementary/` and `/math-facts/` each hold one
+`<iframe loading="lazy" width="100%" height="1400px">` whose `src` is `https://hbleiberg.github.io/mathsheet/`,
+`…/math-minute.html` or `…/math-facts.html`; `mathsheet.io/math-minute.html` is a 404. The GitHub Pages copies
+were byte-identical to `origin/main` (d52bf7d) at audit time, so GitHub Pages publishes `main` and merging the
+branch is what deploys S6–S15. The public titles ("Free Math Minute Worksheet Generator – Elementary |
+MathSheet.io"), descriptions, canonical, OG tags, robots.txt (`Disallow:` nothing) and sitemaps are WordPress's.
+The maintainer confirmed the picture (gate, S15); CLAUDE.md carries it now.
+
+**The repo pages' heads.** All three: `lang="en"`, `<meta charset="UTF-8">`, the viewport tag, a `<title>`
+("Custom Math Sheet Generator", "Math Minute", "Math Facts"), nothing else — no description, canonical, OG,
+robots or icon; no `<h1>`, no landmark (the only headings are the row h3s; the validation box is the one
+`role`); no anchors at all (the pages link nowhere, the WordPress parent supplies navigation). GitHub Pages
+answers 404 for `/mathsheet/favicon.ico` and `/robots.txt` (no robots → indexable). Searches for
+`site:hbleiberg.github.io mathsheet` and for the product name returned no mathsheet.io or github.io result
+(the search index used may not honour `site:`), so whether the copies are indexed today is unknown. Decided:
+the copies are `noindex` (69deb36), since the WordPress pages carry the public metadata; a description or
+canonical on the repo pages would be moot.
+
+**The production shape works.** Each page inside a cross-origin `<iframe>` (a second local origin as the parent,
+`s15/iframe-probe.mjs`, the cdnjs libraries allowed): Generate & Print reaches `window.print` once (the frame's
+own document prints), and Save PDF delivers the download ("math-facts-worksheets.pdf", "worksheets.pdf", "PDF
+saved!") in under 2 s with no console complaint about downloads or frames — in headless Chromium; a desktop
+browser's download policy for cross-origin frames is the one residual unknown. The 1400 px frame scrolls
+internally once sheets are generated (a Feature seed: post the document height to the parent).
+
+**Candidates.** A favicon for the GitHub Pages copies (P4; the icon is the maintainer's choice — nothing is
+shown inside the iframe). The silent fallback on an unreadable roster, approved and shipped (see Done).
+
+**Controls.** `S15-head --ref 658ede3` fails 6 (no robots tag, two metas); `S15-unreadable-roster --ref 69deb36`
+fails 12 (no notice, the value kept). The S15-unreadable-roster probe plants the value by hand and reloads: the
+harness's `storage` seed re-plants on every navigation, so a "next load is clean" check can never pass through it
+(a trap for the Probe rules).

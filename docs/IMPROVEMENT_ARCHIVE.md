@@ -388,3 +388,35 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ Queues: index.html's first touch — the four approved strings (S13, gate 2: the code panel's help line, the "moved" message and the clear-roster confirms take the standard pages' wording); then the ops-panel labels (C, S10), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade parse (S11), the per-operation decimal key zeros (S11). Shared first touches: the D P3 (focus after Delete / Close / Fix, Escape on the code panel); the approved offline PDF notice wording and JPEG 0.8 (S2); the code panel under the button row (S5). math-minute — the lenient level parse (S11).
 ⚑ New probes (S13): `S13-escape-html` (the helper lifted from each page's source, run on the five characters, plus a live round trip of a name holding them all; `--ref aadebcc` fails its static arm) and `S13-gencode-notice` (`--ref 854a805` fails). Arm R's set for S14 is S12-a11y (its busy arm needs cdnjs) and the two S13 probes. F's full comparison is in loop-findings S13; the twins need no re-diff until a page changes outside its selector system.
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12 and S13 asked nothing about it); build a seed only when the maintainer names one.
+
+## S15 (2026-11-06) — pass L (metadata & discoverability), the suite, on all three pages; three fixes (on a branch)
+
+- Run without arguments while the S6–S14 draft PR (Hbleiberg/mathsheet#5) was open and unmerged: S15 stacked its
+  commits on `claude/clever-davinci-hhh4iz` as S14's handoff said, and did not touch `main`.
+- Arm R: the smoke (60 checks), the two S13 probes and S14-index-copy green.
+- Pass L: the three heads hold lang, charset, viewport and a title and nothing else; the public site turned out to be
+  a WordPress install whose pages embed the GitHub Pages copies (byte-identical to `main`) in 1400 px iframes and
+  carry the public metadata themselves. Inside a cross-origin iframe, Generate & Print reaches `window.print` and
+  Save PDF downloads on both page shapes. Full measurements in loop-findings S15.
+- Gates (one call, three questions): the GitHub Pages copies → noindex (shipped); an unreadable saved roster → say
+  so once and clear it (shipped); the deployment description → confirmed (CLAUDE.md).
+- Fixes: noindex on all three pages (69deb36, `S15-head`); the unreadable-roster notice on all three (77eda9d,
+  `S15-unreadable-roster`); the deployment paragraph in CLAUDE.md and pass L's premise (d9912f2). Every page then
+  stood on its two-touch cap; the fourth slot went unused.
+- Candidates: the S1 unreadable-roster P4 struck (fixed); a favicon P4 added (gate 3). Feature seed added: iframe
+  auto-height via postMessage.
+
+### Done rows archived from the ledger (S10, verbatim)
+
+- [x] S10 | 2026-11-05 | 291903c | index.html, math-minute.html, math-facts.html, scripts/loop/probes/ | Save PDF reads "Making your PDF: page k of N..." per page, in view, and refuses a second click (button disabled until "PDF saved!" or a notice; approved S3, the S1 guard); the same diff on the twins | S10-pdf-progress (cdnjs), all pages: 8 of 8 counted, disabled mid-export, one pipeline for two clicks; offline and no-student paths re-enable; `--ref HEAD` fails 12; smoke --cdn
+- [x] S10 | 2026-11-05 | a32d3fa | index.html, scripts/loop/probes/ | Rounding problems print on one line (a nowrap span; the blank gives way, 286 → 203–256 px; approved S4, gate 6); Mixed 5–8 too | S10-rounding-one-line: 0 of 244 wrap (122 before), last row 780 px (816), other sheets byte-identical; control fails 2; S5-key-rows12, S7-bracket-names, S8-index-key-division replay the span and stay green; S6-math-audit
+- [x] S10 | 2026-11-05 | 2b678e1 | math-minute.html, math-facts.html, scripts/loop/probes/S10-divisor-baseline.mjs | the long-division divisor shares the dividend's baseline (padding-top 8 → 5 px; approved S10, gate 6) | 860 brackets 0.00 px apart (3.00 before), every bracket where HEAD puts it; control fails 2; S5-key-division, S5-sign-gap, S8-minute-print, smoke
+- [x] S10 | 2026-11-05 | — | docs/IMPROVEMENT_LOG.md, CLAUDE.md | pass C on index.html (UI at 1280 / 800 in five states, 29 type rows with keys under print): the ops-panel labels found, the rest known or by design; gates: micro-feature → skipped; Level 4 label → leave (struck); zero both ways → approved; divisor → align (shipped) | ledger, loop-findings S10
+
+### Previous handoff (S14 → S15), verbatim
+
+**Next session (S15):** S6–S14's commits are on branch `claude/clever-davinci-hhh4iz` (draft PR Hbleiberg/mathsheet#5), NOT on `main`: the maintainer ran S6 "on a new branch - don't push to main yet" and S7–S14 stacked on it. Check `git log origin/main` and the PR first; until it is merged, S15 builds on that branch (never re-apply its commits on `main`); once it is merged, restart the branch from `main`.
+⚑ next: L — the one suite never run (runnable since S1); the never-run surface ties are D on index and math-minute, H and M everywhere. L first because it closes the suite set after E, F and I, and its findings are small (titles, descriptions, `lang`, icons: gate 2 for any text); then D on index.html, whose own blocks (the injected styles, the Mixed and ops panels, the code panel) S12 did not measure.
+⚑ Queues: shared first touches — the D P3 (focus after Delete / Close / Fix, Escape on the code panel), JPEG 0.8 (approved S2; `--cdn` bytes and a zoomed raster), the code panel under the button row (S5), reduced motion and the 16 px links (P4). index.html — the ops-panel labels (C, S10), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade / count parse (S11), the per-operation decimal key zeros (S11), the `students` payload key (P4). The P4 unreadable-payload message is a gate-2 question for the next batch.
+⚑ New probe (S14): `S14-index-copy` (`--ref 9030fbe` fails 4). S11-robustness's math-minute paste expectations follow the digits-only level (7 sheets, 6 reports). Arm R's set for S15 is S13-escape-html, S13-gencode-notice and S14-index-copy (S12-a11y optional; its busy arm needs cdnjs). Pass I's full measurements are in loop-findings S14; a clean suite pass did not buy a second pass (the rule names surfaces) — the slots went to queued approvals instead, a divergence to fold into the skill if wanted.
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S14 asked nothing about it); build a seed only when the maintainer names one.
