@@ -933,7 +933,7 @@ function escapeHtml(text) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
-    .replace(/'/g, "\u0027");
+    .replace(/'/g, "&#x27;");
 }
 
 function renderLevelReference() {

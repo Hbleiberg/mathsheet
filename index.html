@@ -1134,7 +1134,7 @@ function esc(text) {
   return String(text)
     .replace(/&/g,"&amp;").replace(/</g,"&lt;")
     .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
-    .replace(/'/g,"\u0027");
+    .replace(/'/g,"&#x27;");
 }
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function randFrom(arr)  { return arr[Math.floor(Math.random() * arr.length)]; }
