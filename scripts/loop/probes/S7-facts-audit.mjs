@@ -83,7 +83,8 @@ if (FILE === 'math-facts.html') {
   const add = (maxSum, zero) => range(zero ? 0 : 1, 9).flatMap(a => range(zero ? 0 : 1, 9).filter(b => a + b <= maxSum).map(b => form(ADD, a, b)));
   const sub9 = range(1, 9).flatMap(a => range(0, a).map(b => form(SUB, a, b)));
   const teen = range(10, 18).flatMap(a => range(a - 9, 9).map(b => form(SUB, a, b)));
-  const mul = (lo, hi, zero, top) => range(top || (zero ? 0 : 1), 9).flatMap(a => range(Math.max(lo, 1), hi).map(b => form(MUL, a, b)));
+  // a zero stands below as well as on top since S11 (approved S10): the second factor starts at 0 when zero is allowed
+  const mul = (lo, hi, zero, top) => range(top || (zero ? 0 : 1), 9).flatMap(a => range(zero ? lo : Math.max(lo, 1), hi).map(b => form(MUL, a, b)));
   const div = (lo, hi, qlo = 1, qhi = 10) => range(lo, hi).flatMap(d => range(qlo, qhi).map(q => form(DIV, d * q, d)));
   const L = (code, count, desc, family, promise, split) => LEVELS.push({ code: String(code), count, desc, family, promise, split });
   const isAdd = ([o]) => o === ADD, isSub = ([o, a, b]) => o === SUB && a >= b, isMul = ([o]) => o === MUL, isDiv = ([o, a, b]) => o === DIV && a % b === 0;

@@ -1128,8 +1128,10 @@ function teenSubtractionFacts() {                     // a-b with a = 10..18 and
 }
 function multiplicationFacts(minFactor, maxFactor, allowZero, minTop) {   // a x b with a = 0..9 (minTop..9), b = minFactor..maxFactor
   var facts = [];
+  // A zero stands below as well as on top (7 × 0 and 0 × 7), as every other fact is dealt both ways: the second
+  // factor began at 1, so every zero stood on top, 13–17 % of Levels 11 and 13–15 (S7; approved S10, gate 6).
   for (var a = minTop || (allowZero ? 0 : 1); a <= 9; a++) {
-    for (var b = Math.max(minFactor, 1); b <= maxFactor; b++) {
+    for (var b = allowZero ? minFactor : Math.max(minFactor, 1); b <= maxFactor; b++) {
       if (a * b <= 100) facts.push(stack("\u00d7", a, b));
     }
   }
