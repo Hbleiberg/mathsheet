@@ -816,7 +816,7 @@ body { margin: 0; padding: 12px; background: white; }
     <div class="mwg-fill-down-row">
       <button type="button" id="mwgFillDownBtn" class="mwg-btn-small">Fill Down Settings ↓</button>
     </div>
-    <div class="mwg-student-counter" id="mwgStudentCounter">Students: 0</div>
+    <div class="mwg-student-counter" id="mwgStudentCounter" aria-live="polite">Students: 0</div>
     <div id="mwgStudentsContainer"></div>
   </div>
 
@@ -849,7 +849,7 @@ body { margin: 0; padding: 12px; background: white; }
     <button type="button" id="mwgClearSavedBtn" class="mwg-btn-small">Clear Saved Roster</button>
   </div>
 
-  <div id="mwgValidationBox" style="display:none;border:1px solid rgb(204,0,0);background:rgb(255,243,243);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:14px;line-height:1.6;">
+  <div id="mwgValidationBox" role="alert" style="display:none;border:1px solid rgb(204,0,0);background:rgb(255,243,243);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:14px;line-height:1.6;">
     <div id="mwgValidationMsg"></div>
     <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
       <button type="button" id="mwgValidationFix" class="mwg-btn-small">Fix</button>
@@ -862,8 +862,8 @@ body { margin: 0; padding: 12px; background: white; }
   </div>
 </form>
 
-<div id="mwgStatus"></div>
-<div id="mwgErrors"></div>
+<div id="mwgStatus" aria-live="polite"></div>
+<div id="mwgErrors" aria-live="polite"></div>
 <div class="mwg-results" id="mwgResults"></div>
 
 <div id="mwgCodePanel" style="display:none;border:1px solid rgb(199,214,255);background:rgb(238,243,255);border-radius:8px;padding:12px 16px;margin-top:12px;">
@@ -2364,13 +2364,14 @@ function loadPdfLibs() {
 // One export at a time: a second click mid-export started a second full pipeline (S1). The button is disabled
 // from the click until "PDF saved!" or a notice, and enabled again on every path (S10).
 var pdfBusy = false;
-function pdfDone() { pdfBusy = false; savePdfBtn.disabled = false; }
+function pdfDone() { pdfBusy = false; savePdfBtn.disabled = false; statusDiv.removeAttribute("aria-busy"); }
 
 function generateAndSavePdf() {
   if (pdfBusy) return;
   pdfBusy = true;
   savePdfBtn.disabled = true;
   clearStatus();
+  statusDiv.setAttribute("aria-busy", "true");   // the page count below changes every page: a screen reader hears the result, not each count (S12)
   var libsReady = loadPdfLibs();   // the download runs while the worksheets build
   generate();
   // The progress line (one per page, below) stays in view: an export runs half a minute for a class set (S3, approved).
@@ -2379,7 +2380,7 @@ function generateAndSavePdf() {
     var sheets = resultsDiv.querySelectorAll(".mwg-worksheet, .mwg-answer-key-sheet");
     if (!sheets.length) { pdfDone(); return; }
     libsReady.then(function (loaded) {
-      if (!loaded) { showNotice("PDF library not loaded yet. Please try again in a moment."); pdfDone(); return; }
+      if (!loaded) { pdfDone(); showNotice("PDF library not loaded yet. Please try again in a moment."); return; }
       capturePdf(sheets);
     });
   }, 300);
@@ -2416,8 +2417,8 @@ function capturePdf(sheets) {
     if (idx >= sheetArray.length) {
       document.body.removeChild(stage);
       jsPDFObj.save("worksheets.pdf");
-      showSuccess("PDF saved!");
       pdfDone();
+      showSuccess("PDF saved!");
       return;
     }
 
@@ -2482,8 +2483,8 @@ function capturePdf(sheets) {
 
       }).catch(function(err) {
         document.body.removeChild(stage);
-        showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
         pdfDone();
+        showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
       });
     }, 50);
   }

@@ -756,7 +756,7 @@ break-after:avoid !important;
     <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
       <button type="button" id="fillDownButton" class="btn-small">Fill Down Settings ↓</button>
     </div>
-    <div class="student-counter" id="studentCounter">Students: 0</div>
+    <div class="student-counter" id="studentCounter" aria-live="polite">Students: 0</div>
     <div id="studentsContainer"></div>
   </div>
 
@@ -789,7 +789,7 @@ break-after:avoid !important;
     <button type="button" id="clearSavedRosterButton" class="btn-small">Clear Saved Roster</button>
   </div>
 
-  <div id="mmValidationBox" style="display:none;border:1px solid rgb(204,0,0);background:rgb(255,243,243);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:14px;line-height:1.6;">
+  <div id="mmValidationBox" role="alert" style="display:none;border:1px solid rgb(204,0,0);background:rgb(255,243,243);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:14px;line-height:1.6;">
     <div id="mmValidationMsg"></div>
     <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
       <button type="button" id="mmValidationFix" class="btn-small">Fix</button>
@@ -802,8 +802,8 @@ break-after:avoid !important;
   </div>
 </form>
 
-<div id="statusMessages"></div>
-<div id="errors"></div>
+<div id="statusMessages" aria-live="polite"></div>
+<div id="errors" aria-live="polite"></div>
 <div id="results"></div>
 
 <div id="advancedCodePanel" style="display:none;border:1px solid rgb(199,214,255);background:rgb(238,243,255);border-radius:8px;padding:12px 16px;margin-top:12px;">
@@ -1702,13 +1702,14 @@ function loadPdfLibs() {
 // One export at a time: a second click mid-export started a second full pipeline (S1). The button is disabled
 // from the click until "PDF saved!" or a notice, and enabled again on every path (S10).
 var pdfBusy = false;
-function pdfDone() { pdfBusy = false; savePdfButton.disabled = false; }
+function pdfDone() { pdfBusy = false; savePdfButton.disabled = false; statusMessages.removeAttribute("aria-busy"); }
 
 function doGenerateAndSavePdf() {
   if (pdfBusy) return;
   pdfBusy = true;
   savePdfButton.disabled = true;
   clearStatusMessages();
+  statusMessages.setAttribute("aria-busy", "true");   // the page count below changes every page: a screen reader hears the result, not each count (S12)
   var libsReady = loadPdfLibs();   // the download runs while the worksheets build
   generateWorksheets();
   // The progress line (one per page, below) stays in view: an export runs half a minute for a class set (S3, approved).
@@ -1717,7 +1718,7 @@ function doGenerateAndSavePdf() {
     var sheets = results.querySelectorAll(".worksheet");
     if (!sheets.length) { pdfDone(); return; }
     libsReady.then(function (loaded) {
-      if (!loaded) { showNotice("PDF library not loaded yet. Please try again in a moment."); pdfDone(); return; }
+      if (!loaded) { pdfDone(); showNotice("PDF library not loaded yet. Please try again in a moment."); return; }
       capturePdf(sheets);
     });
   }, 300);
@@ -1738,8 +1739,8 @@ function capturePdf(sheets) {
     if (idx >= sheetArray.length) {
       document.body.removeChild(stage);
       jsPDFObj.save("math-minute-worksheets.pdf");
-      showSuccess("PDF saved!");
       pdfDone();
+      showSuccess("PDF saved!");
       return;
     }
     showSuccess("Making your PDF: page " + (idx + 1) + " of " + sheetArray.length + "...");
@@ -1775,8 +1776,8 @@ function capturePdf(sheets) {
         captureNext(idx + 1);
       }).catch(function() {
         document.body.removeChild(stage);
-        showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
         pdfDone();
+        showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
       });
     }, 50);
   }
