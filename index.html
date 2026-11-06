@@ -2380,7 +2380,7 @@ function generateAndSavePdf() {
     var sheets = resultsDiv.querySelectorAll(".mwg-worksheet, .mwg-answer-key-sheet");
     if (!sheets.length) { pdfDone(); return; }
     libsReady.then(function (loaded) {
-      if (!loaded) { pdfDone(); showNotice("PDF library not loaded yet. Please try again in a moment."); return; }
+      if (!loaded) { pdfDone(); showNotice("The PDF tools could not be downloaded. Check your connection and try again."); return; }
       capturePdf(sheets);
     });
   }, 300);

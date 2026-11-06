@@ -145,7 +145,7 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   ```
 - **Pipeline (`doGenerateAndSavePdf` → `capturePdf(sheets)`):**
   1. Guard: `doGenerateAndSavePdf` calls `loadPdfLibs()` before generating, waits for it after the
-     300 ms settle, and on `false` shows the "PDF library not loaded yet" notice and bails;
+     300 ms settle, and on `false` shows the "The PDF tools could not be downloaded" notice and bails;
      `capturePdf` runs only once both libraries exist. One export at a time: a `pdfBusy` flag and the
      Save PDF button disabled from the click until "PDF saved!" or a notice (`pdfDone()` on every path);
      `captureNext` shows "Making your PDF: page k of N..." per page, the status box scrolled into view at
