@@ -217,7 +217,7 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
 - **localStorage:** one key per page, named `"<page>RosterData_v<N>"` (e.g.
   `mathFactsRosterData_v1`, `mathMinuteRosterData_v2`). Saved payload:
   ```js
-  { inputMode, worksheetsPerStudent, answerKey, removeNumber, nameBlank, advancedInput, standardStudents }
+  { inputMode, worksheetsPerStudent, answerKey, removeNumber, nameBlank, headerLine, advancedInput, standardStudents }
   ```
 
 ## Known exceptions (recognize, don't copy)
@@ -229,7 +229,7 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   problems); advanced input is **5 fields** — `Name, Number, Type, Count, Grade;` with
   optional brackets (`mixed[…]`, `fractions[…]`, `decimals[…]`, `|`-separated; a name may hold commas — all
   but the last four fields, S3); PDF saves as
-  `worksheets.pdf`; storage key `mwgRosterData_v2`. Its print/PDF/color values still match
+  `worksheets.pdf`; storage key `mwgRosterData_v2`, its roster saved under `students` and no `headerLine` yet (S13). Its print/PDF/color values still match
   the standard above. Don't propagate the `mwg-`/Georgia/5-field patterns to new pages.
 - **`mwg.js`** is standalone legacy code, **loaded by nothing**. It uses `{ html, answer }`
   problem objects and `esc`/`rand`/`randFrom` helpers and key `mwgRosterData_v1`. Treat it
