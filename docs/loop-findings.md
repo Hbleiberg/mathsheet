@@ -686,3 +686,46 @@ shown inside the iframe). The silent fallback on an unreadable roster, approved 
 fails 12 (no notice, the value kept). The S15-unreadable-roster probe plants the value by hand and reloads: the
 harness's `storage` seed re-plants on every navigation, so a "next load is clean" check can never pass through it
 (a trap for the Probe rules).
+
+## S16 (2026-11-06) — pass D (accessibility) on index.html: its own blocks
+
+Method: a scratch audit over the harness (scratchpad `s16/d-index.mjs`, log `s16/d-index.log`) of what S12 did not
+measure on index.html — the Mixed panel, the Fraction / Decimal Operations panel, the code panel and the
+injected styles: accessible names and ancestors from Chromium's accessibility tree (CDP), focusable controls per
+row shape, computed text colour against the effective background, `:focus-visible` and the computed outline,
+bounding boxes, keyboard operation, then a generate. S12's index log (`s12/audit-index.log`) re-read for the shared
+blocks. Arm R first: the smoke (60 checks), S14-index-copy, S15-head and S15-unreadable-roster green.
+
+**Names.** Every Mixed checkbox is named by its label ("Level 1 — sums < 10"), every ops checkbox likewise, the
+Select All / Deselect All / Select All Operations / All Operations buttons by their text. None sits inside a named
+group: "Include in Mixed:" is a `<div>`, "Fraction Operations" a `<span>`, no fieldset, legend or `role="group"`,
+so a screen reader hears "Level 1 — sums < 10, checkbox" with no word of which student or which panel (P4,
+queued). The code textarea had no name (the S0 P4): fixed, see Done.
+
+**Tab stops.** 17 focusable controls in a Mixed row (grade 1: 8 checkboxes, 2 buttons, the 5 fields, Duplicate and
+Delete), 13 in a Fractions row, 7 in a plain row — a 30-student Mixed roster is some 510 Tab stops. By design of
+the panels; noted, not a candidate.
+
+**Contrast** (computed, on the panel's rgb(238,243,255) and the row's rgb(249,249,249)): the ops title
+rgb(37,99,235) 13 px bold 4.65 (AA passes at 4.5), the group `<strong>` rgb(85,85,85) 12 px bold 6.71, "Include in
+Mixed:" 11.4, the labels 15.7, the small buttons 18.3. Georgia changes nothing (S12).
+
+**Focus and targets.** Every panel control shows the UA ring (`auto 1px rgb(16,16,16)` under `:focus-visible`, no
+outline rule anywhere in index.html). Select All / Deselect All / All Operations are 67–123 × 23 px (12 px text,
+2 px 8 px padding): 1 px under AA's 24 px minimum; the Mixed checkboxes 13 × 13; an ops checkbox's box is
+196.8 × 13 because `.mwg-student-grid input { width: 100% }` reaches it — the same rule that puts the box above its
+label (the C P3, S10). Folded into the P4 target-size candidate and the ops-panel P3's text.
+
+**Keyboard.** Space toggles a Mixed checkbox, Enter on Deselect All leaves 0 of 8 checked and on Select All 8 of
+8, a Mixed + Fractions + plain roster then generates 3 sheets with 0 page errors.
+
+**Focus after actions** (the S12 P3, measured again before the fix): Delete by Enter → body; Generate Advanced
+Code → focus stays on the button, the textarea unnamed; Close → body. Fixed on all three pages (6daf036): the
+probe reads `document.activeElement` after every action. While building it, Fix's "scroll to the first
+highlighted field" turned out to have never run: the highlight is set as `"2px solid rgb(204,0,0)"` but the inline
+style serialises as `rgb(204, 0, 0)`, so `[style*="rgb(204,0,0)"]` matched nothing on any page — Fix only hid
+the box. The fix matches the computed `style.border` with a regex and focuses the field.
+
+**Controls.** `S16-focus --ref 196dd4a` fails 27 (focus on body everywhere, the panel opening without focus,
+Escape idle, no name); `--ref 6daf036` fails the 3 name checks only. A `display:none` node has no accessible
+name: the name arm reads with the panel open (a trap for the Probe rules).

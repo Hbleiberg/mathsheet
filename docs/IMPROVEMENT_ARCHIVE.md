@@ -420,3 +420,36 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ Queues: shared first touches — the D P3 (focus after Delete / Close / Fix, Escape on the code panel), JPEG 0.8 (approved S2; `--cdn` bytes and a zoomed raster), the code panel under the button row (S5), reduced motion and the 16 px links (P4). index.html — the ops-panel labels (C, S10), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade / count parse (S11), the per-operation decimal key zeros (S11), the `students` payload key (P4). The P4 unreadable-payload message is a gate-2 question for the next batch.
 ⚑ New probe (S14): `S14-index-copy` (`--ref 9030fbe` fails 4). S11-robustness's math-minute paste expectations follow the digits-only level (7 sheets, 6 reports). Arm R's set for S15 is S13-escape-html, S13-gencode-notice and S14-index-copy (S12-a11y optional; its busy arm needs cdnjs). Pass I's full measurements are in loop-findings S14; a clean suite pass did not buy a second pass (the rule names surfaces) — the slots went to queued approvals instead, a divergence to fold into the skill if wanted.
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S14 asked nothing about it); build a seed only when the maintainer names one.
+
+## S16 (2026-11-06) — pass D (accessibility) on index.html, its own blocks; two three-page fixes (on a branch)
+
+- Run without arguments while the S6–S15 draft PR (Hbleiberg/mathsheet#5) was open and unmerged: S16 stacked its
+  commits on `claude/clever-davinci-hhh4iz` as S15's handoff said, and did not touch `main`.
+- Arm R: the smoke (60 checks), S14-index-copy, S15-head and S15-unreadable-roster green.
+- Pass D on index.html's own blocks (scratch `s16/d-index.mjs`): every Mixed / ops / code-panel control named by
+  its label or text and keyboard-operable, UA focus rings everywhere, contrast 4.65 and up; no group context on the
+  two panels (P4), 23 px panel buttons and 13 px checkboxes (into the target P4), an ops checkbox's box stretched
+  to the column by the grid's input rule (into the C P3); 17 Tab stops per Mixed row, noted. Measurements in
+  loop-findings S16.
+- Fixes, both the same block on all three pages: focus follows Delete, the code panel's open / Close / Escape / Use,
+  and Fix (6daf036, `S16-focus`) — and Fix's scroll to the field had never run on any page, its selector unable to
+  match the serialised colour; the code textarea named by the panel's title (635eadc). CLAUDE.md's Accessibility
+  bullet grew the convention (dba73d2). Every page then stood on its two-touch cap; the fourth slot went unused.
+- Gates: none asked (nothing gated; the micro-feature question rests under Awaiting).
+- Candidates: the S12 focus P3 and the S0 textarea P4 struck (fixed); the group-context P4 added; the target-size
+  P4 and the ops-panel P3 amended with S16's measurements.
+
+### Done rows archived from the ledger (S11, verbatim)
+
+- [x] S11 | 2026-11-06 | 2abc2e3 | index.html, math-minute.html, math-facts.html | skipped-entry reports number the entries a teacher pasted, not the raw `;` chunks (a newline after `;` made an empty one: the 6th line read "Entry 10", S2); the same loop on all three pages | S11-robustness (paste arm) reports 4, 5, 6, 7 for the 4th–7th entries on each page where HEAD said 7, 9, 11, 13 (15, 26 on index); smoke
+- [x] S11 | 2026-11-06 | 11fd4ee | index.html, scripts/loop/probes/ | the Decimals type shows the level's places on every number, sheet and key ("45.0 + 7.0 = 52.0", "3.50 + 12.25 = 15.75"; 9 % lost a zero or the point, S6; approved S11, gate 6) | S6-math-audit's new places check: 12,000 of 12,000 numbers at grades 5 and 6, keys included; HEAD fails 1,579 problems; Mixed@6 green; the S5, S7, S8, S10 index probes replay the change; smoke
+- [x] S11 | 2026-11-06 | ad0ed78 | math-minute.html, scripts/loop/probes/S7-facts-audit.mjs | a zero factor stands below as well as on top (7 × 0 and 0 × 7) on Levels 11, 13–15 and Mixed, as every other fact is dealt both ways (S7; approved S10, gate 6) | S7-facts-audit green on 21 levels with the family following, fails Levels 11 and 13 on HEAD; seeded, Levels 1–10, 12, 16–20 byte-identical; Level 11 11 on top / 20 below (19 / 0); S8-minute-print; smoke
+- [x] S11 | 2026-11-06 | — | scripts/loop/probes/, docs/IMPROVEMENT_LOG.md | pass E on all three pages (615 selector combinations, bad and 500-entry pastes, storage denied / full, 13 bad payloads, every control): clean but for the known numbering (fixed); a lenient level parse and the silent 30 cap found; the rounding probe's reference re-pointed (bd961ee); gates: micro-feature → skip; Decimals → full places; 30 cap → say so | S11-robustness green, `--control` fails each page; loop-findings S11
+
+### Previous handoff (S15 → S16), verbatim
+
+**Next session (S16):** S6–S15's commits are on branch `claude/clever-davinci-hhh4iz` (draft PR Hbleiberg/mathsheet#5), NOT on `main`: the maintainer ran S6 "on a new branch - don't push to main yet" and S7–S15 stacked on it. Check `git log origin/main` and the PR first; until it is merged, S16 builds on that branch (never re-apply its commits on `main`); once it is merged, restart the branch from `main`. GitHub Pages publishes `main` into mathsheet.io's iframes (CLAUDE.md, S15), so the merge is the deploy.
+⚑ next: D on index.html — the never-run ties left are D on index and math-minute, H and M everywhere (every suite has now run). D on index first: its own blocks (the injected styles, the Mixed and ops panels, the code panel, Georgia's contrast) were never measured, while the shared blocks were measured on all three in S12; then H.
+⚑ Queues: shared first touches — the D P3 (focus after Delete / Close / Fix, Escape on the code panel), JPEG 0.8 (approved S2; `--cdn` bytes and a zoomed raster), the code panel under the button row (S5), reduced motion and the 16 px links (P4), the favicon (P4, gate 3). index.html — the ops-panel labels (C, S10), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade / count parse (S11), the per-operation decimal key zeros (S11), the `students` payload key (P4).
+⚑ New probes (S15): `S15-head` (`--ref 658ede3` fails 6) and `S15-unreadable-roster` (`--ref 69deb36` fails 12). Arm R's set for S16 is S14-index-copy, S15-head and S15-unreadable-roster. Traps: the harness `storage` seed re-plants on every navigation (plant by hand for a "next load" check); the production page sits in a 1400 px cross-origin iframe, so M and B should also run inside one (`s15/iframe-probe.mjs` in the scratchpad shows the shape).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S15 asked nothing about it); build a seed only when the maintainer names one.
