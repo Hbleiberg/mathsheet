@@ -1009,6 +1009,7 @@ var GRADE_REFERENCE = {
 
 var VALID_COUNTS = [30, 40, 50, 60];
 var inputMode = "standard";
+var entryUid = 0;   // numbers each roster row's ids: a label names its field only through `for` (S12)
 var entryIdCounter = 0;
 
 var form, studentsContainer, studentCounter, standardSection,
@@ -1533,21 +1534,22 @@ function createStudentEntry(index, data) {
   var mixedTypes = data.mixedTypes || null;
   var div = document.createElement("div");
   div.className = "mwg-student-entry";
+  var uid = ++entryUid;
   div.setAttribute("data-entry-id", ++entryIdCounter);
   div.innerHTML =
     '<div class="mwg-student-entry-header">' +
-      '<h3>Student ' + index + '</h3>' +
+      '<h3 id="studentHeading-' + uid + '">Student ' + index + '</h3>' +
       '<div class="mwg-student-entry-actions">' +
         '<button type="button" class="mwg-duplicate-link">Duplicate student</button>' +
         '<button type="button" class="mwg-delete-link">Delete student</button>' +
       '</div>' +
     '</div>' +
     '<div class="mwg-student-grid">' +
-      '<div><label>Student Name</label><input type="text" name="studentName" value="' + esc(name) + '" /></div>' +
-      '<div class="mwg-number-field-wrap"><label>Student Number</label><input type="text" name="studentNumber" value="' + esc(number) + '" placeholder="Any text" /></div>' +
-      '<div><label>Grade Level</label><select name="grade">' + getGradeOptions(grade) + '</select></div>' +
-      '<div><label>Problem Type</label><select name="problemType">' + getTypeOptions(parseInt(grade)||0, type) + '</select></div>' +
-      '<div><label>Problem Count</label><select name="count">' + getCountOptions(count, isHorizType(type)) + '</select></div>' +
+      '<div><label for="studentName-' + uid + '" id="studentNameLabel-' + uid + '">Student Name</label><input type="text" name="studentName" id="studentName-' + uid + '" aria-labelledby="studentHeading-' + uid + ' studentNameLabel-' + uid + '" value="' + esc(name) + '" /></div>' +
+      '<div class="mwg-number-field-wrap"><label for="studentNumber-' + uid + '" id="studentNumberLabel-' + uid + '">Student Number</label><input type="text" name="studentNumber" id="studentNumber-' + uid + '" aria-labelledby="studentHeading-' + uid + ' studentNumberLabel-' + uid + '" value="' + esc(number) + '" placeholder="Any text" /></div>' +
+      '<div><label for="grade-' + uid + '" id="gradeLabel-' + uid + '">Grade Level</label><select name="grade" id="grade-' + uid + '" aria-labelledby="studentHeading-' + uid + ' gradeLabel-' + uid + '">' + getGradeOptions(grade) + '</select></div>' +
+      '<div><label for="problemType-' + uid + '" id="problemTypeLabel-' + uid + '">Problem Type</label><select name="problemType" id="problemType-' + uid + '" aria-labelledby="studentHeading-' + uid + ' problemTypeLabel-' + uid + '">' + getTypeOptions(parseInt(grade)||0, type) + '</select></div>' +
+      '<div><label for="count-' + uid + '" id="countLabel-' + uid + '">Problem Count</label><select name="count" id="count-' + uid + '" aria-labelledby="studentHeading-' + uid + ' countLabel-' + uid + '">' + getCountOptions(count, isHorizType(type)) + '</select></div>' +
       '<div class="mwg-ops-panel" id="ops-' + entryIdCounter + '"></div>' +
       '<div class="mwg-mixed-types"></div>' +
     '</div>';

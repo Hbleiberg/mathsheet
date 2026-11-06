@@ -858,6 +858,7 @@ var useAdvancedCodeButton = null;
 
 var STORAGE_KEY = "mathMinuteRosterData_v2";
 var inputMode = "standard";
+var entryUid = 0;   // numbers each roster row's ids: a label names its field only through `for` (S12)
 
 var levelNames = [
   "01 - Easy Addition",
@@ -938,18 +939,19 @@ function createStudentEntry(index, studentData) {
 
   var div = document.createElement("div");
   div.className = "student-entry";
+  var uid = ++entryUid;
   div.innerHTML =
     '<div class="student-entry-header">' +
-      '<h3>Student ' + index + '</h3>' +
+      '<h3 id="studentHeading-' + uid + '">Student ' + index + '</h3>' +
       '<div class="student-entry-actions">' +
         '<button type="button" class="duplicate-student-link">Duplicate student</button>' +
         '<button type="button" class="delete-student-link">Delete student</button>' +
       '</div>' +
     '</div>' +
     '<div class="student-grid">' +
-      '<div><label>Student Name</label><input type="text" name="studentName" value="' + nameValue + '" /></div>' +
-      '<div class="mm-number-field-wrap"><label>Student Number</label><input type="text" name="studentNumber" value="' + numberValue + '" placeholder="Any text" /></div>' +
-      '<div><label>Level</label><select name="level">' + getLevelOptions(levelValue) + '</select></div>' +
+      '<div><label for="studentName-' + uid + '" id="studentNameLabel-' + uid + '">Student Name</label><input type="text" name="studentName" id="studentName-' + uid + '" aria-labelledby="studentHeading-' + uid + ' studentNameLabel-' + uid + '" value="' + nameValue + '" /></div>' +
+      '<div class="mm-number-field-wrap"><label for="studentNumber-' + uid + '" id="studentNumberLabel-' + uid + '">Student Number</label><input type="text" name="studentNumber" id="studentNumber-' + uid + '" aria-labelledby="studentHeading-' + uid + ' studentNumberLabel-' + uid + '" value="' + numberValue + '" placeholder="Any text" /></div>' +
+      '<div><label for="level-' + uid + '" id="levelLabel-' + uid + '">Level</label><select name="level" id="level-' + uid + '" aria-labelledby="studentHeading-' + uid + ' levelLabel-' + uid + '">' + getLevelOptions(levelValue) + '</select></div>' +
     '</div>';
 
   var deleteButton = div.querySelector(".delete-student-link");
