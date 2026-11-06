@@ -493,8 +493,10 @@ fraction and decimal "All Operations", one box, the ops panels with one, all and
 console errors on each page. Fractions / Decimals with every operation unchecked print the type's default mix.
 
 **Controls.** `--control` serves each page with three plants (one level's generator throws, the parser throws on a
-bad entry, the storage read unguarded): see the probe's run log in the ledger row. The numbering check fails on the
-pre-fix pages (7, 9, 11, 13, 15, 26 on index). HEAD's Decimals: `S6-math-audit` "places shown" {0: 1,016, 1: 10,872}
+bad entry, the storage read unguarded): 25 checks fail on the three HEAD pages (every plant caught: 32 / 1 / 1
+throwing combinations, the paste and 500-entry arms, the denied-storage load), the fixed pages all green (run after
+the close-out; the control's selector arm took 341 s on index). The numbering check fails on the pre-fix pages
+(7, 9, 11, 13, 15, 26 on index). HEAD's Decimals: `S6-math-audit` "places shown" {0: 1,016, 1: 10,872}
 of 12,000 grade-5 numbers, 1,579 problems short including keys ("89.2 + 82.8 → 172"); fixed: 12,000 of 12,000 at
 each grade. HEAD's zero factor: Level 11 19 on top / 0 below of 150 seeded problems; fixed 11 / 20 (0 × 0: 2);
 Levels 13–15 16/14, 22/20, 37/25; Levels 1–10, 12, 16–20 byte-identical seeded, 21 (Mixed, multiplication too)
