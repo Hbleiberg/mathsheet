@@ -168,7 +168,7 @@ async function armSelectors(file) {
 
 // ── 2. a malformed Advanced paste ──
 const PASTES = {
-  'math-minute.html': { good: 6, lenient: 3, bad: 4, nums: [4, 5, 6, 7], text: [
+  'math-minute.html': { good: 6, lenient: 1, bad: 6, nums: [4, 5, 6, 7, 10, 11], text: [   // a level is digits only since S14: "7.5" and "1O" are reported, not read as 7 and 1
     'Avi Cohen, 1, 5;', 'Cohen, Dana, 2, 7;', ', 3, 19;', 'Noa, 4;', 'Lior, 5, 22;', 'Tal, 6, abc;', 'Gal, 7, ;', ';;', '', '',
     '   Maya   ,   8   ,   9   ;', 'Eli\t, 9, 10;', 'Rina, 10, 7.5;', 'Shai, 11, 1O;', 'Dov, 12, 3, 4;', 'Ben, 13, 11'].join('\r\n') },
   'math-facts.html': { good: 8, lenient: 1, bad: 5, nums: [5, 6, 7, 8, 9], text: [

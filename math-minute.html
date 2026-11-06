@@ -1346,7 +1346,7 @@ function getStudentsFromAdvancedInput() {
     if (parts.length !== 3) { parseErrors.push('Entry ' + n + ' is invalid: "' + entry + '"'); continue; }
     var name   = parts[0];
     var number = parts[1];
-    var level  = parseInt(parts[2], 10);
+    var level  = /^\d+$/.test(parts[2]) ? parseInt(parts[2], 10) : NaN;   // digits only: "7.5" and "1O" read as Levels 7 and 1 with no message (S11; fixed S14)
     if (!parts[2] || isNaN(level) || level < 1 || level > 21) {
       parseErrors.push('Entry ' + n + ' has an invalid level (must be 1-21): "' + entry + '"'); continue;
     }
