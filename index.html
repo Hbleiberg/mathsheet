@@ -869,7 +869,7 @@ body { margin: 0; padding: 12px; background: white; }
 <div id="mwgCodePanel" style="display:none;border:1px solid rgb(199,214,255);background:rgb(238,243,255);border-radius:8px;padding:12px 16px;margin-top:12px;">
   <div style="font-weight:bold;font-size:14px;margin-bottom:8px;">Advanced Input Code</div>
   <textarea id="mwgCodeOutput" readonly style="width:100%;min-height:120px;resize:vertical;font-family:Georgia,serif;font-size:13px;padding:8px;box-sizing:border-box;border:1px solid rgb(199,214,255);border-radius:4px;background:white;"></textarea>
-  <div style="font-size:13px;color:rgb(68,68,68);margin:8px 0;">Copy and paste this into the Advanced Input box.</div>
+  <div style="font-size:13px;color:rgb(68,68,68);margin:8px 0;">This text is formatted for the Advanced Input box. You can copy and paste it directly.</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
     <button type="button" id="mwgCopyCodeBtn" class="mwg-btn-small">Copy Code</button>
     <button type="button" id="mwgUseCodeBtn" class="mwg-btn-small">Use in Advanced Input</button>
@@ -1686,7 +1686,7 @@ function applyRoster(students) {
 }
 
 function clearCurrentRoster() {
-  if (!window.confirm("Clear the current roster?")) return;
+  if (!window.confirm("Are you sure you want to clear the current roster?")) return;
   setInputMode("standard");
   studentsContainer.innerHTML = "";
   buildDefaultStudents();
@@ -1696,7 +1696,7 @@ function clearCurrentRoster() {
 }
 
 function clearSavedRoster() {
-  if (!window.confirm("Clear the saved roster?")) return;
+  if (!window.confirm("Are you sure you want to clear the saved roster?")) return;
   try { localStorage.removeItem(STORAGE_KEY); showSuccess("Saved roster cleared."); }
   catch(e) { showNotice("Unable to clear saved roster."); }
 }
@@ -2647,7 +2647,7 @@ function wireButtons() {
     advancedBox.value = codeOutput.value;
     setInputMode("advanced");
     codePanel.style.display = "none";
-    showSuccess("Code moved to Advanced Input.");
+    showSuccess("Advanced code moved into Advanced Input.");
   });
 }
 
