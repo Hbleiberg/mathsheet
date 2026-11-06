@@ -68,6 +68,10 @@ content="noindex">` and keep only `lang`, the charset, the viewport tag and a `<
   named by the row's "Student N" heading and its label (`aria-labelledby`); the status, error and student-counter
   containers are `aria-live="polite"`, the validation box `role="alert"`, and the status box `aria-busy` from the
   Save PDF click until `pdfDone()`, which runs before the final message so "PDF saved!" is announced.
+  **Focus follows the action (S16):** Delete student moves it to the next row's Delete (the previous row's for the last row,
+  Add Student when the roster is rebuilt); the Advanced Code panel opens with focus in its textarea (named by its title
+  through `aria-labelledby`), Close and Escape return it to the opener, Use in Advanced Input lands in the Advanced box;
+  Fix focuses the first highlighted field.
 - **Problem objects** — plain data, rendered separately:
   ```js
   { kind: "stack",    operator: "+"|"−"|"×", a, b, answer }   // a over b, ruled line
