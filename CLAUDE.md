@@ -57,6 +57,10 @@ single IIFE `<script>`. When adding a feature, edit the relevant page in place.
   ```
   **Always `escapeHtml(...)` any user-entered value** (names, numbers, descriptions) before
   inserting it into HTML.
+- **Accessibility (S12):** each roster row numbers its ids (`entryUid`): the labels carry `for`, and every field is
+  named by the row's "Student N" heading and its label (`aria-labelledby`); the status, error and student-counter
+  containers are `aria-live="polite"`, the validation box `role="alert"`, and the status box `aria-busy` from the
+  Save PDF click until `pdfDone()`, which runs before the final message so "PDF saved!" is announced.
 - **Problem objects** — plain data, rendered separately:
   ```js
   { kind: "stack",    operator: "+"|"−"|"×", a, b, answer }   // a over b, ruled line

@@ -288,3 +288,32 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   ⚑ Queues: math-minute — zero × both ways (approved S10, gate 6). index.html — the ops-panel labels (C, S10), its divisor 3 px low (the twins' 2b678e1 shape, approved S10), the approved long-header shrink and no zero fraction differences, the short / across Mixed key division (gate 6 P4). Three-page approved P3s still waiting: the offline PDF notice wording, JPEG 0.8.
   ⚑ New probes (S10): `S10-pdf-progress` (real cdnjs; `--ref`), `S10-rounding-one-line` (`--ref`, `--control`), `S10-divisor-baseline` (`--only`, `--ref`, `--control`). `S5-key-rows12`, `S7-bracket-names` and `S8-index-key-division` replay S10's rounding span onto their references. With S9's they are arm R's set.
   ⚑ Micro-feature: skipped at gate 1 for the third session running (S8–S10; the maintainer chose fixes each time). Open dual-audience seeds: the Time / Score strip and the Date line on math-minute, `dir="auto"` on names. Ask once more at S11's selection moment; if skipped again, record that under Awaiting so the seeds stop costing a question.
+
+## S12 (2026-11-06) — pass D (accessibility) on math-facts.html, the shared blocks measured on the twins (on a branch)
+
+- Run without arguments while the S6–S11 draft PR (Hbleiberg/mathsheet#5) was open and unmerged: S12 stacked its
+  commits on `claude/clever-davinci-hhh4iz` as S11's handoff said, and did not touch `main`.
+- Arm R: the smoke and the four S10 / S11 probes green (S11-robustness 5 min 25 s).
+- Pass D (scratch `s12/a11y-audit.mjs`): accessible names from Chromium's accessibility tree, a Tab walk with the
+  focus ring at every stop, every flow by keyboard, contrast, target sizes, live regions, reduced motion. The row
+  fields were unnamed on every page (the labels had no `for`; the S0 baseline missed it) and nothing was a live
+  region; Tab order, focus rings and contrast clean; focus drops after Delete / Close / Fix, Escape idle on the code
+  panel, the 16 px links, the smooth scrolls under reduced motion and the heading structure queued.
+- Fixes, both the same diff on all three pages: the row fields named (4b10d20), the notices live regions (07f115f),
+  with `S12-a11y` (two arms, `--ref` controls). Every page then stood on its two-touch cap; the third and fourth
+  slots went unused.
+- Gates: none asked — no gated work arose, and the micro-feature question rests under Awaiting since S11.
+- CLAUDE.md gained the two conventions (row ids and names; the live notice containers and `aria-busy`).
+- Scratch (scratchpad `s12/`): `armR.log`, `a11y-audit.mjs`, `audit-<page>.log`, `smoke-fix1.log`, `smoke-fix2.log`.
+- Done rows aged out of the ledger (S7), verbatim:
+  - [x] S7 | 2026-11-05 | cfa5cd6 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S7-skipped-list.mjs | the "Some entries were skipped" box stands above the sheets and a Generate that skipped an entry lands on it (it sat 16,560 px down after 20 sheets, below the scroll target) | probe at 1280 / 390 px on each page: in view, above the first sheet, still before the results after print; 18 checks fail on the old pages; smoke
+  - [x] S7 | 2026-11-05 | f48b8db | index.html, scripts/loop/probes/S7-bracket-names.mjs | Advanced Input checks the names inside brackets: an unknown operation or a type the grade lacks skips the entry with "invalid type for grade G: <name>"; a stray "|" is ignored | probe: 6 bad entries skipped and named, 7 valid brackets byte-identical to the old page (seeded); control fails 2; roster-subset, S5-mixed-ops, S6-math-audit, smoke
+  - [x] S7 | 2026-11-05 | 8c9bfd3 | math-facts.html, CLAUDE.md, scripts/loop/probes/S6-header-line.mjs | micro-feature (gate 1): the optional "Header line" on math-facts, line for line math-minute's (S6); the probe takes `--page` | probe on math-facts: blank byte-identical to f48b8db, 8 of 8 carry it escaped, print 1056×816 with 46+ px paper left, PDF clones within 1.0 px, old payload loads; control fails; settings and sheet screenshots
+  - [x] S7 | 2026-11-05 | — | scripts/loop/probes/S7-facts-audit.mjs, docs/IMPROVEMENT_LOG.md | pass G on math-facts, then math-minute (clean, so it bought the second): 674,000 problems, every key right, every deck dealt as documented; gates: micro-feature → header line on math-facts (shipped); Teens Rule → include 10 + 9 (approved Candidate) | probe green on both pages; `--control` fails 7 checks on each
+- Previous handoff (S11 → S12), verbatim:
+  **Next session (S12):** S6–S11's commits are on branch `claude/clever-davinci-hhh4iz` (draft PR Hbleiberg/mathsheet#5), NOT on `main`: the maintainer ran S6 "on a new branch - don't push to main yet" and S7–S11 stacked on it. Check `git log origin/main` and the PR first; until it is merged, S12 builds on that branch (never re-apply its commits on `main`); once it is merged, restart the branch from `main`.
+  ⚑ next: D on math-facts.html — A, B, C and E have run everywhere; every cell left is a never-run tie (D, H, M on each page; F, I, L). D first among them, on math-facts.html (the standard implementation, so what it finds carries to math-minute); F follows, now that five sessions of generator changes have landed on all three pages.
+  ⚑ Queues: index.html — the ops-panel labels (C, S10; displaced this session by the Decimals places), the approved 30-cap note (S11, copy approved), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade parse (S11), the per-operation decimal key zeros (S11), the short / across Mixed key division (gate 6 P4). math-minute — the lenient level parse (S11). Three-page approved P3s still waiting: the offline PDF notice wording, JPEG 0.8; the apostrophe escape.
+  ⚑ New probes (S11): `S11-robustness` (`--only`, `--skip-selectors` — the selector sweep is 191 s on index —, `--control`; it is E's audit, rerun it whenever a parser, a storage path or a selector list changes). `S6-math-audit` holds the Decimals type to its places; `S7-facts-audit`'s multiplication family deals zero both ways; `S5-key-rows12`, `S7-bracket-names`, `S8-index-key-division` and `S10-rounding-one-line` replay the Decimals change onto their references; `S10-rounding-one-line` pins its reference to 2b678e1. With S9's and S10's they are arm R's set.
+  ⚑ Micro-feature: skipped at gate 1 for the fourth session (S8–S11); the question now rests under Awaiting — do not ask it each session; build a seed only when the maintainer names one.
+  

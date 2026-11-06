@@ -501,3 +501,48 @@ of 12,000 grade-5 numbers, 1,579 problems short including keys ("89.2 + 82.8 →
 each grade. HEAD's zero factor: Level 11 19 on top / 0 below of 150 seeded problems; fixed 11 / 20 (0 × 0: 2);
 Levels 13–15 16/14, 22/20, 37/25; Levels 1–10, 12, 16–20 byte-identical seeded, 21 (Mixed, multiplication too)
 differs as expected.
+
+## S12 (2026-11-06) — pass D (accessibility) on math-facts.html, the shared blocks measured on the twins
+
+Method: a scratch audit (scratchpad `s12/a11y-audit.mjs`, logs `s12/audit-<page>.log`) over the harness: every
+visible control's accessible name from Chromium's own accessibility tree (CDP `Accessibility.getPartialAXTree`),
+a Tab walk recording `:focus-visible` and the computed outline at each stop, keyboard activation (Enter, Space,
+ArrowDown, Escape, Shift+Tab) of every flow, computed text colours against the effective background (WCAG
+relative luminance), the bounding box of every control, the live-region attributes, `prefers-reduced-motion`
+emulated. Arm R first: the smoke and the four S10 / S11 probes green (`s12/armR.log`; S11-robustness 5 min 25 s).
+What D found on math-facts.html holds on math-minute.html and index.html unless noted (the same blocks).
+
+- **Names.** 29 visible controls in Standard mode, 6 unnamed: Student Name and Level in every row (the `<label>`s
+  carry no `for` and wrap nothing), Student Number named only by its placeholder "Any text", Student Name by
+  "Optional" / "Prints blank" (the placeholder `applyNameBlankToggle` sets) once the roster changes. index.html:
+  12 of 29 unnamed (Grade Level, Problem Type, Problem Count too). Every button, checkbox, setting and the paste
+  box is named. This refutes the S0 baseline ("only the Advanced Code textarea"): that census must have taken a
+  preceding label as a name. Fixed, 4b10d20: ids per row, `for` on the labels, `aria-labelledby` the row heading
+  and the label ("Student 2 Level"), which follows a renumbering.
+- **Keyboard.** The Tab order follows the visual order (29 stops, none hidden); every stop shows the UA focus
+  ring (`outline: auto 1px`, `:focus-visible` true); Enter and Space fire every button; ArrowDown changes a Level;
+  Enter in a text field submits nothing (no submit button, several text fields). Focus drops to `<body>` after
+  Delete student (the button is removed), after Close on the code panel and after Fix on the validation box; the
+  code panel opens with focus still on its button, 9 Tabs from Close, and Escape does nothing (the panel is in
+  view, by its own smooth scroll); the validation box appears with focus on Generate, Fix is 2 Shift+Tabs back,
+  and the red-bordered Level carries no `aria-invalid`. Candidate P3.
+- **Live regions.** None on any page: `#statusMessages`, `#errors`, the validation box, `#studentCounter` and
+  the mode pill change in silence. Fixed, 07f115f: polite on the three boxes, `role="alert"` on the validation box,
+  `aria-busy` on the status box through the PDF page counts, `pdfDone()` ahead of the final message.
+- **Contrast** (text on its effective background, all ≥ 4.5:1): body 17.9, `#444` 9.7, the links 8.1, the
+  delete red 6.2, error box 8.2, notice 6.7, success 6.6, the mode pill 17.0, buttons 18.3, Chromium's
+  `#757575` placeholders 4.6, the answer key's red on white 7.1. index.html the same (Georgia changes nothing).
+- **Targets.** Duplicate / Delete student are 100 × 16 and 84 × 16 px (13 px text, no padding; index 91 / 75 ×
+  16), the three checkboxes 16 × 16; `.btn-small` 34 px tall, the fields 36, the big buttons 48. AA's 24 px
+  passes only by the spacing exception; D's 44 px floor fails for the links. Candidate P4.
+- **Reduced motion.** The five `scrollIntoView({ behavior: "smooth" })` animate under
+  `prefers-reduced-motion: reduce` (the code panel's scroll runs 567 → 806 px over the second after the click on
+  a 1,467 px page; index 615 → 843); no media query on any page. Candidate P4.
+- **Structure.** `lang="en"` and a `<title>`; the UI's only headings are the row h3s (no h1, no landmark;
+  "Level Reference" and "Advanced Input Code" are bold divs); two `title`-only hints; the mode pill's change is
+  not announced (the toggle's own label flips, which a screen reader re-reads on focus). Candidate P4.
+
+**Controls.** S12-a11y on the pages served from 9eb4248: 25 failing (13 names, 12 live); from 4b10d20: the 12
+live checks only; the fixed tree all green. S10-pdf-progress green after the PDF path's reorder (the button
+still re-enables with the message). The probe's busy check reads the MutationObserver's record order within the
+"PDF saved!" batch, since a batch's post-state alone cannot tell which of two same-task writes came first.
