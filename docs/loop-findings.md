@@ -599,3 +599,49 @@ twins; `esc` / `rand` / `randFrom` are index's legacy names — gate 5, not drif
 **Controls.** `S13-escape-html --ref aadebcc` fails its static arm on all three pages (the helper returns the
 apostrophe raw) and passes its live arm before and after — the entity is invisible once decoded, which is the
 point. `S13-gencode-notice --ref 854a805` fails 3 (the old wording).
+
+## S14 (2026-11-06) — pass I (first load, saved data & safety), the suite: all three pages
+
+Method: a scratch audit over the harness (scratchpad `s14/i-audit.mjs`, logs `s14/audit-<page>.log`), 47 checks on
+each standard page and 46 on index.html, all green. Arm R first: the smoke (60 checks), S12-a11y and the two S13
+probes green (`s14/armR-*.log`). The static part: one `JSON.parse` per page, inside a `try` with the defaults as
+the fallback; one `localStorage.getItem`, of `STORAGE_KEY` only; no inline event handler built by concatenation.
+Every `innerHTML` site read by hand: the user values (name, number, header line, the validation list, the
+skipped-entry list, the description) pass through `escapeHtml` / `esc`; the rest is static markup or option
+lists built from the page's own tables (a saved value only selects, never prints).
+
+**Fresh context** (empty localStorage, the untouched first paint): 3 empty rows, Standard mode, worksheets per
+student 1, every toggle off, the paste box and header line empty, no status message, Add Student / Generate
+Advanced Code / Fill Down shown, Generate and Save PDF enabled, nothing written to localStorage, 0 page errors.
+
+**Save → reload.** A 4-student roster with a name, a number, every toggle on, 3 per student, a header line and a
+paste-box text saves "Roster saved." under the standard payload keys (the twins: the eight CLAUDE.md names;
+index: its seven with `students`) and comes back identical after a reload, "Saved roster loaded." shown, the
+Remove 'Student Number' state re-applied. Saved in Advanced mode, the page reloads in Advanced mode with the
+paste box kept and the three buttons hidden; the Standard roster is intact underneath.
+
+**The two Clear buttons.** Cancelled, either confirm changes nothing. Clear Current rebuilds 3 empty rows, empties
+the paste box and the results, returns to Standard mode and leaves the saved payload byte-identical (a reload
+brings the saved roster back); it leaves the settings as they were (per student, the three toggles, the header
+line) — by design, "roster" meaning the students. Clear Saved removes the page's key and leaves the current
+roster untouched; the next load is the 3 defaults with no message.
+
+**Isolation.** With all three keys seeded and every `localStorage` call logged (an init script wrapping
+`Storage.prototype`), each page restores its own roster, reads only its own key on load, and Save / Clear Saved
+touch only its own key; the other two payloads are byte-identical afterwards.
+
+**Hostile values.** A saved payload with `<img src=x onerror=…>` in the name, number, level (grade, type, count,
+`mixedTypes`, `fracOps` on index), header line, paste box, `inputMode` and `worksheetsPerStudent` loads to a
+usable roster with the hostile name held literally in its input, prints it literally on sheet and key, writes it
+as is into the advanced code: no image element is ever created, the handler never runs, 0 page errors. Typed
+at every input — name, number, header line, a duplicated row, Generate Advanced Code → Use in Advanced Input,
+a malformed advanced entry echoed by the skipped list, an unfilled row named in the validation box, Save →
+reload — the same.
+
+**Open.** The fallback on an unreadable payload is silent on all three pages (the S1 candidate named index
+only), and on index a saved `mixedTypes` that is not an array throws inside `renderMixedCheckboxes` → the whole
+saved roster is replaced by the defaults on screen (the payload itself is kept) — a shape the page never writes;
+both folded into the one P4. Nothing else to fix: the session's three slots went to queued approvals.
+
+**Controls** for the fixes: `S14-index-copy --ref 9030fbe` fails 4; S11-robustness on math-minute with the new
+paste expectations fails 3 on the old parse (9 sheets, 4 reports) and is green after (7 sheets, 6 reports).

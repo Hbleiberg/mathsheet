@@ -354,3 +354,37 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ Queues: the D P3 (focus after Delete / Close / Fix, Escape on the code panel) is one shared diff for all three pages — a session's first touch. index.html — the ops-panel labels (C, S10), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade parse (S11), the per-operation decimal key zeros (S11), the short / across Mixed key division (gate 6 P4). math-minute — the lenient level parse (S11). Three-page approved P3s still waiting: the offline PDF notice wording, JPEG 0.8; the apostrophe escape.
 ⚑ New probe (S12): `S12-a11y` (`--only`, `--ref <commit>`): the row names from Chromium's accessibility tree and the live regions, with a real cdnjs Save PDF for the busy arm (9eb4248 fails both arms, 4b10d20 the live arm). Arm R's set for S13 is S11-robustness and S12-a11y. The S0 "only the Advanced Code textarea is unnamed" baseline was wrong (loop-findings S12).
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12 asked nothing — no gate moment arose); build a seed only when the maintainer names one.
+
+## S14 (2026-11-06) — pass I (first load, saved data & safety), the suite, on all three pages; three fixes (on a branch)
+
+- Run without arguments while the S6–S13 draft PR (Hbleiberg/mathsheet#5) was open and unmerged: S14 stacked its
+  commits on `claude/clever-davinci-hhh4iz` as S13's handoff said, and did not touch `main`.
+- Arm R: the smoke (60 checks), S12-a11y and the two S13 probes green.
+- Pass I (scratch `s14/i-audit.mjs`, 140 checks over the three pages, all green): the static read of every
+  `innerHTML` site, `JSON.parse` and `localStorage` call; a fresh context; Save → reload in both modes against
+  the CLAUDE.md payload; Clear Current and Clear Saved, cancelled and accepted; cross-page isolation with every
+  storage call logged; hostile strings in every saved field and at every input. Nothing to fix; the silent
+  fallback on an unreadable payload turned out to be on all three pages (the S1 candidate broadened, with
+  index's non-array `mixedTypes` throw folded in).
+- Fixes, all from the queue: index's four approved strings (c984c02, `S14-index-copy`); the approved offline PDF
+  notice on all three pages and CLAUDE.md (9ffc917); math-minute's digits-only Advanced level (86643bb, the S11
+  probe's expectations following). index and math-minute then stood on their caps; math-facts had one touch left
+  and no facts-only candidate, so the fourth slot went unused.
+- Gates: none asked (no gated work was shipped; the unreadable-payload message waits for the next batch).
+- Protocol note: a clean suite pass does not buy a second pass under the rule as written (it names surfaces).
+
+### Done rows archived from the ledger (S9, verbatim)
+
+- [x] S9 | 2026-11-05 | f98327b | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S9-name-fit.mjs | a long student name shrinks to fit its printed line (to 11 px, then "…"; gate 6, S2), on its usual baseline; names that fit unchanged | S9-name-fit, all pages, sheets and keys, with and without the Number: 0 overflow, baselines 0.00 px from an 18 px name in print, fitting sheets byte-identical; control fails 12; real PDF; +11 ms at 300 sheets
+- [x] S9 | 2026-11-05 | ae14c70 | index.html, scripts/loop/probes/S9-index-pdf.mjs | Save PDF draws print's box (padding 0.25in 0.3in, border none): the screen sheet's 1px #bbb border framed every PDF page and narrowed the header 2.4 px (S8's twin fix, 6bebbdb) | S9-index-pdf, a real cdnjs PDF of 8 sheet types with keys against print: 0 of 16 pages framed (16 before), header ink within 1 px (2); control fails; smoke --cdn
+- [x] S9 | 2026-11-05 | 936850d | math-minute.html, scripts/loop/probes/S7-facts-audit.mjs | the "hard" levels drop their easiest facts (gate 2: "drop only the easiest"): Level 12 deals 3–9 × 6–9 (no ×1, ×2), Level 17 quotients 2–9; labels kept | S7-facts-audit green with the new decks, fails 3 on the old page (2,807 problems outside); the other 19 levels byte-identical (seeded); S8-minute-print
+- [x] S9 | 2026-11-05 | 2a5a054 | CLAUDE.md | the advanced-input recipe said "require name" while the standard keeps Student Name optional: it now says the name may be empty | doc only
+- [x] S9 | 2026-11-05 | — | docs/IMPROVEMENT_LOG.md | pass A on math-facts.html (clean) bought C on math-minute.html (clean but for known items); gates: micro-feature → skipped for the hard levels; hard levels → drop only the easiest (shipped); "Easy X" → keep X (struck) | ledger, loop-findings S9
+
+### Previous handoff (S13 → S14), verbatim
+
+**Next session (S14):** S6–S13's commits are on branch `claude/clever-davinci-hhh4iz` (draft PR Hbleiberg/mathsheet#5), NOT on `main`: the maintainer ran S6 "on a new branch - don't push to main yet" and S7–S13 stacked on it. Check `git log origin/main` and the PR first; until it is merged, S14 builds on that branch (never re-apply its commits on `main`); once it is merged, restart the branch from `main`.
+⚑ next: I — the never-run ties left are D on index and math-minute, H and M everywhere, I and L; I first because S13's escape fix and its `students`-key finding sit in I's brief (first load, the saved payload, escaping at every sink), while D's two remaining pages would re-measure the shared blocks S12 already measured on all three.
+⚑ Queues: index.html's first touch — the four approved strings (S13, gate 2: the code panel's help line, the "moved" message and the clear-roster confirms take the standard pages' wording); then the ops-panel labels (C, S10), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade parse (S11), the per-operation decimal key zeros (S11). Shared first touches: the D P3 (focus after Delete / Close / Fix, Escape on the code panel); the approved offline PDF notice wording and JPEG 0.8 (S2); the code panel under the button row (S5). math-minute — the lenient level parse (S11).
+⚑ New probes (S13): `S13-escape-html` (the helper lifted from each page's source, run on the five characters, plus a live round trip of a name holding them all; `--ref aadebcc` fails its static arm) and `S13-gencode-notice` (`--ref 854a805` fails). Arm R's set for S14 is S12-a11y (its busy arm needs cdnjs) and the two S13 probes. F's full comparison is in loop-findings S13; the twins need no re-diff until a page changes outside its selector system.
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12 and S13 asked nothing about it); build a seed only when the maintainer names one.
