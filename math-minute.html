@@ -1457,7 +1457,12 @@ function loadRosterIfAvailable() {
     applyNameBlankToggle();
     setInputMode(saved.inputMode || "standard");
     showSuccess("Saved roster loaded.");
-  } catch (error) { buildDefaultStudents(); }
+  } catch (error) {
+    // The saved roster could not be read: start blank, say so once and clear it, or every load repeats this (S1; approved S15)
+    buildDefaultStudents();
+    try { localStorage.removeItem(STORAGE_KEY); } catch (ignored) {}
+    showNotice("The saved roster could not be read, so the page starts with a blank roster.");
+  }
 }
 
 function renderAnswerProblem(problem, answer) {
