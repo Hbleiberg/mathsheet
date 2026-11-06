@@ -546,3 +546,56 @@ What D found on math-facts.html holds on math-minute.html and index.html unless 
 live checks only; the fixed tree all green. S10-pdf-progress green after the PDF path's reorder (the button
 still re-enables with the message). The probe's busy check reads the MutationObserver's record order within the
 "PDF saved!" batch, since a batch's post-state alone cannot tell which of two same-task writes came first.
+
+## S13 (2026-11-06) — pass F (cross-page consistency), the suite: all three pages against the CLAUDE.md standard
+
+Method: textual, not a browser audit. The two standard pages diffed line by line (`diff math-minute.html
+math-facts.html`, scratchpad `s13/twin.diff`, 464 lines); index.html compared affordance by affordance with the
+standard CLAUDE.md writes down — the advanced parser, the toggle UI, the settings labels and button copy, the saved
+payload, the notice boxes, the description box and branding snippet, the print CSS block, the PDF pipeline
+constants, the utilities, the style constants; the shared helpers (`loadScriptOnce`, `loadPdfLibs`, `pdfDone`,
+`fitLongNames`) lifted from each page by name and diffed after index's names were normalised (`s13/fnx.mjs`).
+Arm R first: the smoke (60 checks), S11-robustness and S12-a11y green (`s13/armR-*.log`).
+
+**The twins (math-minute.html vs math-facts.html).** Identical outside the selector system. Every differing line is
+the title, the app id, the paste-box placeholder and its help text, `STORAGE_KEY` (`_v2` / `_v1`, as CLAUDE.md names
+them), the level tables and problem generators, the parser's selector validation and its message
+(`parseInt` 1–21 / `normalizeFactCode` against `FACTS`), and the PDF filename. The six sessions of shared-block
+edits (S7–S12: the header line, the PDF guard and progress, the entry numbering, the row ids, the live regions)
+landed on both identically. `stack()` tests its three operators in a different order on the two pages — equal
+results.
+
+**All three pages against the standard.** One divergence: the escaping helper's apostrophe step replaced `'` with
+a string that is itself `'` (so a single quote reached the markup raw; no sink takes a user value into a
+single-quoted attribute or a script string — the grep of every `value="' +` / `=' +` site — so it was a gap, not a
+hole). Fixed 854a805. The utilities are otherwise the standard's (`randomInt` / `escapeHtml` / `shuffle` on the
+twins; `esc` / `rand` / `randFrom` are index's legacy names — gate 5, not drift).
+
+**index.html against the standard** (its known exceptions aside: `mwg-` classes, injected styles, Georgia, the
+5-field advanced input, `worksheets.pdf`, `mwgRosterData_v2`):
+- Style constants match in value: container 1100 px; radii 8 / 12 / 999 px; `.mwg-btn-small` 7px 12px 14px,
+  `.mwg-btn-large` 12px 20px 17px bold; the error / notice / success boxes, the mode pill and the student entry in
+  `rgb()` equivalents of the standard's hex; the worksheet Arial; the description box 13 px italic in a #222 box;
+  the branding snippet byte-identical at all six call sites.
+- PDF pipeline constants identical: the two cdnjs URLs, 1056 × 816, scale 1.5, JPEG 0.92, `px_scaling`, `FAST`,
+  the stage and clone `cssText`, the 300 ms / 50 ms timers, the `loadPdfLibs` guard and the `pdfDone` paths.
+- Print CSS: the standard's rules plus `box-shadow:none`, `content-visibility:visible`, header / body flex rules
+  and the variable grid's columns and rows 6–12; rows-3/4/5 are not fixed (the S4 P4). `#mwg-results-print` only
+  (the move trick renames the id, so `#results` is not needed).
+- Toggle UI: the same copy ("Advanced Input" ↔ "Back to Standard Input"), the same three buttons hidden in
+  advanced mode. Settings labels: the same five; no "Header line (optional)" (deferred to the convergence session,
+  S7's handoff).
+- Saved payload: `students` where the standard says `standardStudents`, and no `headerLine` (CLAUDE.md now says
+  so, 074ec5e; a P4 candidate carries the migration shape — read either key on load).
+- Copy: four strings differed. The Generate Advanced Code empty-roster notice (the twins' said "with a name and
+  level" though a name is optional and the code needs only a level; index's "complete student" said nothing) —
+  fixed 12c44be on all three, approved S13. The code panel's help line, the "moved" success message and the two
+  clear-roster confirms — approved S13 (index takes the standard's wording), queued.
+- Shared helpers identical after name normalisation; `fitLongNames` differs only where index's header grid does
+  (its `auto` column and the set label).
+- The notice strings a teacher sees most ("Roster saved.", "Unable to save roster in this browser.", "Some entries
+  were skipped:", the PDF notices, "Print Answer Key" and the other labels) are the same on all three pages.
+
+**Controls.** `S13-escape-html --ref aadebcc` fails its static arm on all three pages (the helper returns the
+apostrophe raw) and passes its live arm before and after — the entity is invisible once decoded, which is the
+point. `S13-gencode-notice --ref 854a805` fails 3 (the old wording).

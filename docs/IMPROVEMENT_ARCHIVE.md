@@ -317,3 +317,40 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   ⚑ New probes (S11): `S11-robustness` (`--only`, `--skip-selectors` — the selector sweep is 191 s on index —, `--control`; it is E's audit, rerun it whenever a parser, a storage path or a selector list changes). `S6-math-audit` holds the Decimals type to its places; `S7-facts-audit`'s multiplication family deals zero both ways; `S5-key-rows12`, `S7-bracket-names`, `S8-index-key-division` and `S10-rounding-one-line` replay the Decimals change onto their references; `S10-rounding-one-line` pins its reference to 2b678e1. With S9's and S10's they are arm R's set.
   ⚑ Micro-feature: skipped at gate 1 for the fourth session (S8–S11); the question now rests under Awaiting — do not ask it each session; build a seed only when the maintainer names one.
   
+
+## S13 (2026-11-06) — pass F (cross-page consistency), the suite, on all three pages; three fixes (on a branch)
+
+- Run without arguments while the S6–S12 draft PR (Hbleiberg/mathsheet#5) was open and unmerged: S13 stacked its
+  commits on `claude/clever-davinci-hhh4iz` as S12's handoff said, and did not touch `main`.
+- Arm R: the smoke (60 checks), S11-robustness and S12-a11y green.
+- Pass F: the two standard pages diffed line by line (464 diff lines, every one the selector system: title, app id,
+  placeholder and help text, STORAGE_KEY, the level tables and generators, the parser's selector check, the PDF
+  filename); index.html compared with the CLAUDE.md standard affordance by affordance — the parser, the toggle UI,
+  the settings labels and button copy, the saved payload, the notice boxes, the description box and branding
+  snippet, the print CSS block, the PDF pipeline constants, the utilities, the style constants, and the shared
+  helpers lifted by name and diffed after normalising index's names. Its values match the standard but for the
+  known exceptions; the apostrophe escape was a no-op on all three pages; four strings had drifted; CLAUDE.md's
+  payload line lacked `headerLine` and index saves its roster under `students`.
+- Fixes: the apostrophe entity on all three pages (854a805, `S13-escape-html`); the empty-roster notice on all three
+  (12c44be, `S13-gencode-notice`; approved S13, gate 2); CLAUDE.md's payload line (074ec5e). Every page then stood
+  on its two-touch cap; the fourth slot went unused.
+- Gates (one call, two questions): the empty-roster notice → "say what is needed" (shipped); the four drifted index
+  strings → index takes the standard's wording (queued: index was capped).
+- Candidates: the S1 apostrophe P3 struck (fixed); added index's four strings (P3, approved) and index's `students`
+  payload key (P4).
+
+### Done rows archived from the ledger (S8, verbatim)
+
+- [x] S8 | 2026-11-05 | 6bebbdb | math-minute.html, math-facts.html, CLAUDE.md, scripts/loop/probes/S8-minute-pdf.mjs | Save PDF draws print's box (padding 0.25in 0.3in, no border): the screen sheet's 1px #bbb border framed every PDF page and narrowed the header 2.4 px, so the Level 4 key's description wrapped in the PDF only (its problems 7–9 px low) | real cdnjs PDF, 42 pages: 0 framed (42 before), every cell at print's place (87 px off before); clone vs print 0.0 px on both pages; smoke --cdn
+- [x] S8 | 2026-11-05 | d3ef5c6 | index.html, scripts/loop/probes/ | fraction keys write whole and mixed numbers in lowest terms (1/1 → 1, 0/1 → 0, 4/3 → 1 1/3; gate 2, S3); S6-math-audit reads them and holds keys to that form, S5-key-rows12 and S7-bracket-names replay it | audit green over 378,000 problems, its control fails 3; worksheets byte-identical, 72 of 240 key answers rewritten at equal value
+- [x] S8 | 2026-11-05 | 8e46ade | index.html, scripts/loop/probes/S8-index-key-division.mjs | the key's division is the sheet's own problem, quotient in red over the bar ("49 r1"; gate 6, S5); Mixed keys in rows-10 / 12 and written across keep the old drawing (no room above the bar) | probe: 582 cells 0.00 px from the sheet, quotients ≥ 14 px clear; short / across keys and every sheet byte-identical; control fails 2; real PDF
+- [x] S8 | 2026-11-05 | f0ba0e8 | math-facts.html, scripts/loop/probes/S7-facts-audit.mjs | "+10 (Teens Rule)" deals 10 + 9 = 19 (gate 2, S7); every other level and the Mixed pools keep sums to 18 | S7-facts-audit green (+10 max 19; mix+ 64 facts, max 18), fails 2 on the old page; control fails 7; 70 other levels byte-identical
+- [x] S8 | 2026-11-05 | — | scripts/loop/probes/S8-minute-print.mjs, docs/IMPROVEMENT_LOG.md | pass B on math-minute.html: print clean (378 sheets in 3 configurations; Letter and A4 one page a sheet), Save PDF framed (fixed), round trip and saved payload fine; gate: micro-feature → skipped for two approved index fixes | S8-minute-print green, its control fails 3
+
+### Previous handoff (S12 → S13), verbatim
+
+**Next session (S13):** S6–S12's commits are on branch `claude/clever-davinci-hhh4iz` (draft PR Hbleiberg/mathsheet#5), NOT on `main`: the maintainer ran S6 "on a new branch - don't push to main yet" and S7–S12 stacked on it. Check `git log origin/main` and the PR first; until it is merged, S13 builds on that branch (never re-apply its commits on `main`); once it is merged, restart the branch from `main`.
+⚑ next: F — every cell left is a never-run tie (D on index and math-minute, H and M everywhere, F, I, L); F first because six sessions of shared-block edits (S7–S12: the header line, the PDF guard, the entry numbering, the row ids, the live regions) have landed on all three pages and only the smoke has compared them to the CLAUDE.md standard since S1; D's two remaining pages would mostly re-measure the shared blocks S12 already measured on all three.
+⚑ Queues: the D P3 (focus after Delete / Close / Fix, Escape on the code panel) is one shared diff for all three pages — a session's first touch. index.html — the ops-panel labels (C, S10), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade parse (S11), the per-operation decimal key zeros (S11), the short / across Mixed key division (gate 6 P4). math-minute — the lenient level parse (S11). Three-page approved P3s still waiting: the offline PDF notice wording, JPEG 0.8; the apostrophe escape.
+⚑ New probe (S12): `S12-a11y` (`--only`, `--ref <commit>`): the row names from Chromium's accessibility tree and the live regions, with a real cdnjs Save PDF for the busy arm (9eb4248 fails both arms, 4b10d20 the live arm). Arm R's set for S13 is S11-robustness and S12-a11y. The S0 "only the Advanced Code textarea is unnamed" baseline was wrong (loop-findings S12).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12 asked nothing — no gate moment arose); build a seed only when the maintainer names one.
