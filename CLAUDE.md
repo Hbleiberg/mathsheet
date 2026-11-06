@@ -29,6 +29,13 @@ jsPDF) used for PDF export, fetched on the first Save PDF click rather than with
 Each page embeds everything: a `<style>` block (or JS-injected styles), the markup, and a
 single IIFE `<script>`. When adding a feature, edit the relevant page in place.
 
+**Deployment (S15):** GitHub Pages publishes this repo's `main` branch at
+https://hbleiberg.github.io/mathsheet/ (`index.html`, `math-minute.html`, `math-facts.html`), and each
+mathsheet.io page (WordPress) embeds one of them in a 1400 px `<iframe>`: `/custom-math-sheet-generator/`,
+`/math-minute-elementary/`, `/math-facts/`. Merging to `main` is what reaches teachers. The public titles,
+descriptions and search metadata live in WordPress, so the repo pages carry `<meta name="robots"
+content="noindex">` and keep only `lang`, the charset, the viewport tag and a `<title>` in their `<head>`.
+
 ## Code & file layout standard
 
 - **One self-contained file** per generator. Root wrapper `<div id="<page>-app">` (e.g.

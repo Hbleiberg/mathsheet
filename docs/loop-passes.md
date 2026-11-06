@@ -143,7 +143,9 @@ inside a `try` with a defaults fallback; no inline event handler built from user
 
 Titles, meta descriptions, `lang`, a favicon, `rel=canonical`, OG tags, one `h1` per page, a
 `robots`/sitemap only if the maintainer wants one. The pages are standalone files (maintainer, S1), so a
-`<head>` edit reaches production. Any title or description text is gate 2; L audits and batches the
+`<head>` edit reaches GitHub Pages — but the public pages are mathsheet.io's WordPress pages, which embed
+the three files in iframes and carry the public titles, descriptions and search metadata; the repo pages are
+`noindex` (S15). Any title or description text is gate 2; L audits and batches the
 questions, then ships what was approved.
 
 ## M — Mobile & touch (surface)
