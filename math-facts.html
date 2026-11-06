@@ -809,8 +809,8 @@ break-after:avoid !important;
 <div id="results"></div>
 
 <div id="advancedCodePanel" style="display:none;border:1px solid rgb(199,214,255);background:rgb(238,243,255);border-radius:8px;padding:12px 16px;margin-top:12px;">
-  <div style="font-weight:bold;font-size:14px;margin-bottom:8px;">Advanced Input Code</div>
-  <textarea id="advancedCodeOutput" readonly="" style="width:100%;min-height:120px;resize:vertical;font-family:Arial,sans-serif;font-size:13px;padding:8px;box-sizing:border-box;border:1px solid rgb(199,214,255);border-radius:4px;background:white;"></textarea>
+  <div id="advancedCodeTitle" style="font-weight:bold;font-size:14px;margin-bottom:8px;">Advanced Input Code</div>
+  <textarea id="advancedCodeOutput" aria-labelledby="advancedCodeTitle" readonly="" style="width:100%;min-height:120px;resize:vertical;font-family:Arial,sans-serif;font-size:13px;padding:8px;box-sizing:border-box;border:1px solid rgb(199,214,255);border-radius:4px;background:white;"></textarea>
   <div style="font-size:13px;color:rgb(68,68,68);margin:8px 0;">This text is formatted for the Advanced Input box. You can copy and paste it directly.</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
     <button type="button" id="copyAdvancedCodeButton" class="btn-small">Copy Code</button>

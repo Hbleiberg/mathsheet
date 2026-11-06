@@ -76,7 +76,8 @@ for (const file of Object.keys(UI)) {
   const at = await focusAt(page);
   const highlighted = await page.evaluate(() => { const el = document.activeElement; return !!el && /rgb\(204, 0, 0\)/.test(el.style.border); });
   check(shown && highlighted && /in Student 1$/.test(at), `Fix: the box showed (${shown}), focus on the first highlighted field (${at}, red border ${highlighted})`);
-  // Second arm: the code textarea's accessible name
+  // Second arm: the code textarea's accessible name (read with the panel open: a display:none node has no name)
+  await page.click(ui.gen); await page.waitForTimeout(200);
   const name = await axName(page, ui.out);
   check(name === 'Advanced Input Code', `the code textarea is named by the panel's title (${JSON.stringify(name)})`);
   check(p.errors.length === 0, `0 page errors (${p.errors.join('; ')})`);
