@@ -1383,7 +1383,7 @@ function buildAdvancedCodeFromStandardRoster() {
 
 function openAdvancedCodeModal() {
   var output = buildAdvancedCodeFromStandardRoster();
-  if (!output.trim()) { showNotice("Add at least one student with a name and level before generating advanced code."); return; }
+  if (!output.trim()) { showNotice("Add at least one student with a level before generating advanced code."); return; }
   advancedCodeOutput.value = output;
   advancedCodePanel.style.display = "block";
   advancedCodePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });

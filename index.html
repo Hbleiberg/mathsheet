@@ -1718,7 +1718,7 @@ function buildAdvancedCode() {
 
 function openCodeModal() {
   var code = buildAdvancedCode();
-  if (!code.trim()) { showNotice("Add at least one complete student before generating code."); return; }
+  if (!code.trim()) { showNotice("Add at least one student with a grade, type and count before generating advanced code."); return; }
   codeOutput.value = code;
   codePanel.style.display = "block";
   codePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
