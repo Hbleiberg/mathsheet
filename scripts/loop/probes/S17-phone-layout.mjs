@@ -8,6 +8,8 @@
 // Arm 2 — index.html's responsive rules (≤860 the Advanced box stacks over its reference card, ≤700 the roster
 // grid takes two columns, ≤480 one): they lost to the injected base rules appended after the static sheet, so
 // a phone showed five 60 px roster fields and a 46 px paste box. Fails on `--ref 8e40f96`.
+// Arm 3 — math-facts.html's Advanced help names no side for the Level Reference, which sits beside the box on a
+// desktop and below it at ≤860 px ("…in the Level Reference.", approved S17, gate 2). Fails on `--ref 13bcc9b`.
 //   node scripts/loop/probes/S17-phone-layout.mjs [--only <file>] [--ref <commit>]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, devices, ROOT } from '../harness.mjs';
@@ -69,6 +71,11 @@ for (const file of ['index.html', 'math-minute.html', 'math-facts.html']) {
         }));
         const want = vw <= 860 ? 1 : 2;
         check(a.cols === want, `${shape}, advanced: layout ${a.cols} column(s), ${want} expected (paste box ${a.box} px wide)`);
+      }
+      if (file === 'math-facts.html' && mode === 'advanced' && shape === 'iPhone 13') {
+        const help = await p.page.$eval('.advanced-help', e => e.innerText);
+        check(/listed in the Level Reference\./.test(help) && !/to the right|on the right|to the left|below/i.test(help),
+          `${shape}, advanced: the help names no side for the Level Reference (${JSON.stringify(help.split('\n')[1])})`);
       }
       const rows = await p.page.evaluate(rowReport);
       const buttons = rows.reduce((n, r) => n + r.buttons, 0);
