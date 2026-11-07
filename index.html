@@ -828,12 +828,12 @@ body { margin: 0; padding: 12px; background: white; }
     <div class="mwg-advanced-layout">
       <div class="mwg-advanced-input-wrap">
         <label for="mwgAdvancedBox">Paste student data</label>
-        <textarea id="mwgAdvancedBox" placeholder="Harrison, 1, addition, 30, 3; Emily, 2, mixed, 40, 5;"></textarea>
+        <textarea id="mwgAdvancedBox" placeholder="Harrison, 1, add2, 30, 3; Emily, 2, mixed, 40, 5;"></textarea>
         <div class="mwg-advanced-help">
           Format: <strong>Name, Number, ProblemType, Count, Grade;</strong><br>
-          Number can be any text (e.g. 2, 14B, Blue) or left empty. The name may be left empty too — it prints a blank Name line (e.g. <strong>, 2, addition, 30, 3;</strong>).<br>
-          Example: <strong>Harrison, 1, addition, 30, 3; Emily, 2, mixed, 40, 5;</strong><br>
-          Problem types: addition, subtraction, multiplication, division, fractions, fractions[add|sub|mul|divf|divw], decimals, decimals[add|sub|mulw|muld|divw|divd], rounding, longdivision, orderofoperations, integers, exponents, scientificnotation, mixed, mixed[type1|type2|...]<br>
+          Number can be any text (e.g. 2, 14B, Blue) or left empty. The name may be left empty too — it prints a blank Name line (e.g. <strong>, 2, add2, 30, 3;</strong>).<br>
+          Example: <strong>Harrison, 1, add2, 30, 3; Emily, 2, mixed, 40, 5;</strong><br>
+          Problem types: add1–add5, sub1–sub5, mul1–mul5, div1–div5 (Levels 1–5 of addition, subtraction, multiplication, division), fractions, fractions[add|sub|mul|divf|divw], decimals, decimals[add|sub|mulw|muld|divw|divd], rounding, longdivision, orderofoperations, integers, exponents, scientificnotation, mixed, mixed[type1|type2|...]<br>
           Counts: 30, 40, 50, 60 — Grades: 1–8
         </div>
       </div>
@@ -1746,6 +1746,14 @@ function bracketList(text) {
   for (var k = 0; k < parts.length; k++) { var v = parts[k].trim(); if (v) names.push(v); }
   return names;
 }
+// The help writes a fraction or decimal operation short (fractions[add|divf]) and Generate Advanced Code writes it
+// whole (fractions[fractions-add]): both read; a name that is neither stays as typed, for the skipped message (S18).
+function opNames(prefix, ops, names) {
+  return names.map(function (v) {
+    for (var k = 0; k < ops.length; k++) if (ops[k].value === prefix + v) return prefix + v;
+    return v;
+  });
+}
 // The first bracket name the entry's grade cannot print, or null. Mixed takes the grade's types and, where the
 // grade has fractions or decimals, their single operations (as its checkboxes do). An unknown name printed
 // Addition Level 1 under the entry's label, and a type the grade lacks ran anyway (S7).
@@ -1790,12 +1798,12 @@ function parseAdvancedInput() {
     var fracMatch = type.match(/^fractions\[([^\]]+)\]$/);
     if (fracMatch) {
       type = "fractions";
-      fracOps = bracketList(fracMatch[1]);
+      fracOps = opNames("fractions-", FRAC_OPS, bracketList(fracMatch[1]));
     }
     var decMatch = type.match(/^decimals\[([^\]]+)\]$/);
     if (decMatch) {
       type = "decimals";
-      decOps = bracketList(decMatch[1]);
+      decOps = opNames("decimals-", DEC_OPS, bracketList(decMatch[1]));
     }
     var validTypes = GRADE_TYPES[grade] || [];
     if (validTypes.indexOf(type) === -1) { errors.push("Entry " + n + " invalid type for grade " + grade + ": " + type); continue; }
