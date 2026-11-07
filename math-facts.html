@@ -1119,6 +1119,11 @@ function showSuccess(message) {
   statusMessages.appendChild(box);
 }
 
+// A printed name in its own direction: a Hebrew name ending in punctuation ("שרה כ.") printed the period at the
+// name's start as a Hebrew reader reads it. <bdi> isolates it, so the name stays at the left of its line and an
+// English name prints as before; an empty name stays an empty line (S18, approved).
+function nameHtml(name) { return name ? "<bdi>" + escapeHtml(name) + "</bdi>" : ""; }
+
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -1414,7 +1419,7 @@ function createWorksheet(name, number, level, problems, isLast, setNumber, setTo
       '<div class="worksheet-header-main" style="grid-template-columns:' + (removeNumberToggle && removeNumberToggle.checked ? "3fr 5fr" : "2fr 1fr 3fr") + '">' +
         '<div class="student-field">' +
           '<span class="student-field-label">Student Name</span>' +
-          '<span class="student-field-value">' + escapeHtml(safeName) + '</span>' +
+          '<span class="student-field-value">' + nameHtml(safeName) + '</span>' +
         '</div>' +
         (removeNumberToggle && removeNumberToggle.checked ? '' :
         '<div class="student-field">' +
@@ -1638,7 +1643,7 @@ function buildAnswerKeySheet(student, problems, isLast, copyNum, copies) {
       '<div class="worksheet-header-main" style="grid-template-columns:' + (removeNumberToggle && removeNumberToggle.checked ? "3fr 5fr" : "2fr 1fr 3fr") + '">' +
         '<div class="student-field">' +
           '<span class="student-field-label">Student Name</span>' +
-          '<span class="student-field-value">' + escapeHtml(student.name || "") + '</span>' +
+          '<span class="student-field-value">' + nameHtml(student.name || "") + '</span>' +
         '</div>' +
         (removeNumberToggle && removeNumberToggle.checked ? '' :
         '<div class="student-field">' +
