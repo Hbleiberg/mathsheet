@@ -5,6 +5,9 @@
 // so under ~762 px it overflowed on both sides and only the right side scrolled: Add Student and half of
 // Generate Advanced Code were unreachable on every phone in portrait. At 1280 px each row stays one line.
 // Fails on the pages before the fix (`--ref e2bb697`).
+// Arm 2 — index.html's responsive rules (≤860 the Advanced box stacks over its reference card, ≤700 the roster
+// grid takes two columns, ≤480 one): they lost to the injected base rules appended after the static sheet, so
+// a phone showed five 60 px roster fields and a 46 px paste box. Fails on `--ref 8e40f96`.
 //   node scripts/loop/probes/S17-phone-layout.mjs [--only <file>] [--ref <commit>]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, devices, ROOT } from '../harness.mjs';
@@ -46,8 +49,27 @@ for (const file of ['index.html', 'math-minute.html', 'math-facts.html']) {
       await p.page.route(new RegExp(`/${file.replace('.', '\\.')}$`), r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body }));
       await p.page.reload({ waitUntil: 'load' }); await p.page.waitForSelector(`${p.spec.students} ${p.spec.entry}`);
     }
+    if (file === 'index.html') {
+      const vw = (device.viewport || {}).width;
+      const g = await p.page.evaluate(() => {
+        const grid = document.querySelector('.mwg-student-grid');
+        return { cols: getComputedStyle(grid).gridTemplateColumns.split(' ').length,
+          narrowest: Math.min(...[...grid.querySelectorAll('input, select')].filter(e => e.offsetParent).map(e => Math.round(e.getBoundingClientRect().width))) };
+      });
+      const want = vw <= 480 ? 1 : vw <= 700 ? 2 : 5;
+      check(g.cols === want, `${shape}: roster grid ${g.cols} column(s), ${want} expected at ${vw} px (narrowest field ${g.narrowest} px)`);
+    }
     for (const mode of ['standard', 'advanced']) {
       if (mode === 'advanced') await p.page.click(p.spec.modeToggle);
+      if (file === 'index.html' && mode === 'advanced') {
+        const vw = (device.viewport || {}).width;
+        const a = await p.page.evaluate(() => ({
+          cols: getComputedStyle(document.querySelector('.mwg-advanced-layout')).gridTemplateColumns.split(' ').length,
+          box: Math.round(document.querySelector('#mwgAdvancedBox').getBoundingClientRect().width),
+        }));
+        const want = vw <= 860 ? 1 : 2;
+        check(a.cols === want, `${shape}, advanced: layout ${a.cols} column(s), ${want} expected (paste box ${a.box} px wide)`);
+      }
       const rows = await p.page.evaluate(rowReport);
       const buttons = rows.reduce((n, r) => n + r.buttons, 0);
       const outside = rows.flatMap(r => r.outside);

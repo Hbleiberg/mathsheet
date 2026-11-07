@@ -681,17 +681,17 @@ body { margin: 0; padding: 12px; background: white; }
 }
 .mwg-ak-num { color: #888; font-size: 11px; }
 
-/* ── Responsive ── */
+/* ── Responsive ── (each rule carries #mwg-app: injectStyles() appends the base rules after this sheet, S17) */
 @media (max-width: 860px) {
-  .mwg-advanced-layout { grid-template-columns: 1fr; }
-  /* centred and nowrap, the row's left end could not be scrolled to on a phone (S17); the id outranks the injected rule */
+  #mwg-app .mwg-advanced-layout { grid-template-columns: 1fr; }
+  /* centred and nowrap, the row's left end could not be scrolled to on a phone (S17) */
   #mwg-app .mwg-button-row { flex-wrap: wrap; }
 }
 @media (max-width: 700px) {
-  .mwg-student-grid { grid-template-columns: 1fr 1fr; }
+  #mwg-app .mwg-student-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 480px) {
-  .mwg-student-grid { grid-template-columns: 1fr; }
+  #mwg-app .mwg-student-grid { grid-template-columns: 1fr; }
 }
 
 /* ══════════════════════════════════════
