@@ -578,6 +578,10 @@ margin-top:12px;
     grid-template-columns:1fr;
   }
 
+  .button-row{
+    flex-wrap:wrap;   /* centred and nowrap, the row's left end could not be scrolled to on a phone (S17) */
+  }
+
   .level-reference-grid{
     grid-template-columns:minmax(0,1fr) minmax(0,1fr);
     gap:6px 12px;
