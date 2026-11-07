@@ -773,3 +773,7 @@ Header line and Name blank hints are `title`-only (the S12 P4).
 
 **Controls.** `S17-phone-layout --ref e2bb697` fails 20 (arm 1), `--ref 8e40f96 --only index.html` fails 8
 (arm 2), `--ref 13bcc9b --only math-facts.html` fails 1 (arm 3); the desktop one-line check passes on both sides.
+
+**Seen on the contact sheet afterwards.** After the validation box's Fix, the red "missing" borders stay on fields
+the teacher then fills, until the next Generate clears them: with every field filled, 9 still red on index.html,
+3 on each twin (scratch `s17/red.mjs`, change events fired). Queued as a three-page P3.
