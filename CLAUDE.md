@@ -222,6 +222,8 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
     Student Name line — never skip a student or flag them as invalid for a missing name.
   - **A long Student Name shrinks to fit its line** (`fitLongNames()` at the end of every generate, S9):
     down to 11 px (then "…"), on the 18 px name's baseline; a name that fits gets no style.
+  - **A printed name sits in a `<bdi>`** (`nameHtml()`, S18), so a Hebrew name keeps its punctuation at its own
+    end and stays at the left of its line; an empty name stays an empty line. (`index.html`'s half is queued.)
   - **"Name blank"** (`nameBlankToggle`, helper `isNameBlank()`): prints an empty Student
     Name line on every worksheet even when a name is entered (answer keys still show the
     name). Student Number is always free text — never validate it as numeric.
@@ -233,6 +235,8 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   ```js
   { inputMode, worksheetsPerStudent, answerKey, removeNumber, nameBlank, headerLine, advancedInput, standardStudents }
   ```
+  Generate never saves: after Generate & Print or Save PDF, a roster that is not the saved one gets the notice "This
+  roster isn't saved. Click Save Roster to keep it for next time." (`remindUnsavedRoster()`, S18).
 
 ## Known exceptions (recognize, don't copy)
 
@@ -242,7 +246,8 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   the grid is variable (`mwg-cols-N` / `mwg-rows-N`, plus a `mwg-horiz-grid` for inline
   problems); advanced input is **5 fields** — `Name, Number, Type, Count, Grade;` with
   optional brackets (`mixed[…]`, `fractions[…]`, `decimals[…]`, `|`-separated; a name may hold commas — all
-  but the last four fields, S3); PDF saves as
+  but the last four fields, S3); the Type is a level code (`add1`–`add5` … `div1`–`div5`) or a named type, and the
+  fraction / decimal brackets take an operation short or whole (`add` or `fractions-add`, S18); PDF saves as
   `worksheets.pdf`; storage key `mwgRosterData_v2`, its roster saved under `students` and no `headerLine` yet (S13). Its print/PDF/color values still match
   the standard above. Don't propagate the `mwg-`/Georgia/5-field patterns to new pages.
 - **`mwg.js`** is standalone legacy code, **loaded by nothing**. It uses `{ html, answer }`
