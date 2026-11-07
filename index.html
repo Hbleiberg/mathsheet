@@ -2340,8 +2340,26 @@ function nameLineHeight(field, size) {
   return 2 * (at18 - at0);
 }
 
+// A class typed in and printed was gone at the next visit unless Save Roster was clicked, and nothing said so (S18,
+// approved): after Generate & Print or Save PDF, a roster that is not the saved one gets a notice under any message
+// shown. Nothing is saved without the click; with storage denied, Save Roster cannot help, so there is no notice.
+function remindUnsavedRoster() {
+  var saved;
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; } catch (e) { return false; }
+  var unsaved = inputMode === "advanced"
+    ? (saved.advancedInput || "").trim() !== advancedBox.value.trim()
+    : JSON.stringify(saved.students || []) !== JSON.stringify(collectRoster());
+  if (!unsaved) return false;
+  var box = document.createElement("div");
+  box.className = "mwg-notice-box";
+  box.textContent = "This roster isn't saved. Click Save Roster to keep it for next time.";
+  statusDiv.appendChild(box);
+  return true;
+}
+
 function generateAndPrint() {
   clearStatus(); generate();
+  if (resultsDiv.querySelector(".mwg-worksheet") && remindUnsavedRoster()) statusDiv.scrollIntoView({ behavior: "smooth", block: "start" });
   setTimeout(function() {
     if (!resultsDiv.querySelector(".mwg-worksheet")) return;
     var originalParent=resultsDiv.parentNode, originalNext=resultsDiv.nextSibling;
@@ -2443,6 +2461,7 @@ function capturePdf(sheets) {
       jsPDFObj.save("worksheets.pdf");
       pdfDone();
       showSuccess("PDF saved!");
+      remindUnsavedRoster();
       return;
     }
 

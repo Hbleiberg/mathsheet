@@ -1668,9 +1668,27 @@ function nameLineHeight(field, size) {
   return 2 * (at18 - at0);
 }
 
+// A class typed in and printed was gone at the next visit unless Save Roster was clicked, and nothing said so (S18,
+// approved): after Generate & Print or Save PDF, a roster that is not the saved one gets a notice under any message
+// shown. Nothing is saved without the click; with storage denied, Save Roster cannot help, so there is no notice.
+function remindUnsavedRoster() {
+  var saved;
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; } catch (e) { return false; }
+  var unsaved = inputMode === "advanced"
+    ? (saved.advancedInput || "").trim() !== advancedInputBox.value.trim()
+    : JSON.stringify(saved.standardStudents || []) !== JSON.stringify(collectStandardRoster());
+  if (!unsaved) return false;
+  var box = document.createElement("div");
+  box.className = "notice-box";
+  box.textContent = "This roster isn't saved. Click Save Roster to keep it for next time.";
+  statusMessages.appendChild(box);
+  return true;
+}
+
 function doGenerateAndPrint() {
   clearStatusMessages();
   generateWorksheets();
+  if (results.querySelector(".worksheet") && remindUnsavedRoster()) statusMessages.scrollIntoView({ behavior: "smooth", block: "start" });
   setTimeout(function () {
     if (results.querySelector(".worksheet")) {
       var originalParent = results.parentNode;
@@ -1758,6 +1776,7 @@ function capturePdf(sheets) {
       jsPDFObj.save("math-minute-worksheets.pdf");
       pdfDone();
       showSuccess("PDF saved!");
+      remindUnsavedRoster();
       return;
     }
     showSuccess("Making your PDF: page " + (idx + 1) + " of " + sheetArray.length + "...");
