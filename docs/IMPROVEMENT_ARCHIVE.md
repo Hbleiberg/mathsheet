@@ -481,3 +481,34 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ Queues: shared first touches — JPEG 0.8 (approved S2; `--cdn` bytes and a zoomed raster), the code panel under the button row (S5), reduced motion (P4), the target sizes (P4, now with index's 23 px panel buttons), the favicon (P4, gate 3). index.html — the ops-panel labels (C, S10; the grid's `input{width:100%}` is part of it), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade / count parse (S11), the per-operation decimal key zeros (S11), the `students` payload key (P4), the panels' group context (P4, S16).
 ⚑ New probe (S16): `S16-focus` (`--ref 196dd4a` fails 27; `--ref 6daf036` fails the 3 name checks). Arm R's set for S17 is S15-head, S15-unreadable-roster and S16-focus. Traps: a `display:none` node has no accessible name (read names with the panel open); an inline style set as `rgb(204,0,0)` reads back as `rgb(204, 0, 0)`, so attribute selectors on colours silently miss.
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S16 asked nothing about it); build a seed only when the maintainer names one.
+
+## S18 (2026-11-07) — pass H (teacher walkthrough) on index.html; three fixes, pushed to `main`
+
+- Run on `main` (local `main` at `origin/main`, 1f80a43); each fix pushed as it landed.
+- Arm R: the smoke, S16-focus and S17-phone-layout green.
+- Pass H on index.html (scratch `s18/walk.mjs`, `walk2.mjs`, `walk3.mjs`, `walk4.mjs`): a class of 22 built by real
+  clicks and keys (Hebrew names, two students on other levels, an IEP student, a key for a parent helper, a
+  substitute's blank sheets), then the Advanced box as its help teaches it. Measurements in loop-findings S18.
+- Gates (one call, four questions, every answer the recommended one): the Advanced help → name the codes and read
+  the help's bracket spelling; the unsaved roster → a notice after Generate, nothing saved without the click; Fill
+  Down over set rows → confirm first (queued); a Hebrew name's punctuation → `<bdi>`, the name stays left.
+- Fixes: index's Advanced help and short bracket names (e71f8fc); the unsaved-roster notice on all three pages
+  (fde4b66); the twins' printed name in a `<bdi>` (36f71e4). Every page then stood on its two-touch cap, so index's
+  `<bdi>` half and Fill Down's confirm wait as approved candidates.
+- Found on the artifact while proving 36f71e4, and logged P2: Save PDF cuts an 11 px-floor name mid-letter with no
+  "…", and a long Hebrew name loses its first letter (the same before the change).
+
+### Done rows archived from the ledger (S13, verbatim)
+
+- [x] S13 | 2026-11-06 | 854a805 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S13-escape-html.mjs | the escaping helper writes the apostrophe as `&#x27;` as the standard says (its step replaced `'` with itself since S0: no live sink, but a gap the smoke's XSS arm could not see); one line on all three pages | S13-escape-html: the helper lifted from each page escapes all five characters (fails 3 on aadebcc); a name with every special character round-trips as typed; smoke
+- [x] S13 | 2026-11-06 | 12c44be | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S13-gencode-notice.mjs | the Generate Advanced Code empty-roster notice says what the code needs (the twins said "with a name and level" though a name is optional; index "complete student"); approved S13 (gate 2) | S13-gencode-notice: a name and no level shows the notice and no panel, a level and no name opens the panel with the empty name first (fails 3 on 854a805); smoke
+- [x] S13 | 2026-11-06 | 074ec5e | CLAUDE.md | the saved-payload line lists `headerLine` (saved since S6 / S7) and index's exceptions name its `students` roster key and missing header line | doc only
+- [x] S13 | 2026-11-06 | — | docs/IMPROVEMENT_LOG.md, docs/loop-findings.md | pass F on all three pages (the twins diffed line by line; index compared with the standard affordance by affordance): the twins identical outside their selectors, index matching in value but for its known exceptions; four index strings approved and queued; gates: notice wording → say what is needed; copy drift → index takes the standard's | ledger, loop-findings S13
+
+### Previous handoff (S17 → S18), verbatim
+
+**Next session (S18):** S17 ran on `main` (local `main` reset to `origin/main` at e2bb697, which matched the session's assigned branch; the remote `claude/awesome-meitner-kkmh8h` was never created) and pushed each fix there: 8e40f96, 13bcc9b, 13b7c75 and the close-out are live on GitHub Pages. Work on `main` again: one commit per iteration, each push a deploy.
+⚑ next: H on index.html — the never-run cells are D on math-minute (S12's shared blocks, the twins identical outside their selectors, S13), H everywhere and M on index and math-minute. H has never run anywhere and is the feature-seed intake (the micro-feature question rests under Awaiting), so H first, on index.html, the page with the most teacher-facing surface; M on index next (its phone layout was fixed in S17, its own Mixed / ops panels at phone width only spot-checked).
+⚑ Queues: shared first touches — the 16 px phone fields (P3, S17: iOS zooms a focused field under 16 px; prove the computed size at ≤560 / ≤480 px and desktop unchanged), JPEG 0.8 (approved S2; `--cdn` bytes and a zoomed raster), the code panel under the button row (S5), reduced motion (P4), the target sizes (P4), the favicon (P4, gate 3), the sideways sheet preview on phones (P4, S17). index.html — the ops-panel labels (C, S10), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade / count parse (S11), the per-operation decimal key zeros (S11), the `students` payload key (P4), the panels' group context (P4, S16).
+⚑ New probe (S17): `S17-phone-layout` (`--ref e2bb697` fails 20, `--ref 8e40f96` fails index's 8, `--ref 13bcc9b` fails math-facts' 1). Arm R's set for S18 is S16-focus and S17-phone-layout. Trap: index.html's static `<style>` loses to `injectStyles()` at equal specificity (the injected sheet is appended later), so any static rule meant to override an injected one needs `#mwg-app`; measure the computed style, never trust the source.
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S17 asked nothing about it); build a seed only when the maintainer names one.

@@ -777,3 +777,56 @@ Header line and Name blank hints are `title`-only (the S12 P4).
 **Seen on the contact sheet afterwards.** After the validation box's Fix, the red "missing" borders stay on fields
 the teacher then fills, until the next Generate clears them: with every field filled, 9 still red on index.html,
 3 on each twin (scratch `s17/red.mjs`, change events fired). Queued as a three-page P3.
+
+## S18 (2026-11-07) — pass H (teacher walkthrough) on index.html, the frictions measured on all three pages
+
+**Method.** Real clicks and keys at 1280 × 900 (scratch `s18/walk.mjs`): Student 1 filled by hand (Avi Cohen, 1,
+Grade 3, Multiplication Level 2, 40), Add Student × 19, Fill Down, 21 names typed (five Hebrew: "יעל לוי",
+'מאיר כ"ץ', "שרה בת-אל", "רחל פרידמן.", "אורי (אורי) כהן"), Student 7 moved to Grade 2 Addition 2, Student
+15 to Grade 4 Division 2, the IEP student's counts read, Print Answer Key, Generate & Print, then a reload with no
+Save Roster. `walk2.mjs` repeated the save and Fill Down findings on the twins, `walk3.mjs` / `walk4.mjs` pasted
+every example and type the Advanced help names.
+
+**Building the class: 52 actions, and gone on reload.** No autosave on any page: Generate & Print, then a
+reload, gives three empty rows and an empty storage (`[]`) on all three pages. Shipped (fde4b66, approved): a
+notice after Generate & Print or Save PDF when the roster on screen is not the saved one (standard rows by
+`JSON.stringify` against the saved list, Advanced by the trimmed text; storage denied → no notice).
+
+**The Advanced help taught a format the page rejects.** The help was written for mwg.js's types: its placeholder,
+its Example line and its empty-name example ("…, addition, 30, 3;") were each skipped as "invalid type for grade
+3: addition", the first four names of its type list ("addition, subtraction, multiplication, division") at every
+grade, and its brackets as written ("fractions[add|sub]" → "invalid type for grade 5: add"; the page took only
+"fractions[fractions-add]", the spelling Generate Advanced Code writes). No level code (add1 … div5) appeared
+anywhere in the help. Fixed (e71f8fc, approved): the help names the codes; both bracket spellings read.
+
+**Hebrew names.** "רחל פרידמן." printed its period at the name's right, the start for a Hebrew reader (the
+field's base direction is the page's); parentheses rendered correctly. `<bdi>` fixes the order and keeps the name
+at the left of its line; `dir="auto"` on the span would right-align it (offered as the second option). Shipped on
+the twins (36f71e4); the real print and the real cdnjs Save PDF were rasterized before and after (scratch
+`s18/bidi-artifact.mjs`): the Hebrew names corrected in both, "Avi Cohen." and every other header pixel identical.
+
+**Save PDF and long names (logged P2).** On the same rasters: a name still too long at the 11 px floor ends in "…"
+in print but is cut mid-letter in Save PDF ("Alexandria Montgomery-Washington th", "Chaya Mushka Bat-Sheva
+Schneerson-(") — html2canvas draws no `text-overflow` ellipsis — and "אלישבע רחל בת-שבע פרידמן-גולדשטיין.", which
+fits at 11 px in print, loses its first letter in the PDF. Identical before and after 36f71e4.
+
+**Fill Down.** It copies Student 1's grade / type / count (the level on the twins) over every row, including
+rows set differently (before 2,2,8 → after 2,2,2 on index; 1,1,21 → 1,1,1 and +0+1,+0+1,mixmd60 → all +0+1 on
+the twins), with "Settings filled down from Student 1." and no undo. So the order matters: fill first, then set
+the exceptions, and a later Fill Down for a new student resets them. Approved S18: confirm first; queued.
+
+**Smaller frictions.** Add Student numbers from the last row only: Student 1 = 1, rows 2–22 blank (the twins do not
+number at all; P4). A Grade change keeps a still-valid type and count (Student 7: mul2 / 40 kept at Grade 2). The
+smallest count is 30 on every page (index's VALID_COUNTS; the twins' rows-3), so an IEP sheet of 20 is the Large
+print seed. Seven Tab presses from one name to the next (number, grade, type, count, the next row's Duplicate and
+Delete). A names column pasted into Advanced is skipped line by line ("needs 5 fields"): the Paste names seed.
+Generate Anyway prints the complete rows and drops a half-filled one silently, but the box listed it just before.
+
+**Clean.** Enter in a name field submits nothing (two text fields per row block implicit submission). Keys print
+after all the sheets (22 S then 22 K), so a parent helper's stack is one range. A blank-name row with 5 per student
+gives a substitute 5 unnamed sheets (Duplicate for more); Name blank empties every sheet's name line and keeps the
+keys named. 0 page errors throughout.
+
+**Controls.** `S18-advanced-help --ref 1f80a43` fails 7, `S18-unsaved-reminder --ref e71f8fc` fails 12 (the
+storage-denied arm asserts the denial took), `S18-hebrew-name --ref fde4b66` fails 8. `S9-name-fit` failed its
+byte-identical arm against HEAD while 36f71e4 was uncommitted (every name now carries `<bdi>`), green once committed.
