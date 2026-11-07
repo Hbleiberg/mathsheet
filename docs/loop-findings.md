@@ -729,3 +729,47 @@ the box. The fix matches the computed `style.border` with a regex and focuses th
 **Controls.** `S16-focus --ref 196dd4a` fails 27 (focus on body everywhere, the panel opening without focus,
 Escape idle, no name); `--ref 6daf036` fails the 3 name checks only. A `display:none` node has no accessible
 name: the name arm reads with the panel open (a trap for the Probe rules).
+
+## S17 (2026-11-07) — pass M (mobile & touch) on math-facts.html, the shared rows measured on all three
+
+Method: scratch `s17/m-audit.mjs` (Playwright's `iPhone SE`, `iPhone 13`, `iPhone 13 landscape`, `iPad Mini`,
+`iPad Mini landscape` descriptors on Chromium — no WebKit in the sandbox — and a 350 × 1400 touch viewport for the
+production frame; five states: fresh, the validation box, the code panel open, Advanced mode, after a generate;
+per state the document's scroll width, every element past the viewport, every scrolling box and the children it
+cannot reach at `scrollLeft` 0, every control's box, font size and `inputmode`, fixed elements, `title`-only
+hints); `s17/rows.mjs` (the button rows and field fonts on all three pages); `s17/iframe-m.mjs` (each page inside a
+real cross-origin 100 % × 1400 px iframe, 20 px column padding, on an iPhone 13: the frame is 350 px wide).
+
+**The button row** (`.button-row` / `.mwg-button-row`: `nowrap`, `overflow-x:auto`, `justify-content:center`):
+the five roster buttons are 746 px wide with their gaps, so under a ~752 px box (a ~762 px viewport) the row
+overflows on both sides, and a scroll box cannot scroll to its negative side. Unreachable at `scrollLeft` 0 on
+every page: iPhone SE, iPhone 13 and the 350 px frame — Add Student wholly (−221…−116 px at 320 px), Generate
+Advanced Code half; Clear Current / Clear Saved Roster past the right edge (scrollable, but no visible scrollbar
+on a touch screen); Advanced mode cut Save Roster. iPhone 13 landscape (734 px box) cut Add Student by 6 px on
+the twins; index's box (726 px) holds its narrower Georgia row. iPad Mini and desktop: fits. Fixed (8e40f96) by
+wrapping in the ≤860 px query; desktop screenshots at 1280 / 1024 / 880 px pixel-identical before and after.
+
+**index.html's responsive block was dead at every width.** `injectStyles()` appends `.mwg-student-grid` (five
+`1fr` columns) and `.mwg-advanced-layout` (`minmax(0,1.5fr) minmax(280px,1fr)`) after the static sheet, so the
+static ≤860 / ≤700 / ≤480 rules lost at equal specificity: an iPhone 13 showed five 60 px roster columns (the
+selects read "Gra", "Sele", "Cou"; 38 px on an iPhone SE) and a 46 px paste box (18 px on the SE) beside a
+280 px Grade Reference. Fixed (13bcc9b) with `#mwg-app` on the three rules; the Mixed and Fraction-ops panels fit
+at 320 and 390 px with nothing past the edge. The S10 ops-label P3 is the same mechanism.
+
+**Clean.** The code panel (340 px textarea, Copy / Use / Close 34 px tall, Close wraps to its own line at 390 px)
+and the validation box (Fix / Generate Anyway) fit at every shape; opening the panel focuses the read-only
+textarea inside the viewport (344–464 of 568 px on the SE; read-only, so no keyboard). No `position:fixed`
+element anywhere, so the keyboard has nothing to cover; the student number is `type="text"` with no `inputmode`.
+The Level Reference card fits at 320 px (its `min-width:250px` grid inside 278 px). No horizontal document scroll
+before a generate at any shape; 0 page errors; Generate & Print reaches `window.print` on every shape (mobile
+print preview itself is the browser's and was not exercised).
+
+**Queued.** Every roster field, select and the paste box is 14 px (index's too): iOS Safari zooms the page when
+a field under 16 px takes focus — documented WebKit behaviour, not reproducible on Chromium; the fix is 16 px in
+the phone query, proved by computed size. After a generate the 1056 px sheets give the page (and the iframe) a
+1064 px scroll width at every shape under 1064 px, the iPad in landscape included. Controls at phone width:
+buttons 34 px tall, fields 36 px, the three checkboxes 16 px, Duplicate / Delete 16 px (the target P4); the
+Header line and Name blank hints are `title`-only (the S12 P4).
+
+**Controls.** `S17-phone-layout --ref e2bb697` fails 20 (arm 1), `--ref 8e40f96 --only index.html` fails 8
+(arm 2), `--ref 13bcc9b --only math-facts.html` fails 1 (arm 3); the desktop one-line check passes on both sides.

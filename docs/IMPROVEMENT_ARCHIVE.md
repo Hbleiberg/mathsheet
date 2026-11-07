@@ -453,3 +453,31 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ Queues: shared first touches — the D P3 (focus after Delete / Close / Fix, Escape on the code panel), JPEG 0.8 (approved S2; `--cdn` bytes and a zoomed raster), the code panel under the button row (S5), reduced motion and the 16 px links (P4), the favicon (P4, gate 3). index.html — the ops-panel labels (C, S10), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade / count parse (S11), the per-operation decimal key zeros (S11), the `students` payload key (P4).
 ⚑ New probes (S15): `S15-head` (`--ref 658ede3` fails 6) and `S15-unreadable-roster` (`--ref 69deb36` fails 12). Arm R's set for S16 is S14-index-copy, S15-head and S15-unreadable-roster. Traps: the harness `storage` seed re-plants on every navigation (plant by hand for a "next load" check); the production page sits in a 1400 px cross-origin iframe, so M and B should also run inside one (`s15/iframe-probe.mjs` in the scratchpad shows the shape).
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S15 asked nothing about it); build a seed only when the maintainer names one.
+
+## S17 (2026-11-07) — pass M (mobile & touch) on math-facts.html; three fixes, pushed to `main`
+
+- Run on `main`: the session's assigned branch matched `origin/main` (e2bb697), local `main` was reset to it, and
+  each fix was pushed to `main` as CLAUDE.md and the S1 ratification say.
+- Arm R: the smoke (60 checks), S15-head, S15-unreadable-roster and S16-focus green.
+- Pass M on math-facts.html (scratch `s17/m-audit.mjs`: iPhone SE, iPhone 13 and iPad Mini in both orientations,
+  a 350 px frame; fresh, validation box, code panel, Advanced, results): the roster's button row cut Add Student
+  on every phone, and `s17/rows.mjs` found the same on index.html and math-minute.html; index.html's responsive
+  block measured dead at every width. Measurements in loop-findings S17.
+- Fixes: the button rows wrap at ≤860 px on all three pages (8e40f96); index's three responsive rules carry
+  `#mwg-app` and apply again (13bcc9b); the math-facts help line drops "to the right" (13b7c75, approved).
+  index.html and math-facts.html then stood on their caps; math-minute's slot went unused rather than split the
+  queued three-page 16 px change.
+- Gates: one asked — the help line ("to the right") → drop the direction.
+- Candidates: the 16 px phone fields (P3) and the sideways sheet preview (P4) added; three found and fixed.
+
+### Done rows archived from the ledger (S12, verbatim)
+
+- [x] S12 | 2026-11-06 | 07f115f | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S12-a11y.mjs | the notices are live regions (the status, error and counter boxes and the validation box changed in silence for a screen reader): polite regions, the validation box an alert, `aria-busy` through the PDF page counts | S12-a11y arm 2: polite / alert in the accessibility tree, a real PDF busy through every count and clear before the result; 12 fails on 4b10d20; smoke
+
+### Previous handoff (S16 → S17), verbatim
+
+**Next session (S17):** S6–S16 reached `main` on 2026-11-06 (the maintainer: "Push to main"; `main` fast-forwarded to 7867a4f, draft PR Hbleiberg/mathsheet#5 closed as merged, branch `claude/clever-davinci-hhh4iz` retired). S17 works on `main` again, as CLAUDE.md says: one commit per iteration, pushed to `main`. GitHub Pages publishes `main` into mathsheet.io's iframes (CLAUDE.md, S15), so every push is a deploy; `--cdn` close-outs matter accordingly.
+⚑ next: M on math-facts.html — the never-run cells are D on math-minute, H and M everywhere. D on math-minute would re-measure S12's shared blocks (the twins are identical outside their selector systems, S13), so M first: it has never run anywhere, and the production frame is 100 % wide and a fixed 1400 px tall, so phone widths need a look (gate 4 for anything that changes desktop; phone screenshots at deviceScaleFactor 2); then H on index.html (the feature-seed intake; the micro-feature question rests under Awaiting).
+⚑ Queues: shared first touches — JPEG 0.8 (approved S2; `--cdn` bytes and a zoomed raster), the code panel under the button row (S5), reduced motion (P4), the target sizes (P4, now with index's 23 px panel buttons), the favicon (P4, gate 3). index.html — the ops-panel labels (C, S10; the grid's `input{width:100%}` is part of it), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade / count parse (S11), the per-operation decimal key zeros (S11), the `students` payload key (P4), the panels' group context (P4, S16).
+⚑ New probe (S16): `S16-focus` (`--ref 196dd4a` fails 27; `--ref 6daf036` fails the 3 name checks). Arm R's set for S17 is S15-head, S15-unreadable-roster and S16-focus. Traps: a `display:none` node has no accessible name (read names with the panel open); an inline style set as `rgb(204,0,0)` reads back as `rgb(204, 0, 0)`, so attribute selectors on colours silently miss.
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S16 asked nothing about it); build a seed only when the maintainer names one.
