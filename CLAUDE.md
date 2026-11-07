@@ -72,6 +72,9 @@ content="noindex">` and keep only `lang`, the charset, the viewport tag and a `<
   Add Student when the roster is rebuilt); the Advanced Code panel opens with focus in its textarea (named by its title
   through `aria-labelledby`), Close and Escape return it to the opener, Use in Advanced Input lands in the Advanced box;
   Fix focuses the first highlighted field.
+- **Narrow screens (S17):** at ≤860 px the button rows wrap (a centred `nowrap` row cannot scroll to its left end,
+  which hid Add Student on every phone) and the Advanced layout stacks; at ≤560 px the roster is one column. On
+  `index.html` a static rule that must beat an injected one carries `#mwg-app`, since `injectStyles()` loads last.
 - **Problem objects** — plain data, rendered separately:
   ```js
   { kind: "stack",    operator: "+"|"−"|"×", a, b, answer }   // a over b, ruled line
