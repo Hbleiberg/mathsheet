@@ -38,7 +38,8 @@ for (const file of ['math-minute.html', 'math-facts.html']) {
   pg.on('dialog', d => { asked.push(d.message()); d.accept(); });
   const fresh = async () => { await pg.evaluate(() => localStorage.clear()); await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector('.student-entry'); };
   const read = () => pg.$$eval(LEVEL, v => v.map(s => s.value));
-  const status = () => pg.$eval('#statusMessages', b => b.textContent.trim());
+  // the message sits beside the button since S21 (#fillDownStatus); a page before it wrote to the status box
+  const status = () => pg.evaluate(() => (document.getElementById('fillDownStatus') || document.getElementById('statusMessages')).textContent.trim());
   const fill = async () => { await pg.evaluate(() => { document.getElementById('statusMessages').innerHTML = ''; }); await pg.click('#fillDownButton'); await pg.waitForTimeout(80); };
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
@@ -115,7 +116,7 @@ if (!ONLY || ONLY === 'index.html') {
   };
   const read = () => pg.$$eval('#mwgStudentsContainer .mwg-student-entry', es => es.map(e => ['grade', 'problemType', 'count'].map(k => e.querySelector(`select[name="${k}"]`).value).join('/')
     + ([...e.querySelectorAll('.mwg-frac-op-cb')].length ? ':' + [...e.querySelectorAll('.mwg-frac-op-cb:checked')].length : '')));
-  const status = () => pg.$eval('#mwgStatus', b => b.textContent.trim());
+  const status = () => pg.evaluate(() => (document.getElementById('mwgFillDownStatus') || document.getElementById('mwgStatus')).textContent.trim());
   const fill = async () => { await pg.evaluate(() => { document.getElementById('mwgStatus').innerHTML = ''; }); await pg.click('#mwgFillDownBtn'); await pg.waitForTimeout(80); };
   const fresh = async () => { await pg.evaluate(() => localStorage.clear()); await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector('.mwg-student-entry'); };
   const IMSG = 'Settings filled down from Student 1.';

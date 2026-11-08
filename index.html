@@ -277,7 +277,14 @@ body { margin: 0; padding: 12px; background: white; }
 .mwg-fill-down-row {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 6px;
+}
+.mwg-fill-down-status {
+  color: rgb(35,101,45);
+  font-size: 14px;
+  text-align: right;
 }
 
 /* ── Buttons ── */
@@ -817,6 +824,7 @@ body { margin: 0; padding: 12px; background: white; }
   <!-- Standard input -->
   <div id="mwgStandardSection">
     <div class="mwg-fill-down-row">
+      <span id="mwgFillDownStatus" class="mwg-fill-down-status" aria-live="polite"></span>
       <button type="button" id="mwgFillDownBtn" class="mwg-btn-small">Fill Down Settings ↓</button>
     </div>
     <div class="mwg-student-counter" id="mwgStudentCounter" aria-live="polite">Students: 0</div>
@@ -1019,7 +1027,7 @@ var entryIdCounter = 0;
 var form, studentsContainer, studentCounter, standardSection,
     advancedSection, advancedBox, modeIndicator, toggleModeBtn,
     addStudentBtn, genCodeBtn, saveBtn, clearCurrentBtn, clearSavedBtn,
-    generateBtn, savePdfBtn, fillDownBtn, worksheetsPerStudent, answerKeyToggle,
+    generateBtn, savePdfBtn, fillDownBtn, fillDownStatus, worksheetsPerStudent, answerKeyToggle,
     resultsDiv, statusDiv, errorsDiv, closeModal,
     codeOutput, copyCodeBtn, useCodeBtn, referenceGrid,
     validationBox, validationMsg, validationFix, validationGenerate,
@@ -1065,7 +1073,8 @@ function injectStyles() {
     ".mwg-reference-grid{font-size:13px;line-height:1.6}",
     ".mwg-reference-grade{margin-bottom:6px}",
     ".mwg-reference-grade strong{display:inline-block;min-width:70px}",
-    ".mwg-fill-down-row{display:flex;justify-content:flex-end;margin-bottom:6px}",
+    ".mwg-fill-down-row{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:6px}",
+    ".mwg-fill-down-status{color:rgb(35,101,45);font-size:14px;text-align:right}",
     ".mwg-btn-small{padding:7px 12px;font-size:14px;cursor:pointer;flex:0 0 auto;white-space:nowrap;font-family:Georgia,serif}",
     ".mwg-btn-large{padding:12px 20px;font-size:17px;font-weight:bold;cursor:pointer;font-family:Georgia,serif}",
     ".mwg-error-box{border:1px solid rgb(221,51,51);background:rgb(255,243,243);color:rgb(153,0,0);padding:10px 12px;border-radius:8px;margin-top:12px;white-space:pre-line}",
@@ -1113,6 +1122,7 @@ function assignDomRefs() {
   generateBtn          = document.getElementById("mwgGenerateBtn");
   savePdfBtn           = document.getElementById("mwgSavePdfBtn");
   fillDownBtn          = document.getElementById("mwgFillDownBtn");
+  fillDownStatus       = document.getElementById("mwgFillDownStatus");
   worksheetsPerStudent = document.getElementById("mwgWorksheetsPerStudent");
   answerKeyToggle      = document.getElementById("mwgAnswerKeyToggle");
   resultsDiv           = document.getElementById("mwgResults");
@@ -1540,6 +1550,10 @@ function settingsKey(div) {
   return [e.grade, e.type, e.count, (e.mixedTypes || []).join("|"), (e.fracOps || []).join("|"), (e.decOps || []).join("|")].join(";");
 }
 
+// Fill Down's message sits beside its button (S21): with 22 rows the status box under the roster was ~2,900 px below it,
+// out of sight. A change to the roster clears it, so the rows it names by number never go stale.
+function setFillDownStatus(text) { if (fillDownStatus) fillDownStatus.textContent = text; }
+
 // The rows Fill Down left on their own settings, named after its message (S20, approved, as on the standard pages):
 // " Students 7 and 15 kept their own settings."; one row reads " Student 7 kept its own settings."
 function keptSettingsText(rows) {
@@ -1620,6 +1634,7 @@ function refreshNumbers() {
 
 function updateCounter() {
   studentCounter.textContent = "Students: " + studentsContainer.querySelectorAll(".mwg-student-entry").length;
+  setFillDownStatus("");
 }
 
 function getNextStudentNumber() {
@@ -2722,7 +2737,10 @@ function wireButtons() {
       e.setAttribute("data-fill-from", now);
     }
     entries[0].setAttribute("data-fill-from", now);
-    showSuccess("Settings filled down from Student 1." + keptSettingsText(kept));
+    setFillDownStatus("Settings filled down from Student 1." + keptSettingsText(kept));
+  });
+  ["input", "change"].forEach(function(type) {
+    studentsContainer.addEventListener(type, function() { setFillDownStatus(""); });
   });
   closeModal.addEventListener("click", function() { closeCodePanel(); });
   codePanel.addEventListener("keydown", function(e) { if (e.key === "Escape") { e.preventDefault(); closeCodePanel(); } });

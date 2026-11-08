@@ -497,6 +497,12 @@ margin-top:12px;
 white-space:pre-line;
 }
 
+.fill-down-status{
+color:#23652d;
+font-size:14px;
+text-align:right;
+}
+
 .modal-overlay{
 position:fixed;
 inset:0;
@@ -758,7 +764,8 @@ break-after:avoid !important;
   </div>
 
   <div id="standardInputSection">
-    <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+    <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:6px;">
+      <span id="fillDownStatus" class="fill-down-status" aria-live="polite"></span>
       <button type="button" id="fillDownButton" class="btn-small">Fill Down Settings ↓</button>
     </div>
     <div class="student-counter" id="studentCounter" aria-live="polite">Students: 0</div>
@@ -831,6 +838,7 @@ break-after:avoid !important;
 var studentsContainer = null;
 var addStudentButton = null;
 var fillDownButton = null;
+var fillDownStatus = null;
 var saveRosterButton = null;
 var clearCurrentRosterButton = null;
 var clearSavedRosterButton = null;
@@ -966,6 +974,7 @@ function renderLevelReference() {
 function updateStudentCounter() {
   var count = studentsContainer.querySelectorAll(".student-entry").length;
   studentCounter.textContent = "Students: " + count;
+  setFillDownStatus("");
 }
 
 function getLevelOptions(selectedValue) {
@@ -1812,6 +1821,10 @@ function nameLineHeight(field, size) {
   return 2 * (at18 - at0);
 }
 
+// Fill Down's message sits beside its button (S21): with 22 rows the status box under the roster was ~2,900 px below it,
+// out of sight. A change to the roster clears it, so the rows it names by number never go stale.
+function setFillDownStatus(text) { if (fillDownStatus) fillDownStatus.textContent = text; }
+
 // The rows Fill Down left on their own level, named after its message (S20, approved): " Students 7 and 15 kept their
 // own levels."; one row reads " Student 7 kept its own level."
 function keptLevelsText(rows) {
@@ -1976,6 +1989,7 @@ function assignDomRefs() {
   studentsContainer          = document.getElementById("studentsContainer");
   addStudentButton           = document.getElementById("addStudentButton");
   fillDownButton             = document.getElementById("fillDownButton");
+  fillDownStatus             = document.getElementById("fillDownStatus");
   saveRosterButton           = document.getElementById("saveRosterButton");
   clearCurrentRosterButton   = document.getElementById("clearCurrentRosterButton");
   clearSavedRosterButton     = document.getElementById("clearSavedRosterButton");
@@ -2074,7 +2088,10 @@ function wireButtons() {
       entries[i].setAttribute("data-fill-from", firstLevel);
     }
     entries[0].setAttribute("data-fill-from", firstLevel);
-    showSuccess("Level filled down from Student 1." + keptLevelsText(kept));
+    setFillDownStatus("Level filled down from Student 1." + keptLevelsText(kept));
+  });
+  ["input", "change"].forEach(function (type) {
+    studentsContainer.addEventListener(type, function () { setFillDownStatus(""); });
   });
 
   if (generateAdvancedCodeButton) {
