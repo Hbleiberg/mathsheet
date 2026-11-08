@@ -1966,7 +1966,7 @@ function makeFractions(grade) {
   var ops=grade<=5?["+","\u2212"]:["+","\u2212","\u00d7"];
   var op=randFrom(ops);
   if(op==="+") return {html:horizHtml(fracHtml(a,d)+" + "+fracHtml(b,d)+" ="),answer:fractionStr(a+b,d),kind:"horiz"};
-  if(op==="\u2212"){if(a<b){var t=a;a=b;b=t;} return {html:horizHtml(fracHtml(a,d)+" \u2212 "+fracHtml(b,d)+" ="),answer:fractionStr(a-b,d),kind:"horiz"};}
+  if(op==="\u2212") return makeLikeFracSub(rand(3,9));
   return {html:horizHtml(fracHtml(a,d)+" \u00d7 "+fracHtml(b,d)+" ="),answer:fractionStr(a*b,d*d),kind:"horiz"};
 }
 function makeDecimals(grade) {
@@ -1983,10 +1983,13 @@ function makeFracAdd() {
   var d=rand(2,12),a=rand(1,d-1),b=rand(1,d-1);
   return {html:horizHtml(fracHtml(a,d)+" + "+fracHtml(b,d)+" ="),answer:fractionStr(a+b,d),kind:"horiz"};
 }
-function makeFracSub() {
-  var d=rand(2,12),a=rand(1,d-1),b=rand(1,d-1);
+function makeFracSub() { return makeLikeFracSub(rand(3,12)); }
+// A subtraction of like fractions takes away a smaller one (S6, approved; shipped S21): drawn on their own, 27–34 % of
+// differences were x − x = 0, and a denominator of 2 only ever gave ½ − ½. Every pair of distinct fractions is equally likely.
+function makeLikeFracSub(d) {
+  var a=rand(1,d-1),b; do{b=rand(1,d-1);}while(b===a);
   if(a<b){var t=a;a=b;b=t;}
-  return {html:horizHtml(fracHtml(a,d)+" − "+fracHtml(b,d)+" ="),answer:fractionStr(a-b,d),kind:"horiz"};
+  return {html:horizHtml(fracHtml(a,d)+" \u2212 "+fracHtml(b,d)+" ="),answer:fractionStr(a-b,d),kind:"horiz"};
 }
 function makeFracMul() {
   var d1=rand(2,9),n1=rand(1,d1-1),d2=rand(2,9),n2=rand(1,d2-1);
