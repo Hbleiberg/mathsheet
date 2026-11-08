@@ -76,6 +76,8 @@ content="noindex">` and keep only `lang`, the charset, the viewport tag and a `<
 - **Narrow screens (S17):** at ≤860 px the button rows wrap (a centred `nowrap` row cannot scroll to its left end,
   which hid Add Student on every phone) and the Advanced layout stacks; at ≤560 px the roster is one column. On
   `index.html` a static rule that must beat an injected one carries `#mwg-app`, since `injectStyles()` loads last.
+  A phone's text fields, selects and textareas are 16 px, upright or on its side (`(max-width:560px), (pointer:coarse)
+  and (max-height:500px)`; ≤480 on `index.html`), or iPhone Safari zooms into the field that takes focus (S23).
 - **Problem objects** — plain data, rendered separately:
   ```js
   { kind: "stack",    operator: "+"|"−"|"×", a, b, answer }   // a over b, ruled line
