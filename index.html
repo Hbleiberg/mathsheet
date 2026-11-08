@@ -2339,9 +2339,34 @@ function generate() {
     }
   }
   if (doKey && allAnswers.length) resultsDiv.appendChild(buildAnswerKeySheet(allAnswers, !doKey));
+  fitLongDescriptions();
   fitLongNames();
   // The skipped-entries box stands above the sheets: land on it, so a missing student is explained (S7).
   (parsed.errors.length ? errorsDiv : resultsDiv).scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// A description too long for its box shrinks to fit (approved S4, shipped S22): with copies its end ran under
+// "Worksheet 3 of 5" and a key's "(Key 3 of 5)" was cut by the box (1,055 of 1,510 descriptions, 5 copies with keys).
+// Measured as the names are, one box per header layout; down to 9 px, the branding tag's size (the longest needs
+// 9.5), on its 13 px line height, so the header keeps its height and nothing under it moves. One that fits gets no style;
+// with the Number removed the description's column is "auto", as wide as its text, and is left alone.
+function fitLongDescriptions() {
+  var texts = resultsDiv.querySelectorAll(".mwg-ws-desc-text");
+  var ctx = document.createElement("canvas").getContext("2d"), boxes = {};
+  for (var i = 0; i < texts.length; i++) {
+    var text = texts[i], label = text.nextSibling, key = text.parentNode.parentNode.style.gridTemplateColumns;
+    if (key.indexOf("auto") >= 0) continue;
+    key += "|" + (label && label.className === "mwg-ws-set-label" ? label.textContent : "");
+    if (!boxes[key]) {
+      var cs = getComputedStyle(text);
+      boxes[key] = { room: text.getBoundingClientRect().width, size: parseFloat(cs.fontSize), lineHeight: cs.lineHeight };
+      ctx.font = cs.fontStyle + " " + cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
+    }
+    var box = boxes[key], width = ctx.measureText(text.textContent).width;
+    if (width <= box.room) continue;
+    text.style.fontSize = Math.max(9, Math.floor(box.size * box.room / width * 2) / 2) + "px";
+    text.style.lineHeight = box.lineHeight;
+  }
 }
 
 // A long name shrinks to fit its line instead of being cut with "…" (S9, approved S2). Every name line in one
