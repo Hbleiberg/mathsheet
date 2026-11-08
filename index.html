@@ -2695,6 +2695,14 @@ function clearValidationHighlights() {
   }
 }
 
+// A Grade, Type or Count the validation box marked red loses it once it holds a value, picked or filled down (S24, as
+// on the standard pages since S23): it stayed red until the next Generate, with every field filled (found S17). A field
+// still empty keeps it.
+function clearFilledHighlights() {
+  var fields = studentsContainer.querySelectorAll('[name="grade"], [name="problemType"], [name="count"]');
+  for (var i = 0; i < fields.length; i++) if (fields[i].value && fields[i].style.border) fields[i].style.border = "";
+}
+
 function fallbackCopy(text, successMsg) {
   var ta = document.createElement("textarea");
   ta.value = text;
@@ -2797,10 +2805,11 @@ function wireButtons() {
       e.setAttribute("data-fill-from", now);
     }
     entries[0].setAttribute("data-fill-from", now);
+    clearFilledHighlights();
     setFillDownStatus("Settings filled down from Student 1." + keptSettingsText(kept));
   });
   ["input", "change"].forEach(function(type) {
-    studentsContainer.addEventListener(type, function() { setFillDownStatus(""); });
+    studentsContainer.addEventListener(type, function() { setFillDownStatus(""); clearFilledHighlights(); });
   });
   closeModal.addEventListener("click", function() { closeCodePanel(); });
   codePanel.addEventListener("keydown", function(e) { if (e.key === "Escape") { e.preventDefault(); closeCodePanel(); } });
