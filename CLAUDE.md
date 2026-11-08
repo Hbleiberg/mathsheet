@@ -71,7 +71,8 @@ content="noindex">` and keep only `lang`, the charset, the viewport tag and a `<
   **Focus follows the action (S16):** Delete student moves it to the next row's Delete (the previous row's for the last row,
   Add Student when the roster is rebuilt); the Advanced Code panel opens with focus in its textarea (named by its title
   through `aria-labelledby`), Close and Escape return it to the opener, Use in Advanced Input lands in the Advanced box;
-  Fix focuses the first highlighted field.
+  Fix focuses the first highlighted field; Save PDF, pressed from the keyboard, gives its button focus back when the
+  export ends (`pdfRefocus`, S22: a disabled button drops focus to the page's start).
 - **Narrow screens (S17):** at ≤860 px the button rows wrap (a centred `nowrap` row cannot scroll to its left end,
   which hid Add Student on every phone) and the Advanced layout stacks; at ≤560 px the roster is one column. On
   `index.html` a static rule that must beat an injected one carries `#mwg-app`, since `injectStyles()` loads last.
@@ -225,6 +226,7 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   - **A long Student Name shrinks to fit its line** (`fitLongNames()` at the end of every generate, S9):
     down to 11 px, on the 18 px name's baseline; a name that fits gets no style. Still too long at 11 px, it is cut
     with a written "…" (`endWithEllipsis()`, S19): Save PDF draws no CSS ellipsis, and the name keeps its start.
+    On `index.html` a long description shrinks the same way (`fitLongDescriptions()`, S22), down to 9 px on its line height.
   - **A printed name sits in a `<bdi>`** (`nameHtml()`, S18; `index.html` S19), so a Hebrew name keeps its
     punctuation and its "…" at its own end and stays at the left of its line; an empty name stays an empty line.
   - **Fill Down keeps a row on its own level** (S20, all three pages): the empty rows and the rows still on Student 1's
