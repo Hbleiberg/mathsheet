@@ -3,16 +3,17 @@
 // each read laid out its whole sheet (content-visibility), 452 of 572 ms of a generate for 30 students on 30 types × 5
 // with keys (2.6 s at a quarter of the speed). Those lines are now measured on copies of their headers, one layout.
 // Checks, per shape: the real sheets whose boxes are read while `generate()` runs (the copies not counted) — none with
-// the Number removed, no more than before with it shown; every sheet's HTML is
-// byte for byte what 37af5e4 printed (Math.random seeded): short, long, floor-cut, Hebrew and empty names, Name blank,
-// 1 and 5 copies, keys, the Number shown and removed. Times are printed, not asserted. Fails before the change
-// (`--ref 37af5e4`).
-//   node scripts/loop/probes/S23-name-fit-layout.mjs [--ref <commit>]
+// the Number removed, no more than before with it shown; every name line's size, line height and text are what 37af5e4
+// fitted (Math.random seeded): short, long, floor-cut, Hebrew and empty names, Name blank, 1 and 5 copies, keys, the
+// Number shown and removed. `--identity` also compares every sheet's HTML byte for byte with 37af5e4, which proved S23's
+// change and decays with every later approved change to the sheet's markup (S24's name wrapper: the S23 trap).
+// Times are printed, not asserted. Fails before the change (`--ref 37af5e4`).
+//   node scripts/loop/probes/S23-name-fit-layout.mjs [--ref <commit>] [--identity]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
-const REF = arg('--ref'), BASE = '37af5e4';
+const REF = arg('--ref'), BASE = '37af5e4', IDENTITY = process.argv.includes('--identity');
 const fails = [];
 const check = (ok, msg) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg); };
 const FILE = 'index.html';
@@ -70,6 +71,7 @@ async function run(ref, shape) {
     const res = document.querySelector('#mwgResults'), sheets = [...res.querySelectorAll('.mwg-worksheet, .mwg-answer-key-sheet')];
     return { ms: Math.round(ms), read: [...window.__read].filter(s => s.isConnected).length, sheets: sheets.length,
       html: sheets.map(s => s.outerHTML), extra: res.children.length - sheets.length,
+      names: [...res.querySelectorAll('.mwg-ws-header-main > .mwg-ws-field:first-child > .mwg-ws-field-value')].map(f => (f.getAttribute('style') || '') + '|' + f.textContent),
       shrunk: [...res.querySelectorAll('.mwg-ws-field-value[style]')].length, cut: [...res.querySelectorAll('.mwg-ws-field-value')].filter(f => /…$/.test(f.textContent)).length };
   });
   r.errors = p.errors.slice(); await p.close(); return r;
@@ -84,8 +86,12 @@ for (const shape of SHAPES) {
   // descriptions' and names' one line per layout, as before
   if (shape.noNum) check(now.read === 0, `no real sheet laid out to fit the names (${now.read}; ${BASE}: ${was.read})`);
   else check(now.read <= was.read, `no more real sheets laid out than before (${now.read}; ${BASE}: ${was.read})`);
-  const diff = now.html.findIndex((h, i) => h !== was.html[i]);
-  check(diff < 0 && now.html.length === was.html.length, `every sheet byte for byte as ${BASE} printed it${diff >= 0 ? ` (sheet ${diff + 1} differs)` : ''}`);
+  const nameDiff = now.names.findIndex((h, i) => h !== was.names[i]);
+  check(now.names.length === now.sheets && nameDiff < 0 && now.names.length === was.names.length, `every name line sized, set and cut as ${BASE} fitted it (${now.names.length} lines${nameDiff >= 0 ? `; line ${nameDiff + 1}: ${now.names[nameDiff]} vs ${was.names[nameDiff]}` : ''})`);
+  if (IDENTITY) {
+    const diff = now.html.findIndex((h, i) => h !== was.html[i]);
+    check(diff < 0 && now.html.length === was.html.length, `every sheet byte for byte as ${BASE} printed it${diff >= 0 ? ` (sheet ${diff + 1} differs)` : ''}`);
+  }
   check(now.extra === 0, `nothing left in the results but the sheets (${now.extra})`);
   if (shape.noNum && !shape.blank) check(now.shrunk > 0 && (shape.copies === '1' || now.cut > 0), `the shape has names that shrink (${now.shrunk})${shape.copies === '1' ? '' : ` and names cut at the floor (${now.cut})`}`);
   check(now.errors.length === 0, `0 page errors (${now.errors.join('; ')})`);

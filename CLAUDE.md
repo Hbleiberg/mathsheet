@@ -229,8 +229,10 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
     down to 11 px, on the 18 px name's baseline; a name that fits gets no style. Still too long at 11 px, it is cut
     with a written "…" (`endWithEllipsis()`, S19): Save PDF draws no CSS ellipsis, and the name keeps its start.
     On `index.html` a long description shrinks the same way (`fitLongDescriptions()`, S22), down to 9 px on its line height.
-  - **A printed name sits in a `<bdi>`** (`nameHtml()`, S18; `index.html` S19), so a Hebrew name keeps its
-    punctuation and its "…" at its own end and stays at the left of its line; an empty name stays an empty line.
+  - **A printed name sits in a `<span dir="auto">`** (`nameHtml()`, S18; `index.html` S19), so a Hebrew name keeps its
+    punctuation and its "…" at its own end and stays at the left of its line; an empty name stays an empty line. Not a
+    `<bdi>`: it renders the same, but Chromium's fast innerHTML parser takes no `<bdi>`, which made every generate
+    1.3–1.9× as slow (S24).
   - **Fill Down keeps a row on its own level** (S20, all three pages): the empty rows and the rows still on Student 1's
     earlier level follow it (its level when made, loaded or last filled down, or the first picked: `data-fill-from`),
     the rest keep theirs and are named: "Level filled down from Student 1. Students 7 and 15 kept their own levels."
