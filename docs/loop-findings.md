@@ -882,3 +882,47 @@ its next touch.
 **Controls.** `S19-long-name --ref f9e7b6a` fails 42 (14 a page); `S18-hebrew-name --ref 84025f7 --only index.html`
 fails 4; `S19-fill-down --ref bf9f2c7` fails 10. `S9-name-fit` stayed green before and after each commit (the change
 touches only floor names; its byte-identity arm compares names that fit).
+
+## S20 (2026-11-08) — pass H (teacher walkthrough) on math-minute.html
+
+**Method.** Real clicks and keys at 1280 × 900 (scratch `s20/walk.mjs`, `s20/walk2.mjs`): Student 1 typed by hand (Avi
+Cohen, 1, Level 5), Add Student × 19, Fill Down, 21 names and numbers typed (five Hebrew: "יעל לוי", 'מאיר כ"ץ',
+"שרה בת-אל", "רחל פרידמן.", "אורי (אורי) כהן"), Student 7 (an IEP) moved to Level 1, Student 15 to Level 13, Print
+Answer Key, Generate & Print, Save Roster; then next week (a reload, Student 1 to Level 7, Fill Down), a new student,
+the Hebrew round trip through Generate Advanced Code, a spreadsheet paste, a substitute's blanks.
+
+**Building the class: 112 actions** (1 + 19 Add Student + Fill Down + 21 × (click, name, Tab, number) + the two
+exceptions). Five Tab presses from one name to the next (number, level, the next row's Duplicate and Delete). Add
+Student leaves the number empty (Duplicate adds one): 42 of the 112 actions typed 2…22. Type-ahead in the Level select:
+"5" picks nothing, "05" picks Level 5 (the options read "05 - 40 Addition"; 10–21 work as typed).
+
+**Fill Down after S19 (found, fixed, approved).** The week the class moves up (Student 1 from 5 to 7, then Fill Down),
+S19's question read "Fill Down will change Students 2, 3, 4, … 22, which have their own settings. Continue?" — true
+of 2 of 21; OK reset the IEP student and the advanced one, Cancel left the class on 5. A new student (row 23) and Fill
+Down: "…Students 7 and 15…", and OK reset both while Cancel left the new row empty. Shipped (aafa34e, approved): no
+question; the empty rows and the rows still on Student 1's earlier level follow, a row on its own level keeps it, and
+the message names it; index's half in the same shape (8083292), its settings being grade, type, count, Mixed picks and
+operations.
+
+**A spreadsheet paste (found, fixed, approved).** Three columns copied from a spreadsheet arrive tab-separated: every
+line skipped, the error quoting "Avi Cohen 1 5" (the tabs shown as spaces). "Avi Cohen, 5" (no number field) is
+skipped too (the help shows ", 2, 19;" for an empty name; two fields would be ambiguous: "2, 19"). Shipped (b7eb193, approved): a
+line short of its fields by commas is read by its tabs, a name in two columns joined by a space; a stray tab inside a comma
+line stays whitespace (`S11-robustness`'s "Eli\t, 9, 10"). A spreadsheet row with an empty name cell loses its leading
+tab to the entry's trim and is reported as invalid (not silent).
+
+**Smaller frictions.** With 22 rows the page is 3,144 px tall: Fill Down at y = 146, Add Student at 2,966 and Generate at
+3,014 (rows 113 px), so a new student's Fill Down is a scroll to the top. The sheet header has nothing for the time or
+the score (Name, Number, the description, the branding): the Time / Score seed is the one a timed sheet most lacks.
+The parent helper's 22 keys are one per student (each sheet is dealt on its own): the compact-key seed, on math-minute
+too.
+
+**Clean.** The unsaved-roster notice after Generate & Print (S18); Save → reload restores every level; keys after all
+sheets (22 S then 22 K); the Hebrew names print isolated (S18) and round-trip through Generate Advanced Code and the
+Advanced box unchanged; a substitute's three nameless Level 5 rows × 5 print 15 sheets "Worksheet k of 5"; a named row
+with no level is caught by the validation box ("Student 2: missing Level"). 0 page errors.
+
+**Controls.** `S20-fill-down --ref f14b27e` fails 14 on the twins, `--ref b7eb193 --only index.html` fails 7;
+`S20-spreadsheet-paste --ref aafa34e` fails 30. The first paste shape ("a line with a tab is read by its tabs") failed
+`S11-robustness` 9 times (its "Eli\t, 9, 10" read as two fields); green once reshaped. `S7-bracket-names` (1) and
+`S7-skipped-list` (6) fail on HEAD and on f14b27e alike: stale comparisons, not this session's.

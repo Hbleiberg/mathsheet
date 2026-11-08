@@ -545,3 +545,40 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ Queues: the new P2 first (a long name in Save PDF is cut mid-letter with no "…" on every page, and a long Hebrew name loses its first letter; S18). Approved and waiting: index's Hebrew `<bdi>` (its half of 36f71e4; S18-hebrew-name lists only the twins until then), Fill Down's confirm on all three (S18), JPEG 0.8 (S2), the 30-cap note (S11), the long-header shrink (S4) and no zero fraction differences (S6), the divisor 3 px low (S10). Shared first touches otherwise — the 16 px phone fields (S17), the code panel under the button row (S5), the red border after Fix (S17), reduced motion and target sizes (P4).
 ⚑ New probes (S18): `S18-advanced-help` (`--ref 1f80a43` fails 7), `S18-unsaved-reminder` (`--ref e71f8fc` fails 12), `S18-hebrew-name` (`--ref fde4b66` fails 8). Arm R's set for S19 is S17-phone-layout and the three S18 probes. Trap: `S9-name-fit` compares sheets byte for byte with HEAD, so it fails on any uncommitted change to the printed name markup and passes once committed; a change there is proved by its other arms and the real PDF.
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S18 asked nothing about it); build a seed only when the maintainer names one. H on index refreshed two seeds (Paste names now lists index; Large print notes 30 as the smallest count).
+
+## S20 (2026-11-08) — pass H (teacher walkthrough) on math-minute.html; three fixes, pushed to `main`
+
+- Run on `main` (local `main` at `origin/main`, f14b27e; the assigned `claude/awesome-meitner-kkmh8h` has no remote
+  branch); each fix pushed as it landed.
+- Arm R: the smoke and the three S18 and two S19 probes green.
+- Pass H on math-minute.html (scratch `s20/walk.mjs`, `s20/walk2.mjs`): a class of 22 by real clicks and keys, five
+  Hebrew names, an IEP on Level 1, an advanced student on 13, the key for a parent helper; next week's move up, a new
+  student, the Hebrew round trip, a spreadsheet paste, a substitute's blanks. 112 actions to build the class (42 typed
+  numbers); S19's own Fill Down question was wrong in both weekly uses; a spreadsheet paste skipped line by line.
+- Gates (two, both as recommended): Fill Down → keep a row on its own level, no question, the message names it;
+  spreadsheet paste → read tabs and add a help line.
+- Fixes: the twins' Fill Down keep rule (aafa34e; S20-fill-down supersedes S19-fill-down); the three-page spreadsheet
+  paste (b7eb193; first shaped as "any tab splits", which broke S11-robustness's stray tab, reshaped before commit to
+  "short of its fields by commas"); index's Fill Down half in the same shape (8083292); CLAUDE.md (f3f6a81). Every page
+  then stood on its cap; the fourth slot went unused.
+- Divergence: a `git stash` during a background S11-robustness run spoiled that run (the harness serves the working
+  tree); stopped and rerun alone, green. Recorded as a trap.
+
+### Done rows archived from the ledger (S15, verbatim)
+
+- [x] S15 | 2026-11-06 | 69deb36 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S15-head.mjs | the GitHub Pages copies declare `noindex` (the public pages are mathsheet.io's WordPress pages, which iframe the copies and carry the titles, descriptions and search metadata; approved S15, gate 2); one line on all three pages | S15-head: lang, charset, viewport, title and exactly one robots tag read from each live document (fails 6 on 658ede3); smoke
+- [x] S15 | 2026-11-06 | 77eda9d | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S15-unreadable-roster.mjs | an unreadable saved roster is reported once ("The saved roster could not be read, so the page starts with a blank roster.") and cleared, so the next load is plain (silent and repeating since S0; approved S15, gate 2); the same block on all three pages | S15-unreadable-roster: unparsable JSON and "null" on each page (fails 12 on 69deb36); S11 payload arm green; smoke
+- [x] S15 | 2026-11-06 | d9912f2 | CLAUDE.md, docs/loop-passes.md | the deployment written down: GitHub Pages publishes `main`, mathsheet.io's WordPress pages embed the three files in 1400 px iframes, merging is what reaches teachers; pass L's premise amended | doc only; confirmed by the maintainer (gate, S15)
+- [x] S15 | 2026-11-06 | — | docs/loop-findings.md | pass L on all three pages (the heads, the repo root, the public site and its sitemaps, the GitHub Pages copies, the pages inside a cross-origin iframe): the deployment found, the copies byte-identical to main; print and Save PDF work in the frame; a favicon queued, an auto-height seed; gates: indexing → noindex; unreadable roster → say and clear; deployment → confirmed | scratch s15/l-audit.mjs, s15/iframe-probe.mjs, loop-findings S15
+
+### Per-session line archived from the ledger (S0, verbatim)
+
+- S0 | 2026-11-04 | bootstrap | pass — | fixes 0 | smoke 3/3 green | baselines in loop-findings S0
+
+### Previous handoff (S19 → S20), verbatim
+
+**Next session (S20):** S19 ran on `main` and pushed each fix there: 84025f7, bf9f2c7, c68f197, 81e3d8c and the close-out are live on GitHub Pages. Work on `main` again: one commit per iteration, each push a deploy.
+⚑ next: H on math-minute.html — the never-run cells are D, H and M on math-minute and H on math-facts. H on math-minute first: the feature-seed intake for the timed sheets, on the page with the most never-run cells; D on math-minute after it (S12's shared blocks, the twins identical outside their selectors, S13), then H on math-facts.
+⚑ Queues: approved and waiting — index's Fill Down question (its half of c68f197: a row differing in grade, type or count, or in its ops and Mixed picks), JPEG 0.8 (S2), the 30-cap note (S11), the long-header shrink (S4), no zero fraction differences (S6), the divisor 3 px low (S10). Shared first touches — the 16 px phone fields (S17; index's 16 fields confirmed S19), the code panel under the button row (S5), the red border after Fix (S17), reduced motion and target sizes (P4). Index alone: the ops labels (P3, the pairing unclear at phone width), the Count select's cut text (P4, gate 2 or 4).
+⚑ New probes (S19): `S19-long-name` (`--ref f9e7b6a` fails 42) and `S19-fill-down` (`--ref bf9f2c7` fails 10); `S18-hebrew-name` now covers index (`--ref 84025f7 --only index.html` fails 4). Arm R's set for S20 is the three S18 probes and the two S19 probes. Trap (S19): a script that moves the results for print must put them back where they were (`parentNode` / `nextSibling`): after the app root they lose its scoped `box-sizing`, the header widens and the next generate sizes names differently — S18's "a Hebrew name loses its first letter in the PDF" was that, refuted.
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S19 asked nothing about it); build a seed only when the maintainer names one.
