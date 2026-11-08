@@ -3,8 +3,8 @@
 // starts: the name's base direction was the page's. Each printed name is now isolated in a <bdi>, so the period
 // sits left of the letters, the name stays at the left of its line, an English name ("Avi Cohen.") prints as
 // before, an empty or "Name blank" line stays empty, and a long name still shrinks to fit. Sheets and keys.
-// On math-minute.html and math-facts.html; index.html's half is queued (S18's two touches there were spent).
-// Fails on the pages before the change (`--ref fde4b66`).
+// On math-minute.html and math-facts.html (36f71e4), and index.html since S19 (its half, queued while S18's two
+// touches there were spent). Fails on the pages before the change (`--ref fde4b66`; index alone: `--ref 84025f7`).
 //   node scripts/loop/probes/S18-hebrew-name.mjs [--only <file>] [--ref <commit>]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
@@ -14,9 +14,16 @@ const REF = arg('--ref'), ONLY = arg('--only');
 const fails = [];
 const check = (ok, msg) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg); };
 const NAMES = ['שרה כ.', 'Avi Cohen.', '', 'אלישבע רחל בת-שבע פרידמן-גולדשטיין.'];
+const SEL = {
+  'index.html': { field: '#mwgResults .mwg-ws-header-main > .mwg-ws-field:first-child > .mwg-ws-field-value', add: '#mwgAddStudentBtn',
+    row: '#mwgStudentsContainer .mwg-student-entry', key: '#mwgAnswerKeyToggle', blank: '#mwgNameBlankToggle' },
+  'math-minute.html': { field: '.worksheet .worksheet-header-main > .student-field:first-child > .student-field-value', add: '#addStudentButton',
+    row: '.student-entry', key: '#answerKeyToggle', blank: '#nameBlankToggle' },
+};
+SEL['math-facts.html'] = SEL['math-minute.html'];
 
 // Per name line: where the final character's glyph sits against the rest, and where the ink starts.
-const measure = () => [...document.querySelectorAll('.worksheet .worksheet-header-main > .student-field:first-child > .student-field-value')].map(f => {
+const measure = sel => [...document.querySelectorAll(sel)].map(f => {
   const text = f.textContent, node = (function walk(n) { if (n.nodeType === 3 && n.data) return n; for (const c of n.childNodes) { const t = walk(c); if (t) return t; } return null; })(f);
   if (!node) return { text, html: f.innerHTML };
   const rect = (a, b) => { const r = document.createRange(); r.setStart(node, a); r.setEnd(node, b); return r.getBoundingClientRect(); };
@@ -27,21 +34,21 @@ const measure = () => [...document.querySelectorAll('.worksheet .worksheet-heade
 });
 
 const srv = await serve(); const browser = await launch();
-for (const file of ['math-minute.html', 'math-facts.html']) {
+for (const file of ['index.html', 'math-minute.html', 'math-facts.html']) {
   if (ONLY && ONLY !== file) continue;
   console.log(`${file}${REF ? ` (served from ${REF})` : ''}`);
   const p = await openPage(browser, srv.base, file);
-  const pg = p.page;
+  const pg = p.page, q = SEL[file];
   if (REF) {
     const body = execSync(`git show ${REF}:${file}`, { cwd: ROOT, encoding: 'utf8' });
     await pg.route(new RegExp(`/${file.replace('.', '\\.')}$`), r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body }));
-    await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector('.student-entry');
+    await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector(q.row);
   }
-  await pg.click('#addStudentButton'); await p.spec.prepare(pg);
-  for (let i = 0; i < NAMES.length; i++) await pg.fill(`.student-entry:nth-child(${i + 1}) input[name="studentName"]`, NAMES[i]);
-  await pg.check('#answerKeyToggle');
+  await pg.click(q.add); await p.spec.prepare(pg);
+  for (let i = 0; i < NAMES.length; i++) await pg.fill(`${q.row}:nth-child(${i + 1}) input[name="studentName"]`, NAMES[i]);
+  await pg.check(q.key);
   await pg.click(p.spec.generate); await pg.waitForFunction(() => window.__prints > 0);
-  const lines = await pg.evaluate(measure);
+  const lines = await pg.evaluate(measure, q.field);
   check(lines.length === 8, `${lines.length} name lines measured (4 sheets, 4 keys)`);
   for (const [i, l] of lines.entries()) {
     const where = i < 4 ? `sheet ${i + 1}` : `key ${i - 3}`;
@@ -51,10 +58,10 @@ for (const file of ['math-minute.html', 'math-facts.html']) {
     if (l.text.length > 30) check(parseFloat(l.size) < 18 && !l.clipped, `${where}: the long name shrinks to ${l.size} and fits`);
   }
   // Name blank: every sheet's line empty, the keys keep the names
-  await pg.check('#nameBlankToggle');
+  await pg.check(q.blank);
   const before = await p.prints();
   await pg.click(p.spec.generate); await pg.waitForFunction(n => window.__prints > n, before);
-  const blank = await pg.$$eval('.worksheet .worksheet-header-main > .student-field:first-child > .student-field-value', v => v.map(e => e.innerHTML));
+  const blank = await pg.$$eval(q.field, v => v.map(e => e.innerHTML));
   check(blank.slice(0, 4).every(h => h === '') && blank.slice(4).filter(Boolean).length === 3, `Name blank: the sheets' lines empty, the keys' named (${JSON.stringify(blank)})`);
   check(p.errors.length === 0, `0 page errors (${p.errors.join('; ')})`);
   await p.close();

@@ -1139,6 +1139,10 @@ function esc(text) {
     .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
     .replace(/'/g,"&#x27;");
 }
+// A printed name in its own direction: a Hebrew name ending in punctuation ("שרה כ.") printed the period at the
+// name's start as a Hebrew reader reads it. <bdi> isolates it, so the name stays at the left of its line and an
+// English name prints as before; an empty name stays an empty line (S18, approved; as on the standard pages, S19).
+function nameHtml(name) { return name ? "<bdi>" + esc(name) + "</bdi>" : ""; }
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function randFrom(arr)  { return arr[Math.floor(Math.random() * arr.length)]; }
 function clearStatus()  { statusDiv.innerHTML = ""; }
@@ -2171,7 +2175,7 @@ function buildWorksheet(student, setNum, setTotal, isLast) {
   }
   ws.innerHTML =
     '<div class="mwg-ws-header"><div class="mwg-ws-header-main" style="grid-template-columns:' + (removeNumberToggle && removeNumberToggle.checked ? '1fr auto' : '2fr 1fr 3fr') + '">' +
-      '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + (isNameBlank() ? "" : esc(name)) + '</span></div>' +
+      '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + (isNameBlank() ? "" : nameHtml(name)) + '</span></div>' +
       (removeNumberToggle && removeNumberToggle.checked ? '' : '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + esc(number) + '</span></div>') +
       '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">' + esc(desc) + '</span>' + (setLabel ? '<span class="mwg-ws-set-label">' + esc(setLabel) + '</span>' : '') + '<span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span></div>' +
     '</div></div>' +
@@ -2261,7 +2265,7 @@ function buildAnswerKeySheet(allAnswers, isLast) {
     sheet.innerHTML =
       '<div class="mwg-ws-header">' +
         '<div class="mwg-ws-header-main" style="grid-template-columns:' + (removeNumberToggle && removeNumberToggle.checked ? '1fr auto' : '2fr 1fr 3fr') + '">' +
-          '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + esc(entry.name) + '</span></div>' +
+          '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Student Name</span><span class="mwg-ws-field-value">' + nameHtml(entry.name) + '</span></div>' +
           (removeNumberToggle && removeNumberToggle.checked ? '' : '<div class="mwg-ws-field"><span class="mwg-ws-field-label">Number</span><span class="mwg-ws-field-value">' + (entry.number ? esc(entry.number) : "") + '</span></div>') +
           '<div class="mwg-ws-desc-box"><span class="mwg-ws-desc-text">ANSWER KEY — ' + esc(entry.desc) + (entry.copies > 1 ? " (Key " + entry.copyNum + " of " + entry.copies + ")" : "") + '</span><span style="font-size:9px;color:rgb(187,187,187);font-style:normal;margin-left:8px;flex-shrink:0;font-family:Arial,sans-serif">MathSheet.io</span></div>' +
         '</div>' +
