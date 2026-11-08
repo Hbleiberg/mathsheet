@@ -97,7 +97,8 @@ Every generator offers a Standard form **and** an Advanced paste box. Keep both 
   var normalized = raw.trim().replace(/\n+/g, ";");   // newlines act as ";"
   var chunks = normalized.split(";");
   // for each chunk: trim; skip if empty; split(",");
-  // more than 3 parts: rejoin all but the last two with "," as the name ("Cohen, Avi", S3);
+  // fewer than 3 parts and a tab in the line: split("\t") instead (spreadsheet columns, S20);
+  // more than 3 parts: rejoin all but the last two with "," (a space for tabs) as the name ("Cohen, Avi", S3);
   // trim each part; require 3 fields (the name may be empty); validate the selector;
   // on any failure push a human-readable message to errors[] and `continue`;
   // "Entry N" counts the non-empty entries, as a teacher counts the lines (S11)
@@ -225,8 +226,10 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
     with a written "…" (`endWithEllipsis()`, S19): Save PDF draws no CSS ellipsis, and the name keeps its start.
   - **A printed name sits in a `<bdi>`** (`nameHtml()`, S18; `index.html` S19), so a Hebrew name keeps its
     punctuation and its "…" at its own end and stays at the left of its line; an empty name stays an empty line.
-  - **Fill Down asks** before changing a row set to another level: "Fill Down will change Students 7 and 15, which
-    have their own settings. Continue?" (S19 on the twins; `index.html`'s half is queued).
+  - **Fill Down keeps a row on its own level** (S20, all three pages): the empty rows and the rows still on Student 1's
+    earlier level follow it (its level when made, loaded or last filled down, or the first picked: `data-fill-from`),
+    the rest keep theirs and are named: "Level filled down from Student 1. Students 7 and 15 kept their own levels."
+    (`index.html`: its grade, type, count, Mixed picks and operations, `settingsKey()`, "…their own settings.").
   - **"Name blank"** (`nameBlankToggle`, helper `isNameBlank()`): prints an empty Student
     Name line on every worksheet even when a name is entered (answer keys still show the
     name). Student Number is always free text — never validate it as numeric.
