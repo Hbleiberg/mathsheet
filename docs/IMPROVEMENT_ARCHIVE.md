@@ -582,3 +582,39 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ Queues: approved and waiting — index's Fill Down question (its half of c68f197: a row differing in grade, type or count, or in its ops and Mixed picks), JPEG 0.8 (S2), the 30-cap note (S11), the long-header shrink (S4), no zero fraction differences (S6), the divisor 3 px low (S10). Shared first touches — the 16 px phone fields (S17; index's 16 fields confirmed S19), the code panel under the button row (S5), the red border after Fix (S17), reduced motion and target sizes (P4). Index alone: the ops labels (P3, the pairing unclear at phone width), the Count select's cut text (P4, gate 2 or 4).
 ⚑ New probes (S19): `S19-long-name` (`--ref f9e7b6a` fails 42) and `S19-fill-down` (`--ref bf9f2c7` fails 10); `S18-hebrew-name` now covers index (`--ref 84025f7 --only index.html` fails 4). Arm R's set for S20 is the three S18 probes and the two S19 probes. Trap (S19): a script that moves the results for print must put them back where they were (`parentNode` / `nextSibling`): after the app root they lose its scoped `box-sizing`, the header widens and the next generate sizes names differently — S18's "a Hebrew name loses its first letter in the PDF" was that, refuted.
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S19 asked nothing about it); build a seed only when the maintainer names one.
+
+## S21 (2026-11-08) — pass H (teacher walkthrough) on math-facts.html; three fixes, pushed to `main`
+
+- Run on `main` (local `main` at `origin/main`, f5a60c2); each fix pushed once verified.
+- Arm R: the smoke, `S19-long-name` and the two S20 probes green.
+- Pass H on math-facts.html (scratch `s21/walk.mjs`, `s21/walk2.mjs`): a second-grade class of 22 by real clicks and
+  keys, five Hebrew names, an IEP on +0 +1, an advanced student on mixed +/−, the key for a parent helper; next week's
+  +3 → +4, the Advanced box as a teacher writes codes, a spreadsheet's level column, a substitute's blanks. S20's Fill
+  Down rule held; 15 of 34 plausible code spellings skipped, 9 of them a real code.
+- Gate (one, as recommended): a spreadsheet's "+3" stored as 3 → explain it in the skipped line (queued: math-facts on
+  its cap).
+- Fixes: math-facts' codes read whatever their capitals, spaces or dash (caedad5); Fill Down's message beside its
+  button on all three pages (516b2d4); index's fraction subtraction takes away a smaller fraction, approved S6 (99911b1);
+  CLAUDE.md (904695f). math-facts and index then on their caps; math-minute's one touch left had no autonomous item.
+- Method note: `S11-robustness` ran from a frozen `git worktree` of caedad5 in the scratchpad while fix 2 was edited
+  (S20's stash trap avoided). Four stale probes listed in the handoff.
+
+### Done rows archived from the ledger (S16, verbatim)
+
+- [x] S16 | 2026-11-06 | 6daf036 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S16-focus.mjs | focus follows every action: Delete → the next row's Delete; the code panel opens with focus in the code, Close / Escape return it to the opener, Use lands in the Advanced box; Fix focuses the first highlighted field (its scroll had never run); the same block thrice | S16-focus: activeElement after every keyboard action (fails 8 of 9 a page on 196dd4a); smoke
+- [x] S16 | 2026-11-06 | 635eadc | index.html, math-minute.html, math-facts.html | the Advanced Code textarea is named "Advanced Input Code" by the panel's title (`aria-labelledby`; the one unnamed field since S0, and the field that takes focus on open since 6daf036) | S16-focus name arm, from the accessibility tree with the panel open (fails 3 on 6daf036); smoke
+- [x] S16 | 2026-11-06 | dba73d2 | CLAUDE.md | the focus convention and the textarea's name added to the Accessibility bullet | doc only
+- [x] S16 | 2026-11-06 | — | docs/loop-findings.md | pass D on index.html's own blocks (the Mixed and ops panels, the code panel, the injected styles: names, ancestors, tab stops, contrast, focus rings, targets, keyboard): every control named and keyboard-operable, contrast ≥ 4.65, UA focus rings; no group context (P4 queued); 23 px buttons and 13 px checkboxes into the target P4; the stretched ops checkbox box into the C P3 | scratch s16/d-index.mjs, loop-findings S16
+
+### Per-session line archived from the ledger (S1, verbatim)
+
+- S1 | 2026-11-04 | pass A on index.html (6 measured arms + a critic; 24 findings, all verified real) | fixes 3 (two P2 + two P3 in 3 commits, all pushed to main) | smoke 3/3 green + `--cdn` | 4th fix blocked by the 2-per-page cap
+
+### Previous handoff (S20 → S21), verbatim
+
+**Next session (S21):** S20 ran on `main` and pushed each fix there: aafa34e, b7eb193, 8083292, f3f6a81 and the close-out are live on GitHub Pages. Work on `main` again: one commit per iteration, each push a deploy.
+⚑ next: H on math-facts.html — the never-run cells are D and M on math-minute and H on math-facts. H on math-facts first: the twin of S20's walkthrough (its 71 fact codes, the weekly move by fact family); D on math-minute after it (S12's shared blocks, the twins identical outside their selectors, S13), then M on math-minute.
+⚑ Queues: Fill Down's message beside its button (P3, all three; S20's kept-rows note lands 2,900 px below the button with 22 rows — a shared first touch). Approved and waiting — JPEG 0.8 (S2), the 30-cap note (S11), the long-header shrink (S4), no zero fraction differences (S6), the divisor 3 px low (S10). Shared otherwise — the 16 px phone fields (S17), the code panel under the button row (S5), the red border after Fix (S17), reduced motion and target sizes (P4). Index alone: the ops labels (P3), the Count select's text (P4, gate 2 or 4).
+⚑ New probes (S20): `S20-fill-down` replaces `S19-fill-down` (deleted: it asserted S19's question; `--ref f14b27e` fails 14 on the twins, `--ref b7eb193 --only index.html` fails 7) and `S20-spreadsheet-paste` (a real Ctrl+V; `--ref aafa34e` fails 30). Arm R's set for S21 is `S19-long-name` and the two S20 probes. `S7-bracket-names` (1) and `S7-skipped-list` (6) fail on HEAD and on f14b27e alike (stale comparisons, not S20's).
+⚑ Trap (S20): never `git stash` while a probe runs in the background — the harness serves the working tree, so the run reads the stashed files (S20's S11-robustness run was spoiled and rerun). `S11-robustness` takes ~10 minutes: run it in the background, alone.
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S20 asked nothing about it); build a seed only when the maintainer names one. H on math-minute marked the Time / Score strip as the one thing a timed sheet's header lacks, and the compact key now lists math-minute.

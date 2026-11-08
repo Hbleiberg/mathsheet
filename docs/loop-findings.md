@@ -926,3 +926,46 @@ with no level is caught by the validation box ("Student 2: missing Level"). 0 pa
 `S20-spreadsheet-paste --ref aafa34e` fails 30. The first paste shape ("a line with a tab is read by its tabs") failed
 `S11-robustness` 9 times (its "Eli\t, 9, 10" read as two fields); green once reshaped. `S7-bracket-names` (1) and
 `S7-skipped-list` (6) fail on HEAD and on f14b27e alike: stale comparisons, not this session's.
+
+## S21 (2026-11-08) — pass H (teacher walkthrough) on math-facts.html
+
+**Method.** Real clicks and keys at 1280 × 900 (scratch `s21/walk.mjs`, `s21/walk2.mjs`): a second-grade class of 22,
+Student 1 typed by hand (Avi Cohen, 1, +3), Add Student × 19, Fill Down, 21 names and numbers typed (the five Hebrew
+names of S20), Student 7 (an IEP) on "+0  +1", Student 15 on "30 mixed +/-", Print Answer Key, Generate & Print, Save
+Roster; next week (a reload, Arrow Down from +3 to +4, Fill Down); Generate Advanced Code; then the Advanced box as a
+teacher writes codes, a spreadsheet's level column, a substitute's blanks, Duplicate.
+
+**Building the class: 112 actions**, as on math-minute (42 typed numbers; Add Student leaves the number empty,
+Duplicate adds one but copies the name too). 44 pages, sheets then keys; every single-fact level prints 30 problems.
+
+**Next week by fact family (clean).** Arrow Down moves +3 to +4 (the menu runs +0 +1, +2, Doubles, Doubles +1, +3 …);
+Fill Down: "Level filled down from Student 1. Students 7 and 15 kept their own levels." (S20's rule held). The message
+sat at y = 3,074 with the button at 146: S20's P3, fixed on all three pages (516b2d4).
+
+**The codes a teacher writes (found, fixed).** 34 plausible spellings pasted one per line: 15 skipped as "invalid fact
+code", 9 of them a real code written otherwise — "+0 +1" (as the level menu shows it), "Doubles", "Doubles +1", "Mix+30",
+"mix +30", "mix+ 30", "x 3", "–3" (an en dash) and "−3" (the minus sign). Shipped (caedad5): the code is lower-cased,
+its spaces dropped and any dash read as a hyphen; still skipped: "3", "+1", "fr10", "mix+/-30", "mix±30", "mixx/30".
+Index reads its Advanced type case-sensitively too ("Add1", "Fractions"): queued P4.
+
+**A spreadsheet's level column (approved, queued).** Excel and Google Sheets store a typed "+3" as the number 3 (not
+testable in the sandbox), so a pasted column reads "Avi Cohen 1 3" and each line is skipped with no reason; approved
+S21 (gate 2): when the code is a bare whole number the skipped line says a spreadsheet turns +3 into 3. math-facts was on
+its cap.
+
+**Smaller frictions.** Type-ahead in the Level select: "+1" picks "+10 (Teens Rule)", "3" picks "30 mixed +", "x3"
+and "m" pick nothing (the options read "×3", "30 mixed"); "+3", "+4", "-3", "d" work. A Hebrew line in the Advanced box
+(and the code panel, both LTR) shows in Hebrew order: "יעל לוי, 3, +4;" displays as "4+ ,3 ,יעל לוי;" — the data is right
+(S20's round trip); per-line direction is a display choice (P4, gate 3). The header has nothing for time or score (the
+seed, as on math-minute).
+
+**Clean.** Save → reload restores every level; the unsaved-roster notice; the Hebrew names round-trip through Generate
+Advanced Code; three nameless rows print 3 blanks; "×3", "*3", "X3", "÷3", "/3", "-self", "-fr10", "mix×30", "mix÷30",
+"mix*30" read as documented; the Level select cuts no option (longest 123 px in 349). 0 page errors, no dialog.
+
+**Fixes' controls.** `S21-fact-codes --ref f5a60c2` fails 22; `S21-fill-down-status --ref caedad5` fails 39;
+`S21-fraction-sub --ref 516b2d4` fails 9 (26 % of "Fractions — Subtraction" and 34 % of the Fractions type's
+subtractions x − x, ½ − ½ at d = 2; after: 0 of 5,528). `S11-robustness` green on caedad5, run from a frozen worktree so
+the next fix could be edited meanwhile. Stale before S21: `S8-index-key-division` (2, seeded identity to d3ef5c6) fails
+on caedad5 too; `S5-key-rows12`'s reference 5c3b01a is not in the repository; `S7-bracket-names` (1) and
+`S7-skipped-list` (6) unchanged.
