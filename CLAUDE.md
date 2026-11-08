@@ -99,7 +99,8 @@ Every generator offers a Standard form **and** an Advanced paste box. Keep both 
   // for each chunk: trim; skip if empty; split(",");
   // fewer than 3 parts and a tab in the line: split("\t") instead (spreadsheet columns, S20);
   // more than 3 parts: rejoin all but the last two with "," (a space for tabs) as the name ("Cohen, Avi", S3);
-  // trim each part; require 3 fields (the name may be empty); validate the selector;
+  // trim each part; require 3 fields (the name may be empty); validate the selector
+  // (math-facts reads a code whatever its capitals, spaces or dash: "Doubles +1", "–3", S21);
   // on any failure push a human-readable message to errors[] and `continue`;
   // "Entry N" counts the non-empty entries, as a teacher counts the lines (S11)
   // (invalid entries are SKIPPED, never fatal, and listed back to the user).
@@ -229,7 +230,8 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   - **Fill Down keeps a row on its own level** (S20, all three pages): the empty rows and the rows still on Student 1's
     earlier level follow it (its level when made, loaded or last filled down, or the first picked: `data-fill-from`),
     the rest keep theirs and are named: "Level filled down from Student 1. Students 7 and 15 kept their own levels."
-    (`index.html`: its grade, type, count, Mixed picks and operations, `settingsKey()`, "…their own settings.").
+    (`index.html`: its grade, type, count, Mixed picks and operations, `settingsKey()`, "…their own settings."). The
+    message sits beside the button in a polite live line (`fillDownStatus`, S21), cleared by any change to the roster.
   - **"Name blank"** (`nameBlankToggle`, helper `isNameBlank()`): prints an empty Student
     Name line on every worksheet even when a name is entered (answer keys still show the
     name). Student Number is always free text — never validate it as numeric.
