@@ -907,25 +907,17 @@ function escapeHtml(text) {
     .replace(/'/g, "&#x27;");
 }
 
+// Two columns, levels 1\u201311 and 12\u201321, written in level order and flowed down each column, so a screen reader reads
+// 1, 2, 3 \u2026 as the eye does (written row by row it read 1, 12, 2, 13, \u2026; S22). The rows pair the same levels as before.
 function renderLevelReference() {
-  var left = levelNames.slice(0, 11);
-  var right = levelNames.slice(11);
-  var maxRows = Math.max(left.length, right.length);
+  var rows = 11;
   var html = "";
-  for (var i = 0; i < maxRows; i++) {
-    if (left[i]) {
-      html += '<div class="level-reference-item">' + (i + 1) + " \u2013 " +
-        escapeHtml(left[i].replace(/^\d+\s-\s/, "")) + "</div>";
-    } else {
-      html += "<div></div>";
-    }
-    if (right[i]) {
-      html += '<div class="level-reference-item">' + (i + 12) + " \u2013 " +
-        escapeHtml(right[i].replace(/^\d+\s-\s/, "")) + "</div>";
-    } else {
-      html += "<div></div>";
-    }
+  for (var i = 0; i < levelNames.length; i++) {
+    html += '<div class="level-reference-item">' + (i + 1) + " \u2013 " +
+      escapeHtml(levelNames[i].replace(/^\d+\s-\s/, "")) + "</div>";
   }
+  levelReferenceGrid.style.gridTemplateRows = "repeat(" + rows + ", auto)";
+  levelReferenceGrid.style.gridAutoFlow = "column";
   levelReferenceGrid.innerHTML = html;
 }
 
