@@ -1770,7 +1770,19 @@ function fitLongNames() {
     if (!line.heights[size]) line.heights[size] = nameLineHeight(line.field, size);
     field.style.fontSize = size + "px";
     field.style.lineHeight = line.heights[size] + "px";
+    if (width * size / line.size > line.room) endWithEllipsis(field, ctx, (line.room - 1) * line.size / size);
   }
+}
+// A name still too long at the 11 px floor ends in a written "…", its end cut, never its start (S19): Save PDF draws
+// no CSS ellipsis, so it cut the name mid-letter, and a Hebrew name's "…" fell at the line's right, on its first name.
+// `limit` is the room in the measuring font's pixels.
+function endWithEllipsis(field, ctx, limit) {
+  var full = field.textContent, lo = 0, hi = full.length;
+  while (lo < hi) {
+    var mid = Math.ceil((lo + hi) / 2);
+    if (ctx.measureText(full.slice(0, mid).replace(/\s+$/, "") + "…").width <= limit) lo = mid; else hi = mid - 1;
+  }
+  (field.firstElementChild || field).textContent = full.slice(0, lo).replace(/[\uD800-\uDBFF]$/, "").replace(/\s+$/, "") + "…";
 }
 // The line height that rests a smaller name on the 18 px name's baseline, so it sits on its line, not above it:
 // a baseline moves half as far as its line height. Measured once per size on an empty copy of a name line.
