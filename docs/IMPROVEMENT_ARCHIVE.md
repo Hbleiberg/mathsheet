@@ -731,3 +731,41 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ Queues: approved and waiting — JPEG 0.8 (S2), the 30-cap note (S11), the divisor 3 px low (S10). index alone: the red border after Fix (P3, the twins' half shipped S23), the ops labels (P3, C), its case-sensitive Advanced type (P4), the Count select's text (P4, gate 2 or 4). Shared — the code panel under the button row (P3, S5), reduced motion and targets (P4).
 ⚑ New probes (S23): `S23-name-fit-layout` (`--ref 37af5e4` fails 3), `S23-phone-fields` (`--ref f57d63c` fails 12), `S23-red-border` (`--ref af59ae5` fails 6). Arm R's set for S24: the four S22 and three S23 probes. Repaired in S23 and green: `S5-key-rows12`, `S7-bracket-names`, `S7-skipped-list`, `S8-index-key-division`, `S10-pdf-progress`, `S11-robustness`, `S22-desc-fit` (byte-for-byte arms against old commits now need `--identity`).
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S23 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.
+
+## S25 (2026-11-08) — pass B (print & export) on index.html; two fixes, one approved at gate 6, pushed to `main`
+
+- Run on `main` (local `main` at `origin/main`, 2f9a38f; the clone full); each fix pushed once verified.
+- Arm R: the smoke and the three S23 and two S24 probes green.
+- Pass B on index.html: every grade × type × count in three configurations (3,160 sheets), A4, a real 126-page Save
+  PDF, the round trip and payload. Found: a division written across (Long Division at Grades 5–8, a Mixed sheet's
+  divisions there) 54 px a row in 43 px tracks, the 15th row 0.12 in from the paper's edge; its key a run-together
+  column of own-bar divisions; S4's PDF rows P4 measured at up to 13 px; the last key's harmless `print-break` again.
+- Gates: one (gate 6: the across division sheet and key, with a before/after picture) → "Both", as recommended.
+- Fixes: the PDF clone at print's rows (abdbd88); the across division sheet and key (7435289, with the S6 and S22
+  probe repairs). index.html then on its cap; the twins had no autonomous item of their own; two slots unused.
+- Method notes: S4's B probe read the across sheets' depth from text rects and called Long Division keys 799 px, never
+  the worksheet's 804.5 bracket; the cell-overflow was invisible to every "ink inside its cell" check because each cell
+  box itself ran past its track. A 140 ink threshold counted the across answer line (rgb 136) in print but not in the
+  JPEG: 100 reads dark ink only. A layout claim about the PDF is proved on the clone (stubbed libraries), the raster
+  only for what is drawn (html2canvas puts the rows-12 keys' tight glyphs ~3 px off print over an identical layout).
+
+### Done rows archived from the ledger (S20, verbatim)
+
+- [x] S20 | 2026-11-08 | aafa34e | math-minute.html, math-facts.html, scripts/loop/probes/S20-fill-down.mjs | Fill Down keeps a row on its own level and names it, no question (approved S20, gate 2): S19's question named all 21 rows when the class moved up, and for a new student OK reset the IEP row while Cancel left the new one empty; the same block on both | S20-fill-down: a new row, the class moved, a reload, the singular, by hand, arrow keys, Student 1 empty (fails 14 on f14b27e); smoke
+- [x] S20 | 2026-11-08 | b7eb193 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S20-spreadsheet-paste.mjs | a roster pasted from a spreadsheet is read: a line short of its fields by commas is read by its tabs, a stray tab in a comma line stays a space; the help says so (approved S20, gate 2) | S20-spreadsheet-paste by a real Ctrl+V on all three (fails 30 on aafa34e); S11-robustness green; smoke
+- [x] S20 | 2026-11-08 | 8083292 | index.html, scripts/loop/probes/S20-fill-down.mjs | index's Fill Down half, the S20 shape: a row on its own grade, type, count, Mixed picks or operations keeps them, "…Students 4 and 5 kept their own settings." (`settingsKey()`) | S20-fill-down's index arm, an unchecked operation and Mixed pick included (fails 7 on b7eb193); smoke
+- [x] S20 | 2026-11-08 | f3f6a81 | CLAUDE.md | Fill Down's keep rule and the parse's tab rule | doc only
+- [x] S20 | 2026-11-08 | — | docs/loop-findings.md | pass H on math-minute.html (a class of 22 by real clicks and keys, five Hebrew names, an IEP, an advanced student, a parent helper's key; next week's move up, a new student, a spreadsheet paste, a substitute's blanks): 112 actions to build, 42 of them numbers; S19's Fill Down question wrong for both weekly uses; gates: two, both as recommended | scratch s20/walk.mjs, s20/walk2.mjs, loop-findings S20
+
+### Per-session line archived from the ledger (S5, verbatim)
+
+- S5 | 2026-11-05 | pass C on math-facts.html (UI at 1280 / 800 px, Advanced mode, the code panel, the error list; rendered sheets and keys of every level class) | fixes 4 (two gated print changes on both standard pages, two index P2s; on branch claude/fervent-lovelace-urwaob, not main) | smoke 3/3 green + `--cdn`; probes green | every page ended on its two-touch cap
+
+### Previous handoff (S24 → S25), verbatim
+
+**Next session (S25):** S24 ran on `main` and pushed each fix there: 037221c, 7f40755, 9fb3e5d and the close-out are live on GitHub Pages. Work on `main` again: one commit per iteration, each push a deploy. If `git rev-parse --is-shallow-repository` says true, `git fetch --unshallow origin main` before a `--ref` names an old commit.
+⚑ next: B on index.html — the stalest cell (S4); B has now run twice on the twins. Expect S5's key division, S9's PDF frame, S9's name shrink, S19's written "…", S22's description fit and S24's name span on paper and in a real `--cdn` PDF, against the S4 baselines; S4's probes carry index's classes, S8's the twins' method.
+⚑ Queues: approved and waiting — JPEG 0.8 (S2), the 30-cap note (S11), the divisor 3 px low (S10). index alone: the ops labels (P3, C), its case-sensitive Advanced type (P4), the Count select's text (P4, gate 2 or 4). Shared — the code panel under the button row (P3, S5), reduced motion and targets (P4).
+⚑ New probes (S24): `S24-name-parse` (`--ref d31ff06` fails 3; the page's generate as a ratio of the bare name's, 7 runs alternated, so a slow machine slows both), `S24-index-red-border` (`--ref 037221c` fails 9). Arm R's set for S25: the three S23 and two S24 probes. `S23-name-fit-layout` now compares name lines; its byte arm needs `--identity`.
+⚑ A new element in the sheet markup: time a generate with it swapped for a `<span>` first; a tag Chromium's fast innerHTML parser does not take (`<bdi>`) slowed every sheet for six sessions unseen (S24).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S24 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.

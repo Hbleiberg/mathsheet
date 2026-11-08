@@ -1128,3 +1128,45 @@ pages); a span without `dir` changes 12 print pages. `S24-name-parse`: the page'
 runs alternated: 0.94–1.09× now, 1.32–1.74× on d31ff06. 7f40755: each of index's 12 fields red exactly when empty after
 every step. 9fb3e5d: five states × 1280 / 390 px on both twins, screenshots and every element's computed style identical.
 
+
+## S25 (2026-11-08) — pass B (print & export) on index.html
+
+Method: scratch adaptations of S24's three B probes to index.html (its `mwg-` classes, five-field Advanced lines, every
+grade × type × count the Standard form offers: 151 pairs, 523 with their counts); `Math.random` seeded; "ink" = glyphs'
+own box (canvas `measureText`) plus every drawn border; PDFs from Chromium's print and from the real Save PDF (cdnjs),
+rasterized with `pdftoppm`; layout claims about the PDF proved on the clone itself (the two libraries stubbed).
+
+**Print.** Three configurations with keys: plain (523 combinations × 1), heavy (151 pairs at their largest count × 5,
+long Latin, Hebrew, punctuated-Hebrew and empty names) and bare (151 at their smallest × 2, no Number, Name blank): 3,160
+sheets, every one 1056 × 816, every grid its count, no ink outside its cell side to side, red in every key cell,
+descriptions inside their room (down to 9.5 px at 5 copies), names in their `dir="auto"` span and line (12.5 / 16 / 18 px,
+11 with "…"). Paper left under the lowest ink, stacked: rows-3…6 99 / 70 / 53 / 42 px, rows-8 21 (key 14), rows-10 13
+(key 5), rows-12 7 (key 2). Print-to-PDF one 792 × 612 page a sheet; A4 landscape and portrait one page a sheet. Header 55 px.
+Defects: (1) a division written across (Long Division at Grades 5–8, a Mixed sheet's divisions there) was 53.7 px a row in
+a 42.8 px track — the grid's height is the body's and `min-height: 0` lets the tracks shrink below their items, which then
+overflow into the next row unseen — so the 15th row's bracket ended at 804.5 px, 0.12 in from the paper's edge (the
+separator under it 807); (2) its key drew the own-bar division (S8's shape for short rows), centred in each half of the
+across grid with no number, every bracket meeting the next (−0.4 px): 720 problems on 40 keys in arm 1. Both unchanged
+since S4 (b9df9c9 measures the same). (3) The last key sheet still carries `print-break` (S4's note), harmless: 1,046 pages
+for 1,046 sheets. Fractions across rows also overflow (47.7 px in 42.9), dark ink to 790.5 px, the last light separator 801.
+
+**Save PDF (real cdnjs).** Grades 2, 5, 8, every type at its largest count, with keys: `worksheets.pdf`, 126 pages for 126
+sheets, one 1584 × 1224 JPEG a page, 146 KB a page (S4 ~170), 24 s; every page inked when scrolled away; header within
+1 px; no frame; every name inside its field and where print puts it; red on every key. The stacked grids: 4,043 of 5,880
+cells more than 3 px off print's place, up to 13 px (S4's P4: the clone's `minmax(…, 1fr)` rows; print fixes rows-6…12 and
+lets rows-3/4/5 fall to their minimum) — fixed in abdbd88. The across cells: clone layout = print (stub: 0.0 px); 84 cells on
+3 sheets read off only where overflowing rows overlapped. An ink threshold of 140 counts the answer line (rgb 136) in print
+and not after JPEG: read dark ink at 100.
+
+**Round trip and payload.** 12 Standard rows by real selects (op subsets, a Mixed subset, Hebrew, `&`, `<b>`, quotes) →
+Generate Advanced Code → Use → Generate, seeded alike: 20 of 24 sheets byte-identical, the other 4 the two known P4s
+(";" in a name, "12, B" as a Number). Save → reload restores Advanced mode, its box, 3 copies, key, no Number, Name blank,
+and the 12 rows with their op and Mixed picks; the payload keeps index's `students` (the known P4).
+
+**Fix measurements.** abdbd88 (the clone takes print's rows): `S25-pdf-rows` 0.0 px on every stacked class (7.5 px on
+2f9a38f); the real export 4,043 → 90 cells off, worst 13 → 8 px, the rest html2canvas's glyph placement in the tight
+rows-12 keys (≈3 px, by eye identical). 7435289 (approved, gate 6): in an across row the bracket is as tall as its
+numbers, the divisor level with the dividend (padding-top 5 px, S10's approved shape, across only), and the key writes the
+sheet's own problem with its quotient in red at the right. `S25-across-division`: 1,440 problems on 80 sheets inside their
+rows, lowest ink 786.2 px, ≥ 12 px between problems, divisors 0.0 px off, every key cell the sheet's markup with a
+recomputed quotient (fails 6 on abdbd88); 286 other sheets byte-identical; the real export's across cells off print 84 → 0.
