@@ -1803,6 +1803,13 @@ function nameLineHeight(field, size) {
 // A class typed in and printed was gone at the next visit unless Save Roster was clicked, and nothing said so (S18,
 // approved): after Generate & Print or Save PDF, a roster that is not the saved one gets a notice under any message
 // shown. Nothing is saved without the click; with storage denied, Save Roster cannot help, so there is no notice.
+// Fill Down's question when it would change rows with their own level (S18, approved): "Fill Down will change
+// Students 7 and 15, which have their own settings. Continue?"; one row reads "Student 7, which has its own settings".
+function fillDownQuestion(rows) {
+  var list = rows.length === 1 ? "Student " + rows[0] + ", which has its own settings"
+    : "Students " + rows.slice(0, -1).join(", ") + " and " + rows[rows.length - 1] + ", which have their own settings";
+  return "Fill Down will change " + list + ". Continue?";
+}
 function remindUnsavedRoster() {
   var saved;
   try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; } catch (e) { return false; }
@@ -2043,6 +2050,13 @@ function wireButtons() {
     var entries = studentsContainer.querySelectorAll(".student-entry");
     if (entries.length < 2) return;
     var firstLevel = entries[0].querySelector('select[name="level"]').value;
+    // A row set to another level is an IEP or an advanced student: ask before changing it (S18, approved).
+    var own = [];
+    for (var j = 1; j < entries.length; j++) {
+      var level = entries[j].querySelector('select[name="level"]').value;
+      if (level && level !== firstLevel) own.push(j + 1);
+    }
+    if (own.length && !window.confirm(fillDownQuestion(own))) return;
     for (var i = 1; i < entries.length; i++) {
       entries[i].querySelector('select[name="level"]').value = firstLevel;
     }
