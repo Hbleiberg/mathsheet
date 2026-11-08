@@ -2602,6 +2602,12 @@ function capturePdf(sheets) {
     // the PDF (S4). Mirror print.
     var cloneBody = clone.querySelector(".mwg-ws-body, .mwg-ak-body");
     if (cloneBody) cloneBody.style.overflow = "visible";
+    // Print's rows: fixed heights in the print block, and rows-3/4/5 at their minimum (print's grid has no height for
+    // the 1fr to fill). The screen's 1fr rows set the PDF's stacked problems up to 13 px lower than on paper (S4, S25).
+    var cloneGrid = clone.querySelector(".mwg-problems-grid");
+    var printRows = { "mwg-rows-3": "repeat(3,2.4in)", "mwg-rows-4": "repeat(4,1.8in)", "mwg-rows-5": "repeat(5,1.44in)", "mwg-rows-6": "repeat(6,1.2in)",
+      "mwg-rows-7": "repeat(7,1.03in)", "mwg-rows-8": "repeat(8,0.9in)", "mwg-rows-10": "repeat(10,0.72in)", "mwg-rows-12": "repeat(12,0.6in)" };
+    for (var rc in printRows) if (cloneGrid && cloneGrid.classList.contains(rc)) cloneGrid.style.gridTemplateRows = printRows[rc];
     stage.innerHTML = "";
     stage.appendChild(clone);
 
