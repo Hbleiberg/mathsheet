@@ -577,6 +577,12 @@ body { margin: 0; padding: 12px; background: white; }
   justify-content: flex-start;
 }
 .mwg-division-dividend { display: inline-block; padding-top: 1px; }
+/* A division written across (Long Division, a Mixed sheet's division at Grades 5-8) is as tall as its numbers: with the
+   stacked grid's 0.32in bracket and padding each row was 54 px in a 43 px track, so the rows overlapped and the 15th
+   ended 0.12in from the paper's edge. Its divisor sits level with the dividend (S25, approved at gate 6). */
+.mwg-horiz-problem .mwg-problem-cell { height: auto; padding: 0; }
+.mwg-horiz-problem .mwg-division-bracket { min-height: 0; }
+.mwg-horiz-problem .mwg-division-divisor { padding-top: 5px; }
 
 /* Horizontal / equation problems (fractions, order of ops, integers, etc.) */
 .mwg-horiz-grid {
@@ -2270,10 +2276,11 @@ function renderAnswerProblem(problem, answer, inHorizGrid, tight, shortRows) {
       '</div>' +
     '</div>';
   }
-  if (problem.kind === "division") {
-    // Mixed keys of 0.6-0.72in rows (rows-10 / rows-12) and the written-across Mixed keys have no room for a
-    // quotient over the sheet's bar (it overprinted the problem above by 3-11 px, S8): there the key keeps its
-    // own bar, answer above it.
+  if (problem.kind === "division" && !inHorizGrid) {
+    // Mixed keys of 0.6-0.72in rows (rows-10 / rows-12) have no room for a quotient over the sheet's bar (it
+    // overprinted the problem above by 3-11 px, S8): there the key keeps its own bar, answer above it. A division
+    // written across takes the across key below: the sheet's own problem, its answer in red at the right (S25,
+    // approved; its own bars ran into each other down an unnumbered column).
     var wideS = String(problem.html).indexOf("1.3in") !== -1 || String(problem.html).indexOf("1.02in") === -1;
     var sizeS = wideS ? "18px" : "20px";
     return '<div class="mwg-problem-cell">' +

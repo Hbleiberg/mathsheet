@@ -111,7 +111,8 @@ function extract() {
       // A key's division is the sheet's own since S8: its quotient a red span over the dividend (" r3" nested in it).
       const q = dd && dd.querySelector('span');
       if (q) return { t: `DIV ${divisor} ${dd.firstChild.textContent.trim()}`, ans: q.textContent.replace(/\u00a0/g, ' ').trim() };
-      if (dd) return { t: `DIV ${divisor} ${dd.textContent.trim()}` };
+      // Written across, a key's division is the sheet's own problem with its quotient in red at the right (S25).
+      if (dd) { const red = c.querySelector(':scope > span'); return { t: `DIV ${divisor} ${dd.textContent.trim()}`, ans: red ? red.textContent : undefined }; }
       const col = dv.children[1]; return { t: `DIV ${divisor} ${col.children[1].textContent.trim()}`, ans: col.children[0].textContent }; }
     const st = c.querySelector('.mwg-problem-stack');
     if (st) return { t: `${st.querySelector('.mwg-problem-top').textContent.trim()} ${st.querySelector('.mwg-problem-operator').textContent.trim()} ${st.querySelector('.mwg-problem-bottom').textContent.trim()}`,

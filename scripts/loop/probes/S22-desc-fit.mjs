@@ -27,7 +27,9 @@ const MEASURE = `(() => [...document.querySelectorAll('.mwg-ws-desc-text')].map(
   const box = t.parentNode.getBoundingClientRect(), pad = parseFloat(getComputedStyle(t.parentNode).paddingRight);
   return { text: t.textContent, over: ink.right - Math.min(room.right, next.left, box.right - pad), size: parseFloat(getComputedStyle(t).fontSize), styled: t.hasAttribute('style') };
 }))()`;
+// A sheet with a division written across is left out: its rows changed shape in S25 (approved), after BASE.
 const GEOMETRY = `(() => [...document.querySelectorAll('.mwg-worksheet, .mwg-answer-key-sheet')].map(s => {
+  if (s.querySelector('.mwg-horiz-grid .mwg-division-problem')) return 'across division (S25)';
   const o = s.getBoundingClientRect();
   const at = el => { const r = el.getBoundingClientRect(); return [r.left - o.left, r.top - o.top, r.width, r.height].map(v => Math.round(v * 10) / 10).join(','); };
   return [at(s.querySelector('.mwg-ws-header')), ...[...s.querySelectorAll('.mwg-ws-field-value, .mwg-ws-set-label, .mwg-problems-grid > *, .mwg-horiz-grid > *')].map(at)].join(';');
@@ -86,7 +88,7 @@ for (const shape of SHAPES) {
   check(now.descs.every(d => d.styled === (d.size < 13)), `only a shrunk description carries a style (${now.descs.filter(d => d.styled && d.size >= 13).length} styled at 13 px)`);
   // within 0.25 px: under CPU load one fraction cell read 47.6 or 47.7 px tall from run to run, the base against itself
   // too (S23), so an exact string compare failed 2 runs in 5
-  const near = (a, b) => { const x = a.split(/[;,]/).map(Number), y = (b || '').split(/[;,]/).map(Number);
+  const near = (a, b) => { if (a === b) return true; const x = a.split(/[;,]/).map(Number), y = (b || '').split(/[;,]/).map(Number);
     return x.length === y.length && x.every((v, i) => Math.abs(v - y[i]) <= 0.25); };
   const moved = now.geometry.filter((g, i) => !near(g, was.geometry[i])).length;
   check(now.geometry.length === was.geometry.length && moved === 0, `every header, field, set label and problem where it was, within 0.25 px (${moved} of ${now.geometry.length} sheets differ)`);
