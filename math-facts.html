@@ -1368,9 +1368,11 @@ defineMixed("mixmd", "multiplication and division facts", function (count) {
 });
 
 // Advanced input may write the operator as a symbol: x7, X7, *7 and \u00d77 all mean x7;
-// /7 and \u00f77 both mean /7.
+// /7 and \u00f77 both mean /7. A code is read whatever its capitals and spaces, and a typed dash or minus sign is a
+// hyphen: "+0 +1" as the level menu shows it, "Doubles", "Mix +30", "\u20133" (S21).
 function normalizeFactCode(code) {
-  return String(code || "").replace(/[\u00d7*X]/g, "x").replace(/\u00f7/g, "/");
+  return String(code || "").toLowerCase().replace(/\s+/g, "").replace(/[\u00d7*]/g, "x").replace(/\u00f7/g, "/")
+    .replace(/[\u2010-\u2015\u2212]/g, "-");
 }
 
 function generateProblemsForLevel(level) {
