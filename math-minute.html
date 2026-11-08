@@ -1605,6 +1605,13 @@ function clearValidationHighlights() {
   }
 }
 
+// A Level the validation box marked red loses it once it holds a value, picked or filled down (S23): it stayed red
+// until the next Generate, with every level set (found S17). A Level still empty keeps it.
+function clearFilledHighlights() {
+  var levels = studentsContainer.querySelectorAll('select[name="level"]');
+  for (var i = 0; i < levels.length; i++) if (levels[i].value && levels[i].style.border) levels[i].style.border = "";
+}
+
 function validateAndRun(action) {
   if (inputMode === "advanced") { action(); return; }
   var problems = highlightInvalidEntries();
@@ -1987,10 +1994,11 @@ function wireButtons() {
       entries[i].setAttribute("data-fill-from", firstLevel);
     }
     entries[0].setAttribute("data-fill-from", firstLevel);
+    clearFilledHighlights();
     setFillDownStatus("Level filled down from Student 1." + keptLevelsText(kept));
   });
   ["input", "change"].forEach(function (type) {
-    studentsContainer.addEventListener(type, function () { setFillDownStatus(""); });
+    studentsContainer.addEventListener(type, function () { setFillDownStatus(""); clearFilledHighlights(); });
   });
 
   if (generateAdvancedCodeButton) {
