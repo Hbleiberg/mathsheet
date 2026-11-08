@@ -1785,11 +1785,20 @@ function loadPdfLibs() {
 // One export at a time: a second click mid-export started a second full pipeline (S1). The button is disabled
 // from the click until "PDF saved!" or a notice, and enabled again on every path (S10).
 var pdfBusy = false;
-function pdfDone() { pdfBusy = false; savePdfButton.disabled = false; statusMessages.removeAttribute("aria-busy"); }
+// A focused button that is disabled loses focus to the page's start: the keyboard user who pressed Save PDF gets it
+// back when the export ends (S22), unless a Tab or a click took it elsewhere meanwhile; a mouse click (no focus ring)
+// is left as it was.
+var pdfRefocus = false;
+function pdfDone() {
+  pdfBusy = false; savePdfButton.disabled = false; statusMessages.removeAttribute("aria-busy");
+  if (pdfRefocus && (!document.activeElement || document.activeElement === document.body)) savePdfButton.focus();
+  pdfRefocus = false;
+}
 
 function doGenerateAndSavePdf() {
   if (pdfBusy) return;
   pdfBusy = true;
+  try { pdfRefocus = document.activeElement === savePdfButton && savePdfButton.matches(":focus-visible"); } catch (e) { pdfRefocus = false; }
   savePdfButton.disabled = true;
   clearStatusMessages();
   statusMessages.setAttribute("aria-busy", "true");   // the page count below changes every page: a screen reader hears the result, not each count (S12)
