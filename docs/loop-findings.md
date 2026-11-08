@@ -1018,3 +1018,54 @@ line follows (stale, listed). `S9-name-fit` compares every sheet with HEAD byte 
 style until the commit lands, then reads green.
 
 **After the close-out.** The maintainer declined the Time / Score strip ("No time/score"): the seed is struck to the archive.
+
+## S23 (2026-11-08) — pass M (mobile & touch) on math-minute.html, then A (performance) on index.html
+
+**Arm R.** The smoke and the three S21 and four S22 probes green, but `S22-desc-fit` failed 2 runs in 5 ("2 of 1,510
+sheets differ"). Diagnosed (scratch `s23/descflake.mjs`): under CPU load one fraction cell read 47.6 or 47.7 px tall from
+run to run (and a key's field 119.1 or 119.2), the base against itself too; eight quiet runs identical. The probe's
+precision, not the page: its geometry arm now compares within 0.25 px (the tooling commit).
+
+**M on math-minute.html.** Method: scratch `s23/m-mm.mjs` (S17's audit with S19's additions) on Playwright's iPhone SE,
+iPhone 13 (both ways), iPad Mini (both ways) and a 350 × 1400 touch frame; states fresh, validation and Fix, filled (Level
+21, Fill Down, a header line), the code panel, Advanced with the Level Reference, after a generate; `s23/contact.mjs` the
+iPhone 13 contact sheet. **Clean**: no sideways scroll before a generate, nothing past the edge, no scroll box hiding a
+control, no fixed element, no Level text cut (the longest, "03 - Easy Subtraction", 134 px in 191–310 px); the Level
+Reference fits at 320 px (302 px card, no wrap, read in order since S22); Fix focuses Level 1 in view (265–303 of 568 px
+on the SE), the code box too (418–538); Fill Down's line sits beside its button at every shape; 0 page errors.
+**Confirmed and fixed**: 11 fields 14 px, the code box 13 (af59ae5, all three pages); the red "missing" border on every
+Level after Fix, filled or filled down (2597f1c, the twins; index's half queued). **Confirmed, queued**: the 1,064 px
+page after a generate, Duplicate / Delete 16 px tall, a Hebrew name typed in LTR order (the `dir="auto"` seed).
+
+**A on index.html** (the clean surface bought a second; S1 was its last A). Method: `s23/a-index.mjs` (S9's: a fresh
+context a run, medians of 3, click → handler → next frame, long tasks, cpu4 by CDP), `s23/prof.mjs` (a CDP CPU profile),
+`s23/pdf-index.mjs` (the real cdnjs libraries, warmed). **Load**: DCL 20 ms, load 30, FCP 40; 127,900 B; 212 nodes.
+**Generate** (handler / frame, one long task each): add2 at grade 3, 30 × 5, 48 / 53 ms; with keys 93 / 98; fractions
+at grade 5 with keys 107 / 112; Mixed 77 / 82; 30 types × 5 with keys 101 / 106; all 151 types × 5 with keys (1,510
+sheets) 435 / 450. **Form at 30 students** (next frame): Add Student 15 ms, Fill Down 25, Duplicate 11, Delete 13, a grade
+change 15, a keystroke ~3, Save 8, Generate Advanced Code 14, the mode toggle 11 / 29, Add Student with 30 sheets shown
+18; a saved 31-row roster restores by DCL 24 / load 44. **Save PDF**, 30 pages: 192 ms a page (add2), 222 (fractions),
+one long task a page of at most 139 ms (the twins: 205–222, S9).
+
+**Found and fixed (P3, f57d63c).** With "Remove 'Student Number' Field" a class on different types generated 2–5× slower:
+30 types × 5 with keys 470 ms against 101 with the Number (2.6 s at cpu4), all 151 types × 5 1.3 s (6.1 s). The profile:
+`fitLongNames()` → `getBoundingClientRect` 452 of 572 ms. Without the Number the name's room turns on the description
+(`1fr auto`), so each description and copy label is its own line, and each read laid out its whole sheet
+(content-visibility). Now measured on copies of their headers in one hidden copy of their sheet, one layout: 109 ms (cpu4
+518), 151 × 5 239 ms; every sheet byte-identical to before. Save PDF regenerates first, so it gains the same.
+
+**Fix notes.** At 16 px the twins' Header line example was cut ("…Parashat Noac", 253 px of text in 240): their setting
+boxes widen from 260 to 280 px in the same phone rule. 481 px is inside the twins' 560 px phone query, so their fields
+change there as their one-column roster does. index on its side (750 px, the five-column layout) cuts the same three
+selects before and after (the Count / Type text P4). iPad and desktop pixel-identical.
+
+**Tooling.** Arm R's stale probes repaired: `S10-pdf-progress` reads "PDF saved!" then S18's notice; `S7-skipped-list`
+saves the roster before its nothing-skipped run (an unsaved one lands on S18's reminder, 70 px above the first sheet);
+`S11-robustness` reads Fill Down's message beside its button (S21); `S7-bracket-names`, `S8-index-key-division` and
+`S5-key-rows12` keep their measured arms and run their byte-for-byte arms only with `--identity`; `S22-desc-fit` within
+0.25 px. `S5-key-rows12`'s "missing" 5c3b01a was a shallow clone: `git fetch --unshallow` restores it.
+
+**Controls.** `S23-name-fit-layout --ref 37af5e4` fails 3 (260, 52 and 130 real sheets laid out); `S23-phone-fields --ref
+f57d63c` fails 12; `S23-red-border --ref af59ae5` fails 6. The repaired probes, green on HEAD, still fail their controls:
+`S7-bracket-names --control` 2, `S7-skipped-list --control` 18, `S8-index-key-division --control` 2, `S5-key-rows12
+--control` 1, `S22-desc-fit --ref 3589e48` 3, `S10-pdf-progress --ref 291903c~1` 12.

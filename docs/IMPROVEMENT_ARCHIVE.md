@@ -661,3 +661,39 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
   - [ ] seed | math-minute.html, math-facts.html | "Time / Score" strip in the header (toggle): `Time: ____  Score: ____ / N`, N from the level's count (S20 and S21 H: the one thing a timed sheet's header lacks, on both timed pages) | from S0
 - The S22 note on math-minute's "11 - Easy X" (a screen reader reads the letter X) is removed from the type-ahead P4:
   the maintainer keeps the letter X (S9, gate 2).
+
+## S23 (2026-11-08) — pass M (mobile & touch) on math-minute.html, then A (performance) on index.html; four fixes, pushed to `main`
+
+- Run on `main` (local `main` at `origin/main`, 37af5e4); each fix pushed once verified.
+- Arm R: the smoke and the three S21 and four S22 probes green, but `S22-desc-fit` failed 2 runs in 5: a 0.1 px drift
+  in one fraction cell under CPU load, the base against itself too (the probe's precision; repaired in the tooling fix).
+- Pass M on math-minute.html (scratch `s23/m-mm.mjs`, `s23/contact.mjs`): clean but for two queued items, both fixed.
+  The clean surface bought a second: A on index.html (`s23/a-index.mjs`, `s23/prof.mjs`, `s23/pdf-index.mjs`): clean
+  but for a 2–5× slower generate with the Number removed, fixed.
+- Gates: none asked (a perf fix with byte-identical sheets, a phone-width CSS fix, a highlight that follows its field,
+  probe repairs).
+- Fixes: index's no-Number name fit in one layout (f57d63c); 16 px phone fields on all three (af59ae5); the twins' red
+  border (2597f1c); arm R's seven stale probes (6611a2f); CLAUDE.md (e258268). Every page then on its cap.
+- Method note: the first 16 px shape cut the twins' Header line example; widened in the same commit. The clone was
+  shallow, so `S5-key-rows12`'s 5c3b01a looked missing (S22 listed it so): `git fetch --unshallow` found it.
+
+### Done rows archived from the ledger (S18, verbatim)
+
+- [x] S18 | 2026-11-07 | e71f8fc | index.html, scripts/loop/probes/S18-advanced-help.mjs | the Advanced help names the types the page reads (add1–add5 … div1–div5; its "addition" examples and type names were all skipped) and the page reads fractions[add] as written there (approved S18, gate 2) | S18-advanced-help: every example and named type generates (fails 7 on 1f80a43); smoke
+- [x] S18 | 2026-11-07 | fde4b66 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S18-unsaved-reminder.mjs | after Generate & Print or Save PDF, a roster that is not the saved one gets "This roster isn't saved. Click Save Roster to keep it for next time." (approved S18, gate 2; nothing saved without the click) | S18-unsaved-reminder on all three pages (fails 12 on e71f8fc); smoke
+- [x] S18 | 2026-11-07 | 36f71e4 | math-minute.html, math-facts.html, scripts/loop/probes/S18-hebrew-name.mjs | a printed name sits in a `<bdi>`, so "שרה כ." ends in its period (it printed at the name's start); English names unchanged (approved S18, gate 6); index's half queued | S18-hebrew-name (fails 8 on fde4b66); real print and cdnjs Save PDF rasterized before / after; smoke
+- [x] S18 | 2026-11-07 | ecc8741 | CLAUDE.md | the unsaved-roster notice, the printed name's `<bdi>` and index's Advanced type codes written down | doc only
+- [x] S18 | 2026-11-07 | — | docs/loop-findings.md | pass H on index.html (a class of 22 by real clicks: Hebrew names, two other levels, an IEP, a parent helper's key, a substitute's blanks; the Advanced box as the help teaches it): 52 actions to build, lost on reload; the help's every example skipped; Fill Down over set rows; gates: four, all as recommended | scratch s18/walk*.mjs, loop-findings S18
+
+### Per-session line archived from the ledger (S3, verbatim)
+
+- S3 | 2026-11-05 | pass A on math-minute.html (node census vs math-facts, 150-sheet generate per level and cpu4, roster form, load, retention, PDF per page to 150 pages) | fixes 3 (one P2 in two commits, one P3; on branch claude/fervent-lovelace-urwaob, not main) | smoke 3/3 green + `--cdn` | every page ended on its two-touch cap again
+
+### Previous handoff (S22 → S23), verbatim
+
+**Next session (S23):** S22 ran on `main` and pushed each fix there: 7dbcdb9, a458824, 3589e48, ef52c67, 94c4e71 and the close-out are live on GitHub Pages. Work on `main` again: one commit per iteration, each push a deploy.
+⚑ next: M on math-minute.html — the last never-run cell (S17 measured the shared rows on all three pages and S19 index; expect math-minute's Level select and reference at phone width, the S20–S22 rows, the Fill Down line at 390 px).
+⚑ Queues: approved and waiting — JPEG 0.8 (S2), the 30-cap note (S11), the divisor 3 px low (S10). Shared — the 16 px phone fields (S17), the red border after Fix (S17), the code panel under the button row (S5), reduced motion and targets (P4). Index alone: the ops labels (P3, C), its case-sensitive Advanced type (P4, the twin of caedad5), the Count select's text (P4, gate 2 or 4).
+⚑ New probes (S22): `S22-pdf-focus` (`--ref ac0a2e4` fails 15), `S22-level-reference` (`--ref 7dbcdb9` fails 6), `S22-spreadsheet-hint` (`--ref a458824` fails 4), `S22-desc-fit` (`--ref 3589e48` fails 3; ~1 min). Arm R's set for S23: the three S21 and four S22 probes. `S9-name-fit` compares every sheet with HEAD byte for byte: run it after a sheet-markup commit lands, not before.
+⚑ Stale probes, failing before S22 and unchanged by it: `S10-pdf-progress` (3: its "ends on PDF saved!" predates S18's unsaved-roster line), `S7-bracket-names` (1), `S7-skipped-list` (6), `S8-index-key-division` (2), `S5-key-rows12` (its reference 5c3b01a is not in this repository) — one tooling iteration to repair or retire them.
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S22 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (the maintainer, after S22: "No time/score"): struck to the archive, not to be proposed again.
