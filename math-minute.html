@@ -643,6 +643,21 @@ margin-top:12px;
   }
 }
 
+/* iPhone Safari zooms the page into a field under 16 px when it takes focus, and stays zoomed: a phone's fields are
+   16 px, held either way (a touch screen under 500 px tall is a phone on its side; S23). */
+@media (max-width:560px), (pointer:coarse) and (max-height:500px){
+  #math-minute-app input:not([type="checkbox"]),
+  #math-minute-app select,
+  #math-minute-app textarea{
+    font-size:16px !important;   /* !important: the code box's 13 px is inline */
+  }
+
+  .setting-group{
+    max-width:280px;   /* the Header line's example needs 271 px at 16 px */
+    flex-basis:280px;
+  }
+}
+
 @page{
 size:11in 8.5in;
 margin:0;

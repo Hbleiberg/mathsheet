@@ -700,6 +700,12 @@ body { margin: 0; padding: 12px; background: white; }
 @media (max-width: 480px) {
   #mwg-app .mwg-student-grid { grid-template-columns: 1fr; }
 }
+/* iPhone Safari zooms the page into a field under 16 px when it takes focus, and stays zoomed: a phone's fields are
+   16 px, held either way (a touch screen under 500 px tall is a phone on its side; S23). !important: the code box's
+   13 px is inline. */
+@media (max-width: 480px), (pointer: coarse) and (max-height: 500px) {
+  #mwg-app input:not([type="checkbox"]), #mwg-app select, #mwg-app textarea { font-size: 16px !important; }
+}
 
 /* ══════════════════════════════════════
    PRINT
