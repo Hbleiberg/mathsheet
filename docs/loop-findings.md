@@ -969,3 +969,50 @@ subtractions x − x, ½ − ½ at d = 2; after: 0 of 5,528). `S11-robustness` g
 the next fix could be edited meanwhile. Stale before S21: `S8-index-key-division` (2, seeded identity to d3ef5c6) fails
 on caedad5 too; `S5-key-rows12`'s reference 5c3b01a is not in the repository; `S7-bracket-names` (1) and
 `S7-skipped-list` (6) unchanged.
+
+## S22 (2026-11-08) — pass D (accessibility) on math-minute.html
+
+Method: a scratch audit over the harness (scratchpad `s22/d-mm.mjs`, `s22/d-mm2.mjs`, logs beside them): every
+interactive node's role and name from Chromium's full accessibility tree (CDP) in four states (fresh Standard, the
+validation box shown, the code panel open, Advanced), Tab walks in both modes recording `:focus-visible`, the computed
+outline and whether the stop is in view, every flow by keyboard, text colour against its effective background (WCAG
+luminance, placeholders by `::placeholder`), the box of every control, the live regions, WCAG 1.4.12 text spacing
+injected, 1280 × 900 at 200 % (640 px). Arm R first: the smoke, the two S20 and three S21 probes green. S12 measured
+the shared blocks on the twins and S13 found them identical outside their selectors, so D read math-minute's own parts
+(its Level select and reference) and what changed since S12 (the S16 focus moves, the S18 notice, the S20–S21 Fill Down
+line).
+
+- **Names.** 29 interactive nodes in Standard, 36 with the validation box, 38 with the code panel, 12 in Advanced: none
+  unnamed. The row fields read "Student 2 Level" (S12 holds), the code textarea "Advanced Input Code" (S16), Fill Down's
+  status line is polite. "Fill Down Settings ↓" is read with its arrow ("downwards arrow"): noted, not a candidate.
+- **Keyboard.** 29 Tab stops in the visual order, every one with the UA ring and in view; Enter / Space fire every
+  button; ArrowDown changes a Level; Delete moves focus to the next row's Delete, the code panel opens on its textarea,
+  Escape closes it back to the opener, Fix lands on the empty Level, Use in Advanced Input on the Advanced box, both
+  Clears keep focus on themselves after their confirm. **Save PDF dropped it**: the button is disabled for the export
+  (S10) and a disabled focused button loses focus to the page's start, so after "PDF saved!" the next Tab was the mode
+  toggle at the top (all three pages; with 22 students ~120 Tabs back to Save PDF). Fixed, 7dbcdb9 (see Done); the first
+  shape also focused after a mouse click and scrolled a 22-row page ~470 px at the save's end, so it is limited to a
+  button showing its focus ring (`:focus-visible`), which a click does not.
+- **Reading order.** The Level Reference shows two columns (1–11, 12–21) but was written row by row: a screen reader read
+  1, 12, 2, 13, … 10, 21, 11 (math-facts' reference reads by rows of codes, as it looks). Fixed, a458824: written in level
+  order, `grid-auto-flow: column` over 11 rows, the same pairs per row, pixel-identical at 1280, 800 and 390 px.
+- **Option text.** The Level options read "11 - Easy X" (the letter X), "16 - Easy ÷", "05 - 40 Addition"; type-ahead "5"
+  picks nothing, "1" picks "10 - 60 Subtraction", "12" Level 12. Option text is gate 2: folded into the type-ahead P4.
+- **Contrast** (lowest first): placeholders 4.61, the delete red 6.15, the unsaved notice 6.66, the success line 6.63,
+  the links 8.10, the help 9.25; the answer key's red rgb(180,0,0). **Targets**: Duplicate / Delete 100 / 84 × 16, the
+  three checkboxes 16 × 16, `.btn-small` 34 tall (the S12 P4). **Text spacing**: nothing clips, no sideways scroll; 200 %:
+  no sideways scroll. **Still open** (P4s, confirmed): no `aria-invalid` with the red border, no heading or landmark but
+  the row h3s, the six smooth scrolls under reduced motion.
+
+**Also shipped.** math-facts' approved spreadsheet hint (3589e48): a bare whole-number code adds "A spreadsheet turns +3
+into 3: type it as '+3 there, or fix it here."; "fr10", "plus 3", "3.5", "-3x" read as before. index's approved description
+shrink (ef52c67), measured first over every grade × type the form offers: with 5 copies and keys 1,045 of 1,510
+descriptions ran past their room (a sheet's under "Worksheet 3 of 5", overprinting it; a key's under the branding tag,
+"(Key 3 of 5)" lost), 44 of 302 with one copy and a key, none with the Number removed (the column is `auto`). The longest,
+Division Level 4's key, needs 9.5 px of 13; the floor is 9 px, the branding tag's size.
+
+**Controls.** `S22-pdf-focus --ref ac0a2e4` fails 15; `S22-level-reference --ref 7dbcdb9` fails 6 and a planted 10-row grid
+fails its geometry and pixel checks; `S22-spreadsheet-hint --ref a458824` fails 4; `S22-desc-fit --ref 3589e48` fails 3.
+`S10-pdf-progress` fails 3 on ac0a2e4 as on HEAD: it expects the status to end on "PDF saved!", which S18's unsaved-roster
+line follows (stale, listed). `S9-name-fit` compares every sheet with HEAD byte for byte, so it flags a description's new
+style until the commit lands, then reads green.

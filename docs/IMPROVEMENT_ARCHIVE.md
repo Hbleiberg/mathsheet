@@ -618,3 +618,39 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ New probes (S20): `S20-fill-down` replaces `S19-fill-down` (deleted: it asserted S19's question; `--ref f14b27e` fails 14 on the twins, `--ref b7eb193 --only index.html` fails 7) and `S20-spreadsheet-paste` (a real Ctrl+V; `--ref aafa34e` fails 30). Arm R's set for S21 is `S19-long-name` and the two S20 probes. `S7-bracket-names` (1) and `S7-skipped-list` (6) fail on HEAD and on f14b27e alike (stale comparisons, not S20's).
 ⚑ Trap (S20): never `git stash` while a probe runs in the background — the harness serves the working tree, so the run reads the stashed files (S20's S11-robustness run was spoiled and rerun). `S11-robustness` takes ~10 minutes: run it in the background, alone.
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S20 asked nothing about it); build a seed only when the maintainer names one. H on math-minute marked the Time / Score strip as the one thing a timed sheet's header lacks, and the compact key now lists math-minute.
+
+## S22 (2026-11-08) — pass D (accessibility) on math-minute.html; four fixes, pushed to `main`
+
+- Run on `main` (local `main` at `origin/main`, ac0a2e4); each fix pushed once verified.
+- Arm R: the smoke, the two S20 and three S21 probes green.
+- Pass D on math-minute.html (scratch `s22/d-mm.mjs`, `s22/d-mm2.mjs`): names from Chromium's accessibility tree in four
+  states, Tab walks in both modes, every flow by keyboard (add, Fill Down, Duplicate, Delete, validation and Fix, the code
+  panel, Use in Advanced Input, the toggle, Generate, Save PDF, both Clears), contrast, targets, live regions, WCAG text
+  spacing, 200 % zoom. Two losses found and fixed: Save PDF dropped keyboard focus to the page's start (all three pages),
+  the Level Reference read 1, 12, 2, 13.
+- Gates: none asked (both D fixes change nothing a teacher sees; the two queued items were approved S21 and S4).
+- Fixes: Save PDF's keyboard focus returns (7dbcdb9); math-minute's Level Reference in level order (a458824);
+  math-facts' spreadsheet hint, approved S21 (3589e48); index's long descriptions shrink to fit, approved S4 (ef52c67);
+  CLAUDE.md (94c4e71). Every page then on its cap.
+- Method note: the first refocus shape also focused after a mouse click and scrolled a 22-row page ~470 px at the save's
+  end; it was narrowed to a button showing its focus ring before commit. `S10-pdf-progress` found stale (since S18).
+
+### Done rows archived from the ledger (S17, verbatim)
+
+- [x] S17 | 2026-11-07 | 8e40f96 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S17-phone-layout.mjs | the button rows wrap at ≤860 px (centred and `nowrap`, Add Student was out of reach on every phone); index's rule carries `#mwg-app`; the same block thrice | S17-phone-layout arm 1, 5 devices and a 350 px frame (fails 20 on e2bb697); desktop pixel-identical; a real iframe on an iPhone 13; smoke
+- [x] S17 | 2026-11-07 | 13bcc9b | index.html, scripts/loop/probes/S17-phone-layout.mjs | index's responsive rules apply again (≤860 the Advanced box stacks, ≤700 two roster columns, ≤480 one): the injected base rules, appended after the static sheet, had won at every width, leaving five 60 px roster fields and a 46 px paste box (18 px on an iPhone SE) | arm 2: column counts per width (fails 8 on 8e40f96); desktop pixel-identical; the Mixed and Fraction-ops panels fit at 320 and 390 px; smoke
+- [x] S17 | 2026-11-07 | 13b7c75 | math-facts.html | the Advanced help reads "Fact codes are listed in the Level Reference." (it said "to the right", below the box at ≤860 px; approved S17, gate 2) | arm 3 reads the live help (fails 1 on 13bcc9b); smoke
+- [x] S17 | 2026-11-07 | — | docs/loop-findings.md | pass M on math-facts.html (iPhone SE, iPhone 13 and iPad Mini in both orientations, a 350 px frame; fresh, validation, code panel, Advanced, results): the button row on all three pages and index's dead responsive block found and fixed; code panel and validation box fit, Close reachable; no `inputmode` forced; 14 px fields (iOS focus zoom) and the sideways sheet preview queued | scratch s17/m-audit.mjs, s17/iframe-m.mjs, loop-findings S17
+
+### Per-session line archived from the ledger (S2, verbatim)
+
+- S2 | 2026-11-05 | pass B on math-facts.html (geometry 100 sheets, real PDF rasters, A4, font census, advanced round trip) | fixes 3 (two P2 print defects, one P3; on branch claude/fervent-lovelace-urwaob, not main) | smoke 3/3 green + `--cdn` | every page ended on its two-touch cap
+
+### Previous handoff (S21 → S22), verbatim
+
+**Next session (S22):** S21 ran on `main` and pushed each fix there: caedad5, 516b2d4, 99911b1, 904695f and the close-out are live on GitHub Pages. Work on `main` again: one commit per iteration, each push a deploy.
+⚑ next: D on math-minute.html — the never-run cells are D and M on math-minute. D first (S12 measured the shared blocks on the twins and S13 showed them identical outside their selectors, so expect its Level select, its reference and the S20–S21 rows), then M on math-minute.
+⚑ Queues: approved and waiting — math-facts' spreadsheet hint (S21), JPEG 0.8 (S2), the 30-cap note (S11), the long-header shrink (S4), the divisor 3 px low (S10). Shared — the 16 px phone fields (S17), the code panel under the button row (S5), the red border after Fix (S17), reduced motion and targets (P4). Index alone: the ops labels (P3), its case-sensitive Advanced type (P4, the twin of caedad5), the Count select's text (P4, gate 2 or 4).
+⚑ New probes (S21): `S21-fact-codes` (`--ref f5a60c2` fails 22), `S21-fill-down-status` (`--ref caedad5` fails 39; `S20-fill-down` reads the new line, the status box on older refs), `S21-fraction-sub` (`--ref 516b2d4` fails 9). Arm R's set for S22: the two S20 and three S21 probes. Long probes (`S11-robustness`, ~10 min) can run from a `git worktree` of HEAD in the scratchpad while the next fix is edited.
+⚑ Stale probes, failing before S21 and unchanged by it: `S7-bracket-names` (1), `S7-skipped-list` (6), `S8-index-key-division` (2, its seeded identity to d3ef5c6), `S5-key-rows12` (its reference 5c3b01a is not in this repository) — worth one iteration to repair or retire to the archive.
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S21 asked nothing about it); build a seed only when the maintainer names one. H on both timed pages found the Time / Score strip the one thing their header lacks.
