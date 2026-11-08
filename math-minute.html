@@ -959,6 +959,12 @@ function createStudentEntry(index, studentData) {
       '<div><label for="level-' + uid + '" id="levelLabel-' + uid + '">Level</label><select name="level" id="level-' + uid + '" aria-labelledby="studentHeading-' + uid + ' levelLabel-' + uid + '">' + getLevelOptions(levelValue) + '</select></div>' +
     '</div>';
 
+  // The row's level before the teacher changed it, for Fill Down (S20): its level when made, loaded or last filled down,
+  // or the first one picked; a later change keeps it, so the rows still on Student 1's earlier level can follow.
+  var levelSelect = div.querySelector('select[name="level"]');
+  div.setAttribute("data-fill-from", levelValue);
+  levelSelect.addEventListener("change", function () { if (!div.getAttribute("data-fill-from")) div.setAttribute("data-fill-from", levelSelect.value); });
+
   var deleteButton = div.querySelector(".delete-student-link");
   deleteButton.addEventListener("click", function () {
     var neighbour = div.nextElementSibling || div.previousElementSibling;   // focus moves to a neighbour's Delete, or Add Student (S12 P3; S16)
@@ -1685,16 +1691,17 @@ function nameLineHeight(field, size) {
   return 2 * (at18 - at0);
 }
 
+// The rows Fill Down left on their own level, named after its message (S20, approved): " Students 7 and 15 kept their
+// own levels."; one row reads " Student 7 kept its own level."
+function keptLevelsText(rows) {
+  if (!rows.length) return "";
+  return rows.length === 1 ? " Student " + rows[0] + " kept its own level."
+    : " Students " + rows.slice(0, -1).join(", ") + " and " + rows[rows.length - 1] + " kept their own levels.";
+}
+
 // A class typed in and printed was gone at the next visit unless Save Roster was clicked, and nothing said so (S18,
 // approved): after Generate & Print or Save PDF, a roster that is not the saved one gets a notice under any message
 // shown. Nothing is saved without the click; with storage denied, Save Roster cannot help, so there is no notice.
-// Fill Down's question when it would change rows with their own level (S18, approved): "Fill Down will change
-// Students 7 and 15, which have their own settings. Continue?"; one row reads "Student 7, which has its own settings".
-function fillDownQuestion(rows) {
-  var list = rows.length === 1 ? "Student " + rows[0] + ", which has its own settings"
-    : "Students " + rows.slice(0, -1).join(", ") + " and " + rows[rows.length - 1] + ", which have their own settings";
-  return "Fill Down will change " + list + ". Continue?";
-}
 function remindUnsavedRoster() {
   var saved;
   try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; } catch (e) { return false; }
@@ -1935,17 +1942,18 @@ function wireButtons() {
     var entries = studentsContainer.querySelectorAll(".student-entry");
     if (entries.length < 2) return;
     var firstLevel = entries[0].querySelector('select[name="level"]').value;
-    // A row set to another level is an IEP or an advanced student: ask before changing it (S18, approved).
-    var own = [];
-    for (var j = 1; j < entries.length; j++) {
-      var level = entries[j].querySelector('select[name="level"]').value;
-      if (level && level !== firstLevel) own.push(j + 1);
-    }
-    if (own.length && !window.confirm(fillDownQuestion(own))) return;
+    // A row on its own level (an IEP or an advanced student) keeps it: the empty rows and the rows still on Student 1's
+    // earlier level follow, and the message names the rest (S20, approved; S19's question named every row when the
+    // class moved up, and for a new student OK reset the IEP row while Cancel left the new one empty).
+    var earlier = entries[0].getAttribute("data-fill-from") || "", kept = [];
     for (var i = 1; i < entries.length; i++) {
-      entries[i].querySelector('select[name="level"]').value = firstLevel;
+      var select = entries[i].querySelector('select[name="level"]');
+      if (select.value && select.value !== firstLevel && select.value !== earlier) { kept.push(i + 1); continue; }
+      select.value = firstLevel;
+      entries[i].setAttribute("data-fill-from", firstLevel);
     }
-    showSuccess("Level filled down from Student 1.");
+    entries[0].setAttribute("data-fill-from", firstLevel);
+    showSuccess("Level filled down from Student 1." + keptLevelsText(kept));
   });
 
   if (generateAdvancedCodeButton) {
