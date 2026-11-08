@@ -221,9 +221,12 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
     entry may start with an empty field: `, 2, +10;`). A blank name just prints an empty
     Student Name line — never skip a student or flag them as invalid for a missing name.
   - **A long Student Name shrinks to fit its line** (`fitLongNames()` at the end of every generate, S9):
-    down to 11 px (then "…"), on the 18 px name's baseline; a name that fits gets no style.
-  - **A printed name sits in a `<bdi>`** (`nameHtml()`, S18), so a Hebrew name keeps its punctuation at its own
-    end and stays at the left of its line; an empty name stays an empty line. (`index.html`'s half is queued.)
+    down to 11 px, on the 18 px name's baseline; a name that fits gets no style. Still too long at 11 px, it is cut
+    with a written "…" (`endWithEllipsis()`, S19): Save PDF draws no CSS ellipsis, and the name keeps its start.
+  - **A printed name sits in a `<bdi>`** (`nameHtml()`, S18; `index.html` S19), so a Hebrew name keeps its
+    punctuation and its "…" at its own end and stays at the left of its line; an empty name stays an empty line.
+  - **Fill Down asks** before changing a row set to another level: "Fill Down will change Students 7 and 15, which
+    have their own settings. Continue?" (S19 on the twins; `index.html`'s half is queued).
   - **"Name blank"** (`nameBlankToggle`, helper `isNameBlank()`): prints an empty Student
     Name line on every worksheet even when a name is entered (answer keys still show the
     name). Student Number is always free text — never validate it as numeric.
