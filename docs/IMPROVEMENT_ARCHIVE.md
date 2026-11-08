@@ -654,3 +654,10 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ New probes (S21): `S21-fact-codes` (`--ref f5a60c2` fails 22), `S21-fill-down-status` (`--ref caedad5` fails 39; `S20-fill-down` reads the new line, the status box on older refs), `S21-fraction-sub` (`--ref 516b2d4` fails 9). Arm R's set for S22: the two S20 and three S21 probes. Long probes (`S11-robustness`, ~10 min) can run from a `git worktree` of HEAD in the scratchpad while the next fix is edited.
 ⚑ Stale probes, failing before S21 and unchanged by it: `S7-bracket-names` (1), `S7-skipped-list` (6), `S8-index-key-division` (2, its seeded identity to d3ef5c6), `S5-key-rows12` (its reference 5c3b01a is not in this repository) — worth one iteration to repair or retire to the archive.
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S21 asked nothing about it); build a seed only when the maintainer names one. H on both timed pages found the Time / Score strip the one thing their header lacks.
+
+### After the S22 close-out: the maintainer's answers
+
+- Struck Feature seed (the maintainer, after S22: "No time/score" — not to be proposed again), verbatim:
+  - [ ] seed | math-minute.html, math-facts.html | "Time / Score" strip in the header (toggle): `Time: ____  Score: ____ / N`, N from the level's count (S20 and S21 H: the one thing a timed sheet's header lacks, on both timed pages) | from S0
+- The S22 note on math-minute's "11 - Easy X" (a screen reader reads the letter X) is removed from the type-ahead P4:
+  the maintainer keeps the letter X (S9, gate 2).

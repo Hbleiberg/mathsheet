@@ -997,7 +997,7 @@ line).
   1, 12, 2, 13, … 10, 21, 11 (math-facts' reference reads by rows of codes, as it looks). Fixed, a458824: written in level
   order, `grid-auto-flow: column` over 11 rows, the same pairs per row, pixel-identical at 1280, 800 and 390 px.
 - **Option text.** The Level options read "11 - Easy X" (the letter X), "16 - Easy ÷", "05 - 40 Addition"; type-ahead "5"
-  picks nothing, "1" picks "10 - 60 Subtraction", "12" Level 12. Option text is gate 2: folded into the type-ahead P4.
+  picks nothing, "1" picks "10 - 60 Subtraction", "12" Level 12. Option text is gate 2, and the letter X was kept by the maintainer in S9: not a candidate.
 - **Contrast** (lowest first): placeholders 4.61, the delete red 6.15, the unsaved notice 6.66, the success line 6.63,
   the links 8.10, the help 9.25; the answer key's red rgb(180,0,0). **Targets**: Duplicate / Delete 100 / 84 × 16, the
   three checkboxes 16 × 16, `.btn-small` 34 tall (the S12 P4). **Text spacing**: nothing clips, no sideways scroll; 200 %:
@@ -1016,3 +1016,5 @@ fails its geometry and pixel checks; `S22-spreadsheet-hint --ref a458824` fails 
 `S10-pdf-progress` fails 3 on ac0a2e4 as on HEAD: it expects the status to end on "PDF saved!", which S18's unsaved-roster
 line follows (stale, listed). `S9-name-fit` compares every sheet with HEAD byte for byte, so it flags a description's new
 style until the commit lands, then reads green.
+
+**After the close-out.** The maintainer declined the Time / Score strip ("No time/score"): the seed is struck to the archive.
