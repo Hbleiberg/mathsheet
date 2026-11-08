@@ -1497,7 +1497,11 @@ function getStudentsFromAdvancedInput() {
     var number = parts[1];
     var level  = normalizeFactCode(parts[2]);
     if (!level || !FACTS[level]) {
-      parseErrors.push('Entry ' + n + ' has an invalid fact code (see Level Reference): "' + entry + '"'); continue;
+      var invalid = 'Entry ' + n + ' has an invalid fact code (see Level Reference): "' + entry + '"';
+      // Excel and Google Sheets store a typed "+3" as the number 3: a bare whole number is still skipped, nothing
+      // guessed, and its line says why (approved S21, shipped S22).
+      if (/^\d+$/.test(level)) invalid += " A spreadsheet turns +3 into 3: type it as '+3 there, or fix it here.";
+      parseErrors.push(invalid); continue;
     }
     parsedStudents.push({ name: name, number: number, level: level });
   }
