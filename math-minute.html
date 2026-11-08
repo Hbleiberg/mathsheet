@@ -774,6 +774,7 @@ break-after:avoid !important;
           Format: <strong>STUDENTNAME, NUMBER, LEVEL; NEXTSTUDENT, NEXTNUMBER, LEVEL;</strong><br>
           NUMBER can be any text (e.g. 2, 14B, Blue) or left empty. The name may be left empty too — it prints a blank Name line (e.g. <strong>, 2, 19;</strong>).<br>
           You can also paste one student per line.<br>
+          You can also paste three columns (name, number, level) straight from a spreadsheet.<br>
           Example: <strong>Harrison, 2, 19; Emily, 5, 7; Jacob, 14, 21;</strong><br>
           Extra spaces are okay. Blank trailing entries are ignored. Invalid entries are skipped and listed in an error message.
         </div>
@@ -1358,9 +1359,12 @@ function getStudentsFromAdvancedInput() {
     var entry = chunks[i].trim();
     if (!entry) continue;
     n++;   // numbered as a teacher counts the entries: an empty chunk (a newline after ";") took a number, so the 6th line read "Entry 10" (S2; fixed S11)
-    var parts = entry.split(",");
-    // A name may hold commas ("Cohen, Avi"): everything before the last two fields is the name (S3).
-    if (parts.length > 3) parts = [parts.slice(0, -2).join(",")].concat(parts.slice(-2));
+    // Columns pasted from a spreadsheet come with tabs between them: a line short of its 3 fields by commas is read by its
+    // tabs (S20, approved); a stray tab in a comma line stays a space ("Eli\t, 9, 10", S11).
+    var sep = ",", parts = entry.split(sep);
+    if (parts.length < 3 && entry.indexOf("\t") >= 0) parts = entry.split(sep = "\t");
+    // A name may hold commas ("Cohen, Avi"), or fill two columns: everything before the last two fields is the name (S3).
+    if (parts.length > 3) parts = [parts.slice(0, -2).join(sep === "\t" ? " " : ",")].concat(parts.slice(-2));
     for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
     if (parts.length !== 3) { parseErrors.push('Entry ' + n + ' is invalid: "' + entry + '"'); continue; }
     var name   = parts[0];

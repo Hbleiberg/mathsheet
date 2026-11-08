@@ -832,6 +832,7 @@ body { margin: 0; padding: 12px; background: white; }
         <div class="mwg-advanced-help">
           Format: <strong>Name, Number, ProblemType, Count, Grade;</strong><br>
           Number can be any text (e.g. 2, 14B, Blue) or left empty. The name may be left empty too — it prints a blank Name line (e.g. <strong>, 2, add2, 30, 3;</strong>).<br>
+          You can also paste five columns (name, number, problem type, count, grade) straight from a spreadsheet.<br>
           Example: <strong>Harrison, 1, add2, 30, 3; Emily, 2, mixed, 40, 5;</strong><br>
           Problem types: add1–add5, sub1–sub5, mul1–mul5, div1–div5 (Levels 1–5 of addition, subtraction, multiplication, division), fractions, fractions[add|sub|mul|divf|divw], decimals, decimals[add|sub|mulw|muld|divw|divd], rounding, longdivision, orderofoperations, integers, exponents, scientificnotation, mixed, mixed[type1|type2|...]<br>
           Counts: 30, 40, 50, 60 — Grades: 1–8
@@ -1784,9 +1785,12 @@ function parseAdvancedInput() {
     var entry = chunks[i].trim();
     if (!entry) continue;
     n++;   // numbered as a teacher counts the entries: an empty chunk (a newline after ";") took a number, so the 6th line read "Entry 10" (S2; fixed S11)
-    var parts = entry.split(",");
-    // A name may hold commas ("Cohen, Avi"): everything before the last four fields is the name (S3).
-    if (parts.length > 5) parts = [parts.slice(0, -4).join(",")].concat(parts.slice(-4));
+    // Columns pasted from a spreadsheet come with tabs between them: a line short of its 5 fields by commas is read by its
+    // tabs (S20, approved); a stray tab in a comma line stays a space ("Eli\t, 9, 10", S11).
+    var sep = ",", parts = entry.split(sep);
+    if (parts.length < 5 && entry.indexOf("\t") >= 0) parts = entry.split(sep = "\t");
+    // A name may hold commas ("Cohen, Avi"), or fill two columns: everything before the last four fields is the name (S3).
+    if (parts.length > 5) parts = [parts.slice(0, -4).join(sep === "\t" ? " " : ",")].concat(parts.slice(-4));
     for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
     if (parts.length !== 5) { errors.push("Entry " + n + " needs 5 fields: " + entry); continue; }
     var grade = parseInt(parts[4]);
