@@ -56,7 +56,8 @@ for (const file of files) {
     check(sheets === 8, `${sheets} sheets and keys generated`);
     check(pages.length === sheets && pages[0] === `Making your PDF: page 1 of ${sheets}...` && pages[pages.length - 1] === `Making your PDF: page ${sheets} of ${sheets}...`,
       `the status box counts every page ("${pages[0] || st.status[0] || ''}" … "${pages[pages.length - 1] || ''}"; ${pages.length} of ${sheets})`);
-    check(st.status[st.status.length - 1] === 'PDF saved!', `ends on "PDF saved!" (last: "${st.status[st.status.length - 1]}")`);
+    // "PDF saved!", then S18's approved notice when the roster is not the saved one (read as one text here)
+    check(/^PDF saved!/.test(st.status[st.status.length - 1] || ''), `ends on "PDF saved!" (last: "${st.status[st.status.length - 1]}")`);
     check(midDisabled === true && afterDisabled === false, `Save PDF disabled during the export (${midDisabled}) and enabled after (${!afterDisabled})`);
     check(st.h2c === sheets && p.downloads === 1, `a second click mid-export starts nothing: ${st.h2c} page captures for ${sheets} sheets, ${p.downloads} download`);
     check(inView, `the status box is in the viewport while the export runs`);

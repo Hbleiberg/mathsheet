@@ -12,7 +12,7 @@
 //     byte-identical to `--ref`;
 //   - seeded, the worksheets are byte-identical to `--ref` (default d3ef5c6, the page before the fix): only the keys change.
 // `--control` serves index.html from `--ref` and must fail.
-//   node scripts/loop/probes/S8-index-key-division.mjs [--control] [--ref <commit>]
+//   node scripts/loop/probes/S8-index-key-division.mjs [--control] [--ref <commit>] [--identity]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
@@ -61,15 +61,21 @@ const shortKeys = p => p.page.$$eval('#mwgResults .mwg-answer-key-sheet', ks => 
 
 const srv = await serve(); const browser = await launch();
 try {
-  const ref = await open(browser, srv.base, OLD);
-  const before = await sheetsHtml(ref), shortBefore = await shortKeys(ref);
-  await ref.close();
   const p = await open(browser, srv.base, control ? OLD : null);
   const after = await sheetsHtml(p), shortAfter = await shortKeys(p);
   const shortN = shortAfter.filter(Boolean).length;
-  check(shortN > 0 && shortAfter.every((h, i) => h === shortBefore[i]), `the ${shortN} Mixed keys of 10 / 12 rows or written across keep the old drawing, byte-identical to ${REF} (${shortAfter.filter((h, i) => h !== shortBefore[i]).length} differ)`);
-  check(before.length === SETS.length && after.length === before.length && after.every((h, i) => h === before[i]),
-    `seeded, the ${after.length} worksheets are byte-identical to ${REF} (${after.filter((h, i) => h !== before[i]).length} differ)`);
+  check(after.length === SETS.length && shortN > 0, `${after.length} worksheets and ${shortN} Mixed keys of 10 / 12 rows or written across generated`);
+  // The two byte-for-byte arms against the page before S8 run only with `--identity`: they proved S8's fix changed only
+  // the keys it meant to, and every later approved change to a sheet's markup (S19's <bdi>, S22's description fit)
+  // breaks them (S23). The measured arms below are the regression check.
+  if (process.argv.includes('--identity')) {
+    const ref = await open(browser, srv.base, OLD);
+    const before = await sheetsHtml(ref), shortBefore = await shortKeys(ref);
+    await ref.close();
+    check(shortAfter.every((h, i) => h === shortBefore[i]), `the ${shortN} Mixed keys of 10 / 12 rows or written across keep the old drawing, byte-identical to ${REF} (${shortAfter.filter((h, i) => h !== shortBefore[i]).length} differ)`);
+    check(before.length === SETS.length && after.length === before.length && after.every((h, i) => h === before[i]),
+      `seeded, the ${after.length} worksheets are byte-identical to ${REF} (${after.filter((h, i) => h !== before[i]).length} differ)`);
+  }
   await p.page.emulateMedia({ media: 'print' });
   const r = await p.page.evaluate(() => {
     const res = document.querySelector('#mwgResults'); res.id = 'mwg-results-print'; document.body.appendChild(res);

@@ -301,7 +301,8 @@ async function armControls(file) {
   });
   await step('Fill Down from a filled first entry', async () => {
     await p.spec.prepare(p.page);
-    await p.page.click(s.fillDown); const said = await text(p, s.status); if (!/filled down/i.test(said)) throw new Error(`said "${said}"`);
+    // the message sits in its own line beside the button since S21 (516b2d4), not the status box
+    await p.page.click(s.fillDown); const said = await text(p, s.isIndex ? '#mwgFillDownStatus' : '#fillDownStatus'); if (!/filled down/i.test(said)) throw new Error(`said "${said}"`);
   });
   await step('Generate Advanced Code: open, copy, use, close', async () => {
     await p.page.click(s.genCode);

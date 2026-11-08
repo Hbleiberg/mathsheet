@@ -84,8 +84,12 @@ for (const shape of SHAPES) {
   const sizes = now.descs.map(d => d.size);
   check(Math.min(...sizes) >= 9, `none under 9 px (smallest ${Math.min(...sizes)} px; ${now.descs.filter(d => d.size < 13).length} shrunk)`);
   check(now.descs.every(d => d.styled === (d.size < 13)), `only a shrunk description carries a style (${now.descs.filter(d => d.styled && d.size >= 13).length} styled at 13 px)`);
-  const moved = now.geometry.filter((g, i) => g !== was.geometry[i]).length;
-  check(now.geometry.length === was.geometry.length && moved === 0, `every header, field, set label and problem where it was (${moved} of ${now.geometry.length} sheets differ)`);
+  // within 0.25 px: under CPU load one fraction cell read 47.6 or 47.7 px tall from run to run, the base against itself
+  // too (S23), so an exact string compare failed 2 runs in 5
+  const near = (a, b) => { const x = a.split(/[;,]/).map(Number), y = (b || '').split(/[;,]/).map(Number);
+    return x.length === y.length && x.every((v, i) => Math.abs(v - y[i]) <= 0.25); };
+  const moved = now.geometry.filter((g, i) => !near(g, was.geometry[i])).length;
+  check(now.geometry.length === was.geometry.length && moved === 0, `every header, field, set label and problem where it was, within 0.25 px (${moved} of ${now.geometry.length} sheets differ)`);
   check(now.errors.length === 0, `0 page errors (${now.errors.join('; ')})`);
 }
 

@@ -7,7 +7,7 @@
 //     "fractions" in Mixed) prints exactly what it printed before (seeded, byte-identical to the old page);
 //   - a stray "|" (an empty name, `mixed[add1|]`) is ignored, not reported.
 // `--control` serves index.html from `--ref` (default cfa5cd6, before the fix) and must fail.
-//   node scripts/loop/probes/S7-bracket-names.mjs [--control] [--ref <commit>]
+//   node scripts/loop/probes/S7-bracket-names.mjs [--control] [--ref <commit>] [--identity]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
@@ -76,14 +76,18 @@ async function run(p, roster) {
 
 const srv = await serve(); const browser = await launch();
 try {
-  // 1. The valid brackets print what they printed before (seeded, valid entries only).
-  const ref = await open(browser, srv.base, OLD);
-  const before = await run(ref, GOOD.map(line).join('\n'));
-  await ref.close();
+  // 1. The valid brackets print, nothing reported. Byte for byte against the old page (seeded, LATER replayed) only with
+  // `--identity`: that arm proved S7's fix changed nothing else, and every later approved change to what a valid entry
+  // prints (S19's <bdi>, S21's fraction subtraction, S22's description fit) breaks it (S23).
   const p = await open(browser, srv.base, control ? OLD : null);
   const after = await run(p, GOOD.map(line).join('\n'));
-  check(before.names.length === GOOD.length, `the old page prints the ${GOOD.length} valid entries (${before.names.length})`);
-  check(after.html === before.html && after.errors === '', `every valid bracket prints byte-identically to the old page, nothing reported (${after.html === before.html ? 'identical' : 'differs'}; "${after.errors}")`);
+  check(after.names.length === GOOD.length && after.errors === '', `every valid bracket prints (${after.names.length} of ${GOOD.length}), nothing reported ("${after.errors}")`);
+  if (process.argv.includes('--identity')) {
+    const ref = await open(browser, srv.base, OLD);
+    const before = await run(ref, GOOD.map(line).join('\n'));
+    await ref.close();
+    check(after.html === before.html, `every valid bracket prints byte-identically to the old page (${after.html === before.html ? 'identical' : 'differs'})`);
+  }
 
   // 2. The unknown names are skipped and named; the valid entries around them still print.
   const mixedRoster = [...GOOD.slice(0, 3), ...BAD, ...GOOD.slice(3)].map(line).join('\n');

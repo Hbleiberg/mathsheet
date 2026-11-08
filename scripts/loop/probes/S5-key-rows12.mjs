@@ -7,7 +7,7 @@
 //   - every key and worksheet that is not a rows-12 key is byte-identical to the control's (the pre-S5 page
 //     with later approved generator changes replayed, LATER).
 // Fails on the pre-fix page (`--control` serves index.html from `git show 5c3b01a:index.html`).
-//   node scripts/loop/probes/S5-key-rows12.mjs [--control]
+//   node scripts/loop/probes/S5-key-rows12.mjs [--control] [--identity]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
@@ -107,14 +107,20 @@ const replay = body => LATER.reduce((b, [from, to]) => {
 
 const srv = await serve(); const browser = await launch();
 try {
-  const old = execSync('git show 5c3b01a:index.html', { cwd: ROOT, encoding: 'utf8' });
+  // The byte-for-byte arm runs only with `--identity`: it proved S5's fix changed nothing else, and every later approved
+  // change to a sheet's markup breaks it (S23); the ink arms are the regression check. 5c3b01a needs the full history
+  // (`git fetch --unshallow`): a cloud session's clone is shallow.
+  const identity = process.argv.includes('--identity');
+  const old = control || identity ? execSync('git show 5c3b01a:index.html', { cwd: ROOT, encoding: 'utf8' }) : null;
   const r = await measure(browser, srv.base, control ? old : null);
-  const ref = control ? r : await measure(browser, srv.base, replay(old));
   check(r.keys12 > 0 && r.cells12 > 0, `${r.students} students at 60: ${r.keys12} rows-12 key(s), ${r.cells12} cells measured`);
   check(r.close === 0, `every red answer >= 2 px clear of the problem below (${r.close} closer; min gap ${r.minGap.toFixed(1)} px)`);
   check(r.inkBottom <= 816, `rows-12 key ink ends on the paper (${r.inkBottom.toFixed(0)} of 816 px)`);
-  const diff = r.html.filter((h, i) => h !== ref.html[i]).length;
-  check(r.html.length === ref.html.length && diff === 0, `every other sheet byte-identical to the control's (${diff} of ${r.html.filter(h => h !== null).length} differ)`);
+  if (identity) {
+    const ref = control ? r : await measure(browser, srv.base, replay(old));
+    const diff = r.html.filter((h, i) => h !== ref.html[i]).length;
+    check(r.html.length === ref.html.length && diff === 0, `every other sheet byte-identical to the control's (${diff} of ${r.html.filter(h => h !== null).length} differ)`);
+  }
   check(r.errors.length === 0, `0 page errors (${r.errors.join(' | ')})`);
 } finally { await browser.close(); await srv.close(); }
 console.log(fails.length ? `\nS5-key-rows12: ${fails.length} failing` : '\nS5-key-rows12: all green');

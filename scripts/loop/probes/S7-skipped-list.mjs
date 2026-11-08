@@ -23,8 +23,10 @@ async function settle(page) {        // wait for the smooth scroll to stop
   for (let i = 0; i < 40; i++) { const y = await page.evaluate(() => scrollY); if (y === last) return y; last = y; await page.waitForTimeout(150); }
   return last;
 }
-async function run(p, roster) {
+async function run(p, roster, save) {
   await p.page.fill(p.spec.advanced, roster);
+  // a saved roster: since S18 an unsaved one shows its reminder after Generate and the page lands on it, above the sheets
+  if (save) await p.page.click(p.spec.save);
   const n = await p.prints();
   await p.page.click(p.spec.generate);
   await p.page.waitForFunction(n => window.__prints > n, n, { timeout: 20000 });
@@ -55,7 +57,7 @@ try {
       check(m.top >= -1 && m.top < m.vh && m.bottom > 0, `the box is in view after Generate (top ${m.top.toFixed(0)}, viewport ${m.vh})`);
       check(m.bottom <= m.firstTop + 0.5, `the box stands above the first sheet (box bottom ${m.bottom.toFixed(0)}, first sheet ${m.firstTop.toFixed(0)})`);
       check(m.before && m.parentSame, 'after the print flow the box still stands before the results, beside them');
-      const c = await run(p, good.join('\n'));
+      const c = await run(p, good.join('\n'), true);
       check(Math.abs(c.firstTop) <= 2 && c.h === 0, `nothing skipped: the page lands on the first sheet (top ${c.firstTop.toFixed(0)}), the box empty (${c.h} px)`);
       check(p.errors.length === 0, `0 page errors (${p.errors.join(' | ')})`);
       await p.close();
