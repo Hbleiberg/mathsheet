@@ -697,3 +697,37 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ New probes (S22): `S22-pdf-focus` (`--ref ac0a2e4` fails 15), `S22-level-reference` (`--ref 7dbcdb9` fails 6), `S22-spreadsheet-hint` (`--ref a458824` fails 4), `S22-desc-fit` (`--ref 3589e48` fails 3; ~1 min). Arm R's set for S23: the three S21 and four S22 probes. `S9-name-fit` compares every sheet with HEAD byte for byte: run it after a sheet-markup commit lands, not before.
 ⚑ Stale probes, failing before S22 and unchanged by it: `S10-pdf-progress` (3: its "ends on PDF saved!" predates S18's unsaved-roster line), `S7-bracket-names` (1), `S7-skipped-list` (6), `S8-index-key-division` (2), `S5-key-rows12` (its reference 5c3b01a is not in this repository) — one tooling iteration to repair or retire them.
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S22 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (the maintainer, after S22: "No time/score"): struck to the archive, not to be proposed again.
+
+## S24 (2026-11-08) — pass B (print & export) on math-facts.html, then A (performance) on math-minute.html; three fixes, pushed to `main`
+
+- Run on `main` (local `main` at `origin/main`, d31ff06; the clone was full this time); each fix pushed once verified.
+- Arm R: the smoke and the four S22 and three S23 probes green.
+- Pass B on math-facts.html: clean but for the two known Advanced Code P4s. The clean surface bought a second: A on
+  math-minute.html, which found every generate 1.6–2.4× slower than S3's on the same machine, bisected to 36f71e4
+  (S18's `<bdi>`; S19 carried it to index.html): Chromium's fast innerHTML parser takes no `<bdi>`.
+- Gates: none asked (a markup swap with pixel-identical output, the twins' S23 fix completed on index, dead CSS).
+- Fixes: the name span on all three pages, with CLAUDE.md and the S23-name-fit-layout repair (037221c); index's red
+  border (7f40755); the twins' dead CSS (9fb3e5d). Every page then on its cap; the fourth slot unused.
+- Method notes: S23-name-fit-layout compared every sheet byte for byte with 37af5e4 by default, the decay S23 recorded
+  for the other probes, and read red after the span: its default now compares the name lines. `S24-name-parse` at 1.3×
+  and 5 runs left index's control at 1.34×: 7 runs and 1.25× read 0.94–1.09× on the fix, 1.32–1.74× on d31ff06.
+
+### Done rows archived from the ledger (S19, verbatim)
+
+- [x] S19 | 2026-11-08 | 84025f7 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S19-long-name.mjs | a name still too long at the 11 px floor ends in a written "…" (`endWithEllipsis()`): Save PDF cut it mid-letter (html2canvas draws no CSS ellipsis), and a Hebrew name's "…" took its first name in print and PDF; the same block thrice | S19-long-name (fails 42 on f9e7b6a); real print and cdnjs Save PDF rasters before / after on all three: only the floor names differ; smoke
+- [x] S19 | 2026-11-08 | bf9f2c7 | index.html, scripts/loop/probes/S18-hebrew-name.mjs | index's printed name in a `<bdi>` (`nameHtml()`, its half of 36f71e4; approved S18, gate 6): "שרה כ." ends in its period, a cut Hebrew name in its "…" | S18-hebrew-name now covers index (fails 4 on 84025f7); print and Save PDF rasters: only the Hebrew names differ; smoke
+- [x] S19 | 2026-11-08 | c68f197 | math-minute.html, math-facts.html, scripts/loop/probes/S19-fill-down.mjs | Fill Down asks before changing a row with its own level, "Fill Down will change Students 4 and 5, which have their own settings. Continue?" (approved S18, gate 2); Cancel changes nothing; index's half queued | S19-fill-down: plural, singular, three rows, unasked fills, Student 1 empty (fails 10 on bf9f2c7); smoke
+- [x] S19 | 2026-11-08 | 81e3d8c | CLAUDE.md | the written "…" at the floor, index's `<bdi>`, Fill Down's question | doc only
+- [x] S19 | 2026-11-08 | — | docs/loop-findings.md | pass M on index.html (iPhone SE, iPhone 13 and iPad Mini in both orientations, a 350 px frame; fresh, validation and Fix, the Mixed and ops panels, the code panel, Advanced, results): no sideways scroll before a generate, focus lands in view, no fixed element; the Count select's cut text queued (P4); S18's "Hebrew first letter in the PDF" refuted (a test artifact) | scratch s19/m-index.mjs, s19/contact.mjs, loop-findings S19
+
+### Per-session line archived from the ledger (S4, verbatim)
+
+- S4 | 2026-11-05 | pass B on index.html (geometry of 2,208 sheets, seeded Save PDF vs print rasters, Advanced Code round trip, saved payload, header toggles) | fixes 3 + a probe (two P2, one P4; on branch claude/fervent-lovelace-urwaob, not main) | smoke 3/3 green + `--cdn`; probe green | index.html ended on its cap with two P2s queued
+
+### Previous handoff (S23 → S24), verbatim
+
+**Next session (S24):** S23 ran on `main` and pushed each fix there: f57d63c, af59ae5, 2597f1c, 6611a2f, e258268 and the close-out are live on GitHub Pages. Work on `main` again: one commit per iteration, each push a deploy. A cloud session's clone is shallow: `git fetch --unshallow origin main` before a `--ref` or `--control` names an old commit.
+⚑ next: B on math-facts.html — the stalest cell (S2); every cell has now run. Expect S5's and S8's print changes, S9's name shrink, S18's `<bdi>`, S19's written "…" and S7's header line on paper and in a real `--cdn` PDF, against the S2 baselines in loop-findings.
+⚑ Queues: approved and waiting — JPEG 0.8 (S2), the 30-cap note (S11), the divisor 3 px low (S10). index alone: the red border after Fix (P3, the twins' half shipped S23), the ops labels (P3, C), its case-sensitive Advanced type (P4), the Count select's text (P4, gate 2 or 4). Shared — the code panel under the button row (P3, S5), reduced motion and targets (P4).
+⚑ New probes (S23): `S23-name-fit-layout` (`--ref 37af5e4` fails 3), `S23-phone-fields` (`--ref f57d63c` fails 12), `S23-red-border` (`--ref af59ae5` fails 6). Arm R's set for S24: the four S22 and three S23 probes. Repaired in S23 and green: `S5-key-rows12`, `S7-bracket-names`, `S7-skipped-list`, `S8-index-key-division`, `S10-pdf-progress`, `S11-robustness`, `S22-desc-fit` (byte-for-byte arms against old commits now need `--identity`).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S23 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.

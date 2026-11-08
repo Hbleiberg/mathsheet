@@ -1069,3 +1069,62 @@ saves the roster before its nothing-skipped run (an unsaved one lands on S18's r
 f57d63c` fails 12; `S23-red-border --ref af59ae5` fails 6. The repaired probes, green on HEAD, still fail their controls:
 `S7-bracket-names --control` 2, `S7-skipped-list --control` 18, `S8-index-key-division --control` 2, `S5-key-rows12
 --control` 1, `S22-desc-fit --ref 3589e48` 3, `S10-pdf-progress --ref 291903c~1` 12.
+
+## S24 (2026-11-08) — pass B (print & export) on math-facts.html, then A (performance) on math-minute.html
+
+Method (B): scratch adaptations of S8's two math-minute probes to math-facts (all 71 codes, the menu's own list), a
+round-trip and payload probe; `Math.random` seeded. PDFs from Chromium's print and from the real Save PDF (cdnjs),
+rasterized with `pdftoppm`.
+
+**Print.** 71 codes × three configurations with keys: plain (1 copy), heavy (5 copies, an 80-character Hebrew / Latin
+header line, long Latin and Hebrew names) and bare (3 copies, the line, no Number, Name blank): 1,278 sheets, every one
+1056 × 816 with `print-break` on all but the last, every grid its rows' count, 0 problems' ink outside its cell or under
+the paper's inner bottom, ≥ 41.7 px between a problem and the one below. Paper left under the lowest ink, plain: rows-3…6
+110 / 82 / 64 / 53 px (keys 95 / 72 / 55 / 43); heavy down to 32 (keys 17) at rows-6. Header 55–61 px, 76–82 with the
+line; 230 heavy descriptions wrap to two lines ("…minus itself, zero, or one" beside "Worksheet k of 5"), all inside
+their box. Names 12.5 px (31 Latin characters), 13.5–16 (the Hebrew and 27-character names), 11 with a written "…" at
+the floor; every name's ink inside its line, each in its wrapper. Print-to-PDF one 792 × 612 page a sheet; A4 landscape
+and portrait 842.88 × 595.92, one page a sheet (Chromium keeps the CSS orientation and scales). Controls: S2's invalid
+`@page` and a 1.5 in rows-6 fail 3.
+
+**Save PDF (real cdnjs).** 71 codes × 1 with keys: `math-facts-worksheets.pdf`, 142 pages for 142 sheets, one 1584 ×
+1224 JPEG a page, 100 KB a page (S2: 122), 27.7 s from the click; 6 codes × 5 with keys and long names, 60 pages at
+113 KB. Scrolled away mid-export, every page carries every problem; every cell's ink within 3 px of print's against
+html2canvas's common offset (top 3, the rest 1 px; 4,980 cells), the header within 1 px, no frame, red answers on every
+key, every name's ink inside its field and where print puts it. Controls: the clone's print rows dropped (worst 5 px)
+and `fitLongNames` removed (40 names moved: print's CSS "…" against the PDF's cut) both fail.
+
+**Round trip and payload.** 12 Standard students (Hebrew, an apostrophe, quotes, `&`, `<b>`, a tab, a blank name) →
+Generate Advanced Code → Use → Generate: 20 of 24 sheets identical, the other 4 the two known P4s ("Levi; Dana" prints
+"Dana"; the Number "12, B" makes the name "Rivka, 12"). Save → reload restores Advanced mode, its box, the header line,
+3 copies, key, no Number, Name blank and the 12 rows behind it; the payload's keys are CLAUDE.md's.
+
+Method (A): S3 / S9 / S23's (fresh context per run, medians of 3–5, click → handler → next frame, long tasks by
+`PerformanceObserver`, cpu4 by CDP); old commits served by route on the same machine.
+
+**Load.** DCL 20 ms, load event 29, first contentful paint 44; 75,955 B; 220 nodes; 0 foreign requests.
+
+**Generate.** HEAD (d31ff06), handler / frame: L1 × 150 38 / 43 ms, L9 (60 +) 61 / 67, L21 67 / 73; with keys (300
+sheets) L9 133 / 141, L21 117 / 123; 21 levels with long names 133 / 138; L21 × 1,510 522 / 540. On c9b5853 (S3's end),
+same machine: L1 17 / 25, L9 with keys 91 / 102, 21 levels with long names 56 / 65 — HEAD 1.6–2.4× slower. Bisected over
+the 34 math-minute commits since: fde4b66 → 36f71e4 (S18's `<bdi>` round each printed name), alternated, five runs: L1
+26 → 40, L9 with keys 81 → 127. `nameHtml` variants on HEAD (L1 / L9 keys): none 26 / 72, `<span dir="auto">` 27 / 80,
+`<span style="unicode-bidi:isolate">` 27 / 73, `<bdi dir="ltr">` 40 / 126, `<bdi>` 41 / 145 — the element, not its
+direction, and the cost grows with the sheets' markup rather than the number of names: Chromium's fast innerHTML parser
+takes no `<bdi>`, so each sheet's whole markup went through the full parser. index.html (its `<bdi>` since S19): add2 ×
+300 96 → 63, fractions 123 → 88 with the span. f98327b (S9's name fit) added ~7 ms to L1; the rest is noise. Fixed in
+037221c.
+
+**Fine as is.** The roster form at 30 students, frame after click: Add Student 15 ms, Fill Down 18, Duplicate 13, Delete
+12, a level 14, a keystroke 4, Save 10, Generate Advanced Code 14, the mode toggle 8 / 25, Generate × 30 20, Add Student
+and Fill Down with 30 sheets shown 19 / 12; a saved 30-student roster restores by DCL 29 / load 46. Save PDF (real cdnjs,
+long names): 30 pages 6.2 s (206 ms a page), 150 pages 29.3 s (196), long tasks ≤ 149 ms, none ≥ 200.
+
+**Fix measurements.** 037221c, medians of 5, frame, before → after: math-minute L1 38 → 29, L9 with keys 139 → 84 (cpu4
+745 → 391), 21 levels with long names 114 → 70 (cpu4 518 → 290); index add2 with keys 91 → 62 (cpu4 484 → 314), fractions
+145 → 88. The same seeded class (Hebrew, punctuated, mixed, floor and empty names; 1 copy, and 2 with no Number and a
+header line) on d31ff06 and the change: screen, print and the real Save PDF pixel-identical on all three pages (198 PDF
+pages); a span without `dir` changes 12 print pages. `S24-name-parse`: the page's generate against the bare name's, 7
+runs alternated: 0.94–1.09× now, 1.32–1.74× on d31ff06. 7f40755: each of index's 12 fields red exactly when empty after
+every step. 9fb3e5d: five states × 1280 / 390 px on both twins, screenshots and every element's computed style identical.
+
