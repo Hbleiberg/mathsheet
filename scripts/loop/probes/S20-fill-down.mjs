@@ -6,8 +6,11 @@
 // level when made, loaded or last filled down, or the first one picked. On math-minute.html and math-facts.html.
 // Arms, per page, by real picks (each fires `change`): a fresh fill; a new row with two exceptions; the class moved
 // up; the same after Save and a reload; the singular; a class set by hand, then moved; Student 1 stepped by arrow
-// keys; Student 1 empty; never a dialog.
-// Fails on the pages before the change (`--ref f14b27e`).
+// keys; Student 1 empty; never a dialog. index.html (its half of the S18 approval, S20): a row's settings are its
+// grade, type, count, Mixed picks and fraction / decimal operations; the rows not yet set (grade, type or count
+// missing) and the rows on Student 1's earlier settings follow; a row differing by its count or by one unchecked
+// operation keeps its own; "Settings filled down from Student 1. Students 4 and 5 kept their own settings."
+// Fails on the pages before the change (`--ref f14b27e`; index.html: `--ref <the twins' S20 commit>`).
 //   node scripts/loop/probes/S20-fill-down.mjs [--only <file>] [--ref <commit>]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
@@ -86,6 +89,78 @@ for (const file of ['math-minute.html', 'math-facts.html']) {
   await pg.selectOption(ROW(2), B); await pg.selectOption(ROW(4), C); await fill();
   check(same(await read(), ['', B, '', C, '']) && await status() === `${MSG} Students 2 and 4 kept their own levels.`, `Student 1 empty: nothing blanked, 2 and 4 named ("${await status()}")`);
 
+  check(asked.length === 0, `no dialog at any step (${JSON.stringify(asked.slice(0, 2))})`);
+  check(p.errors.length === 0, `0 page errors (${p.errors.join('; ')})`);
+  await p.close();
+}
+
+// index.html: the settings are five fields and two panels
+if (!ONLY || ONLY === 'index.html') {
+  const file = 'index.html';
+  console.log(`${file}${REF ? ` (served from ${REF})` : ''}`);
+  const p = await openPage(browser, srv.base, file, { raw: true });
+  const pg = p.page;
+  if (REF) {
+    const body = execSync(`git show ${REF}:${file}`, { cwd: ROOT, encoding: 'utf8' });
+    await pg.route(/\/index\.html$/, r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body }));
+    await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector('.mwg-student-entry');
+  }
+  const asked = [];
+  pg.on('dialog', d => { asked.push(d.message()); d.accept(); });
+  const E = n => `#mwgStudentsContainer .mwg-student-entry:nth-child(${n})`;
+  const set = async (n, grade, type, count) => {   // real picks, in a teacher's order; each fires the page's own change handlers
+    if (grade) await pg.selectOption(`${E(n)} select[name="grade"]`, grade);
+    if (type) await pg.selectOption(`${E(n)} select[name="problemType"]`, type);
+    if (count) await pg.selectOption(`${E(n)} select[name="count"]`, count);
+  };
+  const read = () => pg.$$eval('#mwgStudentsContainer .mwg-student-entry', es => es.map(e => ['grade', 'problemType', 'count'].map(k => e.querySelector(`select[name="${k}"]`).value).join('/')
+    + ([...e.querySelectorAll('.mwg-frac-op-cb')].length ? ':' + [...e.querySelectorAll('.mwg-frac-op-cb:checked')].length : '')));
+  const status = () => pg.$eval('#mwgStatus', b => b.textContent.trim());
+  const fill = async () => { await pg.evaluate(() => { document.getElementById('mwgStatus').innerHTML = ''; }); await pg.click('#mwgFillDownBtn'); await pg.waitForTimeout(80); };
+  const fresh = async () => { await pg.evaluate(() => localStorage.clear()); await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector('.mwg-student-entry'); };
+  const IMSG = 'Settings filled down from Student 1.';
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const X = '3/add2/30', Y = '2/sub1/30', Z = '3/add2/40', M = '3/mul2/30', N = '3/mul2/40';
+
+  await pg.click('#mwgAddStudentBtn'); await pg.click('#mwgAddStudentBtn');   // 5 rows
+  await set(1, '3', 'add2', '30'); await fill();
+  check(same(await read(), [X, X, X, X, X]) && await status() === IMSG, `fresh: every row takes Student 1's settings ("${await status()}")`);
+  await set(4, '2', 'sub1', '30'); await set(5, null, null, '40');   // an IEP row on Grade 2, a row differing by its count alone
+  await pg.click('#mwgAddStudentBtn'); await fill();
+  check(same(await read(), [X, X, X, Y, Z, X]), `new row filled, the two own rows kept (${(await read()).join(' ')})`);
+  check(await status() === `${IMSG} Students 4 and 5 kept their own settings.`, `the message names them ("${await status()}")`);
+  await set(1, null, 'mul2', null); await fill();
+  check(same(await read(), [M, M, M, Y, Z, M]), `the class moved to mul2: the rows on the earlier settings follow (${(await read()).join(' ')})`);
+  await pg.click('#mwgSaveBtn');
+  await pg.reload({ waitUntil: 'load' }); await pg.waitForSelector('.mwg-student-entry');
+  await set(1, null, null, '40'); await fill();
+  check(same(await read(), [N, N, N, Y, Z, N]) && /Students 4 and 5 kept/.test(await status()), `after a reload: the saved class follows (${(await read()).join(' ')})`);
+  await set(5, null, 'mul2', null); await fill();
+  check(await status() === `${IMSG} Student 4 kept its own settings.`, `one row: the singular ("${await status()}")`);
+  // fractions: one operation unchecked is a row's own setting
+  await fresh();
+  await set(1, '5', 'fractions', '30'); await fill();
+  const all = (await read())[1];
+  await pg.uncheck(`${E(2)} .mwg-frac-op-cb >> nth=0`);
+  const own = (await read())[1];
+  await set(1, null, 'decimals', '30'); await fill();   // fractions take 30 problems only: the class moves to Decimals
+  const after = await read();
+  check(all !== own && after[1] === own && after[2] === after[0] && after[0] === '5/decimals/30', `an unchecked operation keeps a row (${all} → ${own}; after: ${after.join(' ')})`);
+  // Mixed: one pick unchecked is a row's own setting
+  await fresh();
+  await set(1, '3', 'mixed', '40'); await fill();
+  const picks = r => pg.$eval(`${E(r)}`, e => [...e.querySelectorAll('.mwg-mixed-cb:checked')].length);
+  const p0 = await picks(3);
+  await pg.uncheck(`${E(3)} .mwg-mixed-cb >> nth=0`);
+  await set(1, null, null, '30'); await fill();
+  const mixed = await read();
+  check(p0 > 1 && await picks(3) === p0 - 1 && mixed[2] === '3/mixed/40' && mixed[1] === '3/mixed/30' && /Student 3 kept its own settings/.test(await status()),
+    `an unchecked Mixed pick keeps a row (${p0} → ${await picks(3)} picks; ${mixed.join(' ')}; "${await status()}")`);
+  // a class set by hand, then moved
+  await fresh();
+  for (const n of [1, 2, 3]) await set(n, '3', 'add2', '30');
+  await set(1, null, 'mul2', null); await fill();
+  check(same(await read(), [M, M, M]) && await status() === IMSG, `set by hand, then moved: every row follows (${(await read()).join(' ')})`);
   check(asked.length === 0, `no dialog at any step (${JSON.stringify(asked.slice(0, 2))})`);
   check(p.errors.length === 0, `0 page errors (${p.errors.join('; ')})`);
   await p.close();

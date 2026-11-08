@@ -1532,6 +1532,22 @@ function readEntry(div) {
   };
 }
 
+// A row's settings as one string, for Fill Down (S20): grade, type, count, Mixed picks and fraction / decimal operations;
+// "" until the row has a grade, a type and a count.
+function settingsKey(div) {
+  var e = readEntry(div);
+  if (!e.grade || !e.type || !e.count) return "";
+  return [e.grade, e.type, e.count, (e.mixedTypes || []).join("|"), (e.fracOps || []).join("|"), (e.decOps || []).join("|")].join(";");
+}
+
+// The rows Fill Down left on their own settings, named after its message (S20, approved, as on the standard pages):
+// " Students 7 and 15 kept their own settings."; one row reads " Student 7 kept its own settings."
+function keptSettingsText(rows) {
+  if (!rows.length) return "";
+  return rows.length === 1 ? " Student " + rows[0] + " kept its own settings."
+    : " Students " + rows.slice(0, -1).join(", ") + " and " + rows[rows.length - 1] + " kept their own settings.";
+}
+
 function createStudentEntry(index, data) {
   data = data || {};
   var name  = data.name   || "";
@@ -1568,6 +1584,10 @@ function createStudentEntry(index, data) {
   updateMixedVisibility(div, type === "mixed" ? mixedTypes : null);
   updateOpsPanel(div);
   if (data.fracOps || data.decOps) renderOpsPanel(div, type, data.fracOps, data.decOps);
+  // The row's settings before the teacher changed them, for Fill Down (S20): when made, loaded or last filled down, or
+  // the first complete ones picked; a later change keeps them, so the rows still on Student 1's earlier settings follow.
+  div.setAttribute("data-fill-from", settingsKey(div));
+  div.addEventListener("change", function() { if (!div.getAttribute("data-fill-from")) div.setAttribute("data-fill-from", settingsKey(div)); });
   div.querySelector(".mwg-delete-link").addEventListener("click", function() {
     var neighbour = div.nextElementSibling || div.previousElementSibling;   // focus moves to a neighbour's Delete, or Add Student (S12 P3; S16)
     div.parentNode.removeChild(div);
@@ -2687,16 +2707,22 @@ function wireButtons() {
   fillDownBtn.addEventListener("click", function() {
     var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
     if (entries.length < 2) return;
-    var first = readEntry(entries[0]);
+    var first = readEntry(entries[0]), now = settingsKey(entries[0]);
+    // A row on its own settings (an IEP or an advanced student) keeps them: the rows not yet set and the rows still on
+    // Student 1's earlier settings follow, and the message names the rest (S20, approved, as on the standard pages).
+    var earlier = entries[0].getAttribute("data-fill-from") || "", kept = [];
     for (var i = 1; i < entries.length; i++) {
-      var e = entries[i];
+      var e = entries[i], own = settingsKey(e);
+      if (own && own !== now && own !== earlier) { kept.push(i + 1); continue; }
       e.querySelector('[name="grade"]').value = first.grade;
       updateTypeOptionsForGrade(e, first.type, first.mixedTypes);
       updateOpsPanel(e);
       if (first.fracOps || first.decOps) renderOpsPanel(e, first.type, first.fracOps, first.decOps);
       e.querySelector('[name="count"]').value = first.count;
+      e.setAttribute("data-fill-from", now);
     }
-    showSuccess("Settings filled down from Student 1.");
+    entries[0].setAttribute("data-fill-from", now);
+    showSuccess("Settings filled down from Student 1." + keptSettingsText(kept));
   });
   closeModal.addEventListener("click", function() { closeCodePanel(); });
   codePanel.addEventListener("keydown", function(e) { if (e.key === "Escape") { e.preventDefault(); closeCodePanel(); } });
