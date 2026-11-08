@@ -512,3 +512,36 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ Queues: shared first touches — the 16 px phone fields (P3, S17: iOS zooms a focused field under 16 px; prove the computed size at ≤560 / ≤480 px and desktop unchanged), JPEG 0.8 (approved S2; `--cdn` bytes and a zoomed raster), the code panel under the button row (S5), reduced motion (P4), the target sizes (P4), the favicon (P4, gate 3), the sideways sheet preview on phones (P4, S17). index.html — the ops-panel labels (C, S10), the approved 30-cap note (S11), its divisor 3 px low (approved S10), the approved long-header shrink and no zero fraction differences, the lenient grade / count parse (S11), the per-operation decimal key zeros (S11), the `students` payload key (P4), the panels' group context (P4, S16).
 ⚑ New probe (S17): `S17-phone-layout` (`--ref e2bb697` fails 20, `--ref 8e40f96` fails index's 8, `--ref 13bcc9b` fails math-facts' 1). Arm R's set for S18 is S16-focus and S17-phone-layout. Trap: index.html's static `<style>` loses to `injectStyles()` at equal specificity (the injected sheet is appended later), so any static rule meant to override an injected one needs `#mwg-app`; measure the computed style, never trust the source.
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S17 asked nothing about it); build a seed only when the maintainer names one.
+
+## S19 (2026-11-08) — pass M (mobile & touch) on index.html; three fixes, pushed to `main`
+
+- Run on `main` (local `main` at `origin/main`, f9e7b6a; the assigned `claude/awesome-meitner-kkmh8h` carried nothing
+  `main` lacked); each fix pushed as it landed.
+- Arm R: the smoke, S17-phone-layout and the three S18 probes green.
+- Pass M on index.html (scratch `s19/m-index.mjs`, `s19/cp.mjs`, `s19/cut.mjs`, `s19/contact.mjs`): iPhone SE, iPhone
+  13 in both orientations, iPad Mini in both, a 350 px frame; fresh, the validation box and Fix, the Mixed and
+  Fraction / Decimal panels, the code panel, Advanced, after a generate. No new defect but the Problem Count select's
+  cut text (also on the desktop, P4); the known 14 px fields, small targets, ops labels and sideways sheet confirmed.
+- The S18 P2 re-measured on the real artifact (scratch `s19/long.mjs`, `s19/hook.mjs`, `s19/h2c-field.mjs`): the
+  English floor names cut mid-letter in Save PDF confirmed; "a Hebrew name that fits loses its first letter in the
+  PDF" refuted — S18's script put the results back after the app root, outside its scoped `box-sizing`, so the
+  regenerate measured a wider header. Found instead: a Hebrew name too long at 11 px lost its first name in print too.
+- Fixes: the written "…" at the 11 px floor on all three pages (84025f7); index's printed name in a `<bdi>` (bf9f2c7,
+  approved S18); the twins' Fill Down confirm (c68f197, approved S18); CLAUDE.md (81e3d8c). Every page then stood on
+  its cap, so the fourth slot went unused; index's Fill Down half and the 16 px fields wait.
+- Gates: none asked (both gated changes were approved in S18; the rest were bug fixes).
+
+### Done rows archived from the ledger (S14, verbatim)
+
+- [x] S14 | 2026-11-06 | c984c02 | index.html, scripts/loop/probes/S14-index-copy.mjs | the code panel's help line, the "Use in Advanced Input" message and the two clear-roster confirms read as on the standard pages (approved S13, gate 2) | S14-index-copy: the four strings lifted from math-facts.html's source, index driven live (fails 4 on 9030fbe); smoke
+- [x] S14 | 2026-11-06 | 9ffc917 | index.html, math-minute.html, math-facts.html, CLAUDE.md | the offline Save PDF notice reads "The PDF tools could not be downloaded. Check your connection and try again." (was "PDF library not loaded yet…"; approved S2); the same line on all three pages, CLAUDE.md's guard sentence with it | the smoke's offline arm on every page: both cdnjs requests attempted, the new notice shown, 0 page errors; 60 of 60
+- [x] S14 | 2026-11-06 | 86643bb | math-minute.html, scripts/loop/probes/S11-robustness.mjs | an Advanced level is digits only ("7.5" and "1O" printed Levels 7 and 1 with no message, S11): both are reported as invalid; index's grade and count half stays queued | S11-robustness paste arm on math-minute: 7 sheets and 6 reports numbered 4–7, 10, 11 (fails 3 on the old parse); smoke
+- [x] S14 | 2026-11-06 | — | docs/loop-findings.md | pass I on all three pages (fresh context, Save → reload in both modes, Clear Current vs Clear Saved cancelled and accepted, cross-page isolation with every storage call logged, hostile values in every saved field and every input): clean, 140 checks; the silent fallback on an unreadable payload is on all three pages (candidate broadened) | scratch s14/i-audit.mjs, loop-findings S14
+
+### Previous handoff (S18 → S19), verbatim
+
+**Next session (S19):** S18 ran on `main` and pushed each fix there: e71f8fc, fde4b66, 36f71e4 and the close-out are live on GitHub Pages. Work on `main` again: one commit per iteration, each push a deploy.
+⚑ next: M on index.html — the never-run cells are D on math-minute (S12's shared blocks, the twins identical outside their selectors, S13), H on math-minute and math-facts, M on index and math-minute. M on index first: its own Mixed / ops panels at phone width were only spot-checked (S17), and the 16 px phone fields (P3) are its natural first fix; H on a twin next (the feature-seed intake for the Math Minute pages).
+⚑ Queues: the new P2 first (a long name in Save PDF is cut mid-letter with no "…" on every page, and a long Hebrew name loses its first letter; S18). Approved and waiting: index's Hebrew `<bdi>` (its half of 36f71e4; S18-hebrew-name lists only the twins until then), Fill Down's confirm on all three (S18), JPEG 0.8 (S2), the 30-cap note (S11), the long-header shrink (S4) and no zero fraction differences (S6), the divisor 3 px low (S10). Shared first touches otherwise — the 16 px phone fields (S17), the code panel under the button row (S5), the red border after Fix (S17), reduced motion and target sizes (P4).
+⚑ New probes (S18): `S18-advanced-help` (`--ref 1f80a43` fails 7), `S18-unsaved-reminder` (`--ref e71f8fc` fails 12), `S18-hebrew-name` (`--ref fde4b66` fails 8). Arm R's set for S19 is S17-phone-layout and the three S18 probes. Trap: `S9-name-fit` compares sheets byte for byte with HEAD, so it fails on any uncommitted change to the printed name markup and passes once committed; a change there is proved by its other arms and the real PDF.
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S18 asked nothing about it); build a seed only when the maintainer names one. H on index refreshed two seeds (Paste names now lists index; Large print notes 30 as the smallest count).

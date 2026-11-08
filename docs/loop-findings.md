@@ -830,3 +830,55 @@ keys named. 0 page errors throughout.
 **Controls.** `S18-advanced-help --ref 1f80a43` fails 7, `S18-unsaved-reminder --ref e71f8fc` fails 12 (the
 storage-denied arm asserts the denial took), `S18-hebrew-name --ref fde4b66` fails 8. `S9-name-fit` failed its
 byte-identical arm against HEAD while 36f71e4 was uncommitted (every name now carries `<bdi>`), green once committed.
+
+## S19 (2026-11-08) — pass M (mobile & touch) on index.html; the S18 long-name P2 re-measured
+
+**Method.** Scratch `s19/m-index.mjs` (S17's audit adapted to index: Playwright's `iPhone SE`, `iPhone 13`, `iPhone 13
+landscape`, `iPad Mini`, `iPad Mini landscape` on Chromium and a 350 × 1400 touch frame; states fresh, the validation
+box and Fix, the Mixed / Fraction / Decimal panels on three rows, the code panel, Advanced, after a generate; per
+state the scroll width, elements past the edge, scrolling boxes, every control's box, font and `inputmode`, selects
+whose chosen text is cut, fixed elements); `s19/cp.mjs` (the code panel's focus after the smooth scroll);
+`s19/cut.mjs` and `s19/desk.mjs` (the selects at 481–1280 px); `s19/contact.mjs` (the iPhone 13 contact sheet).
+
+**Clean.** No horizontal document scroll before a generate at any shape; nothing past the edge, no scroll box hiding
+a control; no `position:fixed` element; the student number stays `type="text"` with no `inputmode`. Fix focuses the
+first highlighted field inside the viewport (265–302 of 568 px on the SE). The code panel's textarea settles in view
+once its smooth scroll ends (304–424 of 568 on the SE, 444–564 of 664 on the iPhone 13; mid-scroll at 250 ms it
+read 560–680, a timing artifact). The Mixed and ops panels fit at 320 px; Advanced fits; 0 page errors.
+
+**Confirmed, queued already.** 16 fields and selects at 14 px (17 with the code panel) at every shape: the iOS zoom
+P3. Duplicate / Delete 16 px tall, the three checkboxes 16 px, the ops and Mixed checkboxes 13 px, Select All /
+Deselect All 23 px (the target P4). After a generate the page scrolls sideways (1068 px). The ops checkboxes sit
+above their labels (the S10 P3); at phone width each one sits above-right of its label, between two labels.
+
+**New (P4).** The Problem Count select cuts "30 problems (max for this type)" at every width (178 px of text in a
+~167 px inner box at 1280; "30 problems (ma" at 768), and in the five-column layout at 701–860 px the Type select cuts
+"Scientific Notatio", "Order of Operatio". Shorter option text is gate 2; two rows of fields there is gate 4.
+
+**The S18 P2, re-measured (scratch `s19/long.mjs`, `hook.mjs`, `h2c-field.mjs`, `h2c-width.mjs`).** html2canvas 1.4.1
+draws Hebrew and English names at the browser's own width (ink within 1.6 px of the DOM at 11, 15.5 and 18 px, with
+and without `<bdi>`, alone and in the real clone). S18's "a long Hebrew name that fits in print loses its first letter
+in the PDF" was the test script's own doing: it moved the results back *after* the app root, outside
+`#math-facts-app *{box-sizing:border-box}`, so the regenerate inside Save PDF measured a 227 px name box and sized the
+names 12 / 17 px where print had 11 / 15.5. With the results restored to their place, every name that fits is the same
+in print and PDF. Real, on all three pages: a name still too long at 11 px is cut mid-letter in Save PDF ("Alexandria
+Montgomery-Washington th"; "Bartholomew Montgomery-Washington", its "Jr" gone with nothing to say so), since its "…"
+is CSS; and a Hebrew name too long at 11 px loses its first name in print as well — in an LTR line its overflow and
+the CSS "…" fall at the right, its start ("…שבע פרידמן-גולדשטיין הכהן מירושלים").
+
+**Fixed (84025f7).** `fitLongNames()` writes the cut at the floor: the longest start that fits in the room less 1 px,
+plus "…", into the text (the `<bdi>`), so print and the PDF agree and every name keeps its start. Rasters of the real
+print and the real cdnjs Save PDF, 14 pages a page, before and after: print differs only on the long Hebrew name
+(the English floor names print pixel-identical: the written cut falls where the CSS one did); the PDF differs only
+inside the four floor names' boxes. On index, without a `<bdi>`, the Hebrew "…" then sat beside the first letter —
+fixed with index's `<bdi>` (bf9f2c7): "שרה כ.", "רחל פרידמן." and the cut name end correctly in print and PDF, "Avi
+Cohen." pixel-identical.
+
+**Fill Down (c68f197, the twins).** A row with a level that is set and differs from Student 1's is named in the
+approved question; Cancel leaves every row and says nothing; empty and matching rows fill unasked; a Student 1 with
+no level names the rows it would blank. Index's grade / type / count rows (and their ops and Mixed picks) wait for
+its next touch.
+
+**Controls.** `S19-long-name --ref f9e7b6a` fails 42 (14 a page); `S18-hebrew-name --ref 84025f7 --only index.html`
+fails 4; `S19-fill-down --ref bf9f2c7` fails 10. `S9-name-fit` stayed green before and after each commit (the change
+touches only floor names; its byte-identity arm compares names that fit).
