@@ -822,7 +822,9 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 - Method notes: keying the deck by markup missed Mixed's cross-level twins (7)70 from Division 2 and 3); at 300 draws a
   1-in-90 fact was missed on 2.5 % of sheets, at 1,000 none in 1,000. Three identity probes failed after the change: with
   the dealing switched off they matched the parent exactly, so only the drawn problems differ; their identity arms now
-  run behind `--identity`. A sweep of every probe ran at close-out; its result follows in the next commit.
+  run behind `--identity`. A sweep of all 48 probes at close-out: 47 green; S6-header-line's
+  blank arm compared math-minute with its pre-feature page byte for byte, red since S18's name span: it now checks the
+  property (no header line on any sheet or key when blank or spaces), the byte arm behind `--identity`.
 
 ### Done rows archived from the ledger (S22, verbatim)
 

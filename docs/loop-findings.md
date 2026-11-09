@@ -1250,4 +1250,6 @@ exactly.
 **Probes.** S25-across-division's arm 2, S22-desc-fit's "where it was" and S10-rounding-one-line's control sheets compare
 with an old commit under a seed: the approved changes to what a sheet holds move them (S10's had already decayed on
 29e6a69), so they now run only with `--identity`; their controls still fail (`--ref abdbd88` 6, `--ref 3589e48` 3,
-`--control` 2). S6-header-line (math-minute) fails its byte-identity arm on 29e6a69 too.
+`--control` 2). A sweep of all 48 probes on 86e0fd0: 47 green; S6-header-line (math-minute) failed its byte-identity arm on
+29e6a69 too (the pre-feature page has none of the later approved changes, S18's name span among them): its default arm now
+checks that a blank or all-space line prints on none of 8 sheets and keys (a planted always-printed line fails 2).
