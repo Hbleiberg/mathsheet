@@ -1371,3 +1371,5 @@ the same negative margin makes them 110.5 × 39.6 and 93.8 × 39.6, meeting at t
 links' text 0.00 px from 02939af; points 10 px above and below the text hit the link and real clicks there act;
 `--control` fails 27. The focus ring now outlines the 40 px box (screenshots). Trap: `elementFromPoint` sees only the
 viewport — a 900 px window put the third row's lower point off screen at 390 px; the probe uses 1600.
+
+**Sweep.** All 57 probes, run one after another on 15f3989 (the pages as they close the session): all green.
