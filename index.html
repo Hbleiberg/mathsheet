@@ -2139,16 +2139,32 @@ function makeProblem(type, grade) {
   }
 }
 
+// A sheet deals its problems as the twins deal their facts (S27, approved): none twice until the level has no new one
+// to give (1,000 draws find none, and a new round starts), never the same problem twice running. Drawn on their own, a
+// fact level repeated 25-30 % of a 30-problem sheet, and half its sheets had a problem twice in a row.
+// A problem is known by what it prints: Mixed's Division 2 and 3 both draw 7)70, Subtraction 2 and 3 both 15 − 7.
+function problemText(p) {
+  return p.kind === "stack" ? p.a + p.operator + p.b : p.kind === "division" ? p.divisor + ")" + p.dividend : String(p.html);
+}
+function dealProblem(type, grade, deck, prev) {
+  var p, i, last = prev ? problemText(prev) : null;
+  for (i = 0; i < 1000; i++) { p = makeProblem(type, grade); if (!deck.seen[problemText(p)]) break; }
+  if (i === 1000) deck.seen = {};
+  for (i = 0; i < 1000 && problemText(p) === last; i++) p = makeProblem(type, grade);
+  deck.seen[problemText(p)] = true;
+  return p;
+}
+
 function generateProblems(type, count, grade, mixedTypes, fracOps, decOps) {
   var horizTypes = ["fractions","fractions-add","fractions-sub","fractions-mul","fractions-divf","fractions-divw","decimals","decimals-add","decimals-sub","decimals-mulw","decimals-muld","decimals-divw","decimals-divd","rounding","longdivision","orderofoperations","integers","exponents","scientificnotation"];
   if (horizTypes.indexOf(type) !== -1 && count > 30) count = 30;
-  var problems = [];
+  var problems = [], deck = { seen: {} };
   if (type === "fractions" && fracOps && fracOps.length) {
     if (count > 30) count = 30;
-    for (var i = 0; i < count; i++) problems.push(makeProblem(fracOps[i % fracOps.length], grade));
+    for (var i = 0; i < count; i++) problems.push(dealProblem(fracOps[i % fracOps.length], grade, deck, problems[i - 1]));
   } else if (type === "decimals" && decOps && decOps.length) {
     if (count > 30) count = 30;
-    for (var i = 0; i < count; i++) problems.push(makeProblem(decOps[i % decOps.length], grade));
+    for (var i = 0; i < count; i++) problems.push(dealProblem(decOps[i % decOps.length], grade, deck, problems[i - 1]));
   } else if (type === "mixed") {
     var pool = (mixedTypes && mixedTypes.length) ? mixedTypes : getMixedTypesForGrade(grade);
     // Expand fractions/decimals in pool using their sub-ops if present
@@ -2166,10 +2182,13 @@ function generateProblems(type, count, grade, mixedTypes, fracOps, decOps) {
     var poolHasHoriz = false;
     for (var h = 0; h < pool.length; h++) { if (horizTypes.indexOf(pool[h]) !== -1) { poolHasHoriz = true; break; } }
     if (poolHasHoriz && count > 30) count = 30;
-    for (var i = 0; i < count; i++) problems.push(makeProblem(pool[i % pool.length], grade));
-    for (var i = problems.length - 1; i > 0; i--) { var j=Math.floor(Math.random()*(i+1)),tmp=problems[i];problems[i]=problems[j];problems[j]=tmp; }
+    // The types are shuffled, then dealt in that order, so no problem follows itself.
+    var order = [];
+    for (var i = 0; i < count; i++) order.push(pool[i % pool.length]);
+    for (var i = order.length - 1; i > 0; i--) { var j=Math.floor(Math.random()*(i+1)),tmp=order[i];order[i]=order[j];order[j]=tmp; }
+    for (var i = 0; i < count; i++) problems.push(dealProblem(order[i], grade, deck, problems[i - 1]));
   } else {
-    for (var i = 0; i < count; i++) problems.push(makeProblem(type, grade));
+    for (var i = 0; i < count; i++) problems.push(dealProblem(type, grade, deck, problems[i - 1]));
   }
   return problems;
 }

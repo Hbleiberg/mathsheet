@@ -10,7 +10,9 @@
 //     sheet without an across division byte-identical, every cell's box within 0.25 px;
 //   arm 3, Save PDF (the two cdnjs libraries stubbed): every across division clone's cells where print puts them.
 // Fails before the change (`--ref abdbd88`).
-//   node scripts/loop/probes/S25-across-division.mjs [--ref <commit>]
+//   node scripts/loop/probes/S25-across-division.mjs [--ref <commit>] [--identity]
+// Arm 2 runs only with `--identity`: it proved S25's change moved nothing else, and it decays with every later approved
+// change to what a sheet holds (S27: Division Level 5's quotients and the dealing change the problems drawn).
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
@@ -131,7 +133,8 @@ const ARM1 = [5, 6, 7, 8].flatMap(g => [`Avi ${g}, ${g}, longdivision, 30, ${g};
   check(p.errors.length === 0, `0 page errors (${p.errors.join(' | ')})`);
   await p.close();
 }
-// Arm 2: nothing else moves
+// Arm 2: nothing else moves (`--identity`)
+if (process.argv.includes('--identity')) {
 const probe = await open(null);
 const pairs = await probe.page.evaluate(async () => {
   const row = document.querySelector('#mwgStudentsContainer .mwg-student-entry'), tick = () => new Promise(r => setTimeout(r, 0));
@@ -156,6 +159,7 @@ await probe.close();
   check(boxes === 0, `every problem cell's box where it was, within 0.25 px (worst ${worst.toFixed(2)} px)`);
   check(now.errors.length === 0 && was.errors.length === 0, '0 page errors');
   await now.close(); await was.close();
+}
 }
 // Arm 3: Save PDF's clones of the across division sheets
 {

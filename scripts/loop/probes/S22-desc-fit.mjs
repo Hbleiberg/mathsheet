@@ -5,7 +5,9 @@
 // the set label and the branding tag, at 9 px or more; one that fits carries no style (with the Number removed the
 // column is as wide as its text: none changes); every header, problem cell and answer sits exactly where it sat before the change (against 3589e48, the same seed). Save PDF (the two cdnjs
 // libraries stubbed): every clone's description fits too. Fails before the change (`--ref 3589e48`).
-//   node scripts/loop/probes/S22-desc-fit.mjs [--ref <commit>]
+//   node scripts/loop/probes/S22-desc-fit.mjs [--ref <commit>] [--identity]
+// The "where it was" arm runs only with `--identity`: it decays with every later approved change to what a sheet holds
+// (S27: the dealing draws other problems, so an across row's height follows them).
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
@@ -91,7 +93,7 @@ for (const shape of SHAPES) {
   const near = (a, b) => { if (a === b) return true; const x = a.split(/[;,]/).map(Number), y = (b || '').split(/[;,]/).map(Number);
     return x.length === y.length && x.every((v, i) => Math.abs(v - y[i]) <= 0.25); };
   const moved = now.geometry.filter((g, i) => !near(g, was.geometry[i])).length;
-  check(now.geometry.length === was.geometry.length && moved === 0, `every header, field, set label and problem where it was, within 0.25 px (${moved} of ${now.geometry.length} sheets differ)`);
+  if (process.argv.includes('--identity')) check(now.geometry.length === was.geometry.length && moved === 0, `every header, field, set label and problem where it was, within 0.25 px (${moved} of ${now.geometry.length} sheets differ)`);
   check(now.errors.length === 0, `0 page errors (${now.errors.join('; ')})`);
 }
 

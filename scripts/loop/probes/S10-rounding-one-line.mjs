@@ -4,7 +4,7 @@
 // and Decimals and a stacked level as identity controls. Every rounding problem is one line on sheets and keys,
 // its answer blank still ≥ 150 px, the rounding sheets' last row ends ≤ 793 px (as the other across types'); the control
 // sheets are byte-identical to the reference. `--ref <commit>` (2b678e1, the commit before the fix); `--control` runs the reference as the page
-// under test, which must fail.
+// under test, which must fail. `--identity` adds the byte-for-byte arm (below).
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 const args = process.argv.slice(2), flag = f => args.includes(f), opt = f => { const i = args.indexOf(f); return i >= 0 ? args[i + 1] : null; };
@@ -63,8 +63,12 @@ const blanks = cells.filter(c => c.blank !== null).map(c => c.blank);
 check(Math.min(...blanks) >= 150, `the answer blank keeps ≥ 150 px (${Math.min(...blanks)}–${Math.max(...blanks)} px; ${REF}: ${Math.min(...refCells.filter(c => c.blank !== null).map(c => c.blank))}–${Math.max(...refCells.filter(c => c.blank !== null).map(c => c.blank))})`);
 const rs = now.filter(s => /Rounding/.test(s.desc)), refRs = before.filter(s => /Rounding/.test(s.desc));
 check(rs.length === 8 && Math.max(...rs.map(s => s.ink)) <= 793, `the 8 Rounding sheets' ink ends by 793 px (worst ${Math.max(...rs.map(s => s.ink))}; ${REF}: ${Math.max(...refRs.map(s => s.ink))})`);
+// The byte-for-byte arm on the control sheets runs only with `--identity`: it proved S10's change touched nothing else, and
+// it decays with every later approved change to what a sheet holds (it differed on 29e6a69 already; S27's dealing, S27).
+if (flag('--identity')) {
 const ctl = now.map((s, i) => [s, before[i]]).filter(([s]) => !s.rounding.length);
 check(ctl.length >= 4 && ctl.every(([a, b]) => a.html === b.html), `${ctl.length} sheets without rounding byte-identical to ${REF} (${ctl.filter(([a, b]) => a.html !== b.html).length} differ)`);
+}
 console.log(`S10-rounding-one-line: ${failing ? failing + ' failing' : 'all green'}`);
 await browser.close(); await srv.close();
 process.exit(failing ? 1 : 0);
