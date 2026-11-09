@@ -1433,3 +1433,51 @@ starts a smooth scroll to the note before Save PDF's scroll to the status box; a
 shows the same path with the note, without it ("mixed, 40, 4") and with a skipped entry: scrollY 631–644 at 250 ms, the
 box's top 52–65 px, then 696 and 12 px to the end. The probe reads the box at one instant (the second page capture), so a
 smooth scroll slowed by load can still be travelling: a timing edge from S10, not a change in what a teacher sees.
+
+## S32 (2026-11-09) — pass E (errors & robustness), the suite: all three pages over S12–S31
+
+Method: arm R (the smoke, `S31-across-division-left`, `S31-cap-note`, `S30-row-targets`, `S29-index-divisor`: green), then
+`S11-robustness` in full on 469b56d, then two new arms for what a real paste carries (`scratchpad/s32/marks.mjs`,
+`seps.mjs`), by real clicks through the Advanced box, every foreign origin aborted. Since S11 every page changed (Fill
+Down's keep rule and line, the spreadsheet paste, math-facts' codes, the 16 px fields, S27's dealing and Level 5, S28's
+grades, S29's code panel, S30's targets, S31's cap note); each of those has its own probe, green in S31's sweep.
+
+**The suite.** `S11-robustness`, every arm: index 525 selector combinations (S11: 523; S28's Rounding at Grades 3–4 adds
+two) in 192 s, math-minute 21, math-facts 71 — every one a sheet and a key with the count asked, 0 page or console errors;
+the malformed paste reported entry by entry and numbered as a teacher counts, the capped entries named (S31), not skipped;
+500 entries print; storage denied and full give the defaults and the notices; the 13 bad payloads load to a usable
+roster; every control fires without an error. 69 checks green; the notes are S11's known lenient reads. `dealProblem()`
+bounds both loops at 1,000 draws, so no pool at any count can hang a generate.
+
+**Invisible marks in a selector** (ten, after / before / around the field's value): NBSP and a BOM are read on every
+page (`trim()` and `\s` take them). LRM, RLM, LRE…PDF, LRI…PDI, a zero-width space and a word joiner skip the line on
+the twins, wherever they sit; on index any of them in the type skips it, and in the count or the grade only a leading
+one (`parseInt` reads past a trailing mark). Every skip is reported, but the message quotes a line that looks right
+("Entry 5 has an invalid level (must be 1-21): "S05, 1, 5""). Queued P4: strip format characters from the selector
+fields, not the name (ZWNJ is part of Persian and Hindi names). How often a teacher's paste carries one is not known.
+
+**Line breaks.** The parsers turned "\n" alone into ";". Three lines with no ";" joined by U+2028 (Shift+Return in
+Pages, TextEdit or Notes on a Mac), U+2029, a vertical tab (Word's soft break), a form feed or NEL printed one sheet on
+every page: the earlier lines became the last line's name ("Avi Cohen, 1, 5 Noa Levi, 2, 9 Dov K…", the 11 px floor and
+its "…"), at the last line's level and number, and the errors box stayed empty (a name may hold commas). Chromium draws
+U+2028 in the textarea as a space, so the box shows one long line (`scratchpad/s32/ls-box.png`, `ls-sheet.png`). With
+";" at each line end the entries split, but NEL stayed at the start of the next name (`trim()` keeps U+0085). CRLF was
+already right. Fixed, 4303fd8: every line break acts as ";" (the regex `[\n\r\v\f\u0085\u2028\u2029]+`), CLAUDE.md's
+parsing line with it.
+
+**Fixes.** 4303fd8: `S32-line-breaks` — three sheets under their own names and levels for each break and all of them in
+turn, with and without ";", nothing reported; a bad middle line is "Entry 2"; LF, CRLF + ";" and one-line ";" pastes
+byte-identical to 469b56d, seeded; `--control` fails 9. a49055e (the S21 candidate): index lower-cases the type and its
+brackets before the lookup; `S32-type-case` — all 160 types of every grade and seven bracket forms in UPPER and Title
+case print sheets byte-identical to lower case's; an unknown type, a bracket name and a type the grade lacks are still
+reported (in lower case, as a lower-case paste's were); the cap note quotes the entry as typed; the lower-case paste
+byte-identical to 4303fd8; `--control` fails 5. The smoke, `S11-robustness` and the paste probes (S7, S13, S18, S20,
+S21, S22, S24, S27, S31) green after each.
+
+**Noted, not queued.** "Use in Advanced Input" replaces whatever the Advanced box held: the button's job since S16.
+
+**Traps.** The Edit and Write tools put a `\u2028` / `\u2029` typed in new text into the file as the raw character;
+inside a JS regex literal it ends the line, so all three pages failed to parse (`check-inline-js` caught it before a
+probe ran): write such escapes back with a script and count them with Python (a `grep -c $'…'` alternation read 0 while
+five were there). `trim()` removes NBSP and a BOM but not NEL (U+0085) or the bidi marks.
+
