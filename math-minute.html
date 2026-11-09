@@ -1793,7 +1793,7 @@ function capturePdf(sheets) {
         // that copy (the clone sits in the stage), or a 150-page export takes 4x as long (S3).
         ignoreElements: function (el) { return el === results; }
       }).then(function(canvas) {
-        var imgData = canvas.toDataURL("image/jpeg", 0.92);
+        var imgData = canvas.toDataURL("image/jpeg", 0.8);   // 0.8: ~20 % smaller, no visible difference (approved S2; S26)
         if (!jsPDFObj) {
           jsPDFObj = new jsPDFCtor({ orientation: "landscape", unit: "px", format: [PAGE_W_PX, PAGE_H_PX], hotfixes: ["px_scaling"] });
         } else {
