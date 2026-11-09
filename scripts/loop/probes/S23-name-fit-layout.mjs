@@ -39,8 +39,9 @@ async function open(ref) {
   await p.page.reload({ waitUntil: 'load' }); await p.page.waitForSelector('#mwgStudentsContainer .mwg-student-entry', { state: 'attached' });
   return p;
 }
-// 30 grade × type pairs, every fifth the form offers
-const probe = await open(null);
+// 30 grade × type pairs, every fifth the form offers — on BASE's menus, so every line is valid on both pages: the menus
+// since only add (S28's Rounding at grades 3–4), and HEAD's menus put a line BASE skips into the list (red since b60bd4d)
+const probe = await open(BASE);
 const combos = await probe.page.evaluate(async () => {
   const row = document.querySelector('#mwgStudentsContainer .mwg-student-entry');
   const g = row.querySelector('select[name="grade"]'), t = row.querySelector('select[name="problemType"]'), out = [];
