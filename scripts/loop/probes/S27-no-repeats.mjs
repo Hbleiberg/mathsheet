@@ -55,7 +55,8 @@ try {
       const read = s => [...s.querySelector('.mwg-problems-grid, .mwg-horiz-grid').children].map(text);
       return { sheets: [...document.querySelectorAll('#mwgResults .mwg-worksheet')].map(read),
         keys: [...document.querySelectorAll('#mwgResults .mwg-answer-key-sheet')].map(read),
-        errors: document.querySelector('#mwgErrors').innerText.trim() };
+        // a capped count's note ("prints at most 30 problems", S31) is not an error: those sheets print 30, as measured
+        errors: document.querySelector('#mwgErrors').innerText.split('\n').filter(l => l.trim() && !/prints at most 30 problems/.test(l)).join('\n').trim() };
     });
     const pool = new Set(r.sheets.flat()).size;
     let adjacent = 0, short = 0, shortBy2 = 0, maxCopies = 0, keyOff = 0, worst = '';

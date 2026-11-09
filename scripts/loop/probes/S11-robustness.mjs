@@ -174,7 +174,7 @@ const PASTES = {
   'math-facts.html': { good: 8, lenient: 1, bad: 5, nums: [5, 6, 7, 8, 9], text: [
     'Avi Cohen, 1, +2;', 'Cohen, Dana, 2, x3;', ', 3, X3;', 'Uri, 4, ×3;', 'Noa, 5;', 'Lior, 6, +99;', 'Tal, 7, abc;', 'Gal, 8, ;', 'Ron, 9, x;', ';;', '', '',
     '   Maya   ,   10   ,   /4   ;', 'Eli\t, 11, ÷4;', 'Yael, 12, *5;', 'Dov, 13, 3, +2;', 'Ben, 14, doubles'].join('\r\n') },
-  'index.html': { good: 5, lenient: 3, bad: 6, nums: [4, 5, 6, 7, 8, 12], text: [
+  'index.html': { good: 5, lenient: 3, bad: 6, nums: [4, 5, 6, 7, 8, 12], capped: [10, 14], text: [   // 40 of Mixed at 5 and 60 of rounding print 30 and say so (S31)
     'Avi Cohen, 1, add1, 30, 2;', 'Cohen, Dana, 2, sub2, 40, 3;', ', 3, mul1, 30, 1;', 'Noa, 4, add1, 30;', 'Lior, 5, add1, 30, 9;', 'Tal, 6, add1, 35, 2;',
     'Gal, 7, fractions, 30, 1;', 'Ron, 8, mixed[add1|foo], 30, 2;', ';;', '', '',
     '   Maya   ,   9   ,   div1   ,   30   ,   4   ;', 'Eli\t, 10, mixed, 40, 5;', 'Rina, 11, add1, 30, 2.5;', 'Shai, 12, add1, 3O, 2;', 'Dov, 13, 14, add2, 30, 2;', 'Ben, 15, rounding, 60, 5'].join('\r\n') },
@@ -186,7 +186,10 @@ async function armPaste(file) {
   await p.page.fill(p.spec.advanced, spec.text);
   const r = await fire(p);
   const sh = await sheets(p);
-  const errLines = (await text(p, p.sel.errorsOnly)).split('\n').map(s => s.trim()).filter(s => /Entry \d+/.test(s));
+  const allLines = (await text(p, p.sel.errorsOnly)).split('\n').map(s => s.trim()).filter(s => /Entry \d+/.test(s));
+  // a note on an entry that prints, but fewer than it asks (index, S31), is not a skipped entry
+  const errLines = allLines.filter(l => !/prints at most 30 problems/.test(l)), capped = allLines.filter(l => /prints at most 30 problems/.test(l));
+  check(capped.map(l => +l.match(/Entry (\d+)/)[1]).join() === (spec.capped || []).join(), `entries asking more than their type prints are named, not skipped (${capped.map(l => l.slice(0, 50)).join(' · ') || 'none'})`);
   const names = await p.page.$$eval(p.spec.sheet, (ss, isIndex) => ss.map(s => { const n = s.querySelector('.student-name-value, .mwg-student-name, [class*="name"]'); return (n || s).textContent.trim().slice(0, 60); }), p.sel.isIndex);
   check(r.printed && !p.errors.length, `the paste prints with 0 page errors (${p.errors.join(' / ') || 'none'})`);
   check(sh.length === spec.good + spec.lenient, `${sh.length} sheets for ${spec.good} well-formed + ${spec.lenient} leniently read entries`);

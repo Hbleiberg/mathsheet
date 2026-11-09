@@ -862,12 +862,12 @@ body { margin: 0; padding: 12px; background: white; }
     <div class="mwg-advanced-layout">
       <div class="mwg-advanced-input-wrap">
         <label for="mwgAdvancedBox">Paste student data</label>
-        <textarea id="mwgAdvancedBox" placeholder="Harrison, 1, add2, 30, 3; Emily, 2, mixed, 40, 5;"></textarea>
+        <textarea id="mwgAdvancedBox" placeholder="Harrison, 1, add2, 30, 3; Emily, 2, mixed, 40, 4;"></textarea>
         <div class="mwg-advanced-help">
           Format: <strong>Name, Number, ProblemType, Count, Grade;</strong><br>
           Number can be any text (e.g. 2, 14B, Blue) or left empty. The name may be left empty too — it prints a blank Name line (e.g. <strong>, 2, add2, 30, 3;</strong>).<br>
           You can also paste five columns (name, number, problem type, count, grade) straight from a spreadsheet.<br>
-          Example: <strong>Harrison, 1, add2, 30, 3; Emily, 2, mixed, 40, 5;</strong><br>
+          Example: <strong>Harrison, 1, add2, 30, 3; Emily, 2, mixed, 40, 4;</strong><br>
           Problem types: add1–add5, sub1–sub5, mul1–mul5, div1–div5 (Levels 1–5 of addition, subtraction, multiplication, division), fractions, fractions[add|sub|mul|divf|divw], decimals, decimals[add|sub|mulw|muld|divw|divd], rounding, longdivision, orderofoperations, integers, exponents, scientificnotation, mixed, mixed[type1|type2|...]<br>
           Counts: 30, 40, 50, 60 — Grades: 1–8
         </div>
@@ -1189,9 +1189,13 @@ function clearStatus()  { statusDiv.innerHTML = ""; }
 function clearErrors()  { errorsDiv.innerHTML = ""; }
 function showSuccess(m) { statusDiv.innerHTML = '<div class="mwg-success-box">' + esc(m) + '</div>'; }
 function showNotice(m)  { statusDiv.innerHTML = '<div class="mwg-notice-box">' + esc(m) + '</div>'; }
-function showErrors(list) {
-  if (!list.length) { errorsDiv.innerHTML = ""; return; }
-  errorsDiv.innerHTML = '<div class="mwg-error-box">Some entries were skipped:\n\n' + list.map(esc).join("\n") + '</div>';
+// The skipped entries, then the notes on entries that print but not as asked (S31: the 30 cap); a note alone has no heading.
+function showErrors(list, notes) {
+  notes = notes || [];
+  if (!list.length && !notes.length) { errorsDiv.innerHTML = ""; return; }
+  var lines = list.length ? ["Some entries were skipped:", ""].concat(list) : [];
+  if (notes.length) lines = lines.concat(list.length ? [""] : [], notes);
+  errorsDiv.innerHTML = '<div class="mwg-error-box">' + lines.map(esc).join("\n") + '</div>';
 }
 
 function renderReference() {
@@ -1849,8 +1853,8 @@ function unknownBracketName(grade, mixedTypes, fracOps, decOps) {
 
 function parseAdvancedInput() {
   var raw = advancedBox.value.trim();
-  var students = [], errors = [], n = 0;
-  if (!raw) return { students: students, errors: errors };
+  var students = [], errors = [], notes = [], n = 0;
+  if (!raw) return { students: students, errors: errors, notes: notes };
   var chunks = raw.replace(/\n+/g, ";").split(";");
   for (var i = 0; i < chunks.length; i++) {
     var entry = chunks[i].trim();
@@ -1888,9 +1892,20 @@ function parseAdvancedInput() {
     if (validTypes.indexOf(type) === -1) { errors.push("Entry " + n + " invalid type for grade " + grade + ": " + type); continue; }
     var badName = unknownBracketName(grade, mixedTypes, fracOps, decOps);
     if (badName !== null) { errors.push("Entry " + n + " invalid type for grade " + grade + ": " + badName); continue; }
+    // A type written across prints at most 30 (the form offers it only 30): the sheet prints, and says so (approved S11).
+    if (count > 30 && printsAtMost30(type, grade, mixedTypes)) notes.push("Entry " + n + ": " + parts[2] + " prints at most 30 problems (" + count + " asked)");
     students.push({ name: parts[0], number: parts[1], grade: grade, type: type, count: count, mixedTypes: mixedTypes, fracOps: fracOps, decOps: decOps });
   }
-  return { students: students, errors: errors };
+  return { students: students, errors: errors, notes: notes };
+}
+
+// As generateProblems caps a sheet: a type written across, or a Mixed whose pool holds one.
+function printsAtMost30(type, grade, mixedTypes) {
+  if (isHorizType(type)) return true;
+  if (type !== "mixed") return false;
+  var pool = (mixedTypes && mixedTypes.length) ? mixedTypes : defaultMixedTypes(grade);
+  for (var i = 0; i < pool.length; i++) if (isHorizType(pool[i])) return true;
+  return false;
 }
 
 function getStudentsFromStandard() {
@@ -2382,7 +2397,8 @@ function generate() {
   resultsDiv.innerHTML = "";
   clearErrors(); clearStatus();
   var parsed = inputMode === "advanced" ? parseAdvancedInput() : getStudentsFromStandard();
-  if (parsed.errors.length) showErrors(parsed.errors);
+  var notes = parsed.notes || [];
+  if (parsed.errors.length || notes.length) showErrors(parsed.errors, notes);
   if (!parsed.students.length) { showNotice("No valid students found."); return; }
   var copies=parseInt(worksheetsPerStudent.value)||1, doKey=answerKeyToggle.checked;
   var total=parsed.students.length*copies, pageCounter=0, allAnswers=[];
@@ -2401,8 +2417,8 @@ function generate() {
   if (doKey && allAnswers.length) resultsDiv.appendChild(buildAnswerKeySheet(allAnswers, !doKey));
   fitLongDescriptions();
   fitLongNames();
-  // The skipped-entries box stands above the sheets: land on it, so a missing student is explained (S7).
-  (parsed.errors.length ? errorsDiv : resultsDiv).scrollIntoView({ behavior: "smooth", block: "start" });
+  // The skipped-entries box stands above the sheets: land on it, so a missing student (or a capped count, S31) is explained (S7).
+  (parsed.errors.length || notes.length ? errorsDiv : resultsDiv).scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // A description too long for its box shrinks to fit (approved S4, shipped S22): with copies its end ran under
