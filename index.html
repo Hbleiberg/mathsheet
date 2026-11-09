@@ -1873,7 +1873,8 @@ function parseAdvancedInput() {
     if (isNaN(grade) || grade < 1 || grade > 8) { errors.push("Entry " + n + " invalid grade: " + entry); continue; }
     var count = parseInt(parts[3]);
     if (VALID_COUNTS.indexOf(count) === -1) { errors.push("Entry " + n + " invalid count: " + entry); continue; }
-    var type = parts[2], mixedTypes = null, fracOps = null, decOps = null;
+    // Every type and bracket name is lower case: "Add1", "Mixed" (as the Type menu writes it), "Fractions[Add]" read too (S32; found S21).
+    var type = parts[2].toLowerCase(), mixedTypes = null, fracOps = null, decOps = null;
     var mixedMatch = type.match(/^mixed\[([^\]]+)\]$/);
     if (mixedMatch) {
       type = "mixed";

@@ -263,7 +263,7 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   the grid is variable (`mwg-cols-N` / `mwg-rows-N`, plus a `mwg-horiz-grid` for inline
   problems); advanced input is **5 fields** — `Name, Number, Type, Count, Grade;` with
   optional brackets (`mixed[…]`, `fractions[…]`, `decimals[…]`, `|`-separated; a name may hold commas — all
-  but the last four fields, S3); the Type is a level code (`add1`–`add5` … `div1`–`div5`) or a named type, and the
+  but the last four fields, S3); the Type is a level code (`add1`–`add5` … `div1`–`div5`) or a named type, read whatever its capitals (S32), and the
   fraction / decimal brackets take an operation short or whole (`add` or `fractions-add`, S18); PDF saves as
   `worksheets.pdf`; storage key `mwgRosterData_v2`, its roster saved under `students` and no `headerLine` yet (S13). Its print/PDF/color values still match
   the standard above. Don't propagate the `mwg-`/Georgia/5-field patterns to new pages.
