@@ -769,3 +769,40 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ New probes (S24): `S24-name-parse` (`--ref d31ff06` fails 3; the page's generate as a ratio of the bare name's, 7 runs alternated, so a slow machine slows both), `S24-index-red-border` (`--ref 037221c` fails 9). Arm R's set for S25: the three S23 and two S24 probes. `S23-name-fit-layout` now compares name lines; its byte arm needs `--identity`.
 ⚑ A new element in the sheet markup: time a generate with it swapped for a `<span>` first; a tag Chromium's fast innerHTML parser does not take (`<bdi>`) slowed every sheet for six sessions unseen (S24).
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S24 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.
+
+## S26 (2026-11-09) — pass C (aesthetics) on math-facts.html; two fixes, pushed to `main`
+
+- Run on `main` (local `main` at `origin/main`, 24cec4f; the clone full); each fix pushed once verified.
+- Arm R: the smoke and the two S24 and two S25 probes green.
+- Pass C on math-facts.html: the UI at 1280 / 800 in seven states, nine levels' sheets and keys under print with a header
+  line, Hebrew, long and empty names. S5's baselines and the fixes since hold. Found: the three default rows (a fresh page,
+  Clear Current Roster) carry no Name placeholder on all three pages; a key's answers come in two sizes (17 px under a
+  stack, 20 px over a bracket; index three at rows-12). Both queued P4; the second is a printed-key change (gate 6).
+- Gates: none asked. The key's answer size needs index, which the session's fixes had capped, so the question waits.
+- Fixes: index's operation checkboxes beside their labels (ed7f879, S10's P3, the top Candidate); the JPEG 0.8 approved
+  in S2 on all three pages with CLAUDE.md (78e0b94). index then on its cap; the twins had no autonomous item of their own
+  (the Name hint is the same line on index); two slots unused.
+- Method notes: a click-by-coordinates check failed 1 of 2 on both commits — the Mixed label was below the viewport, where
+  a mouse click lands nowhere; scroll the element in first. A full-page screenshot leaves `content-visibility: auto`
+  sheets blank past the first screen, and a shot 200 ms after a smooth scroll catches it mid-way.
+
+### Done rows archived from the ledger (S21, verbatim)
+
+- [x] S21 | 2026-11-08 | caedad5 | math-facts.html, scripts/loop/probes/S21-fact-codes.mjs | an Advanced fact code is read whatever its capitals, spaces or dash ("+0 +1" as the level menu shows it, "Doubles", "Mix +30", "x 3", "–3"); codes that name no level are still skipped | S21-fact-codes: 30 spellings and 7 non-codes (fails 22 on f5a60c2); S11-robustness, S20-paste, S13-escape green; smoke
+- [x] S21 | 2026-11-08 | 516b2d4 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S21-fill-down-status.mjs, scripts/loop/probes/S20-fill-down.mjs | Fill Down's message in a polite live line beside its button (with 22 rows it landed ~2,900 px below, out of sight); any change to the roster clears it; the same block thrice | S21-fill-down-status at 1280 and 390 px (fails 39 on caedad5); S20-fill-down reads the line; S12, S16, S17 probes green; screenshots; smoke
+- [x] S21 | 2026-11-08 | 99911b1 | index.html, scripts/loop/probes/S21-fraction-sub.mjs | a fraction subtraction takes away a smaller fraction (approved S6, gate 2): 26 % of "Fractions — Subtraction" and 34 % of the Fractions type's subtractions were x − x = 0, a denominator of 2 always ½ − ½; addition unchanged | S21-fraction-sub, 12,000 problems (fails 9 on 516b2d4); S6-math-audit green, every key recomputed; smoke
+- [x] S21 | 2026-11-08 | 904695f | CLAUDE.md | Fill Down's message beside its button; math-facts' lenient fact codes | doc only
+- [x] S21 | 2026-11-08 | — | docs/loop-findings.md | pass H on math-facts.html (a class of 22 by real clicks and keys, five Hebrew names, an IEP on +0 +1, an advanced student, a parent helper's key; next week's +3 → +4, codes as a teacher writes them, a spreadsheet's levels, a substitute's blanks): S20's Fill Down rule held; 15 of 34 plausible spellings skipped, 9 a real code; gates: one, as recommended | scratch s21/walk.mjs, s21/walk2.mjs, loop-findings S21
+
+### Per-session line archived from the ledger (S6, verbatim)
+
+- S6 | 2026-11-05 | pass G on index.html (51 selectors × 200 sheets, 378,000 problems recomputed with exact rationals; every key right) | fixes 2 + micro-feature (on branch claude/clever-davinci-hhh4iz, not main, per the maintainer) | smoke 3/3 green; probes green | index.html ended on its cap with 3 P2s queued
+
+### Previous handoff (S25 → S26), verbatim
+
+**Next session (S26):** S25 ran on `main` and pushed each fix there: abdbd88, 7435289 and the close-out are live on GitHub Pages. Work on `main` again: one commit per iteration, each push a deploy. If `git rev-parse --is-shallow-repository` says true, `git fetch --unshallow origin main` before a `--ref` names an old commit.
+⚑ next: C on math-facts.html — the stalest cell (S5), C last on the twins in S5 / S9: since then S7's header line, S9's name shrink, S17–S23's narrow-screen rows and 16 px fields, S21's Fill Down line, S22's spreadsheet hint. A dramatic change is gate 3, BEFORE screenshots first.
+⚑ Queues: approved and waiting — JPEG 0.8 (S2), the 30-cap note (S11), the divisor 3 px low on index's stacked grids (S10; across, level since S25). index alone: the ops labels (P3, C), its case-sensitive Advanced type (P4), the Count select's text (P4, gate 2 or 4), the last key's `print-break` (P4). Shared — the code panel under the button row (P3, S5), reduced motion and targets (P4).
+⚑ New probes (S25): `S25-pdf-rows` (`--ref 2f9a38f` fails 1; offline, the clone's cells against print's), `S25-across-division` (`--ref abdbd88` fails 6; its arm 2 compares every other sheet with abdbd88 byte for byte — move that arm behind `--identity` when a later approved change reaches those sheets). Repaired in 7435289: `S6-math-audit` reads the across key cell, `S22-desc-fit` leaves the across division sheets out. Arm R's set for S26: the two S24 and two S25 probes.
+⚑ index.html's sheets print and export outside `#mwg-app`, so they lose its `box-sizing: border-box`: measure them under print, never on screen. A grid cell taller than its track (`min-height: 0` in a grid of set height) overflows into the next row unseen: compare each cell's box with its track (S25).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S25 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.

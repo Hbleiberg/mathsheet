@@ -1170,3 +1170,39 @@ numbers, the divisor level with the dividend (padding-top 5 px, S10's approved s
 sheet's own problem with its quotient in red at the right. `S25-across-division`: 1,440 problems on 80 sheets inside their
 rows, lowest ink 786.2 px, ≥ 12 px between problems, divisors 0.0 px off, every key cell the sheet's markup with a
 recomputed quotient (fails 6 on abdbd88); 286 other sheets byte-identical; the real export's across cells off print 84 → 0.
+
+## S26 (2026-11-09) — pass C (aesthetics) on math-facts.html
+
+Method: scratch screenshot probes at DSF 2 (UI at 1280 / 800 px in seven states; nine levels' sheets and keys under
+emulated print with the move trick, a header line, Hebrew, long and empty names); computed styles for the key answers on
+all three pages; for the fixes, a committed probe (`S26-ops-labels`) and real cdnjs Save PDFs compared image by image.
+
+**UI (teacher).** Seven states: fresh; four rows with a Hebrew and a 26-character name, a header line, Fill Down's line;
+the validation box; after Generate; the code panel; Advanced mode with the Level Reference; an Advanced generate with a
+skipped entry. Type scale as S5 (row titles 18, labels 14 bold, fields 14, the two `.btn-large` 17 bold, the pill 13); the
+settings row bottom-aligns its two fields with the Name blank row; Fill Down's line sits beside its button; nothing past the
+edge at 800 px. S5's skipped-entries box now sits above the sheets; its code panel still opens after them (the queued P3).
+New: a fresh page's three rows, and the three after Clear Current Roster, carry no Name placeholder ("Optional", or "Prints
+blank" with Name blank on) while every row from Add Student, Duplicate or a saved roster does — `buildDefaultStudents()`
+never calls `applyNameBlankToggle()`; the same on all three pages (queued, P4). Not defects: the validation box's border
+rgb(204,0,0) against the error box's #d33 is the same inline style on all three pages, a component of its own; the menu's
+"-2" and "30 mixed -" keep a typed hyphen (a "−" would stop "-" choosing them, S20's type-ahead note).
+
+**Worksheet (student).** Nine levels (+3, ×12, ÷7, mix+60, mixmd60, mix/40, mixpm50, -fr10, doubles) with keys: 18 sheets,
+each 1056 × 816, the header 76 px with its line, the grid 101.9 → 793.1 px in print's fixed rows (230.4 / 172.8 / 138.2 /
+115.2 px), ten 99.8 px columns; a ×/÷ row centres each bracket on its neighbours' stacks; the 31-character name shrinks onto
+its line (S9). Keys: the stack answers are 17 px bold, the quotients 20 px, the problems 23 px, so a mixed ×/÷ key
+alternates its answer sizes (math-minute alike; index 17 / 20, and 15 / 18 / 20 at rows-12): one size is a printed-key
+change on all three pages (queued, P4, gate 6).
+
+**Fixes.** ed7f879 (index, S10's P3): the 22 operation labels (11 standalone, 11 in the Mixed panel) at 1280 / 800 / 390 px
+went from block, bold 14 px, the checkbox stretched to 197–314 px above the text, 37 px a label, to a flex row, 13 px
+regular, a 13 px checkbox beside its text, 16 px a label; a click on the text toggles its box. 78e0b94 (approved S2): real
+Save PDFs of the same seeded four students with keys, 8 pages each, 1584 × 1224 a page — index 986,762 → 771,074 bytes
+(−21.9 %), math-minute 840,497 → 659,541 (−21.5 %), math-facts 849,151 → 665,463 (−21.6 %); the extracted page images differ
+by a mean 0.45–0.58 of 255 and in 0.012–0.017 % of pixels by more than 32; the dark-ink box 0 px and the red-ink box ≤ 1 px
+apart; the 9 px light-grey tag and the red answers read the same at 3× zoom.
+
+Traps: Chromium's full-page screenshot leaves the `content-visibility: auto` sheets below the first screen blank (not a
+defect); a screenshot 200 ms after a click that smooth-scrolls catches the page mid-scroll, a blank band over half a
+sheet — wait a second; a mouse click by coordinates at a point below the viewport lands nowhere: scroll the element in first.
