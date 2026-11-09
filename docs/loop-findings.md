@@ -1373,3 +1373,55 @@ links' text 0.00 px from 02939af; points 10 px above and below the text hit the 
 viewport — a 900 px window put the third row's lower point off screen at 390 px; the probe uses 1600.
 
 **Sweep.** All 57 probes, run one after another on 15f3989 (the pages as they close the session): all green.
+
+## S31 (2026-11-09) — pass C (aesthetics) on index.html
+
+Method: scratch `s31/c-ui.mjs` (seven UI states at 1280 / 800 px, screenshots at DSF 2; a computed-style digest of 41
+selectors mapped onto math-facts.html's in the same states; index's Mixed and ops panels, each label beside its box;
+overflow, clipped field text, row and button-row alignment), `s31/rowgeo.mjs` (a row's five columns at 1280 / 800 / 390),
+`s31/c-sheet.mjs` (52 entries, every type at a grade that offers it and the counts that change the grid, with keys: 104
+sheets; 6 entries × 3 copies: 36; Latin, Hebrew, 37-character and empty names; glyph ink against its track (stacked) or
+its cell (across), the room under each rule, centring, the bottom padding, name / description / set label / tag fits, the
+keys' red sizes and nearest black ink), `s31/c-shots.mjs` (renders), `s31/c-div.mjs` (the across division's place).
+
+**UI (teacher).** Every mapped style matches math-facts' but for index's known exceptions, Georgia and #1a1a1a text (the
+convergence session's, gate 5). In Georgia a select is 35 px to a text field's 36 (Arial 36 / 36), so in every row the
+three select columns' labels sit 1 px below the two text columns' (the fields' bottoms align): a font metric, left. No
+state at either width has anything past the edge; the only cut text is S19's P4 ("30 problems (max for this type)" 178 px
+in 169 at 1280, 104 at 800; at 800 also the Type select's level names, "Level 2 — sums 10-20" 128 in 104). Button rows on
+one line. The Grade 5 Mixed panel: 35 checkboxes, each beside its text (S26's ed7f879 holds), 10 rows at 1280, 15 at 800;
+the Fractions ops panel 5 of 5. Two panel styles the twins have no counterpart for, both the convergence session's: native
+grey Select All / Deselect All / All Operations buttons (23 / 20 px, S16's target P4) and the ops titles in
+rgb(37, 99, 235), not the palette's link blue. The validation and skipped-entries boxes read as math-facts'. A Hebrew name
+is typed left-aligned (the `dir="auto"` seed).
+
+**Worksheet (student).** 140 sheets, each 1056 × 816; no ink past the bottom padding (lowest 791.4 px, Fractions; S10 793);
+names 18 px (Latin, Hebrew) and 11 px (37 characters) inside their line; descriptions, set labels and tags inside the box
+(9.5–12.5 px with keys and copies, S22). Room from a row's rule to the next row's ink: rows-6 70–71 px (S10 69), rows-8 42
+(40), rows-10 24–25 (23), rows-12 13 (11); division rows-3 228, -4 171, -5 136, -6 113; stacks centred (0.0 px), brackets
+5–5.5 px right. Keys: red 17 px under a narrow stack, 15 wide and in rows-12, 18 / 20 over a bracket (S26's gate-6 P4),
+≥ 3 px from the next black ink, but for the 60 Mixed Grade 4 key (rows-12, narrow 20 px stacks among wide ones): 30 cells
+0.7 px past their 0.6 in track, answers 2.6 px above the next row — S4's approved tight key and S8's own bar, unchanged.
+Across: no problem wraps (a stacked fraction is 32 px tall, not two lines); the light separators end at 796 px.
+
+**Defect (new, P4; fixed, approved at gate 6).** A division written across (Long Division; a Mixed sheet's divisions at
+Grades 5–8) was centred in its problem's room: `.mwg-problem-cell` centres, `!important` under print, and the division box
+centred its contents in its 1.02 / 1.3 in minimum; every other across problem starts at the left. On the sheet it began
+36–46 px in; on the key, whose problem has the answer's room, 108–122 px right of the student's (every other key problem
+sits 26 px left of the student's: the key has no number column).
+
+**Fixes.** 04c9483: across, the cell and the division box justify to the start (print's centring overridden under
+`.mwg-horiz-problem`); the divisor keeps its 0.22 in slot, so brackets stay in a column. `S31-across-division-left`: 576
+divisions at their problem's left (first glyph ≤ 11.1 px in), each key's where the student's is (−26.0 px, as every
+other), brackets ≥ 76.6 px from the answer; 44 sheets' markup byte-identical to 73a7c3a, every cell and every other
+problem's ink 0.00 px from it, each division moved sideways only; the PDF clones as print; `--control` fails 4.
+`S29-index-divisor` now compares across divisions without their left edge. d86b99f (S11's approved "say so"): an Advanced
+line asking more than its type prints gets "Entry 14: rounding prints at most 30 problems (60 asked)" after the skipped
+list (alone, no heading; a skipped-only box byte-identical); `printsAtMost30()` mirrors generateProblems' cap. The help's
+own example asked 40 of Grade 5 Mixed, which prints 30: now "Emily, 2, mixed, 40, 4;" (approved S31, gate 2).
+`S31-cap-note`: a note for exactly the 23 of 29 entries printing fewer than asked, sheets byte-identical to 04c9483,
+the page landing on the box; `--control` fails 5. S11-robustness counts the notes apart; S27-no-repeats reads them as no error.
+
+**Traps.** A print rule marked `!important` beats a style injected to test a candidate: test it under print with
+`!important` (the first "after" moved nothing). A Range over an element's contents returns its descendants' element boxes:
+read a glyph's left from text nodes (the first offsets read 0). A stacked fraction or a superscript is not a wrap.

@@ -952,3 +952,34 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ New probes (S29): `S29-code-panel` (fails 12 on a53342b), `S29-index-divisor` (`--control` fails), `S29-default-name-hint` (the twins; `--control` fails 6). Arm R's set for S30: those three and the two S28 probes. All 53 probes were green on a53342b, S23-name-fit-layout repaired.
 ⚑ Scripts: write every Python or Node script inside a quoted heredoc (`<<'EOF'`): an unquoted one runs each backticked code name in the text as a command (S28). A scratch control that writes the same files as its green run overwrites them: give it its own output names (S29 misread a planted page's PDF that way, briefly).
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S29 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.
+
+## S31 (2026-11-09) — pass C on index.html (one P4, fixed); two fixes, on a branch
+
+- Run on branch `claude/dazzling-gauss-uhpik9` again (invoked with no argument; the maintainer's "on a branch until I tell
+  you to push to main" from S27 still stood), stacked on the open draft PR Hbleiberg/mathsheet#6; `main` untouched.
+- Arm R: the smoke and the five S28–S30 probes, all green.
+- Pass C on index.html (the stalest cell, S10): the UI and 140 sheets and keys hold S10's baselines; a division written
+  across sat centred, 108–122 px off the student's place on the key: gate 6 asked with before / after renders, approved,
+  04c9483. No second surface (a fix was found).
+- Fixes: 04c9483 (the across division at the left), d86b99f (S11's approved cap note; it showed the help's own example
+  asks 40 of Grade 5 Mixed, which prints 30: gate 2 asked, "mixed, 40, 4"). index then on its cap; the twins had no
+  autonomous item of their own, so two slots unused. Gates: two, both answered as recommended.
+
+### Done rows archived from the ledger (S26, verbatim)
+
+- [x] S26 | 2026-11-09 | ed7f879 | index.html, scripts/loop/probes/S26-ops-labels.mjs | each Fraction / Decimal operation's checkbox sits beside its label: 22 boxes had stretched above bold labels (the injected `.mwg-student-grid` rules won); the static rule now under `#mwg-app` (S10's P3) | S26-ops-labels at 1280 / 800 / 390: 22 of 22 beside, 13 px boxes, a click on the text toggles (`--ref 24cec4f` fails 3); smoke, S5-mixed-ops, S20-fill-down, roster-subset, S23-phone-fields, S16-focus green
+- [x] S26 | 2026-11-09 | 78e0b94 | index.html, math-minute.html, math-facts.html, CLAUDE.md | Save PDF writes its pages at JPEG quality 0.8 (approved S2) | real cdnjs PDFs of one seeded roster: −21.9 / −21.5 / −21.6 %; page images a mean 0.45–0.58 of 255 apart, ink boxes ≤ 1 px; the grey tag and red answers alike at 3×; smoke --cdn, S4-pdf-print-parity, S25-pdf-rows, S19-long-name green
+- [x] S26 | 2026-11-09 | — | docs/loop-findings.md | pass C on math-facts.html (the UI at 1280 / 800 in seven states; nine levels' sheets and keys under print): S5's baselines and the fixes since hold; queued the default rows' missing Name hint (three pages) and the key's two answer sizes (gate 6) | screenshots at DSF 2; computed styles on all three pages
+
+### Per-session line archived from the ledger (S11, verbatim)
+
+- S11 | 2026-11-06 | pass E, the suite (615 selector combinations through the forms, malformed and 500-entry pastes, storage denied / full, 13 bad payload shapes, every control, on all three pages) | fixes 3 (the three-page entry numbering, index's Decimals places, math-minute's zero both ways; a 4th slot unused, only math-facts had a touch left; on branch claude/clever-davinci-hhh4iz, not main) | smoke 3/3 green + `--cdn`; probes green | index.html and math-minute.html ended on their caps
+
+### Previous handoff (S30 → S31), verbatim
+
+**Next session (S31):** S27–S30 ran on branch `claude/dazzling-gauss-uhpik9`, not `main`: the maintainer asked for "a branch until I tell you to push to main". Their commits (S30: 94d3797, 02939af, 15f3989 and the close-out) are on that branch and its draft PR, Hbleiberg/mathsheet#6; GitHub Pages (`main`) still serves S26. Stay on the branch until the maintainer says "push to main"; then fast-forward `main` to it. If `git rev-parse --is-shallow-repository` says true, `git fetch --unshallow origin main` before a probe names an old commit.
+⚑ next: C on index.html — the stalest cell (S10); since then its UI gained S12's names, S16's focus, S17's wrapping button row, S20–S21's Fill Down line, S22's description shrink, S23's 16 px fields, S24's red border, S26's ops labels, S29's code panel and S30's row targets; its sheets S25's across division, S27's dealing, S28's Rounding at grades 3–4 and S29's divisor. The UI at 1280 / 800 in its states (the Mixed and ops panels), each type's sheet and key under print, as S10 did; E (S11, the suite) comes next.
+⚑ Queues: approved and waiting — the 30-cap note (S11, index). index alone: its case-sensitive Advanced type (P4, a first touch), the Count select's text (P4, gate 2 or 4). Shared — a marked field's 2 px growth (P4, S30), reduced motion and the settings checkboxes' targets (P4). Gate 6, unasked — one answer size on the keys (S26). Settled S28, not to be asked again: Level 2 "Hard Addition" keeps every sum 2–18; Levels 6 / 8 / 10 stay teen subtraction.
+⚑ New probes (S30): `S30-row-targets` (`--control` fails 27). Repaired: `S28-rounding-grades` (byte arm behind `--identity`), `S29-code-panel` (reads Duplicate / Delete by their text), `S29-default-name-hint` (all three pages; `--control` fails 9). Arm R's set for S31: those four and `S29-index-divisor`. All 57 probes green on 15f3989.
+⚑ Scripts: write every Python or Node script inside a quoted heredoc (`<<'EOF'`): an unquoted one runs each backticked code name in the text as a command (S28). A scratch control that writes the same files as its green run overwrites them: give it its own output names (S29). Clear Current Roster asks `confirm()`, which Playwright dismisses unless the script accepts dialogs; `elementFromPoint` sees only the viewport (S30).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S30 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.
