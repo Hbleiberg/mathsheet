@@ -133,6 +133,9 @@ body { margin: 0; padding: 12px; background: white; }
 }
 .mwg-delete-link { font-size: 13px; color: rgb(185,28,28); text-decoration: underline; cursor: pointer; background: none; border: none; padding: 0; line-height: 1.2; font-family: Georgia, serif; }
 .mwg-duplicate-link:hover { color: #042f6b; }
+/* Duplicate / Delete are 16 px of text: the padding makes each a 40 px tall target and the margin takes it back, so
+   nothing moves; the two meet in their 10 px gap. Under #mwg-app, or the injected padding:0 wins (S30) */
+#mwg-app .mwg-duplicate-link, #mwg-app .mwg-delete-link { padding: 12px 5px; margin: -12px -5px; }
 
 .mwg-student-grid {
   display: grid;

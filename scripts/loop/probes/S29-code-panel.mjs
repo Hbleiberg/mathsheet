@@ -43,7 +43,11 @@ const STYLE = sel => [document.querySelector(sel), ...document.querySelectorAll(
   const c = getComputedStyle(e); const r = e.getBoundingClientRect();
   return [e.tagName, e.id, c.fontFamily, c.fontSize, c.fontWeight, c.color, c.backgroundColor, c.borderTop, c.padding, c.margin, c.display, c.width, Math.round(r.width), Math.round(r.height)].join('|');
 });
-const LAYOUT = app => [...document.querySelectorAll(app + ' *')].filter(e => e.offsetParent).slice(0, 400).map(e => { const r = e.getBoundingClientRect(); return `${e.tagName}#${e.id}:${Math.round(r.top + scrollY)},${Math.round(r.left)},${Math.round(r.width)}x${Math.round(r.height)}`; });
+// Duplicate / Delete by their text: S30 padded their targets (a negative margin takes the padding back, so nothing moves)
+const LAYOUT = app => [...document.querySelectorAll(app + ' *')].filter(e => e.offsetParent).slice(0, 400).map(e => {
+  let r = e.getBoundingClientRect();
+  if (/duplicate|delete/.test(e.className)) { const g = document.createRange(); g.selectNodeContents(e); r = g.getBoundingClientRect(); }
+  return `${e.tagName}#${e.id}:${Math.round(r.top + scrollY)},${Math.round(r.left)},${Math.round(r.width)}x${Math.round(r.height)}`; });
 
 try {
   for (const file of Object.keys(IDS)) {
