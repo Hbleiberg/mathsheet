@@ -847,3 +847,43 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ New probe (S26): `S26-ops-labels` (`--ref 24cec4f` fails 3; 1280 / 800 / 390, standalone and Mixed). Arm R's set for S27: the two S25 probes and `S26-ops-labels`. JPEG 0.8 is in CLAUDE.md's PDF step 4; a PDF size from before S26 reads ~22 % larger.
 ⚑ Screenshots: a full-page shot leaves the `content-visibility: auto` sheets below the first screen blank, a shot taken within a second of a smooth scroll catches it mid-way, and a mouse click by coordinates below the viewport lands nowhere (S26).
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S26 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.
+
+## S28 (2026-11-09) — pass G on math-minute.html (clean), then math-facts.html (clean); two fixes on index.html, on a branch
+
+- Run on branch `claude/dazzling-gauss-uhpik9` again (invoked with no argument; the maintainer's "on a branch until I tell
+  you to push to main" from S27 still stood), stacked on the open draft PR Hbleiberg/mathsheet#6; `main` untouched.
+- Arm R: the smoke, S26-ops-labels and the two S27 probes green.
+- Pass G on math-minute.html: clean (176,000 problems), so it bought math-facts.html: clean (498,000).
+- Gates: two in one call (gate 2: Level 2 "Hard Addition" to sums 10–18; Levels 6 / 8 / 10 to every subtraction fact):
+  both "leave as is". Struck, below.
+- Fixes: the two S27 index items — Scientific Notation's locale (c9cc85f, autonomous), Rounding at grades 3–4 (b60bd4d,
+  approved S27). index then on its cap; the twins had nothing autonomous; two slots unused.
+- Method notes: a Python script in an unquoted heredoc ran the ledger text's backticked code names as shell commands
+  (syntax errors, nothing executed) and blanked them; restored, and the handoff now says to quote every heredoc.
+
+### Candidates struck at gate 2 (S28: the maintainer left both levels as they are)
+
+- [ ] P3 | math-minute.html | Level 2 "Hard Addition" deals every sum 2–18 (`additionFacts(18, false)`), so 20 of its 45 facts are Easy Addition's sums below ten (13 of 30 a sheet), where Level 4 "Hard Subtraction" is the teen facts only: sums 10–18, the inverse of Level 4, as S9's "drop only the easiest" did for 12 and 17 (gate 2) | found S28
+- [ ] P3 | math-minute.html | Levels 6 / 8 / 10 ("Forty–Sixty subtraction facts") deal only Level 4's 45 teen facts, while 5 / 7 / 9 deal every addition fact (Levels 1 and 2 together, 54 % sums below ten): deal Levels 3 and 4 together, every subtraction fact to 18 (gate 2) | found S28
+
+### Done rows archived from the ledger (S23, verbatim)
+
+- [x] S23 | 2026-11-08 | f57d63c | index.html, scripts/loop/probes/S23-name-fit-layout.mjs | with the Number removed the name fit measures its lines (one per description and copy) on header copies in one layout: in place each laid out a whole sheet, 470 ms for 30 students on 30 types × 5 with keys | medians of 3: 479 → 109 ms (cpu4 2,305 → 518); every sheet byte-identical (S23-name-fit-layout, fails 3 on 37af5e4); name probes green; smoke
+- [x] S23 | 2026-11-08 | af59ae5 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S23-phone-fields.mjs | a phone's fields are 16 px, upright or on its side, so iPhone Safari stops zooming into them (14 px, the code box 13); the twins' setting boxes 280 px there, for the Header line's example | S23-phone-fields, four phone shapes, three states (fails 12 on f57d63c); desktop and the iPad pixel-identical; screenshots; smoke
+- [x] S23 | 2026-11-08 | 2597f1c | math-minute.html, math-facts.html, scripts/loop/probes/S23-red-border.mjs | a Level the validation box marked red loses it once it holds a value, picked or filled down (`clearFilledHighlights()`); the same block on both; index's half queued | S23-red-border: mouse, keyboard, Fill Down, a name beside an empty Level (fails 6 on af59ae5); S20, S21, S16, S12 probes green; screenshots; smoke
+- [x] S23 | 2026-11-08 | 6611a2f | scripts/loop/probes/ (S5, S7 ×2, S8, S10, S11, S22) | arm R's seven stale probes repaired: S18's notice and S21's Fill Down line read where they are, byte-for-byte arms against old commits behind `--identity`, S22-desc-fit within 0.25 px (a 0.1 px drift under load) | all seven green on HEAD; their controls fail (loop-findings S23)
+- [x] S23 | 2026-11-08 | e258268 | CLAUDE.md | a phone's fields are 16 px | doc only
+- [x] S23 | 2026-11-08 | — | docs/loop-findings.md | pass M on math-minute.html (6 device shapes; fresh, Fix, Fill Down, the code panel, Advanced and its Level Reference, results): clean but for the queued 14 px fields and red border, both fixed; then A on index.html (load, generate to 1,510 sheets at 1× and cpu4, the form, restore, Save PDF): clean but for the no-Number slowdown, fixed; gates: none | scratch s23/m-mm.mjs, s23/a-index.mjs, s23/prof.mjs, loop-findings S23
+
+### Per-session line archived from the ledger (S8, verbatim)
+
+- S8 | 2026-11-05 | pass B on math-minute.html (378 sheets printed in 3 configurations, Letter and A4; a real 42-page Save PDF rasterized against print; round trip; saved payload) | fixes 4 (one P3 on the twins, two approved index P3s, the approved Teens Rule; on branch claude/clever-davinci-hhh4iz, not main) | smoke 3/3 green + `--cdn`; probes green | every page but math-minute ended on its cap
+
+### Previous handoff (S27 → S28), verbatim
+
+**Next session (S28):** S27 ran on branch `claude/dazzling-gauss-uhpik9`, not `main`: the maintainer asked for "a branch until I tell you to push to main". 56b3b00, 86e0fd0 and the close-out are on that branch and its draft PR; GitHub Pages (`main`) still serves S26. Ask the maintainer which branch to work on; once they say "push to main", fast-forward `main` to the branch. If `git rev-parse --is-shallow-repository` says true, `git fetch --unshallow origin main` before a probe names an old commit (S8's does).
+⚑ next: G on math-minute.html — the stalest cell (S7, math-facts S7 too); since then math-minute gained S9's hard levels and S11's zero both ways. Run `S7-facts-audit` (both pages) for every key and deck, then look for what it does not measure, as S27 did on index.
+⚑ Queues: approved and waiting — Rounding at grades 3–4, left out of their default Mixed (S27), the 30-cap note (S11), the divisor 3 px low on index's stacked grids (S10). index alone: Scientific Notation's locale (P3, autonomous: `toLocaleString("en-US")`), its case-sensitive Advanced type (P4). Shared — the code panel under the button row (P3, S5), the default rows' Name hint (P4, S26). Gate 6, unasked — one answer size on the keys (S26).
+⚑ New probes (S27): `S27-div5-quotients` (fails 3 on 29e6a69), `S27-no-repeats` (62 selectors, ~45 s; fails 57 on 56b3b00). Arm R's set for S28: those two and `S26-ops-labels`. The identity arms of S10-rounding-one-line, S22-desc-fit and S25-across-division now run only with `--identity`.
+⚑ The random stream changed (86e0fd0 deals, and Mixed shuffles its types before dealing): a seeded byte-for-byte compare against an older commit differs on most sheets. Switch the dealing off (`return makeProblem(type, grade);` atop `dealProblem`) to prove an unrelated change, as S27 did. Arm R swept all 48 probes at close-out: green but S6-header-line, repaired (its byte arm behind `--identity`).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S27 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.

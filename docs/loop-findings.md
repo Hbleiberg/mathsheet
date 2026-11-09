@@ -1253,3 +1253,32 @@ with an old commit under a seed: the approved changes to what a sheet holds move
 `--control` 2). A sweep of all 48 probes on 86e0fd0: 47 green; S6-header-line (math-minute) failed its byte-identity arm on
 29e6a69 too (the pre-feature page has none of the later approved changes, S18's name span among them): its default arm now
 checks that a blank or all-space line prints on none of 8 sheets and keys (a planted always-printed line fails 2).
+
+## S28 (2026-11-09) — pass G (math correctness & pedagogy) on math-minute.html, then math-facts.html
+
+Method: `S7-facts-audit` on both pages (21 levels and 71 codes × 200 students, keys on; 176,000 and 498,000 problems read
+back and recomputed, every deck checked against its documented family); the level menus, the Level Reference and the
+fact reference read against the families in the code; a scratch probe (`s28/g-mm.mjs`) counted each math-minute level's
+sums and minuends below ten.
+
+**Clean.** Every key right on both pages, every problem in its family and its description's promise, every deck dealt as
+documented (min(count, family) facts, floor/ceil copies, never twice running, a twice-dealt fact written both ways), every
+split level exact; S9's hard levels (12: 3–9 × 6–9; 17: quotients 2–9), S11's zero both ways and S7's Teens Rule hold.
+
+**Pedagogy measured (asked, both left by the maintainer).** math-minute Level 2 "Hard Addition" is every sum 2–18
+(`additionFacts(18, false)`): 2,648 of 6,000 problems (44 %, 9–17 a sheet) sum below ten, where Level 4 "Hard
+Subtraction" holds only teen minuends (0 of 6,000 below ten) — sums 10–18 only was offered and declined. Levels 6 / 8 /
+10 deal only Level 4's 45 teen facts (0 % below ten) while 5 / 7 / 9 deal every addition fact (54 % below ten) — every
+subtraction fact was offered and declined. Not asked again: S9 already left Level 4's "numbers through twenty" label.
+
+**Fixes (index.html, the two S27 items).** c9cc85f: Scientific Notation in seven locales, 600 whole numbers each — de-DE
+488 and es-ES 488 not comma-grouped ("8.000.000", "5000"), fr-FR 258 of 370 read ("4 100 000", a narrow space), en-IN 234
+("80,00,000"); after, 0 in every locale and every locale's sheets byte-identical to en-US's. b60bd4d: Rounding offered at
+grades 3–8 (was 5–8); grade 3–4 Rounding 12,000 problems, every number ≤ 999 at tens or hundreds, every key right; the
+grade 3 Include-in-Mixed panel shows Rounding unticked and 12 types ticked; Mixed at 3–4 (form at 60, Advanced × 400)
+stacked with no rounding, byte-identical to c9cc85f under a seed with Mixed at 1–2 and Rounding at 5 and 8;
+`mixed[rounding|add1]` at grade 3 across, 750 of 1,500 rounding. Under print: grade 3–4 rounding and Mixed sheets with
+keys, two copies, 12 pages for 12 sheets, each 1056 × 816, lowest ink 773 px, nothing wrapped.
+
+Trap: the form's Generate with the two empty default rows raises the unfilled-fields box and makes nothing until
+Generate Anyway (`#mwgValidationGenerate`): press it in a probe, or "no sheet" reads as a defect.
