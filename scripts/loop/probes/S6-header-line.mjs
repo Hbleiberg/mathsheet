@@ -1,6 +1,8 @@
 // Probe (loop S6, micro-feature on math-minute.html; S7 added math-facts.html with `--page`): the optional
 // "Header line" — free text printed under the header row of every sheet and answer key (a week, a unit, a parasha).
-//   - left blank (the default) the sheets and keys are byte-identical to the pre-feature page's (seeded);
+//   - left blank (the default), or only spaces, no sheet or key carries a header line; with `--identity` the blank sheets
+//     are byte-identical to the pre-feature page's (seeded) — an arm that decays with every later approved change to
+//     the sheets (S18's name span made every sheet differ; found failing in S27's sweep);
 //   - a line with Hebrew, markup and quotes prints literally, once per sheet and key, dir="auto";
 //   - under emulated print with the move trick every sheet stays 1056×816, the line is one row, and the
 //     lowest problem of every row count (rows-3…rows-6) still ends on the paper; an 80-character line fits;
@@ -8,7 +10,7 @@
 //   - the line is saved with the roster and restored; a payload saved before the feature loads blank.
 // Fails on the pre-feature page (`--control` serves the page from its CONF reference: dd8609a for math-minute,
 // f48b8db for math-facts).
-//   node scripts/loop/probes/S6-header-line.mjs [--page math-facts.html] [--control]
+//   node scripts/loop/probes/S6-header-line.mjs [--page math-facts.html] [--control] [--identity]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
@@ -75,17 +77,27 @@ const measure = async p => { await p.page.emulateMedia({ media: 'print' }); cons
 const srv = await serve(); const browser = await launch();
 try {
   console.log(FILE);
-  // 1. Blank: byte-identical to the pre-feature page.
-  const ref = await open(browser, srv.base, BEFORE);
-  await generate(ref, null);
-  const refHtml = await ref.page.$eval('#results', r => r.innerHTML);
-  await ref.close();
-  const blank = await open(browser, srv.base, control ? BEFORE : null);
-  const hasInput = await blank.page.$('#headerLineInput') !== null;
-  check(hasInput, 'the settings row has a Header line field (#headerLineInput)');
-  await generate(blank, hasInput ? '' : null);
-  check(await blank.page.$eval('#results', r => r.innerHTML) === refHtml, 'left blank, every sheet and key is byte-identical to the pre-feature page\'s');
-  await blank.close();
+  // 1. Blank (and only spaces): nothing printed; with `--identity`, byte-identical to the pre-feature page.
+  let hasInput = false;
+  for (const value of ['', '   ']) {   // generate() flips the input mode, so a fresh page each time
+    const blank = await open(browser, srv.base, control ? BEFORE : null);
+    hasInput = await blank.page.$('#headerLineInput') !== null;
+    if (!value) check(hasInput, 'the settings row has a Header line field (#headerLineInput)');
+    await generate(blank, hasInput ? value : null);
+    const r = await blank.page.$eval('#results', el => ({ sheets: el.querySelectorAll('.worksheet').length, lines: el.querySelectorAll('.worksheet-header-line').length }));
+    check(r.sheets >= 8 && r.lines === 0, `left ${value ? 'as spaces' : 'blank'}, none of ${r.sheets} sheets and keys carries a header line (${r.lines})`);
+    await blank.close();
+  }
+  if (process.argv.includes('--identity')) {
+    const ref = await open(browser, srv.base, BEFORE);
+    await generate(ref, null);
+    const refHtml = await ref.page.$eval('#results', r => r.innerHTML);
+    await ref.close();
+    const blank = await open(browser, srv.base, control ? BEFORE : null);
+    await generate(blank, hasInput ? '' : null);
+    check(await blank.page.$eval('#results', r => r.innerHTML) === refHtml, 'left blank, every sheet and key is byte-identical to the pre-feature page\'s');
+    await blank.close();
+  }
   if (!hasInput) throw new Error('no #headerLineInput: the remaining arms need the field');
 
   // 2. A line with Hebrew, markup and quotes.
