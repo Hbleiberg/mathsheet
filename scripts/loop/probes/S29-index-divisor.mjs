@@ -65,8 +65,11 @@ check(by('stacked').length > 1000 && worst(by('stacked')) <= 0.1, `${by('stacked
 check(by('across').length > 50 && worst(by('across')) <= 0.1, `${by('across').length} across: level (worst ${worst(by('across')).toFixed(2)})`);
 const ownMoved = probs.filter((x, i) => x.kind === 'own-bar' && JSON.stringify([x.prob, x.bracket, x.divisor, x.delta]) !== JSON.stringify([refProbs[i].prob, refProbs[i].bracket, refProbs[i].divisor, refProbs[i].delta]));
 check(by('own-bar').length > 50 && !ownMoved.length, `${by('own-bar').length} own-bar keys draw exactly as on ${REF}, divisor included (${ownMoved.length} moved; their divisor ${by('own-bar')[0] ? by('own-bar')[0].delta.toFixed(2) : '—'} px from the dividend's baseline)`);
-const moved = probs.filter((x, i) => !refProbs[i] || JSON.stringify(x.prob) !== JSON.stringify(refProbs[i].prob) || JSON.stringify(x.bracket) !== JSON.stringify(refProbs[i].bracket));
-check(probs.length === refProbs.length && !moved.length, `every problem box and bracket exactly where ${REF} puts it (${moved.length} of ${probs.length} moved)`);
+// An across division starts at its problem's left since S31 (approved, gate 6; `S31-across-division-left` measures it):
+// it is compared without its left edge, everything else exactly.
+const box = x => x.kind === 'across' ? [x.prob.slice(1), x.bracket.slice(1)] : [x.prob, x.bracket];
+const moved = probs.filter((x, i) => !refProbs[i] || JSON.stringify(box(x)) !== JSON.stringify(box(refProbs[i])));
+check(probs.length === refProbs.length && !moved.length, `every problem box and bracket exactly where ${REF} puts it, the across divisions but for their left edge (S31) (${moved.length} of ${probs.length} moved)`);
 check(probs.every(x => x.divisor[1] >= x.prob[1] - 0.01), `every divisor's box inside its problem's`);
 check(!now.errors.length, `0 page errors (${now.errors.join('; ')})`);
 console.log(`S29-index-divisor: ${failing ? failing + ' failing' : 'all green'}`);

@@ -589,8 +589,11 @@ body { margin: 0; padding: 12px; background: white; }
 .mwg-division-dividend { display: inline-block; padding-top: 1px; }
 /* A division written across (Long Division, a Mixed sheet's division at Grades 5-8) is as tall as its numbers: with the
    stacked grid's 0.32in bracket and padding each row was 54 px in a 43 px track, so the rows overlapped and the 15th
-   ended 0.12in from the paper's edge. Its divisor sits level with the dividend (S25, approved at gate 6). */
-.mwg-horiz-problem .mwg-problem-cell { height: auto; padding: 0; }
+   ended 0.12in from the paper's edge. Its divisor sits level with the dividend (S25, approved at gate 6). It starts at the
+   left, as every problem written across does: centred, it sat ~40 px in on the sheet and ~115 px further right on the key,
+   whose problem has the answer's room (S31, approved at gate 6; print's rule below). */
+.mwg-horiz-problem .mwg-problem-cell { height: auto; padding: 0; justify-content: flex-start; }
+.mwg-horiz-problem .mwg-division-problem { justify-content: flex-start; }
 .mwg-horiz-problem .mwg-division-bracket { min-height: 0; }
 .mwg-horiz-problem .mwg-division-divisor { padding-top: 5px; }
 
@@ -779,6 +782,7 @@ body { margin: 0; padding: 12px; background: white; }
     align-items: center !important;
     justify-content: center !important;
   }
+  .mwg-horiz-problem .mwg-problem-cell { justify-content: flex-start !important; }   /* across, at the left (S31) */
   .mwg-answer-key-sheet {
     display: flex !important;
     flex-direction: column !important;
