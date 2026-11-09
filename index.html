@@ -1008,8 +1008,8 @@ var TYPE_SHORT = {
 var GRADE_TYPES = {
   1: ["add1","add2","sub1","sub2","mul1","mul2","div1","div2","mixed"],
   2: ["add1","add2","sub1","sub2","mul1","mul2","div1","div2","mixed"],
-  3: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","mixed"],
-  4: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","mixed"],
+  3: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","rounding","mixed"],
+  4: ["add1","add2","add3","sub1","sub2","sub3","mul1","mul2","mul3","div1","div2","div3","rounding","mixed"],
   5: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","mixed"],
   6: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","mixed"],
   7: ["add1","add2","add3","add4","add5","sub1","sub2","sub3","sub4","sub5","mul1","mul2","mul3","mul4","mul5","div1","div2","div3","div4","div5","fractions","decimals","rounding","longdivision","orderofoperations","integers","mixed"],
@@ -1029,8 +1029,8 @@ var TYPE_GROUPS = [
 
 var GRADE_REFERENCE = {
   "Grades 1-2": "Addition & Subtraction Levels 1-2, Multiplication & Division Levels 1-2",
-  "Grades 3-4": "+ Levels 3 (2-digit operations)",
-  "Grades 5-6": "+ Levels 4-5 (multi-digit), Fractions, Decimals, Rounding, Long Division",
+  "Grades 3-4": "+ Levels 3 (2-digit operations), Rounding",
+  "Grades 5-6": "+ Levels 4-5 (multi-digit), Fractions, Decimals, Long Division",
   "Grade 6+":   "+ Order of Operations",
   "Grade 7+":   "+ Integers & Negatives",
   "Grade 8+":   "+ Exponents, Scientific Notation"
@@ -1257,11 +1257,17 @@ function getMixedTypesForGrade(grade) {
   return result;
 }
 
+// Rounding joins grades 3-4 (3.NBT.A.1, to the nearest 10 or 100; S27, approved) but not their default Mixed: an across
+// type there would turn every grade 3-4 Mixed sheet across, at 30 problems at most. A teacher ticks it to mix it in.
+function defaultMixedTypes(grade) {
+  return getMixedTypesForGrade(grade).filter(function (t) { return !(t === "rounding" && +grade < 5); });
+}
+
 function getMixedPoolFromEntry(entryDiv, grade) {
   var cbs = entryDiv.querySelectorAll(".mwg-mixed-cb:checked");
   var fracOpCbs = entryDiv.querySelectorAll(".mwg-frac-op-cb:checked");
   var decOpCbs  = entryDiv.querySelectorAll(".mwg-dec-op-cb:checked");
-  if (!cbs.length) return getMixedTypesForGrade(grade);
+  if (!cbs.length) return defaultMixedTypes(grade);
   var pool = [];
   for (var i = 0; i < cbs.length; i++) {
     var v = cbs[i].value;
@@ -1273,7 +1279,7 @@ function getMixedPoolFromEntry(entryDiv, grade) {
       pool.push(v);
     }
   }
-  return pool.length ? pool : getMixedTypesForGrade(grade);
+  return pool.length ? pool : defaultMixedTypes(grade);
 }
 
 function mixedHasHorizChecked(entryDiv) {
@@ -1360,7 +1366,7 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
   var box = containerEl.querySelector(".mwg-mixed-types");
   if (!box) return;
   var types = getMixedTypesForGrade(grade);
-  var checked = checkedTypes || types;
+  var checked = checkedTypes || defaultMixedTypes(grade);
   var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
   html += '<div class="mwg-mixed-types-label" style="margin-bottom:0">Include in Mixed:</div>';
   html += '<div style="display:flex;gap:8px">';
@@ -2168,7 +2174,7 @@ function generateProblems(type, count, grade, mixedTypes, fracOps, decOps) {
     if (count > 30) count = 30;
     for (var i = 0; i < count; i++) problems.push(dealProblem(decOps[i % decOps.length], grade, deck, problems[i - 1]));
   } else if (type === "mixed") {
-    var pool = (mixedTypes && mixedTypes.length) ? mixedTypes : getMixedTypesForGrade(grade);
+    var pool = (mixedTypes && mixedTypes.length) ? mixedTypes : defaultMixedTypes(grade);
     // Expand fractions/decimals in pool using their sub-ops if present
     var expandedPool = [];
     for (var h = 0; h < pool.length; h++) {
