@@ -6,15 +6,15 @@
 //   - Name blank on, Clear Current Roster → three rows, each "Prints blank"; Add Student and Duplicate rows alike;
 //   - a saved roster with Name blank and no rows, and an unreadable one, load to rows with the hint the toggle gives;
 //   - every row's markup otherwise identical to the reference page's (`--ref`, a53342b).
-// index.html's half waits (its cap in S29): `--only index.html` measures it. Fails before the change (`--ref`'s page
-// served as the one under test: `--control`).
+// index.html's half shipped in S30 (its cap in S29), so all three pages run by default; `--only <file>` takes one. Fails
+// before the change (`--ref`'s page served as the one under test: `--control`).
 //   node scripts/loop/probes/S29-default-name-hint.mjs [--only <file>] [--control] [--ref <commit>]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
 const REF = arg('--ref') || 'a53342b', CONTROL = process.argv.includes('--control');
-const FILES = arg('--only') ? [arg('--only')] : ['math-minute.html', 'math-facts.html'];
+const FILES = arg('--only') ? [arg('--only')] : ['index.html', 'math-minute.html', 'math-facts.html'];
 const fails = [];
 const check = (ok, msg) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg); };
 const IDS = {

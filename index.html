@@ -1687,6 +1687,7 @@ function buildDefaultStudents() {
   for (var i = 1; i <= 3; i++) studentsContainer.appendChild(createStudentEntry(i));
   updateCounter();
   if (removeNumberToggle) applyRemoveNumberToggle();
+  applyNameBlankToggle();   // the Name hint every other row has: "Optional", or "Prints blank" (S30, as the twins since S29)
 }
 
 function setInputMode(mode) {
