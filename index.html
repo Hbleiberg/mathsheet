@@ -167,13 +167,18 @@ body { margin: 0; padding: 12px; background: white; }
   gap: 4px 16px;
   margin-top: 6px;
 }
-.mwg-ops-grid label {
+/* #mwg-app: the injected `.mwg-student-grid label` (block, bold) and `input` (width 100%) load last and set every
+   operation's checkbox, stretched, above its label (S10, S16, S19); the Mixed grid's own rules hold the same (S26). */
+#mwg-app .mwg-ops-grid label {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 13px;
+  font-weight: normal;
+  margin-bottom: 0;
   cursor: pointer;
 }
+#mwg-app .mwg-ops-grid input[type=checkbox] { width: auto; padding: 0; margin: 0; cursor: pointer; }
 .mwg-ops-header {
   display: flex;
   align-items: center;
