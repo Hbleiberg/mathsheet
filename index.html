@@ -1978,7 +1978,9 @@ function makeDiv4() {
   var dividend=d*q+r;
   return {html:divisionHtml(d,dividend,true),answer:q+" r"+r,kind:"division",divisor:d,dividend:dividend};
 }
-function makeDiv5() { var d=rand(2,9),qMax=Math.floor(999/d),q=rand(Math.max(100,Math.floor(100/d)),qMax); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
+// Level 5's quotient starts at the smallest that makes a 3-digit dividend (156 ÷ 4 = 39 as well as 456 ÷ 4 = 114):
+// it started at 100, so the divisor always went into the first digit and ÷9 had 12 problems (S27, approved).
+function makeDiv5() { var d=rand(2,9),qMax=Math.floor(999/d),q=rand(Math.ceil(100/d),qMax); return {html:divisionHtml(d,d*q,true),answer:q,kind:"division",divisor:d,dividend:d*q}; }
 
 function makeFractions(grade) {
   var d=rand(2,9),a=rand(1,d-1),b=rand(1,d-1);
