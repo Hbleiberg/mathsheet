@@ -887,3 +887,37 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ New probes (S27): `S27-div5-quotients` (fails 3 on 29e6a69), `S27-no-repeats` (62 selectors, ~45 s; fails 57 on 56b3b00). Arm R's set for S28: those two and `S26-ops-labels`. The identity arms of S10-rounding-one-line, S22-desc-fit and S25-across-division now run only with `--identity`.
 ⚑ The random stream changed (86e0fd0 deals, and Mixed shuffles its types before dealing): a seeded byte-for-byte compare against an older commit differs on most sheets. Switch the dealing off (`return makeProblem(type, grade);` atop `dealProblem`) to prove an unrelated change, as S27 did. Arm R swept all 48 probes at close-out: green but S6-header-line, repaired (its byte arm behind `--identity`).
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S27 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.
+
+## S29 (2026-11-09) — pass B on math-minute.html (clean), then A on math-facts.html (clean); three fixes, on a branch
+
+- Run on branch `claude/dazzling-gauss-uhpik9` again (invoked with no argument; the maintainer's "on a branch until I tell
+  you to push to main" from S27 still stood), stacked on the open draft PR Hbleiberg/mathsheet#6; `main` untouched.
+- Arm R: the smoke and the four S27–S28 probes green; then, swept in a worktree, all 53 probes: S23-name-fit-layout red
+  since b60bd4d (its lines from HEAD's menus, one of them invalid on 37af5e4), repaired in a53342b; the rest green.
+- Pass B on math-minute.html (the stalest cell, S8): clean but for the two known Advanced Code P4s, so it bought A on
+  math-facts.html (S9): clean against S9's end.
+- Fixes, all from the queue: the code panel under the button row (878b342, all three pages, S5's P3), index's divisor
+  baseline (ccaa955, approved S10), the default rows' Name hint on the twins (dcbfa6a, S26's P4; index's half waits).
+  Every page then on its cap; the fourth slot unused. Gates: none.
+- Method notes: a planted control of a scratch PDF probe wrote over the green run's rasters, and their crops (the long
+  Hebrew name 18 px, its end showing) read as a defect until a DOM dump after a real Save PDF showed the page right.
+
+### Done rows archived from the ledger (S24, verbatim)
+
+- [x] S24 | 2026-11-08 | 037221c | index.html, math-minute.html, math-facts.html, CLAUDE.md, scripts/loop/probes/S24-name-parse.mjs | a printed name sits in a `<span dir="auto">`, not a `<bdi>`: Chromium's fast innerHTML parser takes no `<bdi>`, so every generate ran 1.3–1.9× as long since S18 / S19; it renders the same | L9 × 300 139 → 84 ms (cpu4 745 → 391), index 91 → 62; screen, print, Save PDF pixel-identical (198 pages); S24-name-parse (fails 3 on d31ff06); smoke
+- [x] S24 | 2026-11-08 | 7f40755 | index.html, scripts/loop/probes/S24-index-red-border.mjs | a Grade, Type or Count the validation box marked red loses it once filled, by mouse, keyboard or Fill Down (`clearFilledHighlights()`, as on the twins since S23) | S24-index-red-border: each of 12 fields red exactly when empty after every step (fails 9 on 037221c); S11, S12, S16, S20, S21, S23 probes green; screenshot; smoke
+- [x] S24 | 2026-11-08 | 9fb3e5d | math-minute.html, math-facts.html | the dead `#student-form-title` and `.modal-*` rules removed (81 lines each) | five states × 1280 / 390 px: screenshots and every computed style identical, no element matched; a planted 1 px fails 20; smoke
+- [x] S24 | 2026-11-08 | — | docs/loop-findings.md | pass B on math-facts.html (71 codes × three configurations: 1,278 sheets in print, A4, real cdnjs PDFs of 202 pages, the round trip, the payload): clean but for the two known Advanced Code P4s; then A on math-minute.html (load, generate to 1,510 sheets, the form, restore, Save PDF): clean but for S18's `<bdi>`, fixed on all three; gates: none | loop-findings S24
+
+### Per-session line archived from the ledger (S9, verbatim)
+
+- S9 | 2026-11-05 | pass A on math-facts.html (load, Generate to 300 sheets at 1× and cpu4, form, restore, memory, Save PDF to 150 pages: clean), then C on math-minute.html (UI at 1280 / 800, every level's sheet and key: clean but for known items) | fixes 4 (the approved name shrink on all pages, index's PDF frame, the hard levels, a CLAUDE.md line; on branch claude/clever-davinci-hhh4iz, not main) | smoke 3/3 green + `--cdn`; probes green | index.html and math-minute.html ended on their caps
+
+### Previous handoff (S28 → S29), verbatim
+
+**Next session (S29):** S27 and S28 ran on branch `claude/dazzling-gauss-uhpik9`, not `main`: the maintainer asked for "a branch until I tell you to push to main". Their commits (S28: c9cc85f, b60bd4d and the close-out) are on that branch and its draft PR, Hbleiberg/mathsheet#6; GitHub Pages (`main`) still serves S26. Stay on the branch until the maintainer says "push to main"; then fast-forward `main` to it. If `git rev-parse --is-shallow-repository` says true, `git fetch --unshallow origin main` before a probe names an old commit.
+⚑ next: B on math-minute.html — the stalest cell (S8); since then its sheets gained S9's name shrink, S10's divisor baseline, S11's zero both ways, S18's name span and the Header line, S19's written "…", S26's JPEG 0.8. Print every level in three configurations, Letter and A4, and a real `--cdn` Save PDF against print, as S8 did (`S8-minute-print`, `S8-minute-pdf`); A on math-facts and C on math-minute (both S9) come next.
+⚑ Queues: approved and waiting — the 30-cap note (S11), the divisor 3 px low on index's stacked grids (S10). index alone: its case-sensitive Advanced type (P4), the Count select's text (P4, gate 2 or 4). Shared — the code panel under the button row (P3, S5), the default rows' Name hint (P4, S26). Gate 6, unasked — one answer size on the keys (S26). Settled S28, not to be asked again: Level 2 "Hard Addition" keeps every sum 2–18; Levels 6 / 8 / 10 stay teen subtraction.
+⚑ New probes (S28): `S28-sci-locale` (seven locales; fails 5 on 2f78bd2), `S28-rounding-grades` (fails 8 on c9cc85f; its last arm compares grades 1–4 Mixed with c9cc85f byte for byte under a seed). Arm R's set for S29: those two and the two S27 probes.
+⚑ Scripts: write every Python or Node script inside a quoted heredoc (`<<'EOF'`): an unquoted one runs each backticked code name in the text as a command (S28 blanked two in the ledger, restored).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S28 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.

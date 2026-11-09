@@ -1282,3 +1282,51 @@ keys, two copies, 12 pages for 12 sheets, each 1056 × 816, lowest ink 773 px, n
 
 Trap: the form's Generate with the two empty default rows raises the unfilled-fields box and makes nothing until
 Generate Anyway (`#mwgValidationGenerate`): press it in a probe, or "no sheet" reads as a defect.
+
+## S29 (2026-11-09) — pass B (print & export) on math-minute.html, then A (performance) on math-facts.html
+
+Method (B): `S8-minute-print` (three configurations × 21 levels with keys, `--a4`, `--control`) and `S8-minute-pdf` (a
+real cdnjs Save PDF of 21 levels against print) on HEAD; the post-S8 probes for this page (S9-name-fit, S19-long-name,
+S10-divisor-baseline, S4-pdf-print-parity, S6-header-line, S18-hebrew-name, S24-name-parse); scratch `s29/heavy-pdf.mjs`
+(a real Save PDF of the heavy shapes against print) and `s29/roundtrip.mjs` (Advanced Code and the payload).
+
+**Print.** 378 sheets (42 plain, 210 heavy, 126 bare), each 1056 × 816 with `print-break` on all but the last, every grid
+its rows' count, 0 problems' ink outside its cell or under the inner bottom, ≥ 47 px between a problem and the one below.
+Paper left under the lowest ink as S8: plain rows-3…6 110 / 82 / 64 / 53 px (keys 101 / 72 / 55 / 43), heavy down to 32
+(keys 22). Header 55–61 px, 76–82 with the line; 40 heavy descriptions on two lines ("Worksheet k of 5" beside them), all
+inside their box. Since S9 no name is cut by CSS: a 31-character Latin name prints at 12.5 px, the long Hebrew and Latin
+names at the 11 px floor with a written "…" (S19). Print-to-PDF one 792 × 612 page a sheet; A4 landscape and portrait
+842.88 × 595.92, one page a sheet. `--control` fails 9.
+
+**Save PDF (real cdnjs).** 21 levels × 1 with keys: `math-minute-worksheets.pdf`, 42 pages for 42 sheets, one 1584 × 1224
+JPEG a page, 84 KB a page (S8: 116; JPEG 0.8 since S26), 9.1 s; every cell within 3 px of print against html2canvas's
+common offset (3 / 1 / 1 / 1), header within 0 px, no frame, red on every key. Heavy (6 levels × 5 copies with keys, the
+80-character Hebrew / Latin line, Latin and Hebrew names that shrink and reach the floor, an empty name), Number shown and
+removed: 60 pages each, 87 KB a page, 13 s; the name's, Number's, line's and description's ink within 3 px of print, every
+name's ink inside its field, the Hebrew name's start ("אלישבע…") at the right with "…" at its end, as on paper. Control:
+`fitLongNames` switched off moves the Hebrew name 16 px (print's CSS clip against the PDF's). Trap: a control run of a
+scratch probe that writes to the same file names overwrites the green run's rasters — S29 read the planted page's crops as
+a defect (the name's end showing) until the DOM said otherwise; give the control its own output names.
+
+**Round trip and payload.** 13 Standard students (Hebrew, an apostrophe, quotes, `&`, `<b>`, a tab, a blank name, a comma
+in a name) → Generate Advanced Code → Use → the code in a fresh page: 11 of 13 sheets identical; the other two are the
+known P4s ("Levi; Dana" prints "Dana"; the Number "12, B" makes the name "Rivka, 12"). Save → reload restores Advanced
+mode, its box, 3 copies, key, no Number, Name blank and the line; the payload's keys are CLAUDE.md's.
+
+**A, math-facts.html.** Scratch `s29/perf-facts.mjs`: HEAD against S9's end (467f477), alternated, fresh context per run,
+medians (5, the generates 9), nothing else running. Load: DCL 22 ms, load 33, FCP 44 (S9: 22 / 31 / 44); 79,131 B
+(+10 KB since S9); 528 nodes; 0 foreign requests. Generate, 30 students × 5, handler / frame: `+3` 30 / 33, `x7` 26 / 31,
+`/7` 23 / 27, `mix+60` 45 / 53, `mixpm60` 80 / 87, `mixmd60` 50 / 56; with keys `+3` 49 / 53, `mixmd60` 84 / 90 — each
+×0.94–1.09 of 467f477 (a 5-run pass read `mixmd60` ×1.35 and its keyed run ×0.75: noise). cpu4: `+3` 121 / 138,
+`mixmd60` with keys 486 / 512 (×0.91 / ×0.98). The form at 30 students, frame: Add Student 18 ms, Fill Down 30,
+Duplicate 14, Delete 11, Save 13, Generate Advanced Code 15, the mode toggle 21 / 44, a keystroke 11, Generate × 30 17,
+Add Student with sheets shown 20 — each within a few ms of 467f477. Restore of a saved 30-student roster: DCL 36, load
+79. Save PDF, libraries warmed: 30 pages 6.7 s (224 ms a page), 150 pages 31.6 s (211), longest task 175 ms, none ≥ 200
+(467f477: 219 / 212 ms a page). Clean: S24's name span holds, and nothing since S9 slowed the page.
+
+**Fix measurements.** 878b342 (code panel): opened after 6 sheets it sat 5,058 px under its button (5,118 at 390 px) and
+the page scrolled 2,541 px to it; now 12 px under the button row on all three pages at 1280 and 390, the page scrolled
+158 px. ccaa955 (index divisor): 1,048 stacked brackets 3.00 → 0.00 px; a real Save PDF's 189 brackets, divisor ink 2–4 px
+below the dividend's → 0 on all. dcbfa6a (Name hint): fresh, Clear Current Roster and an unreadable roster now hinted;
+index's half still fails 3. Arm R: S23-name-fit-layout red since b60bd4d (its lines came from HEAD's menus, which now
+offer Rounding at grade 3, a line 37af5e4 skips), repaired in a53342b; all 53 probes then green on a53342b.
