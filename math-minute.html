@@ -1295,7 +1295,8 @@ function getStudentsFromAdvancedInput() {
   var raw = advancedInputBox.value.trim();
   var parsedStudents = [], parseErrors = [], n = 0;
   if (!raw) return { students: [], errors: [] };
-  var normalized = raw.replace(/\n+/g, ";");
+  // Every line break ends an entry: a Mac's Shift+Return (U+2028) or Word's soft break (\v) joined the lines into one name (S32).
+  var normalized = raw.replace(/[\n\r\v\f\u0085\u2028\u2029]+/g, ";");
   var chunks = normalized.split(";");
   for (var i = 0; i < chunks.length; i++) {
     var entry = chunks[i].trim();

@@ -99,7 +99,7 @@ Every generator offers a Standard form **and** an Advanced paste box. Keep both 
   `19` for math-minute's numeric levels, `+10` for math-facts).
 - **Parsing algorithm (reuse verbatim — `getStudentsFromAdvancedInput`):**
   ```js
-  var normalized = raw.trim().replace(/\n+/g, ";");   // newlines act as ";"
+  var normalized = raw.trim().replace(/[\n\r\v\f\u0085\u2028\u2029]+/g, ";");   // every line break acts as ";" (U+2028: a Mac's Shift+Return, S32)
   var chunks = normalized.split(";");
   // for each chunk: trim; skip if empty; split(",");
   // fewer than 3 parts and a tab in the line: split("\t") instead (spreadsheet columns, S20);
