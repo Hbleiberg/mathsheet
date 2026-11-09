@@ -565,8 +565,10 @@ body { margin: 0; padding: 12px; background: white; }
   font-family: Arial, sans-serif;
   min-width: 1.1in;
 }
+/* The bracket's 2px top border, 2px padding and the dividend's 1px: the divisor shares its baseline, as on the twins
+   (S29, approved S10; it sat 3 px low). */
 .mwg-division-divisor {
-  padding-top: 8px;
+  padding-top: 5px;
   padding-right: 2px;
   min-width: 0.22in;
   text-align: right;
@@ -2320,7 +2322,7 @@ function renderAnswerProblem(problem, answer, inHorizGrid, tight, shortRows) {
     var sizeS = wideS ? "18px" : "20px";
     return '<div class="mwg-problem-cell">' +
       '<div class="mwg-division-problem" style="min-width:' + (wideS ? "1.3in" : "1.02in") + ';font-size:' + sizeS + ';align-items:flex-start">' +
-        '<span class="mwg-division-divisor">' + problem.divisor + '</span>' +
+        '<span class="mwg-division-divisor" style="padding-top:8px">' + problem.divisor + '</span>' +   // beside the answer, as before S29
         '<div style="display:flex;flex-direction:column;border-left:2px solid rgb(17,17,17)">' +
           '<span style="display:block;font-weight:bold;color:rgb(180,0,0);font-size:' + sizeS + ';text-align:right;padding:0 4px 0 6px;border-bottom:2px solid rgb(17,17,17);line-height:1.2">' + ansStr + '</span>' +
           '<span style="display:block;padding:2px 4px 0 6px;line-height:1.2">' + problem.dividend + '</span>' +
