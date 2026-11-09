@@ -806,3 +806,42 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ New probes (S25): `S25-pdf-rows` (`--ref 2f9a38f` fails 1; offline, the clone's cells against print's), `S25-across-division` (`--ref abdbd88` fails 6; its arm 2 compares every other sheet with abdbd88 byte for byte — move that arm behind `--identity` when a later approved change reaches those sheets). Repaired in 7435289: `S6-math-audit` reads the across key cell, `S22-desc-fit` leaves the across division sheets out. Arm R's set for S26: the two S24 and two S25 probes.
 ⚑ index.html's sheets print and export outside `#mwg-app`, so they lose its `box-sizing: border-box`: measure them under print, never on screen. A grid cell taller than its track (`min-height: 0` in a grid of set height) overflows into the next row unseen: compare each cell's box with its track (S25).
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S25 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.
+
+## S27 (2026-11-09) — pass G (math correctness & pedagogy) on index.html; two fixes, both approved, on a branch
+
+- Run on branch `claude/dazzling-gauss-uhpik9`, not `main`: the maintainer invoked the loop "on a branch until I tell
+  you to push to main", so session-start step 5 (fast-forward `main`, push there) was set aside; the branch started at
+  `main` (29e6a69). The clone was shallow: `git fetch --unshallow origin main` before S8's probe named d3ef5c6.
+- Arm R: the smoke and the S25 ×2 and S26 probes green.
+- Pass G on index.html: S6-math-audit (378,000 keys) all right; a scratch probe measured repeats per sheet, Division
+  Level 5's quotients, the branches each grade reaches and Scientific Notation in seven locales. Four P3s logged.
+- Gates: three in one call (gate 6 the dealing, gate 2 Level 5's range, gate 2 Rounding at grades 3–4): all three as
+  recommended (like the twins; fix the range; Rounding at 3–4 with Mixed left as is).
+- Fixes: Level 5's quotients (56b3b00), the dealing (86e0fd0). index then on its cap; Rounding at 3–4 and the locale wait.
+  The twins had no autonomous item of their own.
+- Method notes: keying the deck by markup missed Mixed's cross-level twins (7)70 from Division 2 and 3); at 300 draws a
+  1-in-90 fact was missed on 2.5 % of sheets, at 1,000 none in 1,000. Three identity probes failed after the change: with
+  the dealing switched off they matched the parent exactly, so only the drawn problems differ; their identity arms now
+  run behind `--identity`. A sweep of every probe ran at close-out; its result follows in the next commit.
+
+### Done rows archived from the ledger (S22, verbatim)
+
+- [x] S22 | 2026-11-08 | 7dbcdb9 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S22-pdf-focus.mjs | Save PDF gives keyboard focus back when the export ends (the disabled button dropped it to the page's start: the next Tab was the toggle at the top, ~120 Tabs from Save PDF with 22 students); a mouse click left as it was; the same block thrice | S22-pdf-focus offline: Enter, a Tab mid-export, a mouse click, the notice (fails 15 on ac0a2e4); S12-a11y, S16-focus green; smoke
+- [x] S22 | 2026-11-08 | a458824 | math-minute.html, scripts/loop/probes/S22-level-reference.mjs | the Level Reference is written in level order and flows down its two columns (a screen reader read 1, 12, 2, 13, … 11); nothing moves | S22-level-reference at 1280, 800, 390 px: the AX tree reads 1–21, boxes and pixels identical to 7dbcdb9 (fails 6 on it; a planted 10-row grid fails); smoke
+- [x] S22 | 2026-11-08 | 3589e48 | math-facts.html, scripts/loop/probes/S22-spreadsheet-hint.mjs | a skipped bare-number code adds "A spreadsheet turns +3 into 3: type it as '+3 there, or fix it here." (approved S21, gate 2); nothing guessed | S22-spreadsheet-hint, tab and comma lines, a Hebrew name (fails 4 on a458824); S21-fact-codes, S20-spreadsheet-paste, S13-escape-html green; smoke
+- [x] S22 | 2026-11-08 | ef52c67 | index.html, scripts/loop/probes/S22-desc-fit.mjs | a long sheet or key description shrinks to fit its box (approved S4, gate 6): with 5 copies and keys 1,055 of 1,510 ran under "Worksheet 3 of 5" or lost "(Key 3 of 5)"; down to 9 px (the longest 9.5) on its line height, nothing moves | S22-desc-fit, 151 combinations × 3 shapes under print and Save PDF clones (fails 3 on 3589e48); header shots; S4, S9, S18, S19 probes green; smoke
+- [x] S22 | 2026-11-08 | 94c4e71 | CLAUDE.md | Save PDF's keyboard focus returns; index's long descriptions shrink | doc only
+- [x] S22 | 2026-11-08 | — | docs/loop-findings.md | pass D on math-minute.html (names from the AX tree in four states, Tab walks, every flow by keyboard, contrast, targets, live regions, text spacing, 200 % zoom): every control named, focus visible, contrast ≥ 4.61; Save PDF's lost focus (all three) and the Level Reference's reading order fixed; gates: none | scratch s22/d-mm.mjs, s22/d-mm2.mjs, loop-findings S22
+
+### Per-session line archived from the ledger (S7, verbatim)
+
+- S7 | 2026-11-05 | pass G on math-facts.html, then math-minute.html (clean, so it bought a second: 71 + 21 levels × 200 sheets, 674,000 problems recomputed; every key right, every deck as documented) | fixes 2 + micro-feature (on branch claude/clever-davinci-hhh4iz, not main, after S6) | smoke 3/3 green + `--cdn`; probes green | index.html and math-facts.html ended on their caps
+
+### Previous handoff (S26 → S27), verbatim
+
+**Next session (S27):** S26 ran on `main` and pushed each fix there: ed7f879, 78e0b94 and the close-out are live on GitHub Pages. Work on `main` again: one commit per iteration, each push a deploy. If `git rev-parse --is-shallow-repository` says true, `git fetch --unshallow origin main` before a `--ref` names an old commit.
+⚑ next: G on index.html — the stalest cell (S6), G's oldest; since then index gained S8's key division, S10's one-line Rounding, S11's Decimals places, S21's fraction subtraction and S25's across division keys. Recompute every key with exact rationals as S6 did (its probes carry the method); A on math-facts and C on math-minute (both S9) come next.
+⚑ Queues: approved and waiting — the 30-cap note (S11), the divisor 3 px low on index's stacked grids (S10). Shared — the code panel under the button row (P3, S5), the default rows' Name hint (P4, S26: one line, all three pages), reduced motion and targets (P4). Gate 6, unasked — one answer size on the keys (S26). index alone: its case-sensitive Advanced type (P4), the Count select's text (P4, gate 2 or 4), the last key's `print-break` (P4).
+⚑ New probe (S26): `S26-ops-labels` (`--ref 24cec4f` fails 3; 1280 / 800 / 390, standalone and Mixed). Arm R's set for S27: the two S25 probes and `S26-ops-labels`. JPEG 0.8 is in CLAUDE.md's PDF step 4; a PDF size from before S26 reads ~22 % larger.
+⚑ Screenshots: a full-page shot leaves the `content-visibility: auto` sheets below the first screen blank, a shot taken within a second of a smooth scroll catches it mid-way, and a mouse click by coordinates below the viewport lands nowhere (S26).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S26 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.

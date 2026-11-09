@@ -1206,3 +1206,48 @@ apart; the 9 px light-grey tag and the red answers read the same at 3× zoom.
 Traps: Chromium's full-page screenshot leaves the `content-visibility: auto` sheets below the first screen blank (not a
 defect); a screenshot 200 ms after a click that smooth-scrolls catches the page mid-scroll, a blank band over half a
 sheet — wait a second; a mouse click by coordinates at a point below the viewport lands nowhere: scroll the element in first.
+
+## S27 (2026-11-09) — pass G (math correctness & pedagogy) on index.html
+
+Method: `S6-math-audit` on HEAD (51 selectors × 200 sheets, counts 30–60, keys; 378,000 problems recomputed with exact
+rationals), then a scratch probe for what it does not measure (`s27/g-index.mjs`): repeats on one sheet for 28 types ×
+200, Division Level 5's quotients, which `make*` branches the Standard form and the Advanced box reach at each grade,
+Scientific Notation in seven browser locales. The standards cited are the Common Core's, read from the Learning Commons
+knowledge graph (3.NBT.A.1, 4.NBT.B.6).
+
+**Refuted / clean.** Every key answer right (0 of 378,000), every key problem the sheet's own, every count its
+description's, no negative difference, every Decimals number at its level's places, every fraction key whole, mixed or
+proper in lowest terms: S8's key division, S10's one-line Rounding, S11's places, S21's fraction subtraction and S25's
+across division keys all hold. Integers, Order of Operations, Exponents, Scientific Notation, Long Division exact.
+
+**Defects.** (1) Repeats: every problem was drawn on its own, so a 30-problem sheet of a fact level repeated 25–30 % of
+its problems (Addition 2 8.0, Subtraction 1 7.9, Multiplication 2 8.2, Division 2 8.9, Exponents 11.4 of 30) and 39–66 %
+of its sheets had one twice in a row (Division 2 106 of 200, Exponents 133; pools 40–54, Exponents 28), where the twins
+deal a deck — fixed 86e0fd0 (approved, gate 6). (2) Division Level 5 drew its quotient from `Math.max(100,
+Math.floor(100/d))`, always 100: 0 of 12,000 quotients had two digits, the divisor always went into the dividend's first
+digit (no 156 ÷ 4 = 39, a case 4.NBT.B.6 teaches), ÷9 had 12 problems (900–999), ÷8 25 — fixed 56b3b00 (approved,
+gate 2): 49.6 % 2-digit quotients, ÷9 100 problems. (3) Rounding is offered from grade 5, though `makeRounding` keeps a
+grade ≤ 4 branch (to 999, tens and hundreds — 3.NBT.A.1 exactly) that nothing reaches: the grade 3–4 menus omit it and the
+Advanced box answers "invalid type for grade 3: rounding"; GRADE_TYPES also feeds the default Mixed, so adding it there
+would turn grade 3–4 Mixed sheets across (approved S27 with Mixed left as is; queued). (4) Scientific Notation writes its
+whole numbers with `toLocaleString()`: de-DE 107 and es-ES 128 of ~140 big numbers "460.000" beside the coefficient's
+"4.6", fr-FR "160 000", en-IN "71,00,000"; en-US, he-IL, en-GB "460,000" (queued, P3, autonomous: pass "en-US").
+
+**Pedagogy measured (no candidate).** The grade menus lag the Common Core: 2-digit + 2-digit (2.NBT.B.5) and
+multi-digit ÷ 1-digit (4.NBT.B.6) unlock at grade 5, like-denominator fractions (4.NF.B.3) at 5 — a teacher prints
+"Grade 5" on a younger class's sheet to get them; the maintainer chose Rounding alone this session. Long Division at
+grade 5 gives a 2-digit dividend (20 ÷ 2) in 15 %; Multiplication 1 is a third ×0 or ×1; Division 1 a fifth ÷1.
+
+**The dealing (86e0fd0).** `dealProblem()` redraws while the problem is on the sheet, known by what it prints (Mixed's
+Division 2 and 3 both draw 7)70, Subtraction 2 and 3 both 15 − 7: keyed by markup, 6–10 Mixed sheets of 200 kept a
+repeat), starts a new round after 1,000 draws find nothing new (at 300, a rare fact — Subtraction 1's 9 − x, 1 in 90 —
+was missed on 5 of 200 sheets), and never deals the problem just dealt; Mixed shuffles its types, then deals. Generate
+of 150 sheets with keys, medians of 9 alternated against 56b3b00: Subtraction 1 × 60 127 → 181 ms, Multiplication 2
+130 → 148, Exponents 78 → 134 (a full 1,000-draw round per sheet: its pool of 28 is under 30), Mixed 1 and Addition 5
+unchanged within noise. With the dealing switched off (and the old Mixed shuffle) every identity probe matches 56b3b00
+exactly.
+
+**Probes.** S25-across-division's arm 2, S22-desc-fit's "where it was" and S10-rounding-one-line's control sheets compare
+with an old commit under a seed: the approved changes to what a sheet holds move them (S10's had already decayed on
+29e6a69), so they now run only with `--identity`; their controls still fail (`--ref abdbd88` 6, `--ref 3589e48` 3,
+`--control` 2). S6-header-line (math-minute) fails its byte-identity arm on 29e6a69 too.

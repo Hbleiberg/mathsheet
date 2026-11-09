@@ -86,7 +86,9 @@ content="noindex">` and keep only `lang`, the charset, the viewport tag and a `<
   The minus sign is U+2212 (`"−"`), not a hyphen. Render with `renderProblem(problem)` and,
   for keys, `renderAnswerProblem(problem)` (answers in red `rgb(180,0,0)`). A key problem is the
   sheet's own markup plus its answer, so it sits where the student's does: a division key keeps the
-  sheet's bracket and puts the quotient over the bar (S5).
+  sheet's bracket and puts the quotient over the bar (S5). A sheet never prints a problem twice running and repeats
+  one only once its level has no new one to give: the twins deal each level as a deck, `index.html` redraws
+  (`dealProblem()`, S27).
 
 ## Advanced input (standard)
 
