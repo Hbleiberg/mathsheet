@@ -7,10 +7,12 @@
 //     n ≤ 999 (no thousands), every key answer recomputed;
 //   - grade 3–4 Mixed: its Include-in-Mixed panel offers Rounding unticked, the rest ticked; Mixed with no picks (form and
 //     Advanced) prints no rounding and stays on the stacked grid at 60; `mixed[rounding|add1]` at grade 3 prints both, across;
-//   - nothing else moves: under one seed, Advanced Mixed at grades 1–4 and Rounding at grade 5 are byte-identical to
-//     c9cc85f's (`--ref` another base).
+//   - nothing else moves: Mixed at grades 1–2 stays stacked with no rounding, grade 5's Mixed still deals rounding, and
+//     Rounding at grades 5 and 8 keeps its thousands (to 9,999), every key right. The S28 byte arm (Advanced Mixed at
+//     grades 1–4 and Rounding at 5 and 8, one seed, byte-identical to c9cc85f's) runs with `--identity`: it decayed at
+//     ccaa955, S29's approved divisor change, which gives the own-bar keys' divisor an inline style (S30, arm R).
 // On c9cc85f, before the fix, the menu, the reference, the panel, the two rounding entries and the picked Mixed fail (8).
-//   node scripts/loop/probes/S28-rounding-grades.mjs [--ref <commit>]
+//   node scripts/loop/probes/S28-rounding-grades.mjs [--identity [--ref <commit>]]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
@@ -101,15 +103,37 @@ try {
     check(r.sheets.length === 50 && !r.errors && r.sheets.every(s => s.across) && items.filter(t => /^Round /.test(t)).length === 750,
       `mixed[rounding|add1] at grade 3: ${r.sheets.length} sheets, all across, ${items.filter(t => /^Round /.test(t)).length} of ${items.length} rounding${r.errors ? ' — page says ' + r.errors.slice(0, 90) : ''}`);
   }
+  // 4. nothing else moves
+  for (const g of [1, 2]) {
+    const r = await advanced(p, Array.from({ length: 100 }, (_, i) => `S${i}, ${i}, mixed, ${i % 2 ? 60 : 30}, ${g};`));
+    const across = r.sheets.filter(s => s.across).length, withR = r.sheets.filter(s => s.items.some(t => /^Round /.test(t))).length;
+    check(r.sheets.length === 100 && !across && !withR && r.sheets.every((s, i) => s.items.length === (i % 2 ? 60 : 30)),
+      `Advanced grade ${g} Mixed at 30 and 60: ${r.sheets.length} sheets, ${across} across, ${withR} with rounding`);
+  }
+  {
+    const r = await advanced(p, Array.from({ length: 100 }, (_, i) => `S${i}, ${i}, mixed, 30, 5;`));
+    const withR = r.sheets.filter(s => s.items.some(t => /^Round /.test(t))).length;
+    check(r.sheets.length === 100 && withR > 0, `Advanced grade 5 Mixed still deals rounding: ${withR} of ${r.sheets.length} sheets`);
+  }
+  for (const g of [5, 8]) {
+    const r = await advanced(p, Array.from({ length: 100 }, (_, i) => `S${i}, ${i}, rounding, 30, ${g};`));
+    const items = r.sheets.flatMap(s => s.items), m = items.map(t => t.match(/^Round (\d+) to nearest (tens|hundreds|thousands)$/));
+    const bad = m.filter(x => !x || +x[1] > 9999 || +x[1] < 1).length, big = m.filter(x => x && +x[1] > 999).length;
+    const th = m.filter(x => x && x[2] === 'thousands').length;
+    const wrong = r.keys.filter(k => { const x = k.t.match(/^Round (\d+) to nearest (tens|hundreds|thousands)$/); if (!x) return true;
+      const place = { tens: 10, hundreds: 100, thousands: 1000 }[x[2]]; return +k.a !== Math.floor(+x[1] / place + 0.5) * place; });
+    check(r.sheets.length === 100 && items.length === 3000 && !bad && big > 0 && th > 0 && r.keys.length === 3000 && !wrong.length,
+      `grade ${g} Rounding: ${items.length} problems to 9,999 (${bad} not), ${big} past 999, ${th} to thousands; ${wrong.length} keys wrong of ${r.keys.length}`);
+  }
   check(!p.errors.length, `0 page errors (${p.errors.join('; ')})`);
   await p.close();
-  // 4. nothing else moves
+  if (!process.argv.includes('--identity')) throw 'done';
   const base = execSync(`git show ${BASE}:index.html`, { cwd: ROOT, encoding: 'utf8' });
   const lines = [1, 2, 3, 4].flatMap(g => [30, 60].map(c => `M${g}${c}, ${g}, mixed, ${c}, ${g};`)).concat(['R5, 9, rounding, 30, 5;', 'R8, 10, rounding, 30, 8;']);
   const now = await open(null), was = await open(base);
   const a = await advanced(now, lines), b = await advanced(was, lines);
   check(a.sheets.length === 10 && a.html === b.html, `Mixed at grades 1–4 and Rounding at 5 and 8, one seed: byte-identical to ${BASE} (${a.sheets.length} sheets, ${a.html === b.html ? 'same' : 'differ'})`);
   await now.close(); await was.close();
-} finally { await browser.close(); await srv.close(); }
+} catch (e) { if (e !== 'done') throw e; } finally { await browser.close(); await srv.close(); }
 console.log(`\nS28-rounding-grades: ${fails.length ? fails.length + ' failing' : 'all green'}`);
 process.exit(fails.length ? 1 : 0);
