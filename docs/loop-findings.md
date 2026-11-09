@@ -1481,3 +1481,5 @@ inside a JS regex literal it ends the line, so all three pages failed to parse (
 probe ran): write such escapes back with a script and count them with Python (a `grep -c $'…'` alternation read 0 while
 five were there). `trim()` removes NBSP and a BOM but not NEL (U+0085) or the bidi marks.
 
+**Sweep.** All 61 probes, run one after another on 31eefb7 with nothing else running: all green (`S10-pdf-progress`
+included, which missed once in S31 beside a diagnostic run).
