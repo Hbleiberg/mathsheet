@@ -962,6 +962,7 @@ function buildDefaultStudents() {
   }
   updateStudentCounter();
   if (removeNumberToggle) applyRemoveNumberToggle();
+  applyNameBlankToggle();   // the Name hint every other row has: "Optional", or "Prints blank" (S29)
 }
 
 function setInputMode(mode) {
