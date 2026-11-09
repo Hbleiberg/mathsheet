@@ -1425,3 +1425,11 @@ the page landing on the box; `--control` fails 5. S11-robustness counts the note
 **Traps.** A print rule marked `!important` beats a style injected to test a candidate: test it under print with
 `!important` (the first "after" moved nothing). A Range over an element's contents returns its descendants' element boxes:
 read a glyph's left from text nodes (the first offsets read 0). A stacked fraction or a superscript is not a wrap.
+
+**Sweep.** All 59 probes, run one after another on 52be633: 58 green. `S10-pdf-progress` failed one check on index.html
+("the status box is in the viewport while the export runs") while a diagnostic ran beside it; alone it was green 7 of 7
+(once in full, six times `--only index.html`). Its rows include "mixed, 40, 5", which now raises a cap note, so generate()
+starts a smooth scroll to the note before Save PDF's scroll to the status box; a trace every 250 ms with three busy cores
+shows the same path with the note, without it ("mixed, 40, 4") and with a skipped entry: scrollY 631–644 at 250 ms, the
+box's top 52–65 px, then 696 and 12 px to the end. The probe reads the box at one instant (the second page capture), so a
+smooth scroll slowed by load can still be travelling: a timing edge from S10, not a change in what a teacher sees.
