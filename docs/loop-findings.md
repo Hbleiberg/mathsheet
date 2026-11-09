@@ -1330,3 +1330,44 @@ the page scrolled 2,541 px to it; now 12 px under the button row on all three pa
 below the dividend's → 0 on all. dcbfa6a (Name hint): fresh, Clear Current Roster and an unreadable roster now hinted;
 index's half still fails 3. Arm R: S23-name-fit-layout red since b60bd4d (its lines came from HEAD's menus, which now
 offer Rounding at grade 3, a line 37af5e4 skips), repaired in a53342b; all 53 probes then green on a53342b.
+
+## S30 (2026-11-09) — pass C (aesthetics) on math-minute.html
+
+Method: scratch `s30/c-ui.mjs` (seven UI states at 1280 / 800 px, screenshots at DSF 2, and a computed-style digest of 34
+selectors compared with math-facts.html in the same states; overflow, clipped field text, roster-row and button-row
+alignment), `s30/c-sheet.mjs` (21 levels × 2 copies with keys under emulated print with the move trick, a header line, a
+Latin, a Hebrew, a 37-character and an empty name: 84 sheets; glyph ink per cell against its grid track and its column,
+the room under each row's rule, the name, description and tag fits), `s30/c-hdr.mjs` (two-line descriptions per page and
+copy count; screenshots), `s30/c-sel.mjs` (the marked Level select on all three pages).
+
+**UI (teacher).** The two pages' `<style>` blocks are identical outside the root id, so S26's C on math-facts covers the
+shared CSS. Seven states (fresh; four rows with a Hebrew and a 27-character name, the header line and Fill Down's line;
+the validation box; after Generate with keys; the code panel; Advanced with the Level Reference; an Advanced generate with
+a skipped entry): every computed style the same as math-facts' but the Level Reference (its own content: 21 levels in two
+columns, plain weight, where math-facts' codes are bold); nothing past the edge, no field text cut, each row's fields on
+one top line, every button row on one line; at 800 px only the sheets scroll sideways (1,064 px, the S17 P4). Since S9:
+S29's code panel opens 12 px under its button row; the notices sit above the sheets; the Name hint on every row (S29).
+New, P4 on all three pages: a field the validation box marks gets a 2 px red border on a 1 px field, so it is 2 px taller
+(36 → 38; index 35 → 37) and each marked row pushes the rows under it 2 px down, then back when it is filled (S23 / S24's
+`clearFilledHighlights`); an author border also drops Chromium's native select look, so the marked select turns
+ButtonFace grey. Trap: Clear Current Roster asks `confirm()` and Playwright dismisses dialogs unless told otherwise — the
+first run's "validation" state was a generate of the old roster; accept dialogs before clicking it.
+
+**Worksheet (student).** 84 sheets and keys, each 1056 × 816; no cell's ink outside its grid track, none past the bottom
+padding; names 18 px (Latin, Hebrew) and 11 px for the 37-character name, each inside its line; the description and the
+tag inside their box; the header line centred (528 px). Room from a row's rule to the next row's ink: rows-3 183 px,
+rows-4 125, rows-5 91, rows-6 68 (division rows 205 / 148 / 113 / 90; under the keys' answers stacks keep the same rule
+gap, division 186 / 129 / 94 / 71); stacks centred on their column (0.0 px), brackets 4.1 px right of centre; divisor to
+bracket 8 px. Keys: answers 17 px under a stack, 20 px over a bracket, 11 px of air from a quotient to its dividend (the
+gate-6 answer-size P4 stands). With 2 copies the set label shares the description's box and 16 of 84 descriptions wrap
+(Levels 3, 4, 21 and the keys of 1–4 and 21; math-facts 92 of 284): the header grows 5.9 px and the grid follows, the
+last track then ending 7 px into the bottom padding with the ink 26+ px above the paper's edge — S29 B's "40 heavy
+descriptions on two lines, inside their box"; not a defect.
+
+**Fixes.** 02939af (index, the S29 half): `S29-default-name-hint` on all three pages, `--control` fails 9. 15f3989 (all
+three, S12's P4): Duplicate / Delete measured 100.5 × 15.6 and 83.8 × 15.6 (index 91.3 / 74.7), 10 px apart, with 12.0–
+14.7 px above them to the entry's border and 12.7–15.4 below to the Level label at 1280 / 800 / 390; padding 12px 5px with
+the same negative margin makes them 110.5 × 39.6 and 93.8 × 39.6, meeting at the gap's middle; 279 roster elements and the
+links' text 0.00 px from 02939af; points 10 px above and below the text hit the link and real clicks there act;
+`--control` fails 27. The focus ring now outlines the 40 px box (screenshots). Trap: `elementFromPoint` sees only the
+viewport — a 900 px window put the third row's lower point off screen at 390 px; the probe uses 1600.

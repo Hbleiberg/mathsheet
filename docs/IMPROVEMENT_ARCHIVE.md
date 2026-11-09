@@ -921,3 +921,34 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ New probes (S28): `S28-sci-locale` (seven locales; fails 5 on 2f78bd2), `S28-rounding-grades` (fails 8 on c9cc85f; its last arm compares grades 1–4 Mixed with c9cc85f byte for byte under a seed). Arm R's set for S29: those two and the two S27 probes.
 ⚑ Scripts: write every Python or Node script inside a quoted heredoc (`<<'EOF'`): an unquoted one runs each backticked code name in the text as a command (S28 blanked two in the ledger, restored).
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S28 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.
+
+## S30 (2026-11-09) — pass C on math-minute.html (one P4); two fixes, on a branch
+
+- Run on branch `claude/dazzling-gauss-uhpik9` again (invoked with no argument; the maintainer's "on a branch until I tell
+  you to push to main" from S27 still stood), stacked on the open draft PR Hbleiberg/mathsheet#6; `main` untouched.
+- Arm R: the smoke and the five S28–S29 probes; S28-rounding-grades red on its byte arm against c9cc85f, which decayed at
+  ccaa955 (S29's approved divisor), repaired in 94d3797 to measure the property, the byte arm behind `--identity`.
+- Pass C on math-minute.html (the stalest cell, S9): the UI and the 21 levels' sheets and keys hold S9's and S26's
+  baselines; one new P4 on all three pages (a marked field's 2 px growth and grey fill), queued; no second surface.
+- Fixes from the queue: index's Name hint (02939af, its half of S29's dcbfa6a), the Duplicate / Delete targets on all three
+  pages (15f3989, S12's P4). index then on its cap; the twins had no autonomous item of their own, so two slots unused.
+  Gates: none.
+
+### Done rows archived from the ledger (S25, verbatim)
+
+- [x] S25 | 2026-11-08 | abdbd88 | index.html, scripts/loop/probes/S25-pdf-rows.mjs | Save PDF lays the stacked grids out at print's rows (the clone kept the screen's `minmax(…, 1fr)`): 4,043 of 5,880 cells in a real export sat 3–13 px lower than on paper; S4's P4 | S25-pdf-rows: every stacked class 0.0 px (7.5 on 2f9a38f); real cdnjs export 4,043 → 90 cells off, worst 8 px, html2canvas's glyphs; S4, S9, S19, S22 probes; smoke
+- [x] S25 | 2026-11-08 | 7435289 | index.html, scripts/loop/probes/S25-across-division.mjs (+ S6, S22 repaired) | a division written across fits its row (54 px rows in 43 px tracks ran the 15th to 0.12 in from the edge), divisor level; its key is the sheet's own problem with the quotient in red at the right (approved S25, gate 6) | S25-across-division: 1,440 problems, lowest ink 786 px, keys recomputed (fails 6 on abdbd88); 286 other sheets identical; real PDF across 84 → 0 off; smoke
+- [x] S25 | 2026-11-08 | — | docs/loop-findings.md | pass B on index.html (3,160 sheets in three configurations, A4, a real 126-page Save PDF, the round trip and payload): the across division rows and key, and S4's PDF rows, fixed; the last key's `print-break` (harmless) queued; gates: one (gate 6, both, as recommended) | loop-findings S25
+
+### Per-session line archived from the ledger (S10, verbatim)
+
+- S10 | 2026-11-05 | pass C on index.html (UI at 1280 / 800 in five states; 29 type rows, sheet and key, under print) | fixes 3 (the three-page PDF progress and guard, index's Rounding, the twins' divisor; a 4th slot unused, every approved item left needing a capped page; on branch claude/clever-davinci-hhh4iz, not main) | smoke 3/3 green + `--cdn`; probes green | every page ended on its cap
+
+### Previous handoff (S29 → S30), verbatim
+
+**Next session (S30):** S27–S29 ran on branch `claude/dazzling-gauss-uhpik9`, not `main`: the maintainer asked for "a branch until I tell you to push to main". Their commits (S29: a53342b, 878b342, ccaa955, dcbfa6a and the close-out) are on that branch and its draft PR, Hbleiberg/mathsheet#6; GitHub Pages (`main`) still serves S26. Stay on the branch until the maintainer says "push to main"; then fast-forward `main` to it. If `git rev-parse --is-shallow-repository` says true, `git fetch --unshallow origin main` before a probe names an old commit.
+⚑ next: C on math-minute.html — the stalest cell (S9); since then its UI gained S12's names, S16's focus, S17's wrapping button row, S20–S21's Fill Down line, S23's 16 px phone fields and red border, and S29's code panel under the button row. The UI at 1280 / 800 in its states, every level's sheet and key under print; C on index.html (S10) comes next.
+⚑ Queues: approved and waiting — the 30-cap note (S11, index). index alone: the default rows' Name hint (its half of dcbfa6a, one line: `S29-default-name-hint --only index.html` fails 3 — a first touch), its case-sensitive Advanced type (P4), the Count select's text (P4, gate 2 or 4). Gate 6, unasked — one answer size on the keys (S26). Settled S28, not to be asked again: Level 2 "Hard Addition" keeps every sum 2–18; Levels 6 / 8 / 10 stay teen subtraction.
+⚑ New probes (S29): `S29-code-panel` (fails 12 on a53342b), `S29-index-divisor` (`--control` fails), `S29-default-name-hint` (the twins; `--control` fails 6). Arm R's set for S30: those three and the two S28 probes. All 53 probes were green on a53342b, S23-name-fit-layout repaired.
+⚑ Scripts: write every Python or Node script inside a quoted heredoc (`<<'EOF'`): an unquoted one runs each backticked code name in the text as a command (S28). A scratch control that writes the same files as its green run overwrites them: give it its own output names (S29 misread a planted page's PDF that way, briefly).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S29 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.
