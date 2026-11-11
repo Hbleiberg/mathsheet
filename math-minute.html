@@ -1385,10 +1385,13 @@ function applyStandardRoster(students) {
   studentsContainer.innerHTML = "";
   if (!students || !students.length) { buildDefaultStudents(); return; }
   for (var i = 0; i < students.length; i++) {
+    // A saved row that is not an entry (null) comes back empty in its place, as on index.html: it threw here, and the
+    // catch for an unreadable roster then deleted the whole saved class with it (S35, pass I).
+    var saved = students[i] || {};
     studentsContainer.appendChild(createStudentEntry(i + 1, {
-      name:   students[i].name   || "",
-      number: students[i].number || "",
-      level:  students[i].level  || ""
+      name:   saved.name   || "",
+      number: saved.number || "",
+      level:  saved.level  || ""
     }));
   }
   refreshStudentNumbers();
