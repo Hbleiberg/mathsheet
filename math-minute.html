@@ -957,8 +957,20 @@ function refreshStudentNumbers() {
   updateStudentCounter();
 }
 
+// Add Student carries on the last row's Student Number, as index's does and Duplicate does here: after 3 the new row
+// reads 4; an empty last Number, or one that is not a number ("14B", "Blue"), leaves the new row's empty (approved S34; found S18).
+function getNextStudentNumber() {
+  var entries = studentsContainer.querySelectorAll(".student-entry");
+  if (!entries.length) return "";
+  var lastNum = entries[entries.length - 1].querySelector('input[name="studentNumber"]').value.trim();
+  if (lastNum !== "" && !isNaN(lastNum)) return String(parseInt(lastNum, 10) + 1);
+  return "";
+}
+
 function addStudent(studentData) {
   var count = studentsContainer.querySelectorAll(".student-entry").length + 1;
+  if (!studentData) studentData = {};
+  if (!studentData.number && studentData.number !== 0) studentData.number = getNextStudentNumber();
   studentsContainer.appendChild(createStudentEntry(count, studentData));
   updateStudentCounter();
   if (removeNumberToggle) applyRemoveNumberToggle();
