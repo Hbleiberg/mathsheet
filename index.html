@@ -2884,7 +2884,16 @@ function validationRefocus(button) {
 
 function wireButtons() {
   toggleModeBtn.addEventListener("click", function() { clearStatus(); setInputMode(inputMode==="standard"?"advanced":"standard"); });
-  addStudentBtn.addEventListener("click",   function() { clearStatus(); addStudent(); refreshNumbers(); });
+  // Add Student stays where it was clicked (S39, pass H): the new row goes in above it, so it went a row lower with each
+  // click and left a 900 px window from the third (16 scrolls for a class of 22, 27-41 on a phone). The window takes up
+  // the row with an instant scroll, so nothing on screen moves; where it cannot (mathsheet.io's 1,400 px frame until the
+  // roster fills it), the button is scrolled back into view.
+  addStudentBtn.addEventListener("click",   function() {
+    var top = addStudentBtn.getBoundingClientRect().top;
+    clearStatus(); addStudent(); refreshNumbers();
+    window.scrollBy(0, addStudentBtn.getBoundingClientRect().top - top);
+    addStudentBtn.scrollIntoView({ block: "nearest", behavior: scrollBehavior() });
+  });
   genCodeBtn.addEventListener("click",      function() { clearStatus(); openCodeModal(); });
   saveBtn.addEventListener("click",         function() { clearStatus(); saveRoster(); });
   clearCurrentBtn.addEventListener("click", function() { clearStatus(); clearCurrentRoster(); });

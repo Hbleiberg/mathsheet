@@ -1936,10 +1936,17 @@ function wireButtons() {
     setInputMode(inputMode === "standard" ? "advanced" : "standard");
   });
 
+  // Add Student stays where it was clicked (S39, pass H): the new row goes in above it, so it went a row lower with each
+  // click and left a 900 px window from the third (16 scrolls for a class of 22, 27 on a phone). The window takes up the
+  // row with an instant scroll, so nothing on screen moves; where it cannot (mathsheet.io's 1,400 px frame until the
+  // roster fills it), the button is scrolled back into view.
   addStudentButton.addEventListener("click", function () {
+    var top = addStudentButton.getBoundingClientRect().top;
     clearStatusMessages();
     addStudent();
     refreshStudentNumbers();
+    window.scrollBy(0, addStudentButton.getBoundingClientRect().top - top);
+    addStudentButton.scrollIntoView({ block: "nearest", behavior: scrollBehavior() });
   });
 
   fillDownButton.addEventListener("click", function () {

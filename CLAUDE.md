@@ -78,6 +78,8 @@ the same bytes on all three; S36) in their `<head>`.
   export ends (`pdfRefocus`, S22: a disabled button drops focus to the page's start); Generate Anyway, and Fix with
   nothing left marked, give it to the button that asked (`validationRefocus()`, S33: a hidden button drops it too).
   Every scroll a page makes passes `behavior: scrollBehavior()`, "auto" under `prefers-reduced-motion: reduce` (S33).
+  Add Student stays where it was clicked: an instant `scrollBy` takes up the new row, so nothing on screen moves, then
+  `scrollIntoView({ block: "nearest" })` where the window cannot scroll (mathsheet.io's frame; S39).
 - **Narrow screens (S17):** at ≤860 px the button rows wrap (a centred `nowrap` row cannot scroll to its left end,
   which hid Add Student on every phone) and the Advanced layout stacks; at ≤560 px the roster is one column. On
   `index.html` a static rule that must beat an injected one carries `#mwg-app`, since `injectStyles()` loads last.
