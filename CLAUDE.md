@@ -66,7 +66,9 @@ the same bytes on all three; S36) in their `<head>`.
   **Always `escapeHtml(...)` any user-entered value** (names, numbers, descriptions) before
   inserting it into HTML.
 - **Accessibility (S12):** each roster row numbers its ids (`entryUid`): the labels carry `for`, and every field is
-  named by the row's "Student N" heading and its label (`aria-labelledby`); the status, error and student-counter
+  named by the row's "Student N" heading and its label (`aria-labelledby`), Duplicate and Delete by their own text and the
+  heading ("Delete student Student 3"), and `index.html`'s Mixed and Operations panels are groups named by the heading and
+  their title (S37); the status, error and student-counter
   containers are `aria-live="polite"`, the validation box `role="alert"`, and the status box `aria-busy` from the
   Save PDF click until `pdfDone()`, which runs before the final message so "PDF saved!" is announced.
   **Focus follows the action (S16):** Delete student moves it to the next row's Delete (the previous row's for the last row,

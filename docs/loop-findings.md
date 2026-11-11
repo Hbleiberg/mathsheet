@@ -1713,3 +1713,68 @@ probe's "no favicon request" check is no handle; the decode (32 × 32, ink at th
 
 **Sweep.** All 71 probes, one after another on d045ca5 with nothing else running: 71 green (S36's two
 new among them). Then `closeout.mjs` on the close-out commit.
+
+## S37 (2026-11-11) — pass D (accessibility) on index.html
+
+Method: two scratch audits over the harness (scratchpad `s37/d-index.mjs`, `s37/d-index2.mjs`, logs beside them; the
+second is S33's `d-mf2.mjs` with index's ids), as S33 did on math-facts: every interactive node's role, name and group
+from Chromium's full accessibility tree (CDP) in six states (fresh Standard, the validation box, the three panels —
+Mixed at grade 1, Fractions and Decimals at grade 5 —, the code panel, Advanced, after a generate with a key), Tab walks
+recording `:focus-visible`, the outline and whether each stop is in view, every flow by keyboard with where focus lands
+and what the live regions hold, text and border contrast (WCAG luminance), control boxes, WCAG 1.4.12 text spacing at
+1280 and 390 px, reflow at 640 and 320 px; `s37/d-mixed-names.mjs` read the Mixed panel's names at every grade. Since
+S16 index gained the 40 px Duplicate / Delete (S30), Save PDF's focus back (S22), Generate Anyway's (S33), the reduced-
+motion scrolls (S33), the 16 px phone fields (S23), the Copy and help wording (S34). Arm R first: the smoke and S35's
+three and S36's two probes green on c430733; then S12-a11y, S16-focus, S22-pdf-focus, S33-validation-focus and
+S33-reduced-motion, green on c430733 (index's six scrolls land in their first frame under reduce).
+
+- **Names.** 34 interactive nodes in Standard, 36 with the validation box, 57 with the three panels, 38 with the code
+  panel, 11 in Advanced: none unnamed. The row fields read "Student 1 Grade Level" (S12 holds), the code textarea
+  "Advanced Input Code" (S16), the paste box "Paste student data". **A grade 5–8 Mixed panel** holds 35–39 checkboxes in
+  no group, and "Addition" and "Subtraction" twice each, one under Fractions, one under Decimals (grades 1–4: 8 / 13,
+  none repeated); the Fraction / Decimal Operations panels said nothing of their student either (S16's P4, raised to P3).
+  Fixed, 13081dc. **Duplicate / Delete** read the same in every row, and in the Tab order they come after the previous
+  row's fields, so tabbing on from Student 2's Problem Count met "Duplicate student" of Student 3 (S12's P4). Fixed on
+  all three pages, 196770a. Still open (S12's P4): the "Name blank" hint lives in its label's `title` only (not the
+  checkbox's description); the page's only headings are the three "Student N" h3s, Advanced has none ("Grade
+  Reference" is a bold div), no landmark but an unnamed form.
+- **Keyboard.** 35 Tab stops fresh, 47 with the panels, in the visual order (the settings read their left column, then
+  the checkboxes, as on the twins), every one with the UA ring (`auto 1px`) and in view. Deselect All by Enter 0 / 8,
+  Select All by Space 8 / 8, a fraction operation by Space 4 / 5, Select All Operations 5 / 5, focus kept on the button;
+  Fill Down says "Settings filled down from Student 1. Students 2 and 3 kept their own settings." beside itself; Delete →
+  the next row's Delete, the last row's → the previous row's; the code panel opens on its textarea, Escape and Close
+  return to Generate Advanced Code, Use in Advanced Input lands in the paste box; the mode toggle keeps focus; Generate
+  with blank rows → the alert, focus kept; Generate Anyway by Enter → back on Generate (S33), by a click → the page
+  (S22's rule); Fix → the first marked field; Enter in a text field submits nothing; Save and both Clears keep focus
+  and say so in the polite status. 0 page errors.
+- **Live regions.** Fill Down's line, the counter, the status and error boxes polite, the validation box an alert.
+- **Contrast** (lowest first): placeholders 4.61, the ops title rgb(37,99,235) on the panel's rgb(238,243,255) 4.65 (13 px
+  bold; S16's figure), the Delete red 6.15, "Advanced code moved…" green 6.63, the unsaved notice 6.66, the Mixed group
+  titles 6.71, the Duplicate blue 8.10, the help 9.25, the validation text 16.05. Field borders 4.31 (#767676 on the
+  row's #f9f9f9), the marked field's red 5.59. **Targets**: the Mixed and operations checkboxes 13 × 13 (their labels wrap
+  them), the settings checkboxes 16 × 16, Select All / Deselect All / All Operations 67–123 × 23 px (S12's targets P4,
+  open); Duplicate / Delete 40 px tall (S30), every other button and field ≥ 34 px. **Text spacing**: nothing clipped,
+  no sideways scroll, either mode, 1280 or 390 px. **Reflow**: 640 and 320 px, no sideways scroll and no control past
+  the edge in Standard, Advanced or with the code panel.
+
+**Fixes.** 13081dc (index): each option panel is a group named by the row's heading and its title, "Student 2 Fraction
+Operations", "Student 1 Include in Mixed:", and each title inside the Mixed panel (Addition … Fractions, Decimals,
+Other) names its own group; the ids carry the row's number, read from its heading (`rowUid`). 196770a (all three):
+Duplicate and Delete are named by their text and the row's heading, "Delete student Student 3" (the visible text first,
+WCAG 2.5.3), so the name follows every renumbering. Nothing visible changes in either: each probe compares element
+screenshots with the commit before, byte for byte.
+
+**Probes.** `S37-panel-groups`: grades 1–8, every Mixed control in "Student 1 Include in Mixed:", every checkbox in its
+title's group and no two sharing both names; the two operations panels; a Delete renumbers them; a saved Mixed and
+Fractions subset restores with its groups; the three panels pixel-identical to c430733's. `--ref c430733` fails 24.
+`S37-row-button-names`: per page, fresh, after Duplicate, Delete by keyboard (focus on "Delete student Student 2"), the
+last row, a restored roster, Clear Current Roster; every name unique, the visible text and the roster's pixels as on
+13081dc. `--ref 13081dc` fails 24. The smoke, S12-a11y, S16-focus, S17-phone-layout, S20-fill-down, S26-ops-labels,
+S30-row-targets, S33-validation-focus, S34-add-student-number, S35-saved-null-row, S5-mixed-ops and roster-subset green.
+
+**Traps.** S16-focus described focus by id when the element had one, so the new button ids read "#deleteStudent-3"
+where it expected the class: it now describes a row's control by its class, as its comment said (green before and after
+the change, `--ref 196dd4a` still fails 27). A probe of a panel's checkboxes that filters by group passes vacuously on
+the page without groups: count the panel's checkboxes in the DOM and in the tree first (the handle).
+
+**Sweep.** All 73 probes, one after another on 196770a from a worktree, run at the close-out: the result follows.
