@@ -1777,4 +1777,8 @@ where it expected the class: it now describes a row's control by its class, as i
 the change, `--ref 196dd4a` still fails 27). A probe of a panel's checkboxes that filters by group passes vacuously on
 the page without groups: count the panel's checkboxes in the DOM and in the tree first (the handle).
 
-**Sweep.** All 73 probes, one after another on 196770a from a worktree, run at the close-out: the result follows.
+**Sweep.** All 73 probes, one after another on 196770a from a worktree (867 s): 71 green, 2 red — `S29-code-panel` and
+`S29-default-name-hint`, both byte-for-byte arms against a53342b that read S37's new attributes as a change (the layout
+signature carried each element's id; the row markup now holds Duplicate / Delete's id and `aria-labelledby` and index's
+panel groups). The boxes had not moved. Both now set those attributes aside, as the Name placeholder already was, and
+are green; their controls still fail as recorded (12, and 9 with `--control`). Committed 539b9ce.
