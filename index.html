@@ -2086,25 +2086,28 @@ function makeFracDivW() {
   var d=rand(2,9),n=rand(1,d-1),w=rand(2,9);
   return {html:horizHtml(fracHtml(n,d)+" ÷ "+w+" ="),answer:fractionStr(n,d*w),kind:"horiz"};
 }
+// The key's answer keeps the problem's places, as the Decimals type's own (S11, gate 6): through `parseFloat` 53 of 300
+// sums, differences and products on a Standard form's Decimals key, every operation ticked, lost a zero or the point
+// ("29.8 − 23.8 = 6", "2.10 × 8 = 16.8"; S39, found S11). A quotient is written as it comes.
 function makeDecAdd() {
   var pl=rand(1,2),f=Math.pow(10,pl);
   var a=Math.round(rand(10,99*f))/f,b=Math.round(rand(10,99*f))/f;
-  return {html:horizHtml(a.toFixed(pl)+" + "+b.toFixed(pl)+" ="),answer:parseFloat((a+b).toFixed(pl)),kind:"horiz"};
+  return {html:horizHtml(a.toFixed(pl)+" + "+b.toFixed(pl)+" ="),answer:(a+b).toFixed(pl),kind:"horiz"};
 }
 function makeDecSub() {
   var pl=rand(1,2),f=Math.pow(10,pl);
   var a=Math.round(rand(10,99*f))/f,b=Math.round(rand(10,99*f))/f;
   var hi=Math.max(a,b),lo=Math.min(a,b);
-  return {html:horizHtml(hi.toFixed(pl)+" − "+lo.toFixed(pl)+" ="),answer:parseFloat((hi-lo).toFixed(pl)),kind:"horiz"};
+  return {html:horizHtml(hi.toFixed(pl)+" − "+lo.toFixed(pl)+" ="),answer:(hi-lo).toFixed(pl),kind:"horiz"};
 }
 function makeDecMulW() {
   var pl=rand(1,2),f=Math.pow(10,pl);
   var a=Math.round(rand(10,99*f))/f,b=rand(2,9);
-  return {html:horizHtml(a.toFixed(pl)+" × "+b+" ="),answer:parseFloat((a*b).toFixed(pl)),kind:"horiz"};
+  return {html:horizHtml(a.toFixed(pl)+" × "+b+" ="),answer:(a*b).toFixed(pl),kind:"horiz"};
 }
 function makeDecMulD() {
   var a=Math.round(rand(10,99))/10,b=Math.round(rand(10,99))/10;
-  return {html:horizHtml(a.toFixed(1)+" × "+b.toFixed(1)+" ="),answer:parseFloat((a*b).toFixed(2)),kind:"horiz"};
+  return {html:horizHtml(a.toFixed(1)+" × "+b.toFixed(1)+" ="),answer:(a*b).toFixed(2),kind:"horiz"};
 }
 function makeDecDivW() {
   var b=rand(2,9),pl=rand(1,2),f=Math.pow(10,pl);
