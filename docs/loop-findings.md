@@ -1533,3 +1533,6 @@ and scroll anchoring moves the page 52 px: a first judge counting frames away fr
 frames of animation; count distinct positions. `blur()` before a Tab walk leaves the sequential-focus start at the
 blurred element (the walk began after the code textarea). On the pre-fix page `document.activeElement` still named the
 hidden Fix button in the same task; it settles to `<body>` on the next style recalculation.
+
+**Sweep.** All 63 probes, run one after another on 8d78b6a with nothing else running: all green (930 s). Then
+`closeout.mjs --cdn` on d66ec18: all checks passed (a real 3-page PDF from math-facts).
