@@ -11,6 +11,7 @@
 // Fails before the change (`--control`: REF served as the page under test).
 //   node scripts/loop/probes/S31-cap-note.mjs [--control] [--ref <commit>]
 import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { serve, launch, openPage, ROOT, PAGES } from '../harness.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
@@ -18,7 +19,14 @@ const REF = arg('--ref') || '04c9483', CONTROL = process.argv.includes('--contro
 const fails = [];
 const check = (ok, msg) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg); };
 const SEED = `(() => { let s = 20261109; Math.random = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646; })();`;
-const refBody = execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
+// Later sheet changes replayed on REF, so its byte-for-byte arm measures this probe's own change only (S23's rule):
+// S35's minus sign on Integers, index's `signed()` and `makeIntegers` as the working tree has them.
+const replayLater = body => {
+  const now = readFileSync(`${ROOT}/index.html`, 'utf8').match(/\/\/ A negative number takes[\s\S]*?\nfunction makeIntegers[\s\S]*?\n\}\n/);
+  const old = /function makeIntegers\(grade\) \{[\s\S]*?\n\}\n/;
+  return !now || /function signed\(/.test(body) || !old.test(body) ? body : body.replace(old, () => now[0]);
+};
+const refBody = replayLater(execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 }));
 
 const ACROSS = [['fractions', 5], ['fractions[add|sub]', 6], ['decimals', 6], ['decimals[add]', 6], ['rounding', 3], ['longdivision', 6],
   ['orderofoperations', 6], ['integers', 7], ['exponents', 8], ['scientificnotation', 8]];
