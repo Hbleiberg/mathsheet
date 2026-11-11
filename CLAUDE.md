@@ -106,7 +106,8 @@ Every generator offers a Standard form **and** an Advanced paste box. Keep both 
   // for each chunk: trim; skip if empty; split(",");
   // fewer than 3 parts and a tab in the line: split("\t") instead (spreadsheet columns, S20);
   // more than 3 parts: rejoin all but the last two with "," (a space for tabs) as the name ("Cohen, Avi", S3);
-  // trim each part; require 3 fields (the name may be empty); validate the selector
+  // trim each part, the selector fields also dropping invisible marks (LRM / RLM, isolates, zero-width, BOM; not the
+  // name, S34); require 3 fields (the name may be empty); validate the selector
   // (math-facts reads a code whatever its capitals, spaces or dash: "Doubles +1", "–3", S21);
   // on any failure push a human-readable message to errors[] and `continue`;
   // "Entry N" counts the non-empty entries, as a teacher counts the lines (S11)

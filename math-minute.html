@@ -1325,7 +1325,10 @@ function getStudentsFromAdvancedInput() {
     if (parts.length < 3 && entry.indexOf("\t") >= 0) parts = entry.split(sep = "\t");
     // A name may hold commas ("Cohen, Avi"), or fill two columns: everything before the last two fields is the name (S3).
     if (parts.length > 3) parts = [parts.slice(0, -2).join(sep === "\t" ? " " : ",")].concat(parts.slice(-2));
-    for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
+    // Text copied from a phone or a Hebrew document can carry an invisible mark (LRM / RLM, an embedding or isolate, a
+    // zero-width space or joiner, a BOM): in a selector field it skipped a line that looked right, so the fields after the
+    // Number drop them; the name keeps its own (ZWNJ is part of some names) (S34; found S32).
+    for (var p = 0; p < parts.length; p++) parts[p] = (p > 1 ? parts[p].replace(/[\u061c\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/g, "") : parts[p]).trim();
     if (parts.length !== 3) { parseErrors.push('Entry ' + n + ' is invalid: "' + entry + '"'); continue; }
     var name   = parts[0];
     var number = parts[1];

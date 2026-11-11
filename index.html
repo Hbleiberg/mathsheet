@@ -1874,7 +1874,10 @@ function parseAdvancedInput() {
     if (parts.length < 5 && entry.indexOf("\t") >= 0) parts = entry.split(sep = "\t");
     // A name may hold commas ("Cohen, Avi"), or fill two columns: everything before the last four fields is the name (S3).
     if (parts.length > 5) parts = [parts.slice(0, -4).join(sep === "\t" ? " " : ",")].concat(parts.slice(-4));
-    for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
+    // Text copied from a phone or a Hebrew document can carry an invisible mark (LRM / RLM, an embedding or isolate, a
+    // zero-width space or joiner, a BOM): in a selector field it skipped a line that looked right, so the fields after the
+    // Number drop them; the name keeps its own (ZWNJ is part of some names) (S34; found S32).
+    for (var p = 0; p < parts.length; p++) parts[p] = (p > 1 ? parts[p].replace(/[\u061c\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/g, "") : parts[p]).trim();
     if (parts.length !== 5) { errors.push("Entry " + n + " needs 5 fields: " + entry); continue; }
     var grade = parseInt(parts[4]);
     if (isNaN(grade) || grade < 1 || grade > 8) { errors.push("Entry " + n + " invalid grade: " + entry); continue; }
