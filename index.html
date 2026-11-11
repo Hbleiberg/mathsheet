@@ -1628,12 +1628,14 @@ function createStudentEntry(index, data) {
   div.className = "mwg-student-entry";
   var uid = ++entryUid;
   div.setAttribute("data-entry-id", ++entryIdCounter);
+  // Duplicate and Delete are named by their text and the row's heading, "Delete student Student 3": they sit above the
+  // row's fields, so tabbing on from Student 2 met Student 3's buttons with nothing to say whose they were (S37; S12)
   div.innerHTML =
     '<div class="mwg-student-entry-header">' +
       '<h3 id="studentHeading-' + uid + '">Student ' + index + '</h3>' +
       '<div class="mwg-student-entry-actions">' +
-        '<button type="button" class="mwg-duplicate-link">Duplicate student</button>' +
-        '<button type="button" class="mwg-delete-link">Delete student</button>' +
+        '<button type="button" class="mwg-duplicate-link" id="duplicateStudent-' + uid + '" aria-labelledby="duplicateStudent-' + uid + ' studentHeading-' + uid + '">Duplicate student</button>' +
+        '<button type="button" class="mwg-delete-link" id="deleteStudent-' + uid + '" aria-labelledby="deleteStudent-' + uid + ' studentHeading-' + uid + '">Delete student</button>' +
       '</div>' +
     '</div>' +
     '<div class="mwg-student-grid">' +

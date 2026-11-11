@@ -947,12 +947,14 @@ function createStudentEntry(index, studentData) {
   var div = document.createElement("div");
   div.className = "student-entry";
   var uid = ++entryUid;
+  // Duplicate and Delete are named by their text and the row's heading, "Delete student Student 3": they sit above the
+  // row's fields, so tabbing on from Student 2 met Student 3's buttons with nothing to say whose they were (S37; S12)
   div.innerHTML =
     '<div class="student-entry-header">' +
       '<h3 id="studentHeading-' + uid + '">Student ' + index + '</h3>' +
       '<div class="student-entry-actions">' +
-        '<button type="button" class="duplicate-student-link">Duplicate student</button>' +
-        '<button type="button" class="delete-student-link">Delete student</button>' +
+        '<button type="button" class="duplicate-student-link" id="duplicateStudent-' + uid + '" aria-labelledby="duplicateStudent-' + uid + ' studentHeading-' + uid + '">Duplicate student</button>' +
+        '<button type="button" class="delete-student-link" id="deleteStudent-' + uid + '" aria-labelledby="deleteStudent-' + uid + ' studentHeading-' + uid + '">Delete student</button>' +
       '</div>' +
     '</div>' +
     '<div class="student-grid">' +

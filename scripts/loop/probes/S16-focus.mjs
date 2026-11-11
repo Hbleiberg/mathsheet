@@ -22,7 +22,8 @@ const UI = {
 const focusAt = page => page.evaluate(() => {
   const el = document.activeElement; if (!el || el === document.body) return 'body';
   const row = el.closest('.student-entry, .mwg-student-entry'); const h = row && row.querySelector('h3');
-  return `${el.tagName.toLowerCase()}${el.id ? '#' + el.id : el.className ? '.' + String(el.className).split(' ')[0] : ''}${h ? ' in ' + h.textContent : ''}`;
+  // a row's control by its class: its id carries the row's number (S12; Duplicate / Delete since S37)
+  return `${el.tagName.toLowerCase()}${el.id && !row ? '#' + el.id : el.className ? '.' + String(el.className).split(' ')[0] : ''}${h ? ' in ' + h.textContent : ''}`;
 });
 async function axName(page, selector) {
   const cdp = await page.context().newCDPSession(page);
