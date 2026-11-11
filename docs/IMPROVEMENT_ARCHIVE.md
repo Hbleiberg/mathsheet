@@ -1080,3 +1080,41 @@ Grep it; never read it whole. The live state is `docs/IMPROVEMENT_LOG.md`.
 ⚑ New probes (S33): `S33-validation-focus` (`--ref a130707` fails 12), `S33-reduced-motion` (`--ref 43a8825` fails 18). Arm R's set for S34: the two new probes, `S32-line-breaks` and `S32-type-case`. Sweep: see S33's findings for the full run on 8d78b6a.
 ⚑ Scripts: write every script with the Write tool or inside a quoted heredoc (`<<'EOF'`): an unquoted one runs each backticked code name as a command (S28), and a long Node heredoc can stop at the shell's safety check (S30, S31). A scratch control that writes the same files as its green run overwrites them (S29). Clear Current Roster asks `confirm()`; `elementFromPoint` sees only the viewport (S30). A print `!important` rule beats a style injected to test a candidate; a Range over an element returns its descendants' boxes (S31). The Edit and Write tools put a `\u2028` escape in new text as the raw character, which ends a JS regex literal: write such escapes with a script (S32). A scroll that jumps can move once more when content grows above the anchor (scroll anchoring: the PDF's offline notice, +52 px): count positions, not frames off the last one; `blur()` before a Tab walk leaves the walk's start at the blurred element (S33).
 ⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S33 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.
+
+## S35 (2026-11-11) — pass I, the suite (old saves, odd payloads, the frame); three fixes, on `main`
+
+- Run on `main` (CLAUDE.md's rule): the assigned branch `claude/wonderful-bohr-sg8ygl` sat at main's 6fac477; the
+  commits went to `main`, the branch was pointed at them after.
+- Arm R: the smoke and the five S33–S34 probes, all green on 6fac477.
+- Pass I over S14–S34's 51 page commits: every sink escaped; a roster saved by each of 186 deployed versions reloads
+  as saved but math-facts' launch hour; the Clears, isolation, hostile values clean; a null row in a saved list made
+  the twins delete the whole saved roster (S15's catch): fixed (43ce1a7). The frame's save works.
+- No gate asked: the fixes were autonomous. Then two queued S6 items on index: Integers' minus sign (febeb65), the
+  Scientific Notation key's notation (c385a35), with probe repairs; the sweep's two red arms led to the harness's
+  `replayLater` (874e4c9).
+- Index on its cap; the twins had nothing else autonomous of their own; one slot unused.
+
+### Candidates shipped from the ledger (S6, verbatim)
+
+- [ ] P4 | index.html | Integers print negatives with a hyphen ("-7 − (-3) =", 74 % of problems; the key too) beside the U+2212 operator: use U+2212 for the sign | found S6
+- [ ] P4 | index.html | Scientific-notation keys write "4.5 x 10^4" (ASCII x, caret) beside the sheet's "× 10" with a superscript: render the key with × and `<sup>` | found S6
+
+### Done rows archived from the ledger (S30, verbatim)
+
+- [x] S30 | 2026-11-09 | 15f3989 | index.html, math-minute.html, math-facts.html, scripts/loop/probes/S30-row-targets.mjs, scripts/loop/probes/S29-code-panel.mjs | Duplicate / Delete student are 40 px tall targets (padding 12px 5px taken back by a negative margin), meeting in their gap, over no label or field: nothing moves (S12's P4) | S30-row-targets, 1280 / 800 / 390: the roster 0.00 px from 02939af, hits 10 px off the text, real clicks (`--control` fails 27); smoke, probes green
+- [x] S30 | 2026-11-09 | 02939af | index.html, scripts/loop/probes/S29-default-name-hint.mjs | index's half of dcbfa6a: the rows the page builds itself carry the Name hint (`buildDefaultStudents()` calls `applyNameBlankToggle()`) | S29-default-name-hint now runs all three pages (`--control` fails 9); smoke, the S12–S24 roster probes, roster-subset green
+- [x] S30 | 2026-11-09 | 94d3797 | scripts/loop/probes/S28-rounding-grades.mjs | arm R: its byte arm against c9cc85f decayed at ccaa955 (S29's approved divisor gives the own-bar keys an inline style); it now checks grades 1–2 Mixed, grade 5 Mixed's rounding and the thousands at 5 and 8, the byte arm behind `--identity` | green; `--identity --ref ccaa955` green; a planted page fails 3
+- [x] S30 | 2026-11-09 | — | docs/loop-findings.md | pass C on math-minute.html (the UI at 1280 / 800 in seven states against math-facts' styles; 21 levels' sheets and keys under print, two copies, a header line, Hebrew, long and empty names): S9's baselines hold; a marked field's 2 px growth queued (P4, three pages); gates: none | loop-findings S30
+
+### Per-session line archived from the ledger (S15, verbatim)
+
+- S15 | 2026-11-06 | pass L, the suite (the three heads, the repo root, the public site, the GitHub Pages copies, the pages inside a cross-origin iframe) | fixes 3 (noindex on all three, the unreadable-roster notice on all three, the deployment in CLAUDE.md; a 4th slot unused, every page on its cap; on branch claude/clever-davinci-hhh4iz, not main) | smoke 3/3 green; probes green | the deployment found: GitHub Pages serves main inside mathsheet.io's WordPress iframes
+
+### Previous handoff (S34 → S35), verbatim
+
+**Next session (S35):** S34 ran on `main`, as CLAUDE.md says: the assigned branch `claude/wonderful-bohr-sg8ygl` sat at main's e97c230, so the session committed 3d12adb, 56af4d9, 1a8f3af and the close-out on `main`, pushed it (GitHub Pages serves it) and pointed the branch at the same commit. A cloud session keeps doing that unless the maintainer asks for a branch again. If `git rev-parse --is-shallow-repository` says true, `git fetch --unshallow origin main` before a probe names an old commit.
+⚑ next: I — the stalest row (S14, the suite): a fresh load, the saved payload and the escaping over S14–S34's page commits (S18's unsaved notice, S20's `data-fill-from`, S29's Name hint on a rebuilt roster, S34's carried-on Number beside a restored one); its one open item, the silent fallback on an unreadable payload; then L (S15).
+⚑ Queues: index alone — its parser messages' shape (P4, gate 2, S34), the Count select's text (P4, gate 2 or 4), the lenient grade / count read (P4). Shared — Add Student's count stopping at a gap (P4, S18 / S34), a marked field's 2 px growth (P4, S30), the settings checkboxes' targets (P4), `aria-invalid` with the red border and the row heading in Duplicate / Delete's names (P4, S12; headings' visible text is gate 2). Gate 6, unasked — one answer size on the keys (S26). Settled, not to be asked again: Level 2 "Hard Addition" keeps every sum 2–18 and Levels 6 / 8 / 10 stay teen subtraction (S28); a division written across starts at the left (S31).
+⚑ New probes (S34): `S34-index-copy` (`--ref e97c230` fails 6), `S34-add-student-number` (`--ref e97c230` fails 8), `S34-selector-marks` (`--ref 56af4d9` fails 9). Arm R's set for S35: the three new probes, `S33-validation-focus` and `S33-reduced-motion`. Sweep: see S34's findings for the full run.
+⚑ Scripts: write every script with the Write tool or inside a quoted heredoc (`<<'EOF'`): an unquoted one runs each backticked code name as a command (S28), and a long Node heredoc can stop at the shell's safety check (S30, S31). A scratch control that writes the same files as its green run overwrites them (S29). Clear Current Roster asks `confirm()`; `elementFromPoint` sees only the viewport (S30). A print `!important` rule beats a style injected to test a candidate; a Range over an element returns its descendants' boxes (S31). The Edit and Write tools put any `\uXXXX` escape in new text as the raw character, even inside a Python raw string (S34: `\u200c` too, not only `\u2028`, which ends a JS regex literal, S32): write such escapes with a script that builds them, then grep the file for raw marks. A scroll that jumps can move once more when content grows above the anchor: count positions (S33). A form field keeps the spaces Save trims (" 9 " saves "9"): compare trimmed (S34).
+⚑ Micro-feature: rests under Awaiting (skipped S8–S11; S12–S34 asked nothing about it); build a seed only when the maintainer names one. The Time / Score strip is declined (after S22): not to be proposed again.

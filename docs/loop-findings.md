@@ -1595,3 +1595,71 @@ saved "9"): a restore check compares trimmed values.
 
 **Sweep.** All 66 probes, run one after another on 1a8f3af with nothing else running: all green (918 s). Then
 `closeout.mjs` on 03f1979: all checks passed.
+
+## S35 (2026-11-11) — pass I (first load, saved data & safety), the suite: all three pages over S14–S34's 51 page commits
+
+Method: scratch audits over the harness (scratchpad `s35/`: `old-saves.mjs`, `old-notice.mjs`, `i-audit.mjs`,
+`iframe-storage.mjs`). Arm R first: the smoke (60 checks) and the five S33–S34 probes green on 6fac477.
+
+**Static.** Every `innerHTML` site read again after 51 commits: the user values (name, Number, header line, the
+validation list, the skipped-entry list and S31's cap notes, the description) pass through `escapeHtml` / `esc`;
+the rest is static markup or option lists from the page's own tables, a saved value only selecting. The new writers
+since S14 write text: Fill Down's line and the unsaved notice by `textContent`, the written "…" by `textContent`,
+the header line through `escapeHtml` in a `dir="auto"` div. Two `JSON.parse` per page (the restore and
+`remindUnsavedRoster`), both inside a `try`; one storage key per page; no inline handler built from text.
+
+**Old saves (new arm).** Every deployed version since the current key (index 71 commits from d1c8529, math-minute 56
+from 56e4dbd, math-facts 59 from 41b794a) served in turn: a roster using every level it offers (index every grade ×
+type, 151–153 rows, every other Mixed and ops checkbox flipped; Hebrew, comma, markup and empty names; Numbers blank
+and "14B"), every setting on, saved by its own button, then loaded by today's page: every field, checkbox and setting
+as saved on 184 of 186 versions, "Saved roster loaded.", 0 page errors. The two others are math-facts' launch hour
+(41b794a and 41bec40, 2026-06-02 21:21–22:13 UTC, before d793be5 renamed "add-plus01"… to "+0+1"…): their 32 levels
+come back blank, names and Numbers kept; not a candidate. The payloads' fields only grew (`nameBlank` from c370582,
+`headerLine` from 4f7d68c / 8c9bfd3), each row's keys in today's order, and an old roster loaded unchanged never draws
+S18's "isn't saved" notice on a generate (71 / 56 / 59 quiet).
+
+**Fresh context, Save → reload, the Clears, isolation.** As S14 found: 3 empty rows, Standard, per student 1, every
+toggle off, the Name hints "Optional", nothing written, no message. A hostile payload (`<img onerror>` and `"><svg
+onload>` in the name, Number, header line and paste box) restores literally; Add Student after its restored "9"
+gives "10" (S34); Fill Down on a restored roster follows S20's rule ("Student 3 kept its own level"); the long
+hostile name prints cut with "…" as text; Duplicate, the code panel, Use in Advanced Input and a skipped line echo it
+as text; saved in Advanced mode it reloads in Advanced mode; no handler ran, no element was made, 0 page errors. Clear
+Current keeps the payload byte for byte and rebuilds rows with the toggle's Name hint ("Prints blank" with Name blank
+on, S29 / S30); Clear Saved removes only the key. With all three keys seeded, each page touched only its own. (Two
+red lines in the audit were its own expectations: index's name line is narrower and cut the long name earlier, and
+index's skipped-entry message names the field instead of quoting the line, S34's queued P4.)
+
+**Odd payloads.** A list holding a `null` among good rows deleted the whole saved roster on the twins — the restore
+threw, and the catch S15 added for an unreadable payload cleared it — while index made the row empty and kept the
+rest: fixed, 43ce1a7. A number for a name, an object or a string for the list, a bogus `inputMode`, a number for the
+paste box, an object for the header line, index's `mixedTypes` / `fracOps` as strings (S14's one throw, gone since)
+all load to a usable roster and keep the payload; "per student 9" leaves the select blank (a value no version wrote).
+
+**The production frame.** Each page under its real hostnames (a parent at mathsheet.io, the page from
+hbleiberg.github.io in an iframe, both served from the working tree): Save inside the frame, reload the parent, the
+roster comes back with "Saved roster loaded." on all three. In this headless Chromium a direct visit to the page
+shares the frame's storage; current Chrome, Safari and Firefox partition a third-party frame's storage by the top
+site, so there the mathsheet.io copy and a direct GitHub Pages visit keep separate rosters, and Safari may expire a
+frame's storage it has not seen used: not measurable here.
+
+**Fixes.** 43ce1a7 (the twins): `S35-saved-null-row` — [good, null, good], [null, good] and [null] on all three
+pages: the good rows back, the bad one empty in its place, the payload kept byte for byte, Save rewriting it clean;
+S15's "{oops" and "null" still reported and cleared (`--ref 6fac477` fails 22, index green on both). Then two
+queued S6 (pass G) items on index, the twins having nothing autonomous of their own: febeb65, Integers write a
+negative number with U+2212 on the sheet and key (`S35-integer-sign`: no hyphen, negatives on both, every answer
+right with U+2212 read as minus; `--ref 43ce1a7` fails 9; S6-math-audit integers@7 / @8 and mixed@7 / @8 green);
+c385a35, the Scientific Notation key answers "4.6 × 10<sup>5</sup>" as the sheet writes it, not "4.6 x 10^5"
+(`S35-sci-key`; `--ref febeb65` fails 2; under print every key cell and answer box where it was, 0.00 px).
+Probe repairs: S31-cap-note, S31-across-division-left and S32-type-case replay S35's two sheet changes on their old
+page before comparing byte for byte, through the harness's new `replayLater` (874e4c9; green, controls still fail 5,
+4 and 5); S6-math-audit reads a key's `<sup>` as "^" and takes "×"; S28-sci-locale leaves a `<sup>` answer out of its
+whole numbers.
+
+**Traps.** The harness's `openPage` waits for a visible roster row, so a payload saved in Advanced mode must be
+planted by hand and the page reloaded (as S15's probe does). A long name's text on an index sheet is cut with "…"
+sooner than on the twins: read `textContent` of the name span only where it fits. An iframe from `localhost` to
+`127.0.0.1` errored in this sandbox; fulfilling both hostnames from the working tree with `context.route` works.
+
+**Sweep.** All 69 probes, one after another on c385a35 with nothing else running (947 s): 67 green; S31-across-division-left
+and S32-type-case red on their byte-for-byte arms (the key's `<sup>`), repaired in 874e4c9 and green, their controls
+failing. Then `closeout.mjs` on the close-out commit.
