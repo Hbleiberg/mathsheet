@@ -34,8 +34,10 @@ async function open(file, body, storage) {
   return p;
 }
 const hints = (p, s) => p.page.evaluate(sel => [...document.querySelectorAll(sel)].map(e => e.querySelector('input[name="studentName"]').placeholder), s.rows);
-// a row's markup with the Name's placeholder taken out
-const rowsHtml = (p, s) => p.page.evaluate(sel => [...document.querySelectorAll(sel)].map(e => e.outerHTML.replace(/ placeholder="[^"]*"/g, '')), s.rows);
+// a row's markup with the Name's placeholder taken out, and S37's names: Duplicate / Delete's (an id and `aria-labelledby`),
+// index's panel groups (`role` and `aria-labelledby`)
+const rowsHtml = (p, s) => p.page.evaluate(sel => [...document.querySelectorAll(sel)].map(e => e.outerHTML.replace(/ placeholder="[^"]*"/g, '')
+  .replace(/ id="(duplicate|delete)Student-\d+" aria-labelledby="[^"]*"/g, '').replace(/ role="group" aria-labelledby="studentHeading-\d+ (opsTitle|mixedLabel)-\d+"/g, '')), s.rows);
 
 try {
   for (const file of FILES) {

@@ -47,7 +47,8 @@ const STYLE = sel => [document.querySelector(sel), ...document.querySelectorAll(
 const LAYOUT = app => [...document.querySelectorAll(app + ' *')].filter(e => e.offsetParent).slice(0, 400).map(e => {
   let r = e.getBoundingClientRect();
   if (/duplicate|delete/.test(e.className)) { const g = document.createRange(); g.selectNodeContents(e); r = g.getBoundingClientRect(); }
-  return `${e.tagName}#${e.id}:${Math.round(r.top + scrollY)},${Math.round(r.left)},${Math.round(r.width)}x${Math.round(r.height)}`; });
+  const id = e.id.replace(/^(duplicate|delete)Student-\d+$/, '');   // S37 gave Duplicate / Delete ids: the boxes are what is compared
+  return `${e.tagName}#${id}:${Math.round(r.top + scrollY)},${Math.round(r.left)},${Math.round(r.width)}x${Math.round(r.height)}`; });
 
 try {
   for (const file of Object.keys(IDS)) {
