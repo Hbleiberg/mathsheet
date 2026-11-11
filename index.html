@@ -2449,7 +2449,8 @@ function generate() {
       }
     }
   }
-  if (doKey && allAnswers.length) resultsDiv.appendChild(buildAnswerKeySheet(allAnswers, !doKey));
+  // The keys come last, so the last key is the class set's last sheet: no `print-break` (`!doKey` was always false here; S38, found S4)
+  if (doKey && allAnswers.length) resultsDiv.appendChild(buildAnswerKeySheet(allAnswers, true));
   fitLongDescriptions();
   fitLongNames();
   // The skipped-entries box stands above the sheets: land on it, so a missing student (or a capped count, S31) is explained (S7).

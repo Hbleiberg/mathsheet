@@ -106,7 +106,8 @@ export const launch = () => chromium.launch();
  * Later approved sheet changes, replayed on an old index.html (S23's rule): a probe's byte-for-byte arm against a
  * commit before them then measures its own change only. Each swap takes today's text for the old one, and is skipped
  * where the old page already has it. S35: Integers' minus sign (`signed()`, `makeIntegers`) and the Scientific
- * Notation key's notation (`makeSciNote`'s `answerHtml`, which the key's across cell prints). Extend it when a later
+ * Notation key's notation (`makeSciNote`'s `answerHtml`, which the key's across cell prints). S38: the last key's
+ * `print-break` (`buildAnswerKeySheet(allAnswers, true)`). Extend it when a later
  * change to index's sheets breaks such an arm.
  */
 export function replayLater(body) {
@@ -118,6 +119,7 @@ export function replayLater(body) {
     body = body.replace(/function makeSciNote\(\) \{[\s\S]*?\n\}\n/, () => take(/function makeSciNote\(\) \{[\s\S]*?\n\}\n/));
     body = body.replace(`flex-shrink:0">' + ansStr + '</span>' +`, `flex-shrink:0">' + (problem.answerHtml || ansStr) + '</span>' +`);
   }
+  body = body.replace('buildAnswerKeySheet(allAnswers, !doKey)', 'buildAnswerKeySheet(allAnswers, true)');
   return body;
 }
 
