@@ -866,10 +866,12 @@ body { margin: 0; padding: 12px; background: white; }
         <div class="mwg-advanced-help">
           Format: <strong>Name, Number, ProblemType, Count, Grade;</strong><br>
           Number can be any text (e.g. 2, 14B, Blue) or left empty. The name may be left empty too — it prints a blank Name line (e.g. <strong>, 2, add2, 30, 3;</strong>).<br>
+          You can also paste one student per line.<br>
           You can also paste five columns (name, number, problem type, count, grade) straight from a spreadsheet.<br>
           Example: <strong>Harrison, 1, add2, 30, 3; Emily, 2, mixed, 40, 4;</strong><br>
           Problem types: add1–add5, sub1–sub5, mul1–mul5, div1–div5 (Levels 1–5 of addition, subtraction, multiplication, division), fractions, fractions[add|sub|mul|divf|divw], decimals, decimals[add|sub|mulw|muld|divw|divd], rounding, longdivision, orderofoperations, integers, exponents, scientificnotation, mixed, mixed[type1|type2|...]<br>
-          Counts: 30, 40, 50, 60 — Grades: 1–8
+          Counts: 30, 40, 50, 60 — Grades: 1–8<br>
+          Extra spaces are okay. Blank trailing entries are ignored. Invalid entries are skipped and listed in an error message.
         </div>
       </div>
       <div class="mwg-level-reference-card">
@@ -1794,7 +1796,7 @@ function clearCurrentRoster() {
 function clearSavedRoster() {
   if (!window.confirm("Are you sure you want to clear the saved roster?")) return;
   try { localStorage.removeItem(STORAGE_KEY); showSuccess("Saved roster cleared."); }
-  catch(e) { showNotice("Unable to clear saved roster."); }
+  catch(e) { showNotice("Unable to clear saved roster in this browser."); }
 }
 
 function buildAdvancedCode() {
@@ -2406,7 +2408,7 @@ function generate() {
   var parsed = inputMode === "advanced" ? parseAdvancedInput() : getStudentsFromStandard();
   var notes = parsed.notes || [];
   if (parsed.errors.length || notes.length) showErrors(parsed.errors, notes);
-  if (!parsed.students.length) { showNotice("No valid students found."); return; }
+  if (!parsed.students.length) { showNotice("No valid students found to generate worksheets."); return; }
   var copies=parseInt(worksheetsPerStudent.value)||1, doKey=answerKeyToggle.checked;
   var total=parsed.students.length*copies, pageCounter=0, allAnswers=[];
   for (var s = 0; s < parsed.students.length; s++) {
@@ -2909,10 +2911,8 @@ function wireButtons() {
   copyCodeBtn.addEventListener("click", function() {
     var text = codeOutput.value;
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function() { showSuccess("Code copied."); }).catch(function() { fallbackCopy(text, "Code copied."); });
-    } else { fallbackCopy(text, "Code copied."); }
-    try { void 0; }
-    catch(e) { showNotice("Unable to copy automatically."); }
+      navigator.clipboard.writeText(text).then(function() { showSuccess("Advanced code copied."); }).catch(function() { fallbackCopy(text, "Advanced code copied."); });
+    } else { fallbackCopy(text, "Advanced code copied."); }
   });
   useCodeBtn.addEventListener("click", function() {
     advancedBox.value = codeOutput.value;
