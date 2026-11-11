@@ -1178,6 +1178,10 @@ function esc(text) {
     .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
     .replace(/'/g,"&#x27;");
 }
+// A smooth scroll is an animation: with the system's "reduce motion" setting on, the page jumps instead (S33; found S12).
+function scrollBehavior() {
+  try { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"; } catch (e) { return "smooth"; }
+}
 // A printed name in its own direction: a Hebrew name ending in punctuation ("שרה כ.") printed the period at the
 // name's start as a Hebrew reader reads it. A dir="auto" span isolates it as <bdi> does, so the name stays at the left
 // of its line and an English name prints as before; an empty name stays an empty line (S18, approved; as on the
@@ -1813,7 +1817,7 @@ function openCodeModal() {
   if (!code.trim()) { showNotice("Add at least one student with a grade, type and count before generating advanced code."); return; }
   codeOutput.value = code;
   codePanel.style.display = "block";
-  codePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  codePanel.scrollIntoView({ behavior: scrollBehavior(), block: "nearest" });
   codeOutput.focus({ preventScroll: true });   // the code is read where it appears; Close and Escape return focus to the opener (S12 P3; S16)
 }
 function closeCodePanel() {
@@ -2421,7 +2425,7 @@ function generate() {
   fitLongDescriptions();
   fitLongNames();
   // The skipped-entries box stands above the sheets: land on it, so a missing student (or a capped count, S31) is explained (S7).
-  (parsed.errors.length || notes.length ? errorsDiv : resultsDiv).scrollIntoView({ behavior: "smooth", block: "start" });
+  (parsed.errors.length || notes.length ? errorsDiv : resultsDiv).scrollIntoView({ behavior: scrollBehavior(), block: "start" });
 }
 
 // A description too long for its box shrinks to fit (approved S4, shipped S22): with copies its end ran under
@@ -2536,7 +2540,7 @@ function remindUnsavedRoster() {
 
 function generateAndPrint() {
   clearStatus(); generate();
-  if (resultsDiv.querySelector(".mwg-worksheet") && remindUnsavedRoster()) statusDiv.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (resultsDiv.querySelector(".mwg-worksheet") && remindUnsavedRoster()) statusDiv.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
   setTimeout(function() {
     if (!resultsDiv.querySelector(".mwg-worksheet")) return;
     var originalParent=resultsDiv.parentNode, originalNext=resultsDiv.nextSibling;
@@ -2603,7 +2607,7 @@ function generateAndSavePdf() {
   var libsReady = loadPdfLibs();   // the download runs while the worksheets build
   generate();
   // The progress line (one per page, below) stays in view: an export runs half a minute for a class set (S3, approved).
-  statusDiv.scrollIntoView({ behavior: "smooth", block: "start" });
+  statusDiv.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
   setTimeout(function() {
     var sheets = resultsDiv.querySelectorAll(".mwg-worksheet, .mwg-answer-key-sheet");
     if (!sheets.length) { pdfDone(); return; }
@@ -2832,7 +2836,7 @@ function validateAndRun(action, opener) {
   html += '<br>Fields are highlighted in red. You can fix them or generate anyway.';
   validationMsg.innerHTML = html;
   validationBox.style.display = "block";
-  validationBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  validationBox.scrollIntoView({ behavior: scrollBehavior(), block: "nearest" });
 }
 
 // The validation box's two buttons hide with it, and a focused button that is hidden drops focus to the page's start:
@@ -2862,7 +2866,7 @@ function wireButtons() {
     // Scroll to first highlighted field
     var first = null, fields = studentsContainer.querySelectorAll("input, select");   // the inline style reads back as "rgb(204, 0, 0)": a selector on "rgb(204,0,0)" never matched, so Fix only hid the box (S16)
     for (var i = 0; i < fields.length && !first; i++) if (/rgb\(204,\s*0,\s*0\)/.test(fields[i].style.border)) first = fields[i];
-    if (first) { first.scrollIntoView({ behavior: "smooth", block: "center" }); first.focus({ preventScroll: true }); }
+    if (first) { first.scrollIntoView({ behavior: scrollBehavior(), block: "center" }); first.focus({ preventScroll: true }); }
     else if (back) back.focus();   // every field filled meanwhile: nothing to fix, so back to the button that asked
   });
   validationGenerate.addEventListener("click", function() {

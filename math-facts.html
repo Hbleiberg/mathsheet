@@ -889,6 +889,10 @@ function escapeHtml(text) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#x27;");
 }
+// A smooth scroll is an animation: with the system's "reduce motion" setting on, the page jumps instead (S33; found S12).
+function scrollBehavior() {
+  try { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"; } catch (e) { return "smooth"; }
+}
 
 function renderLevelReference() {
   var html = "";
@@ -1482,7 +1486,7 @@ function openAdvancedCodeModal() {
   if (!output.trim()) { showNotice("Add at least one student with a level before generating advanced code."); return; }
   advancedCodeOutput.value = output;
   advancedCodePanel.style.display = "block";
-  advancedCodePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  advancedCodePanel.scrollIntoView({ behavior: scrollBehavior(), block: "nearest" });
   advancedCodeOutput.focus({ preventScroll: true });   // the code is read where it appears; Close and Escape return focus to the opener (S12 P3; S16)
 }
 
@@ -1682,7 +1686,7 @@ function validateAndRun(action, opener) {
   html += '<br>Fields are highlighted in red. You can fix them or generate anyway.';
   mmValidationMsg.innerHTML = html;
   mmValidationBox.style.display = "block";
-  mmValidationBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  mmValidationBox.scrollIntoView({ behavior: scrollBehavior(), block: "nearest" });
 }
 
 function generateWorksheets() {
@@ -1718,7 +1722,7 @@ function generateWorksheets() {
   fitLongNames();
   if (parsed.students.length > 0) {
     // The skipped-entries box stands above the sheets: land on it, so a missing student is explained (S7).
-    (parsed.errors.length ? errors : results).scrollIntoView({ behavior: "smooth", block: "start" });
+    (parsed.errors.length ? errors : results).scrollIntoView({ behavior: scrollBehavior(), block: "start" });
   } else {
     showNotice("No valid students found to generate worksheets.");
   }
@@ -1808,7 +1812,7 @@ function remindUnsavedRoster() {
 function doGenerateAndPrint() {
   clearStatusMessages();
   generateWorksheets();
-  if (results.querySelector(".worksheet") && remindUnsavedRoster()) statusMessages.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (results.querySelector(".worksheet") && remindUnsavedRoster()) statusMessages.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
   setTimeout(function () {
     if (results.querySelector(".worksheet")) {
       var originalParent = results.parentNode;
@@ -1877,7 +1881,7 @@ function doGenerateAndSavePdf() {
   var libsReady = loadPdfLibs();   // the download runs while the worksheets build
   generateWorksheets();
   // The progress line (one per page, below) stays in view: an export runs half a minute for a class set (S3, approved).
-  statusMessages.scrollIntoView({ behavior: "smooth", block: "start" });
+  statusMessages.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
   setTimeout(function() {
     var sheets = results.querySelectorAll(".worksheet");
     if (!sheets.length) { pdfDone(); return; }
@@ -2113,7 +2117,7 @@ function wireButtons() {
     mmPendingAction = null;
     var first = null, fields = studentsContainer.querySelectorAll("input, select");   // the inline style reads back as "rgb(204, 0, 0)": a selector on "rgb(204,0,0)" never matched, so Fix only hid the box (S16)
     for (var i = 0; i < fields.length && !first; i++) if (/rgb\(204,\s*0,\s*0\)/.test(fields[i].style.border)) first = fields[i];
-    if (first) { first.scrollIntoView({ behavior: "smooth", block: "center" }); first.focus({ preventScroll: true }); }
+    if (first) { first.scrollIntoView({ behavior: scrollBehavior(), block: "center" }); first.focus({ preventScroll: true }); }
     else if (back) back.focus();   // every field filled meanwhile: nothing to fix, so back to the button that asked
   });
 
