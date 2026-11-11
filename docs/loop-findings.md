@@ -1846,3 +1846,57 @@ S35-integer-sign, S35-sci-key and S7-skipped-list green.
 1× differs in the names' line heights alone. Under emulated print the sheets sit in the hidden app until the page's
 move to body runs: `printBoxes()` before `page.pdf()` (the probe's first run read 1 page for 18 sheets). A forced push
 to the assigned branch was refused by the session's guard; a plain push fast-forwards it.
+
+## S39 (2026-11-11) — pass H (teacher walkthrough) on index.html
+
+**Method.** Real clicks and keys at 1280 × 900 (scratch `s39/walk.mjs`, `walk2.mjs`, `dec.mjs`): a grade 4 class of 22
+(Avi Cohen, 1, Grade 4, Multiplication Level 2, 40, typed by keyboard), Add Student × 19 and 21 names (two Hebrew),
+Fill Down, three exceptions (Student 7 Multiplication 1, Student 15 Multiplication 3, Student 20's IEP on Addition 2 at
+30), Print Answer Key, Generate & Print; Save, reload, next week's Fill Down after Student 1 moves to Multiplication 3,
+a new student, Generate Advanced Code; then two copies with keys, Advanced → Standard, Duplicate, Name blank, a
+half-filled row with Generate Anyway, Clear Current Roster; a grade 5-8 Decimals key from the form. Add Student was
+clicked by its box's coordinates with a pointer that follows it (`s39/addclick.mjs`), at 1280 × 900, on an iPhone 13,
+and in a 1,400 px frame under a 250 px header (mathsheet.io's shape).
+
+**The class: 85 actions, 0 page errors, 44 sheets in 265 ms.** Student 1 by keyboard took 18 (Grade: "4" picks
+nothing, the options read "Grade 4", so "Grade 4" typed whole; Problem Type: "M" picks Mixed, "L" Addition Level 1,
+Multiplication Level 2 is Home and 8 arrows; Count: "4" picks 40). Closed, the Problem Type reads "Level 2 — factor 6-9":
+the operation is only in its group's label (queued, gate 2, beside the twins' S20 type-ahead line).
+
+**Add Student left the window (fixed, a95e9e5, all three pages).** The new row (125 px) goes in above the button, so it
+moved a row lower with each click: from the third click it sat at 887 px of a 900 px window, and a teacher adding 19
+students turned the wheel 16-17 times at 1280 × 900 (24-36 on an iPhone 13 after the first reach, 16-17 in the frame). S18, S20 and S21 never
+saw it: Playwright's `page.click` scrolls its target into view. Now an instant `scrollBy` takes up the row, then
+`scrollIntoView({ block: "nearest" })` for the frame, whose document cannot scroll until the roster passes 1,400 px:
+no wheel turn after the first reach anywhere; at 1280 × 900 the button still moves on the first two clicks (the page
+is shorter than the window), in the frame on 1-2. Enter keeps focus on the button and it stays in view.
+
+**Numbers.** Student 1's "1" never carries on: the default rows 2 and 3 are blank, and Add Student continues from the
+last row only, so all 21 rows started empty (S18's P4, measured again). Duplicate on a blank-numbered row leaves its copy
+blank.
+
+**Next week (held).** Student 1 → Multiplication 3, Fill Down: "Settings filled down from Student 1. Students 7 and 20
+kept their own settings." (Student 15 was already on Multiplication 3). The save restored all 22 rows, the key toggle,
+Student 20's 30. A new student's row is empty (Fill Down at the top again: seed).
+
+**Decimals keys (fixed, 03356bd, index).** Picking Decimals ticks all six operations, so the form deals the
+per-operation makers, not `makeDecimals` (S11's approved places): 53 of 300 sums, differences and products on the keys
+showed fewer places than their numbers ("29.8 − 23.8 = 6", "2.10 × 8 = 16.8", "21.03 + 82.27 = 103.3"); 18 % of the
+form's Decimals answers. Quotients are written as they come ("724.0 ÷ 8 = 90.5", "11.20 ÷ 2.8 = 4") and stay so.
+
+**Clean.** The unsaved notice after Generate; keys after all the sheets in roster order, copies by student ("Worksheet 1
+of 2", "(Key 1 of 2)"); Name blank empties the sheets' names and the "Prints blank" hint shows; Generate Anyway prints
+the complete rows; Clear Current Roster asks first and keeps the settings; the Advanced code round-trips the class.
+Advanced → Standard shows the Standard rows as they were (the modes keep their own rosters): seed.
+
+**Seeds logged.** "Use in Standard Input" (the reverse of Generate Advanced Code); a new row on Student 1's settings;
+print by set with copies (gate 6).
+
+**Controls.** `S39-add-student-place --ref 99ccec4` fails 27 (9 a page); `S39-decimal-key-places --ref a95e9e5` fails
+3. The first look at Add Student, wheel-scrolling only when it had left the window, counted no clicks lost: a pointer that
+does not follow the button misses from the second click on any variant while the page is shorter than the window, so
+the probe follows it and counts wheel turns.
+
+**Traps.** Playwright's `page.click` scrolls its target into view: count a teacher's scrolls with `page.mouse` on the
+box. An unscrollable page cannot hold a button still: `scrollBy` is a no-op there. A heredoc of nested quotes stopped
+at the shell's safety check as an unreadable removal: write such scripts with the Write tool.
