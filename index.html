@@ -1329,6 +1329,11 @@ var DEC_OPS = [
   { value: "decimals-divd", label: "Division (dec ÷ dec)" }
 ];
 
+// The row's number in its ids (entryUid), read from its heading: the option panels are groups named "Student 2 Fraction
+// Operations", "Student 1 Include in Mixed:" and each title within, so a screen reader can tell a grade 5 Mixed panel's
+// two "Addition" checkboxes apart, and whose panel it is (S37; found S16, pass D)
+function rowUid(entryDiv) { return entryDiv.querySelector("h3").id.replace("studentHeading-", ""); }
+
 function renderOpsPanel(entryDiv, type, checkedFrac, checkedDec) {
   var panel = entryDiv.querySelector(".mwg-ops-panel");
   if (!panel) return;
@@ -1337,7 +1342,7 @@ function renderOpsPanel(entryDiv, type, checkedFrac, checkedDec) {
   var cbClass = type === "fractions" ? "mwg-frac-op-cb" : "mwg-dec-op-cb";
   var title = type === "fractions" ? "Fraction Operations" : "Decimal Operations";
   var html = '<div class="mwg-ops-header">';
-  html += '<span class="mwg-ops-title">' + title + '</span>';
+  html += '<span class="mwg-ops-title" id="opsTitle-' + rowUid(entryDiv) + '">' + title + '</span>';
   html += '<button type="button" class="mwg-ops-select-all">Select All Operations</button>';
   html += '</div>';
   html += '<div class="mwg-ops-grid">';
@@ -1390,8 +1395,9 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
   if (!box) return;
   var types = getMixedTypesForGrade(grade);
   var checked = checkedTypes || defaultMixedTypes(grade);
+  var u = rowUid(containerEl);
   var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
-  html += '<div class="mwg-mixed-types-label" style="margin-bottom:0">Include in Mixed:</div>';
+  html += '<div class="mwg-mixed-types-label" id="mixedLabel-' + u + '" style="margin-bottom:0">Include in Mixed:</div>';
   html += '<div style="display:flex;gap:8px">';
   html += '<button type="button" class="mwg-mixed-select-all" style="font-size:12px;padding:2px 8px;cursor:pointer;font-family:Georgia,serif;">Select All</button>';
   html += '<button type="button" class="mwg-mixed-deselect-all" style="font-size:12px;padding:2px 8px;cursor:pointer;font-family:Georgia,serif;">Deselect All</button>';
@@ -1407,9 +1413,9 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
     // Fractions and Decimals get special nested treatment
     if (group.label === "Fractions" && groupTypes.indexOf("fractions") !== -1) {
       var fracChecked = checked.indexOf("fractions") !== -1 || checked.some(function(c){return c.indexOf("fractions-")===0;});
-      html += '<div class="mwg-mixed-frac-dec-group">';
+      html += '<div class="mwg-mixed-frac-dec-group" role="group" aria-labelledby="mixedGroup-' + u + '-' + g + '">';
       html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">';
-      html += '<label style="font-size:13px;font-weight:bold;color:rgb(37,99,235);cursor:pointer;display:flex;align-items:center;gap:6px"><input type="checkbox" class="mwg-mixed-cb mwg-frac-master" value="fractions" ' + (fracChecked?"checked":"") + '> Fractions</label>';
+      html += '<label style="font-size:13px;font-weight:bold;color:rgb(37,99,235);cursor:pointer;display:flex;align-items:center;gap:6px"><input type="checkbox" class="mwg-mixed-cb mwg-frac-master" value="fractions" ' + (fracChecked?"checked":"") + '> <span id="mixedGroup-' + u + '-' + g + '">Fractions</span></label>';
       html += '<button type="button" class="mwg-ops-select-all mwg-frac-all" style="font-size:11px;padding:2px 6px;cursor:pointer;font-family:Georgia,serif;">All Operations</button>';
       html += '</div>';
       html += '<div class="mwg-ops-grid">';
@@ -1427,9 +1433,9 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
     }
     if (group.label === "Decimals" && groupTypes.indexOf("decimals") !== -1) {
       var decChecked = checked.indexOf("decimals") !== -1 || checked.some(function(c){return c.indexOf("decimals-")===0;});
-      html += '<div class="mwg-mixed-frac-dec-group">';
+      html += '<div class="mwg-mixed-frac-dec-group" role="group" aria-labelledby="mixedGroup-' + u + '-' + g + '">';
       html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">';
-      html += '<label style="font-size:13px;font-weight:bold;color:rgb(37,99,235);cursor:pointer;display:flex;align-items:center;gap:6px"><input type="checkbox" class="mwg-mixed-cb mwg-dec-master" value="decimals" ' + (decChecked?"checked":"") + '> Decimals</label>';
+      html += '<label style="font-size:13px;font-weight:bold;color:rgb(37,99,235);cursor:pointer;display:flex;align-items:center;gap:6px"><input type="checkbox" class="mwg-mixed-cb mwg-dec-master" value="decimals" ' + (decChecked?"checked":"") + '> <span id="mixedGroup-' + u + '-' + g + '">Decimals</span></label>';
       html += '<button type="button" class="mwg-ops-select-all mwg-dec-all" style="font-size:11px;padding:2px 6px;cursor:pointer;font-family:Georgia,serif;">All Operations</button>';
       html += '</div>';
       html += '<div class="mwg-ops-grid">';
@@ -1442,7 +1448,7 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
       html += '</div>';
       continue;
     }
-    html += '<div style="margin-bottom:6px"><strong style="font-size:12px;color:rgb(85,85,85)">' + esc(group.label) + '</strong><div class="mwg-mixed-types-grid">';
+    html += '<div style="margin-bottom:6px" role="group" aria-labelledby="mixedGroup-' + u + '-' + g + '"><strong id="mixedGroup-' + u + '-' + g + '" style="font-size:12px;color:rgb(85,85,85)">' + esc(group.label) + '</strong><div class="mwg-mixed-types-grid">';
     for (var t = 0; t < groupTypes.length; t++) {
       var type = groupTypes[t];
       var isChecked = checked.indexOf(type) !== -1 ? "checked" : "";
@@ -1636,8 +1642,8 @@ function createStudentEntry(index, data) {
       '<div><label for="grade-' + uid + '" id="gradeLabel-' + uid + '">Grade Level</label><select name="grade" id="grade-' + uid + '" aria-labelledby="studentHeading-' + uid + ' gradeLabel-' + uid + '">' + getGradeOptions(grade) + '</select></div>' +
       '<div><label for="problemType-' + uid + '" id="problemTypeLabel-' + uid + '">Problem Type</label><select name="problemType" id="problemType-' + uid + '" aria-labelledby="studentHeading-' + uid + ' problemTypeLabel-' + uid + '">' + getTypeOptions(parseInt(grade)||0, type) + '</select></div>' +
       '<div><label for="count-' + uid + '" id="countLabel-' + uid + '">Problem Count</label><select name="count" id="count-' + uid + '" aria-labelledby="studentHeading-' + uid + ' countLabel-' + uid + '">' + getCountOptions(count, isHorizType(type)) + '</select></div>' +
-      '<div class="mwg-ops-panel" id="ops-' + entryIdCounter + '"></div>' +
-      '<div class="mwg-mixed-types"></div>' +
+      '<div class="mwg-ops-panel" id="ops-' + entryIdCounter + '" role="group" aria-labelledby="studentHeading-' + uid + ' opsTitle-' + uid + '"></div>' +
+      '<div class="mwg-mixed-types" role="group" aria-labelledby="studentHeading-' + uid + ' mixedLabel-' + uid + '"></div>' +
     '</div>';
   var gradeSelect = div.querySelector('[name="grade"]');
   var typeSelect  = div.querySelector('[name="problemType"]');
