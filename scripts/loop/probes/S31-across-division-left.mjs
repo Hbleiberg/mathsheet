@@ -13,8 +13,7 @@
 // Fails before the change (`--control`: REF served as the page under test).
 //   node scripts/loop/probes/S31-across-division-left.mjs [--control] [--ref <commit>]
 import { execSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { serve, launch, openPage, ROOT } from '../harness.mjs';
+import { serve, launch, openPage, ROOT, replayLater } from '../harness.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
 const REF = arg('--ref') || '73a7c3a', CONTROL = process.argv.includes('--control');
@@ -26,13 +25,7 @@ const H2C_STUB = `window.html2canvas = function (clone) {
     return d.getBoundingClientRect().left - d.closest('.mwg-horiz-problem').getBoundingClientRect().left; }));
   var cv = document.createElement('canvas'); cv.width = 4; cv.height = 4; return Promise.resolve(cv); };`;
 const JSPDF_STUB = `window.jspdf = { jsPDF: function () { return { addPage: function () {}, addImage: function () {}, save: function (n) { window.__pdfSaved = n; } }; } };`;
-// Later sheet changes replayed on REF, so its byte-for-byte arm measures this probe's own change only (S23's rule):
-// S35's minus sign on Integers, index's `signed()` and `makeIntegers` as the working tree has them.
-const replayLater = body => {
-  const now = readFileSync(`${ROOT}/index.html`, 'utf8').match(/\/\/ A negative number takes[\s\S]*?\nfunction makeIntegers[\s\S]*?\n\}\n/);
-  const old = /function makeIntegers\(grade\) \{[\s\S]*?\n\}\n/;
-  return !now || /function signed\(/.test(body) || !old.test(body) ? body : body.replace(old, () => now[0]);
-};
+// S35's sheet changes replayed on REF first (harness `replayLater`, S23's rule)
 const refBody = replayLater(execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 }));
 
 const srv = await serve(); const browser = await launch();

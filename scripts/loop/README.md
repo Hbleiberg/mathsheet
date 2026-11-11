@@ -6,7 +6,7 @@ self-contained HTML files. Playwright and Chromium are preinstalled in the cloud
 
 | Script | What it does |
 |---|---|
-| `harness.mjs` | Serves the repo root, opens a page with every foreign origin aborted (`{ cdn: true }` lets the two cdnjs PDF libraries load), stubs `window.print` with a counter, knows each page's DOM contract (`PAGES`), and offers `generate()`, `cellCounts()`, `printBoxes()`. Import it from a probe. |
+| `harness.mjs` | Serves the repo root, opens a page with every foreign origin aborted (`{ cdn: true }` lets the two cdnjs PDF libraries load), stubs `window.print` with a counter, knows each page's DOM contract (`PAGES`), and offers `generate()`, `cellCounts()`, `printBoxes()`, and `replayLater(body)`, which replays later approved sheet changes on an old `index.html` so a byte-for-byte arm against it measures its own change only (S35). Import it from a probe. |
 | `smoke.mjs` | The regression floor: per page — load clean, generate by a real click, answer key, print geometry (every sheet 1056×816 under the page's own print trick), advanced input with a nameless entry, save/reload roster, an XSS control name. `--cdn` adds the PDF arm (filename, `%PDF-`, page count). `--only <file>`, `--json` (load/generate/PDF timings and bytes for pass A). |
 | `check-inline-js.mjs` | Compiles every inline `<script>` of every root page; one syntax error kills a page's whole JS while the HTML still renders. |
 | `check-ledger.mjs` | The ledger's schema and size rules (`ledger-rules.mjs`). |

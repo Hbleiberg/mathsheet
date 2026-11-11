@@ -11,14 +11,15 @@
 // Fails before the change (`--control`: REF served as the page under test).
 //   node scripts/loop/probes/S32-type-case.mjs [--control] [--ref <commit>]
 import { execSync } from 'node:child_process';
-import { serve, launch, openPage, ROOT } from '../harness.mjs';
+import { serve, launch, openPage, ROOT, replayLater } from '../harness.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
 const REF = arg('--ref') || '4303fd8', CONTROL = process.argv.includes('--control');
 const fails = [];
 const check = (ok, msg) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg); };
 const SEED = `(() => { let s = 20261109; Math.random = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646; })();`;
-const refBody = execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
+// S35's sheet changes replayed on REF first (harness `replayLater`, S23's rule)
+const refBody = replayLater(execSync(`git show ${REF}:index.html`, { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 }));
 
 const srv = await serve(); const browser = await launch();
 async function open(body) {

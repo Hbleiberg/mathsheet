@@ -103,6 +103,25 @@ export const PAGES = {
 export const launch = () => chromium.launch();
 
 /**
+ * Later approved sheet changes, replayed on an old index.html (S23's rule): a probe's byte-for-byte arm against a
+ * commit before them then measures its own change only. Each swap takes today's text for the old one, and is skipped
+ * where the old page already has it. S35: Integers' minus sign (`signed()`, `makeIntegers`) and the Scientific
+ * Notation key's notation (`makeSciNote`'s `answerHtml`, which the key's across cell prints). Extend it when a later
+ * change to index's sheets breaks such an arm.
+ */
+export function replayLater(body) {
+  const now = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const take = re => { const m = now.match(re); if (!m) throw new Error(`replayLater: today's page lacks ${re}`); return m[0]; };
+  if (!/function signed\(/.test(body))
+    body = body.replace(/function makeIntegers\(grade\) \{[\s\S]*?\n\}\n/, () => take(/\/\/ A negative number takes[\s\S]*?\nfunction makeIntegers[\s\S]*?\n\}\n/));
+  if (!/answerHtml/.test(body)) {
+    body = body.replace(/function makeSciNote\(\) \{[\s\S]*?\n\}\n/, () => take(/function makeSciNote\(\) \{[\s\S]*?\n\}\n/));
+    body = body.replace(`flex-shrink:0">' + ansStr + '</span>' +`, `flex-shrink:0">' + (problem.answerHtml || ansStr) + '</span>' +`);
+  }
+  return body;
+}
+
+/**
  * Open a page in a fresh context. Options: viewport, colorScheme, cdn (allow cdnjs), device
  * (a playwright devices descriptor), storage ({ key: value } seeded before load).
  * Returns { context, page, errors, failed, prints() }.
