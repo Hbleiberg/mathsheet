@@ -547,21 +547,9 @@ text-align:right;
     word-break:break-word;
   }
 
-  .worksheet-header-main{
-    grid-template-columns:1fr;
-    gap:8px;
-  }
-
-  .description-box{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
-  .worksheet-set-label{
-    border-left:none;
-    padding-left:0;
-  }
-
+  /* No rule here for the sheet: it is 11 in wide at every width and prints without this query, and fitLongNames() sizes
+     each name on screen. The header restyled here (its fields 8 px apart, the description box stacked) gave a phone's
+     names 0.5 px more than their printed line holds: the last letter printed as "…", and Save PDF cut it (S38). */
   .primary-actions{
     flex-direction:column;
     align-items:stretch;
