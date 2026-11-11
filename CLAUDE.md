@@ -72,7 +72,9 @@ content="noindex">` and keep only `lang`, the charset, the viewport tag and a `<
   Add Student when the roster is rebuilt); the Advanced Code panel opens with focus in its textarea (named by its title
   through `aria-labelledby`), Close and Escape return it to the opener, Use in Advanced Input lands in the Advanced box;
   Fix focuses the first highlighted field; Save PDF, pressed from the keyboard, gives its button focus back when the
-  export ends (`pdfRefocus`, S22: a disabled button drops focus to the page's start).
+  export ends (`pdfRefocus`, S22: a disabled button drops focus to the page's start); Generate Anyway, and Fix with
+  nothing left marked, give it to the button that asked (`validationRefocus()`, S33: a hidden button drops it too).
+  Every scroll a page makes passes `behavior: scrollBehavior()`, "auto" under `prefers-reduced-motion: reduce` (S33).
 - **Narrow screens (S17):** at ≤860 px the button rows wrap (a centred `nowrap` row cannot scroll to its left end,
   which hid Add Student on every phone) and the Advanced layout stacks; at ≤560 px the roster is one column. On
   `index.html` a static rule that must beat an injected one carries `#mwg-app`, since `injectStyles()` loads last.

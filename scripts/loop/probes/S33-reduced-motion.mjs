@@ -1,6 +1,6 @@
 // Probe (loop S33, pass D on math-facts.html; found S12, the same six calls on all three pages): every scroll a page
 // makes on its own was `scrollIntoView({ behavior: "smooth" })`, an animation that ran even with the system's "reduce
-// motion" setting on (the validation box's scroll ran 0 → 3,032 px over 700 ms on a 23-row roster). Per page, with 20
+// motion" setting on (the validation box's scroll ran 0 → 3,032 px over 700 ms on a 24-row roster). Per page, with 20
 // rows, each of the six (the code panel, the validation box, Fix, the sheets after a generate with a saved roster, the
 // unsaved-roster notice after a generate, the PDF status line) is fired from the top or bottom of the page with
 // scrollY sampled every frame for 900 ms: under `prefers-reduced-motion: reduce` the page jumps (the first frame lands,

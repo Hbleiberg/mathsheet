@@ -1483,3 +1483,53 @@ five were there). `trim()` removes NBSP and a BOM but not NEL (U+0085) or the bi
 
 **Sweep.** All 61 probes, run one after another on 31eefb7 with nothing else running: all green (`S10-pdf-progress`
 included, which missed once in S31 beside a diagnostic run).
+
+## S33 (2026-11-11) — pass D (accessibility) on math-facts.html
+
+Method: two scratch audits over the harness (scratchpad `s33/d-mf.mjs`, `s33/d-mf2.mjs`, logs beside them): every
+interactive node's role and name from Chromium's full accessibility tree (CDP) in five states (fresh Standard, the
+validation box shown, the code panel open, Advanced, after a generate with a key), Tab walks recording `:focus-visible`,
+the computed outline and whether each stop is in view, every flow by keyboard with where focus lands and what the live
+regions hold, text colour against its effective background (WCAG luminance, placeholders by `::placeholder`), field and
+button borders against their surroundings (WCAG 1.4.11), the box of every control, WCAG 1.4.12 text spacing injected at
+1280 and 390 px, reflow at 640 and 320 px (200 % and 400 % of 1280), reduced motion emulated with scrollY sampled per
+frame. Arm R first: the smoke and the four S31–S32 probes, green on a130707. Since S12 math-facts gained the Fill Down
+line (S21), the read codes and spreadsheet hint (S21–S22), Save PDF's focus back (S22), the 16 px phone fields and the
+cleared red border (S23), the code panel under its button and the Name hint (S29), the 40 px Duplicate / Delete (S30).
+
+- **Names.** 29 interactive nodes in Standard, 31 with the validation box, 33 with the code panel, 12 in Advanced: none
+  unnamed. The row fields read "Student 2 Level" (S12 holds), the code textarea "Advanced Input Code" (S16), the header
+  line "Header line (optional)" with its title as the description; the Level options sit in five named optgroups. Nothing
+  inside the sheets is focusable. Duplicate / Delete read the same in every row (S12's P4, still open).
+- **Keyboard.** 30 Tab stops in the visual order (the settings read their left column, then the checkboxes), every one
+  with the UA ring (`auto 1px`) and in view; the 40 px Duplicate / Delete draw their ring around the padded box, clear of
+  the fields (`s33/delete-ring.png`). Delete → the next row's Delete; the code panel opens on its textarea, Escape returns
+  to Generate Advanced Code; Fix → the empty Level; Enter in any text field submits nothing. Add Student and Duplicate
+  keep focus on themselves while the counter announces the new count: noted, not queued. **Generate Anyway** hides with
+  the validation box, so a keyboard user's focus fell to the page's start (the next Tab was the mode toggle); Fix did the
+  same once every marked Level had been filled. On all three pages (the same block). Fixed, 43a8825: `validateAndRun`
+  keeps its opener, and a button pressed with its ring showing hands focus back to it; a click is left as it was.
+- **Live regions.** Fill Down's line, the counter, the status and error boxes polite, the validation box an alert;
+  Save Roster, both Clears, Fill Down, the unsaved notice and the skipped list each land in one of them.
+- **Contrast** (lowest first): placeholders 4.61, the Delete red 6.15, the unsaved notice 6.66, the Level Reference's
+  notes 7.08, the Duplicate blue 8.10, the help 9.25; the validation text 17.41 on its pink. Field borders 4.31 (#767676 on
+  the row's #f9f9f9), the marked Level's red 5.59. **Targets**: the three settings checkboxes 16 × 16 (S12's P4, open);
+  every button and field ≥ 34 px tall. **Text spacing**: nothing clipped, no sideways scroll, either mode, 1280 or 390 px.
+  **Reflow**: 640 and 320 px wide, no sideways scroll and no control past the edge in Standard, Advanced or with the code
+  panel. **Reading order**: the Level Reference's 77 items read in the order they show.
+- **Reduced motion.** The six smooth scrolls ran under `prefers-reduced-motion: reduce`: with 24 rows the validation
+  box's scroll glided 0 → 3,032 px over 700 ms. Fixed, 8d78b6a (S12's P4): `scrollBehavior()` on all three pages.
+
+**Probes.** `S33-validation-focus`: per page, Enter on Generate & Print then Generate Anyway prints and focus is back on
+Generate & Print with its ring, the next Tab Save PDF; from Save PDF (offline) focus is on Save PDF after the notice;
+Fix with the row filled meanwhile → the opener, with it still empty → the marked field; a click moves no focus.
+`--ref a130707` fails 12. `S33-reduced-motion`: 20 rows, each scroll fired from the top or bottom with scrollY sampled
+per frame for 900 ms; under reduce every one lands in its first frame (at most one later move), with no preference each
+passes ≥ 5 positions (47–56). `--ref 43a8825` fails all 18 reduce checks. The smoke, S12-a11y, S16-focus, S22-pdf-focus,
+S23 / S24 red-border, S29-code-panel, S10-pdf-progress, S7-skipped-list, S17-phone-layout green after the fixes.
+
+**Traps.** Under reduce, Save PDF's scroll lands at once, then the offline notice grows the status box above the sheets
+and scroll anchoring moves the page 52 px: a first judge counting frames away from the final position read that as 19
+frames of animation; count distinct positions. `blur()` before a Tab walk leaves the sequential-focus start at the
+blurred element (the walk began after the code textarea). On the pre-fix page `document.activeElement` still named the
+hidden Fix button in the same task; it settles to `<body>` on the next style recalculation.
