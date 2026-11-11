@@ -1536,3 +1536,61 @@ hidden Fix button in the same task; it settles to `<body>` on the next style rec
 
 **Sweep.** All 63 probes, run one after another on 8d78b6a with nothing else running: all green (930 s). Then
 `closeout.mjs --cdn` on d66ec18: all checks passed (a real 3-page PDF from math-facts).
+
+## S34 (2026-11-11) — pass F (cross-page consistency), the suite: all three pages against the CLAUDE.md standard
+
+Method: textual, as S13's. The twins diffed line by line (`diff math-minute.html math-facts.html`, scratchpad
+`s34/twin.diff`, 474 lines in 33 hunks); every function declared in each page's script lifted by name with acorn and
+compared (`s34/fnx.mjs`, 194 names; index's legacy names normalised); every string a teacher can read — JS literals
+with a word and a space, the markup's text, placeholders and titles — set against the other pages' (`s34/strings.mjs`);
+then CLAUDE.md as it now reads, sentence by sentence, grepped on all three. Since S13 the pages took 51 commits
+(9030fbe..8d78b6a), 19 of them on all three; the other 32 listed by page and each checked for a missing half.
+Arm R first: the smoke and S32-line-breaks, S32-type-case, S33-validation-focus, S33-reduced-motion, green on e97c230.
+
+- **The twins.** Still identical outside the selector system. The 33 hunks are the title, the app id (and its four CSS
+  scopes), the paste box's placeholder, help and example, `STORAGE_KEY`, the level tables and generators, the
+  selector's parse and message, and the PDF filename. Of the 68 functions on both, all but the selector ones
+  (`getLevelMeta`, `getLevelOptions`, `renderLevelReference`, `stack`, `generateProblemsForLevel`, the two roster readers)
+  are equal byte for byte, `captureNext` / `capturePdf` but for the filename. `stack()` still tests its operators in
+  another order (equal results).
+- **All three against the standard.** Equal: the print block (index's own grid rules aside), the PDF constants (the two
+  cdnjs URLs, 1056 × 816, scale 1.5, JPEG 0.8 since S26, `px_scaling`, `FAST`, the stage and clone styles, 300 / 50 ms,
+  the 200 ms print timer), `ignoreElements` on the results, the branding snippet byte for byte at both sites per page,
+  the five settings labels and every shared button's copy, the shared notices ("Roster saved.", the unsaved-roster
+  notice, "Some entries were skipped:", the PDF notices), the parser's line-break regex (S32), its tab split and
+  name rejoin (S20, S3) and its entry numbering (S11), the 6 scrolls through `scrollBehavior()` and `validationRefocus()`
+  (S33), `pdfRefocus` (S22), four polite live regions, one alert, `aria-busy`, `entryUid`, `data-fill-from`,
+  `isNameBlank()`, `nameHtml()`, `endWithEllipsis()`, `fitLongNames()`, `remindUnsavedRoster()`. Every commit that
+  touched one or two pages has its other half or a reason (the twins' Level Reference order, S22: index's is one
+  column; math-minute's digits-only level, S14: index's lenient read is queued; the twins' dead `.modal-*` rules, S24:
+  index's injected styles wait for the convergence session).
+- **index.html, its known exceptions aside.** Three messages drifted from the twins': "Code copied." ("Advanced code
+  copied."), "No valid students found." ("… to generate worksheets."), "Unable to clear saved roster." ("… in this
+  browser."); its Advanced help lacked "You can also paste one student per line." and "Extra spaces are okay. Blank
+  trailing entries are ignored. Invalid entries are skipped and listed in an error message." (both true of its parser).
+  The Copy handler carried `try { void 0; } catch (e) { showNotice("Unable to copy automatically."); }`, a catch that
+  can never run. Aligned and removed, 3d12adb (gate 2, approved). Its parser messages keep their own shape ("Entry 3
+  needs 5 fields: …", "Entry 3 invalid grade: …", unquoted; the twins quote the line): queued, gate 2. Add Student
+  carried on the Number only on index (S18's P4): the twins now do the same, 56af4d9 (asked, approved).
+- **CLAUDE.md.** Its print block is a subset of every page's: the pages add `box-shadow:none` and
+  `content-visibility:visible` on the sheet (the screen's `content-visibility:auto`, S1) and the header, body and cell
+  flex rules; a sentence now says so and points to math-facts.html's block. Its other sentences hold on all three.
+
+**Fixes.** 3d12adb: `S34-index-copy` — Copy in the code panel, a generate with no valid student and Clear Saved
+Roster with storage refusing, by real clicks, on all three pages: index's messages equal both twins', every help has
+both lines, no dead catch (`--ref e97c230` fails 6). 56af4d9: `S34-add-student-number` — the last row's Number "3",
+" 9 ", "", "14B", "Blue", "21" → "4", "10", "", "", "", "22" on every page, the new row's name and level empty;
+Duplicate "5" → "6"; a fresh load unnumbered; a saved roster restores its Numbers (`--ref e97c230` fails 8).
+1a8f3af (S32's queued P4): the fields after the Number drop LRM / RLM, ALM, the embeddings and isolates, the
+zero-width space, non-joiner and joiner, the word joiner and the BOM as they are trimmed, the same line on all three
+parsers; `S34-selector-marks` — 17 marks before, after and around each selector field (index 153 lines, the twins 51)
+with Math.random seeded print sheets byte-identical to the clean paste's, nothing reported, a ZWNJ name kept, a wrong
+code behind an LRM still reported (`--ref 56af4d9` fails 9: the old twins printed 3 of 51 lines — the BOM's, which
+`trim()` takes — and index 41 of 153). The smoke and the roster and paste probes green after each.
+
+**Traps.** The Write tool wrote every `\uXXXX` escape in new text as its raw character, `‌` and `؜` too, even
+inside a Python raw string (S32 had seen it for ` `): the fix script was rewritten by a script that turns raw marks
+back into escapes, then the pages grepped for raw marks (none). A form field keeps the spaces Save trims (" 9 " is
+saved "9"): a restore check compares trimmed values.
+
+**Sweep.** All 66 probes, run one after another on 1a8f3af: see the next commit.

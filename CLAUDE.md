@@ -147,7 +147,9 @@ Worksheets print as **landscape US Letter (11in × 8.5in)**, one worksheet per p
   }
   ```
   The grid is **always 10 columns**; the row count sets problem count (30/40/50/60 ⇒
-  `rows-3`/`-4`/`-5`/`-6`). Mark every worksheet except the last with `print-break`.
+  `rows-3`/`-4`/`-5`/`-6`). Mark every worksheet except the last with `print-break`. The pages' blocks also carry
+  `box-shadow:none` and `content-visibility:visible` on the sheet (on screen the sheets lay out lazily,
+  `content-visibility:auto`, S1) and flex rules for its header, body and cells: copy `math-facts.html`'s block (S34).
 - **JS print flow (the "move to body" trick — `doGenerateAndPrint`):** generate worksheets,
   then after `setTimeout(…, 200)`: save `results.parentNode`/`nextSibling`, set
   `results.id = "results-print"`, `document.body.appendChild(results)`, `window.print()`,
