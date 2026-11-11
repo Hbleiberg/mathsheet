@@ -1436,8 +1436,16 @@ function loadRosterIfAvailable() {
   var savedRaw = null;
   try { savedRaw = localStorage.getItem(STORAGE_KEY); } catch (error) { buildDefaultStudents(); return; }
   if (!savedRaw) { buildDefaultStudents(); return; }
+  var saved = null;
+  try { saved = JSON.parse(savedRaw); } catch (error) { saved = null; }
+  if (saved === null) {
+    // The saved roster could not be read: start blank, say so once and clear it, or every load repeats this (S1; approved S15)
+    buildDefaultStudents();
+    try { localStorage.removeItem(STORAGE_KEY); } catch (ignored) {}
+    showNotice("The saved roster could not be read, so the page starts with a blank roster.");
+    return;
+  }
   try {
-    var saved = JSON.parse(savedRaw);
     applyStandardRoster(saved.standardStudents || []);
     if (advancedInputBox)        advancedInputBox.value     = saved.advancedInput        || "";
     if (worksheetsPerStudent)    worksheetsPerStudent.value = saved.worksheetsPerStudent || "1";
@@ -1450,9 +1458,9 @@ function loadRosterIfAvailable() {
     setInputMode(saved.inputMode || "standard");
     showSuccess("Saved roster loaded.");
   } catch (error) {
-    // The saved roster could not be read: start blank, say so once and clear it, or every load repeats this (S1; approved S15)
+    // A roster that reads but fails to load starts blank and is kept, not cleared: a page bug must not cost the class,
+    // and the next version of the page can load it (S36; S35's null row did that on the twins)
     buildDefaultStudents();
-    try { localStorage.removeItem(STORAGE_KEY); } catch (ignored) {}
     showNotice("The saved roster could not be read, so the page starts with a blank roster.");
   }
 }
