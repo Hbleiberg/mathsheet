@@ -792,6 +792,7 @@ var mmValidationMsg = null;
 var mmValidationFix = null;
 var mmValidationGenerate = null;
 var mmPendingAction = null;
+var mmPendingOpener = null;   // the button that showed the validation box (S33)
 var results = null;
 var errors = null;
 var statusMessages = null;
@@ -1668,11 +1669,12 @@ function clearFilledHighlights() {
   for (var i = 0; i < levels.length; i++) if (levels[i].value && levels[i].style.border) levels[i].style.border = "";
 }
 
-function validateAndRun(action) {
+function validateAndRun(action, opener) {
   if (inputMode === "advanced") { action(); return; }
   var problems = highlightInvalidEntries();
   if (!problems.length) { action(); return; }
   mmPendingAction = action;
+  mmPendingOpener = opener || null;
   var html = '<strong>The following students have unfilled required fields:</strong><br><br>';
   for (var i = 0; i < problems.length; i++) {
     html += '• ' + escapeHtml(problems[i]) + '<br>';
@@ -2023,6 +2025,13 @@ function applyRemoveNumberToggle() {
   }
 }
 
+// The validation box's two buttons hide with it, and a focused button that is hidden drops focus to the page's start:
+// a keyboard user goes back to the button that asked; a click is left as it was, as with Save PDF (S22). (S33)
+function validationRefocus(button) {
+  var opener = mmPendingOpener; mmPendingOpener = null;
+  try { return document.activeElement === button && button.matches(":focus-visible") ? opener : null; } catch (e) { return null; }
+}
+
 function wireButtons() {
   toggleInputModeButton.addEventListener("click", function () {
     clearStatusMessages();
@@ -2090,24 +2099,28 @@ function wireButtons() {
 
   generatePrintButton.addEventListener("click", function () {
     clearStatusMessages();
-    validateAndRun(function() { clearValidationHighlights(); doGenerateAndPrint(); });
+    validateAndRun(function() { clearValidationHighlights(); doGenerateAndPrint(); }, generatePrintButton);
   });
 
   savePdfButton.addEventListener("click", function () {
     clearStatusMessages();
-    validateAndRun(function() { clearValidationHighlights(); doGenerateAndSavePdf(); });
+    validateAndRun(function() { clearValidationHighlights(); doGenerateAndSavePdf(); }, savePdfButton);
   });
 
   mmValidationFix.addEventListener("click", function() {
+    var back = validationRefocus(mmValidationFix);
     mmValidationBox.style.display = "none";
     mmPendingAction = null;
     var first = null, fields = studentsContainer.querySelectorAll("input, select");   // the inline style reads back as "rgb(204, 0, 0)": a selector on "rgb(204,0,0)" never matched, so Fix only hid the box (S16)
     for (var i = 0; i < fields.length && !first; i++) if (/rgb\(204,\s*0,\s*0\)/.test(fields[i].style.border)) first = fields[i];
     if (first) { first.scrollIntoView({ behavior: "smooth", block: "center" }); first.focus({ preventScroll: true }); }
+    else if (back) back.focus();   // every field filled meanwhile: nothing to fix, so back to the button that asked
   });
 
   mmValidationGenerate.addEventListener("click", function() {
+    var back = validationRefocus(mmValidationGenerate);
     mmValidationBox.style.display = "none";
+    if (back) back.focus();
     clearValidationHighlights();
     if (mmPendingAction) {
       var action = mmPendingAction;
