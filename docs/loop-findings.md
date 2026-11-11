@@ -1663,3 +1663,53 @@ sooner than on the twins: read `textContent` of the name span only where it fits
 **Sweep.** All 69 probes, one after another on c385a35 with nothing else running (947 s): 67 green; S31-across-division-left
 and S32-type-case red on their byte-for-byte arms (the key's `<sup>`), repaired in 874e4c9 and green, their controls
 failing. Then `closeout.mjs` on the close-out commit.
+
+## S36 (2026-11-11) — pass L (metadata & discoverability), the suite: all three pages over S15–S35's 54 page commits
+
+Method: the three `<head>`s compared from `<html` through `<title>` at every page commit since S15's noindex (69deb36),
+`S15-head` run; the GitHub Pages copies and the mathsheet.io pages fetched (`curl`, scratchpad `s36/`); the
+production frame rebuilt in the browser — mathsheet.io's parent and the GitHub Pages hostname fulfilled from the
+working tree by `context.route`, cdnjs the only host on the network (`s36/frame-download.mjs`,
+`s36/frame-shape.mjs`). Arm R first: the smoke, S35's three probes and S34's two green on c3d8cc2.
+
+**The heads.** Byte-identical from `<html lang="en">` through `<title>` across all 100 page revisions since 69deb36
+(index 42, math-minute 28, math-facts 30): charset, viewport, robots noindex, a title; `S15-head` green. The repo
+pages still have no anchor, no `<h1>`, no landmark (the "Student N" h3s are the only headings, S12's queued item).
+
+**The deployment.** The GitHub Pages copies of all three pages are byte-identical to `origin/main` (c3d8cc2, S35's
+fixes live). `/mathsheet/favicon.ico` 404 (a 503 once), `/mathsheet/robots.txt` 404 (the copies are noindex, S15).
+mathsheet.io's `/custom-math-sheet-generator/`, `/math-minute-elementary/` and `/math-facts/` still hold one
+`<iframe loading="lazy" src="https://hbleiberg.github.io/mathsheet/…" width="100%" height="1400px" style="border:none;">`
+each, with a canonical to themselves, OG tags and a Twitter card; robots.txt disallows nothing and the page sitemap
+lists all three. WordPress's side, for the maintainer (logged under Awaiting): the iframes carry no `title`, so the
+frame's accessible name is empty (measured, below); the titles say the brand twice ("Custom Math Sheet Generator –
+Printable Practice Worksheets | MathSheet.io - MathSheet.io", the Math Minute page likewise), Math Facts' is only
+"Math Facts - MathSheet.io"; none of the four pages read has a `<meta name="description">`, only `og:description`, so
+a search engine writes its own snippet. Each WordPress page's only `<h1>` is the site title "MathSheet.io". The
+site's icon (a pencil with + − × ÷ √, 32 px PNG, 1,187 bytes) is the one the repo pages now carry.
+
+**Save PDF in the frame, past the click's activation.** A class export takes 10–70 s, and Chromium's transient user
+activation lasts about 5 s, so the download fires from a cross-origin frame long after the click. Per page, framed
+with the first capture held 7 s (`navigator.userActivation.isActive` read false at the capture: the handle), framed
+without the hold, and the hold on a direct visit: every arm downloaded its file ("worksheets.pdf",
+"math-minute-worksheets.pdf", "math-facts-worksheets.pdf") and said "PDF saved!", no console complaint. Control: the
+same frame with `sandbox="allow-scripts allow-same-origin allow-modals"` (no `allow-downloads`) delivered no download
+— yet the page still said "PDF saved!" (jsPDF cannot tell). Chromium only; Firefox and Safari not measured.
+
+**The frame as a visitor meets it.** At 1280 px the iframe's accessible name is "" (no `title`), the framed
+document's is its `<title>` ("Custom Math Sheet Generator", "Math Minute", "Math Facts"), and its headings are the
+three "Student N" h3s. The 1400 px frame holds the form before a generate at 1280 px; a 2–3 student generate makes
+the framed document 2,570 / 3,220 / 3,991 px (index / math-minute / math-facts), and at 390 px the form alone is
+1,797 / 1,419 / 1,419 px, so the frame scrolls inside: the iframe auto-height seed, unchanged.
+
+**Fixes.** 807d737: S35's P4 — the restore's catch covered `JSON.parse` and the apply both, so any throw while a
+parsed roster was applied cleared the saved class; now a value that does not parse (or parses to null) is reported and
+cleared as before, and one that parses but fails starts blank with the same notice and stays saved
+(`S36-restore-throw` plants the bug through the per-student select's value setter on a `?plant` load; `--ref c3d8cc2`
+fails 9: on all three pages the class was deleted and the next load had nothing to restore). d045ca5: the site icon
+inline in each `<head>` (gate 3, approved: "Use the site icon"), a 1,606-character PNG data URI, the same line on all
+three pages; `S36-favicon --ref 807d737` fails 13. Headless Chromium asks for no favicon before or after, so the
+probe's "no favicon request" check is no handle; the decode (32 × 32, ink at the centre) and the SHA-256 are.
+
+**Sweep.** All 71 probes, one after another on d045ca5 with nothing else running: 71 green (S36's two
+new among them). Then `closeout.mjs` on the close-out commit.
