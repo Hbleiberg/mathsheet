@@ -34,7 +34,8 @@ https://hbleiberg.github.io/mathsheet/ (`index.html`, `math-minute.html`, `math-
 mathsheet.io page (WordPress) embeds one of them in a 1400 px `<iframe>`: `/custom-math-sheet-generator/`,
 `/math-minute-elementary/`, `/math-facts/`. Merging to `main` is what reaches teachers. The public titles,
 descriptions and search metadata live in WordPress, so the repo pages carry `<meta name="robots"
-content="noindex">` and keep only `lang`, the charset, the viewport tag and a `<title>` in their `<head>`.
+content="noindex">` and keep only `lang`, the charset, the viewport tag, a `<title>` and mathsheet.io's site icon (an inline 32 px PNG data URI,
+the same bytes on all three; S36) in their `<head>`.
 
 ## Code & file layout standard
 
