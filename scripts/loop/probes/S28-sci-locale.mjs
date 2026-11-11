@@ -35,9 +35,9 @@ try {
         if ((m = s.match(/^(\S+) = \? × 10\?$/))) whole.push(m[1]);
         else if ((m = s.match(/^(\S+) × 10\d+ =$/))) coeff.push(m[1]);
       }
-      // a key answer to "c × 10ⁿ =" is the whole number; the other form's answer is "c x 10^n"
+      // a key answer to "c × 10ⁿ =" is the whole number; the other form's answer is "c × 10<sup>n</sup>" (S35; "c x 10^n" before)
       for (const a of document.querySelectorAll('#mwgResults .mwg-answer-key-sheet .mwg-horiz-cell > span')) {
-        const s = a.textContent.trim(); if (!/x 10\^/.test(s)) whole.push(s); }
+        const s = a.textContent.trim(); if (!a.querySelector('sup') && !/x 10\^/.test(s)) whole.push(s); }
       return { whole, coeff, html: document.querySelector('#mwgResults').innerHTML };
     });
     html[locale] = r.html;

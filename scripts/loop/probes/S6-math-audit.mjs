@@ -88,7 +88,7 @@ function fractionForm(a) {
 function answerOk(p, ans) {
   const a = ans.trim();
   if (p.kind === 'div') { const want = p.r ? `${p.q} r${p.r}` : `${p.q}`; return a === want; }
-  if (p.kind === 'sci?') { const m = a.match(/^(\d+(?:\.\d+)?) x 10\^(\d+)$/); if (!m) return false;
+  if (p.kind === 'sci?') { const m = a.match(/^(\d+(?:\.\d+)?) \u00d7 10\^(\d+)$/); if (!m) return false;   // "4.6 \u00d7 10<sup>5</sup>" since S35
     const c = dec(m[1]); return Number(c.n) / Number(c.d) >= 1 && Number(c.n) / Number(c.d) < 10 && eq(mul(c, R(10n ** BigInt(m[2]))), p.value); }
   let v;
   if (/^-?\d+\/\d+$/.test(a)) { const [n, d] = a.split('/'); v = R(BigInt(n), BigInt(d)); }
@@ -118,7 +118,7 @@ function extract() {
     if (st) return { t: `${st.querySelector('.mwg-problem-top').textContent.trim()} ${st.querySelector('.mwg-problem-operator').textContent.trim()} ${st.querySelector('.mwg-problem-bottom').textContent.trim()}`,
       ans: st.children[2] ? st.children[2].textContent : undefined };
     const hp = c.querySelector('.mwg-horiz-problem'); const red = c.querySelector(':scope > span');
-    return { t: canon(hp).replace(/ =$/, ''), ans: red ? red.textContent : undefined };
+    return { t: canon(hp).replace(/ =$/, ''), ans: red ? canon(red) : undefined };
   };
   const read = s => { const g = s.querySelector('.mwg-problems-grid, .mwg-horiz-grid');
     return { desc: s.querySelector('.mwg-ws-desc-text').textContent, horiz: g.classList.contains('mwg-horiz-grid'), items: [...g.children].map(item) }; };

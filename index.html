@@ -2139,7 +2139,9 @@ function makeExponents() {
 // de-DE and es-ES wrote "4.6 \u00d7 10\u2075 = 460.000", fr-FR "460 000", en-IN "46,00,000" (S27).
 function makeSciNote() {
   var coeff=(rand(10,99)/10).toFixed(1),exp=rand(2,6),val=parseFloat(coeff)*Math.pow(10,exp);
-  if(Math.random()<0.5) return {html:horizHtml(val.toLocaleString("en-US")+" = ? \u00d7 10<sup>?</sup>"),answer:coeff+" x 10^"+exp,kind:"horiz"};
+  // The key answers in the sheet's own notation, "4.6 \u00d7 10<sup>5</sup>", not "4.6 x 10^5" (S35; found S6, pass G):
+  // answerHtml is markup the key prints as it is, built from the page's own numbers only.
+  if(Math.random()<0.5) return {html:horizHtml(val.toLocaleString("en-US")+" = ? \u00d7 10<sup>?</sup>"),answer:coeff+" \u00d7 10^"+exp,answerHtml:coeff+" \u00d7 10<sup>"+exp+"</sup>",kind:"horiz"};
   return {html:horizHtml(coeff+" \u00d7 10<sup>"+exp+"</sup> ="),answer:val.toLocaleString("en-US"),kind:"horiz"};
 }
 
@@ -2372,7 +2374,7 @@ function renderAnswerProblem(problem, answer, inHorizGrid, tight, shortRows) {
   var expr = horizExpr(problem);
   return '<div class="mwg-horiz-cell">' +
     '<div class="mwg-horiz-problem">' + expr + '</div>' +
-    '<span style="font-size:15px;font-weight:bold;color:rgb(180,0,0);margin-left:8px;flex-shrink:0">' + ansStr + '</span>' +
+    '<span style="font-size:15px;font-weight:bold;color:rgb(180,0,0);margin-left:8px;flex-shrink:0">' + (problem.answerHtml || ansStr) + '</span>' +
   '</div>';
 }
 
