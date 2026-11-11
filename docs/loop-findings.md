@@ -1593,4 +1593,5 @@ inside a Python raw string (S32 had seen it for ` `): the fix script was rewri
 back into escapes, then the pages grepped for raw marks (none). A form field keeps the spaces Save trims (" 9 " is
 saved "9"): a restore check compares trimmed values.
 
-**Sweep.** All 66 probes, run one after another on 1a8f3af: see the next commit.
+**Sweep.** All 66 probes, run one after another on 1a8f3af with nothing else running: all green (918 s). Then
+`closeout.mjs` on 03f1979: all checks passed.
