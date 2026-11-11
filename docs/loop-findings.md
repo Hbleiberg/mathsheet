@@ -1782,3 +1782,67 @@ the page without groups: count the panel's checkboxes in the DOM and in the tree
 signature carried each element's id; the row markup now holds Duplicate / Delete's id and `aria-labelledby` and index's
 panel groups). The boxes had not moved. Both now set those attributes aside, as the Name placeholder already was, and
 are green; their controls still fail as recorded (12, and 9 with `--control`). Committed 539b9ce.
+
+## S38 (2026-11-11) — pass M (mobile & touch) on math-facts.html
+
+Method: scratch `s38/m-facts.mjs` (S17's audit with S23's additions) on Playwright's iPhone SE, iPhone 13 (both ways),
+iPad Mini (both ways) and a 350 × 1400 touch frame, six states (fresh, the validation box, Fix, filled: a Level picked,
+Fill Down, a header line; the code panel, Advanced with the Level Reference, after a generate): the document's scroll
+width, every UI element past the viewport, scroll boxes hiding a child, every control's box, font size and
+`inputmode`, the closed selects' text against their width, fixed elements, `title` hints, where focus lands, Fill Down's
+line; `s38/val.mjs` the validation box's place; `s38/sheet-phone.mjs` the same long-name class (41 names from 24 to
+64 characters, 2 a student, keys) generated on an iPhone 13 and at 1280 px, then printed at the paper's width;
+`s38/dsf.mjs` the names' line heights by screen density; contact sheet `s38/shots/` (iPhone 13). Since S17 math-facts
+gained Fill Down's line (S21), the 16 px phone fields (S23), the code panel under its button (S29), the 40 px Duplicate /
+Delete (S30). Arm R first: the smoke and S37's two and S36's two probes, green on a00e10c.
+
+- **The form: clean.** No sideways scroll before a generate at any shape, nothing past the edge, no scroll box, no fixed
+  element; every closed select's text fits (the longest, "Doubles (up to 9+9)", 141 px in 242); fields and selects
+  16 px on phones and on a phone on its side, 14 px on the iPad Mini (S23's choice, unchanged); the Student Number
+  `type="text"`, no `inputmode`. Generate with no Level scrolls the validation box into view with Fix in it (521–555 of
+  568 px on the SE); Fix focuses Student 1's Level in view; the code panel opens on its textarea in view (316–436 on the
+  SE); Fill Down's line beside its button at every shape (two lines at 320 and 350 px). Targets as queued: the buttons
+  34 px tall, the three checkboxes 16 px, Duplicate / Delete 40 px; the Header line and Name blank hints `title` only.
+  0 page errors.
+- **The sheets a phone makes (P3, fixed).** The twins' ≤560 px query carried three rules for the sheet: the header's
+  grid one column (dead: the inline `grid-template-columns` wins) with an 8 px gap for 14, the description box stacked,
+  the set label without its rule. The sheet is 1056 px at every width and prints without the query (Chromium lays print
+  out at the page's 11 in; html2canvas clones into a 1056 px frame), but `fitLongNames()` sizes each name on screen: on
+  a phone the name's line was 211.25 px for the paper's 207.25, so 152 of 164 long names took 0.5 px more, and printed
+  at the paper's width 140 of 164 ran up to 2.14 px past their line: print turns the last letter into "…", Save PDF cuts
+  it mid-letter (a real cdnjs Save PDF from the iPhone 13: 8 of 9 pages differ from the desktop's, the short name's
+  equal). Without the Number one gap: 4 of 164 differ, none past the line. The phone's preview header was 91 px for the
+  paper's 46. index has no sheet rule in its phone queries. Fixed on both twins (987a5c9): the rules are gone, so a
+  phone's sheets are byte-identical to a desktop's at the same density, and its real Save PDF equal page for page.
+- **Density (P4, queued).** `nameLineHeight()` measures the baseline on screen: a name fitted to 11 or 11.5 px gets a
+  24 px line height at 1× and 26 px at 1.25, 1.5, 2 and 3× (all three pages; 12–13.5 px names 24 everywhere), so the
+  smallest names print 1 px apart by the screen that generated them. A probe comparing a phone's sheets with a
+  desktop's must run both at the same `deviceScaleFactor`.
+- **After a generate (P4, re-measured).** 1,064 px of document at every shape under it, the iPad on its side (1024)
+  included. A scroll box on the results would keep the page still, but its scrollbar sits under the last sheet for a
+  mouse; a scaled preview changes the boxes `fitLongNames()` reads. The shape is a phone-layout choice, left queued.
+- **Fixes from the queue.** c4fda92 (all three): a field the validation box marks red keeps its size: the mark's second
+  pixel comes from the padding (8 → 7 px), and every clear of the mark clears it; before, each marked row moved the rows
+  under it 2 px (6 px with three marked, 36 → 38 px a field; 37 → 39 on a phone). The grey of a marked select stays
+  (S30's line, rewritten). e638aa1 (index): the last answer key no longer carries `print-break` (S4); one Letter page a
+  sheet before and after. index's lenient grade / count read, measured for its line: "2.5" → Grade 2, "30.9" → 30,
+  "2e1" → 2, and "2nd" → 2, "40 problems" → 40, which a teacher means; "3O" and a full-width "２" are reported. Digits
+  only would report the last two as well, so it was not shipped autonomously.
+
+**Probes.** `S38-phone-sheet-header` (Math.random seeded; the iPhone 13 with the Number, the 350 px frame without,
+each against 1280 px at the same density): 164 sheets and keys, the phone's byte-identical to the desktop's, none past
+its line at the paper's width, the header as tall with its description in a row, the form still one column, the desktop
+form and first sheet pixel-identical to a00e10c's; `--cdn` adds a real Save PDF from both, rasterized page by page.
+`--ref a00e10c` fails 10. `S38-marked-field`: per page at 1280 px and on an iPhone 13, every marked field 2 px of red, as
+tall and wide as before, its text where it was, the rows and buttons unmoved, Fix on the first, a filled field back to
+its own padding (`--ref 987a5c9` fails 18). `S38-index-last-key`: four configurations, `print-break` on every sheet but
+the last, Chromium's print path one Letter page a sheet (`--ref c4fda92` fails 3). The smoke, S9-name-fit, S16-focus,
+S17-phone-layout, S19-long-name, S21-fill-down-status, S23-phone-fields, S23-red-border, S24-index-red-border,
+S25-pdf-rows, S29-code-panel, S31-across-division-left, S31-cap-note, S32-type-case, S33-validation-focus,
+S35-integer-sign, S35-sci-key and S7-skipped-list green.
+
+**Traps.** `emulateMedia({ media: 'print' })` keeps the viewport's width, so a phone's width query still applies and the
+"printed" names fit: set the viewport to 1056 px first to see what the paper gets. A phone at 3× against a desktop at
+1× differs in the names' line heights alone. Under emulated print the sheets sit in the hidden app until the page's
+move to body runs: `printBoxes()` before `page.pdf()` (the probe's first run read 1 page for 18 sheets). A forced push
+to the assigned branch was refused by the session's guard; a plain push fast-forwards it.

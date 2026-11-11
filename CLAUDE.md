@@ -83,6 +83,8 @@ the same bytes on all three; S36) in their `<head>`.
   `index.html` a static rule that must beat an injected one carries `#mwg-app`, since `injectStyles()` loads last.
   A phone's text fields, selects and textareas are 16 px, upright or on its side (`(max-width:560px), (pointer:coarse)
   and (max-height:500px)`; ≤480 on `index.html`), or iPhone Safari zooms into the field that takes focus (S23).
+  A phone query styles the form, never the sheet: the sheet is 11 in wide at every width and prints without the query,
+  and `fitLongNames()` sizes each name on screen, so a restyled header printed a phone's long names past their line (S38).
 - **Problem objects** — plain data, rendered separately:
   ```js
   { kind: "stack",    operator: "+"|"−"|"×", a, b, answer }   // a over b, ruled line
