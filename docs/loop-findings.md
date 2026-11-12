@@ -2139,3 +2139,84 @@ sits after a tap (`touchscreen.tap`), not a fill. A screenshot pair across a hel
 is still moving — wait for `scrollY` to hold; the strip of the stage the export leaves in the window may be only the
 clone's blank margin — scroll the window to the top. Taking out a composited layer moves 6-11 pixels of anti-aliasing at
 a rounded box's edge: count the differing pixels, never compare the PNG bytes.
+
+## S44 (2026-11-12) — pass A (performance) on math-minute.html, then B (print & export) on math-facts.html
+
+**Method.** Arm R first: the smoke, S43's two and S42's two probes, green on 1044687. A as S43 ran it on index, rebuilt
+for a twin (scratch `s44/a-twin.mjs --file <twin>`): a fresh context a run, the roster planted as a saved payload,
+Generate timed in the page from the click to the handler's end and the next frame, long tasks observed, cpu4 by CDP; every
+arm against S24's end (2f9a38f) served from git, alternated, medians of 3, so the numbers are ratios on this machine; the
+two cdnjs files replayed from disk for Save PDF. Since S24 math-minute gained 21 commits (the code panel's place, the row
+targets, the line breaks, the saved-row and restore guards, the site icon, the row names, S38's sheet-header rule removed,
+Add Student's place and Number, the skipped list, Duplicate's Number, S43's two PDF waits); none touches a sheet's markup.
+`s44/a-print.mjs`: Generate & Print from the click to `window.print()` on all three pages.
+
+- **Load**: DCL 21 ms, load 31, FCP 48 (2f9a38f 21 / 29 / 44); 83,565 B (74,737), 221 nodes (220). The bytes are the site
+  icon and the sessions' comments; nothing to fix.
+- **Generate, unchanged** (handler / frame, HEAD ÷ 2f9a38f): L1 30 × 5 32 / 36 ms (×1.09; cpu4 169, ×1.06); L9 46 / 49
+  (×0.88; cpu4 233, ×0.84); L9 with keys 106 / 111 (×1.16; cpu4 545, ×1.25); L21 with keys 85 / 92 (×1.12; cpu4 450,
+  ×1.06); 21 levels with long Latin and Hebrew names and keys 73 / 78 (×0.65; cpu4 417, ×1.19), with no Number and a
+  header line 78 / 83 (×0.95; cpu4 397, ×0.95); L21 151 × 5 with keys, 1,510 sheets and 406,750 nodes, 399 / 412 ms
+  (×0.91; cpu4 1.85 s, ×1.11). L9 re-timed at seven runs: ×0.85 (cpu4 ×1.12), with keys ×0.91 (cpu4 ×0.98) — the
+  ×0.65-1.25 spread at three runs is noise on unchanged sheet code. One long task a generate, as S24.
+- **The form at 30 students** (to the next frame, 1× / cpu4): Add Student 8 / 21 ms, Fill Down 4 / 19, Duplicate 6 / 29,
+  Delete 7 / 29, a level change 4 / 14, a keystroke 3 / 17, Save 4 / 18, Generate Advanced Code 8 / 28, the mode toggle
+  6 / 31, Add Student and Fill Down with 30 sheets shown 16 / 29 each; ratios ×0.77-1.58, every action ≤ 31 ms at a
+  quarter of the speed (noise at these sizes). A saved 31-row roster restores by DCL 27 / load 48 ms (2f9a38f 31 / 59;
+  cpu4 93 / 204, one 140 ms task, 176).
+- **Save PDF**: 30 pages with long names 212 ms a page, 6.4 s (2f9a38f 253, 7.6 s; ×0.84), the longest task 164 ms, 2,184
+  KB (2,742); 150 pages 193 ms a page, 28.9 s (249, 37.4 s; ×0.77), longest 173 ms (216), 11.5 MB (14.5): S26's JPEG and
+  S43's two waits.
+- **Generate & Print, the click to the dialog** (all three pages, medians of 5): a class of 30 × 1 212-221 ms, 200 of them
+  the fixed timer before `window.print()` (90-94 %); 30 × 5 with keys 248-282 ms (71-81 %). S1's P4: shipped, below.
+- Clean but for that timer; a clean surface bought a second.
+
+**B on math-facts.html (S24's cell).** S8's two math-minute probes with the page and its 71 codes swapped (scratch
+`s44/b-print.mjs --a4`, `b-pdf.mjs`), the round trip and payload (`b-round.mjs`), long Numbers (`b-number*.mjs`).
+- **Print, clean.** 71 codes × three configurations with keys: plain (1 copy) 142 sheets, heavy (5 copies, the 80-character
+  Hebrew / Latin header line, 31-character names) 710, bare (3 copies, the line, no Number, Name blank) 426: 1,278 sheets,
+  each 1056 × 816, `print-break` on all but the last, every grid its rows' count, no ink outside its cell or under the
+  paper's inner bottom, ≥ 41.7 px between problems. Paper under the lowest ink, plain rows-3…6 110 / 82 / 64 / 53 px
+  (keys 95 / 72 / 55 / 43), heavy down to 32 (keys 17), bare 32 (22); header 55-61 px, 76-82 with the line; 230 heavy
+  descriptions on two lines, inside their box; the line whole. Print-to-PDF one Letter page a sheet; A4 both ways one
+  page a sheet (842.88 × 595.92). Every figure is S24's.
+- **Save PDF (real cdnjs), clean.** 71 codes × 1 with keys and long Latin and Hebrew names: `math-facts-worksheets.pdf`,
+  142 pages, one 1584 × 1224 JPEG a page, 79 KB a page (S24: 100), 22.7 s from the click (27.7); scrolled away mid-export
+  every page carries every problem; every cell's ink within 3 px of print's against the common offset (3 / 1 / 1 / 1; 4,980
+  cells), the header's within 0 px; no frame; red answers on every key.
+- **Round trip and payload, clean.** 12 Standard students (Hebrew, an apostrophe, quotes, `&`, `<b>`, a tab, a blank name)
+  × 2 with keys → Generate Advanced Code → Use → Generate: 40 of 48 sheets identical, the other 8 the two known P4s
+  ("Levi; Dana" prints "Dana"; the Number "12, B" makes the name "Rivka, 12"). Saved in Advanced mode, a reload restores
+  the mode, its box, 2 copies, the key, the header line and the 12 rows behind it; the payload's keys are CLAUDE.md's.
+- **Found: a long Student Number.** b-print's plain run counted 36 sheets "with a name cut" though every name was short:
+  its Numbers (`100 + code`, "100doubles+1"). At 18 px the Number's line holds 89 px, about nine characters, on all three
+  pages: "123456789" fits; a 10-digit ID, "Room 12 B", "Gr3-Cohen-07" and "07 (Tues group)" printed "1234567…", "Room
+  1…", "Gr3-Co…", "07 (Tue…" (a CSS ellipsis), and Save PDF, which draws none, cut them mid-letter ("123456789" and half
+  a 0; "Gr3-Cohen"): the Number lost its end on paper and print ≠ PDF (P2). Names shrink to fit since S9; the Number
+  never did. Gate 6 asked with a before/after (`s44/shots/number-math-facts-before-after.png`) → "Shrink to fit".
+
+**Fixes.** a03e7fd (all three): Generate & Print waits one painted frame (a rAF, then a 0 ms timeout), not 200 ms, before
+`window.print()`: the call 5-16 ms after the click's handler for 204, the click to the dialog ×0.07-0.13. In a hidden tab
+the print waits until the tab shows. ca1cfc4 (all three, approved): `fitLongNames()` fits the Number on its own line too
+(a "|number" layout key): 15.5 px for the 10-digit ID, 16.5 "Room 12 B", 13 "Gr3-Cohen-07", 11.5 "07 (Tues group)", 15
+a Hebrew one, on the 18 px Number's baseline; at 11 px a 29-character one keeps its start and a written "…"; a Number
+that fits keeps no style, so its sheet is as before. Save PDF draws each where print does. cd6cedc repairs the smoke
+(below). Every page on its cap after the two; the other two slots unused.
+
+**Probes.** `S44-print-wait` (the call within 60 ms of the handler and after one frame, every sheet in the print container
+at the call and back after, ×0.07-0.13 of 1044687's; fails 12 before the change). `S44-number-fit` (every long Number
+whole or its start and "…" at 11 px, inside its line, on its baseline; "1042" and none untouched; Save PDF's ink ≥ 2 px
+short of the line's end and within 3 px of print's; `--ref a03e7fd` fails 12). After a03e7fd: the smoke, S16, S18, S33 ×
+2, S7, S41, S8-minute-print, S9-name-fit, S19, S6, S11 green; after ca1cfc4: the smoke `--cdn`, S9-name-fit, S19, S23,
+S38-phone-sheet-header, S18-hebrew-name, S24-name-parse, S22-desc-fit, S8 × 2, S4, S9-index-pdf, S25-pdf-rows, S6, S13
+and the 25 probes that read `innerText` green.
+
+**The smoke after a03e7fd.** Its advanced-name and XSS checks read the first sheet's `innerText` as soon as the print count
+moved; with the print call a frame after the click the window has barely scrolled (math-minute y 2 for 554 before) and a
+sheet off the window, laid out lazily (`content-visibility: auto`), read "" — 3-4 checks a run on a03e7fd (a first run
+had passed). What prints is unaffected (print styles set the sheets visible). cd6cedc reads `textContent`; its XSS check
+still fails with `escapeHtml` broken.
+
+**Traps.** A probe that reads a sheet right after Generate & Print: `textContent`, never `innerText` (since S44). S8's
+"names cut" counts every header field, the Number too. `page.screenshot`'s `clip` is in window coordinates: shoot the
+element. Generate's ratio at three runs spans ×0.65-1.25 on unchanged code: re-time a suspect ratio at seven.
