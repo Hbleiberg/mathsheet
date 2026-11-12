@@ -1,9 +1,10 @@
 // Probe (loop S34, pass F; approved at gate 6's spirit, asked S34; found S18): Add Student carries on the Student
 // Number on every page. index's new row took the last row's Number + 1; the twins' always started empty (their
 // Duplicate already added one), so a class of 22 meant typing 2…22. Per page, by real clicks on Add Student with the
-// last row's Number set to each case: "3" → "4", " 9 " → "10", "" / "14B" / "Blue" → empty; the new row's name and
-// level empty; the twins' answer equal to index's for every case; Duplicate as before ("5" → "6"); a fresh load's three
-// rows unnumbered; a saved roster with blank Numbers restores them blank. Fails before the change (`--ref e97c230`).
+// last row's Number set to each case: "3" → "4", " 9 " → "10", "" / "14B" / "Blue" → on from the last number (empty
+// before S42); the new row's name and level empty; the twins' answer equal to index's for every case; Duplicate as
+// before ("5" → "6"); a fresh load's three rows unnumbered; a saved roster with blank Numbers restores them blank.
+// Fails before the change (`--ref e97c230`).
 //   node scripts/loop/probes/S34-add-student-number.mjs [--ref <commit>]
 import { execSync } from 'node:child_process';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
@@ -17,7 +18,9 @@ const IDS = {
   'math-minute.html': { add: '#addStudentButton', dup: '.duplicate-student-link', level: 'select[name="level"]' },
   'math-facts.html':  { add: '#addStudentButton', dup: '.duplicate-student-link', level: 'select[name="level"]' },
 };
-const CASES = [['3', '4'], [' 9 ', '10'], ['', ''], ['14B', ''], ['Blue', ''], ['21', '22']];
+// Since S42 a blank or wordy last Number counts on from the last number (row 4's 9, then a blank, "14B" and "Blue": the new
+// rows 6, 7 and 8 read 11, 12 and 13): S42-add-student-gap
+const CASES = [['3', '4'], [' 9 ', '10'], ['', '11'], ['14B', '12'], ['Blue', '13'], ['21', '22']];
 
 const srv = await serve(); const browser = await launch();
 const got = {};

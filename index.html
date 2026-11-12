@@ -1717,11 +1717,14 @@ function updateCounter() {
   setFillDownStatus("");
 }
 
+// Add Student counts on from the last row whose Number is a number, one for each row after it, so a blank row or a
+// "14B" no longer stops the count: Student 1's 1 with the default rows 2 and 3 blank gives 4 (S42; found S18)
 function getNextStudentNumber() {
   var entries = studentsContainer.querySelectorAll(".mwg-student-entry");
-  if (!entries.length) return "";
-  var lastNum = entries[entries.length - 1].querySelector('[name="studentNumber"]').value.trim();
-  if (lastNum !== "" && !isNaN(lastNum)) return String(parseInt(lastNum, 10) + 1);
+  for (var i = entries.length - 1; i >= 0; i--) {
+    var num = entries[i].querySelector('[name="studentNumber"]').value.trim();
+    if (num !== "" && !isNaN(num)) return String(parseInt(num, 10) + entries.length - i);
+  }
   return "";
 }
 
