@@ -1380,9 +1380,12 @@ function updateOpsPanel(entryDiv) {
   }
 }
 
+// The row's own Operations panel only: a row that was Mixed keeps its Mixed panel, hidden, whose Fractions and Decimals
+// boxes carry the same classes, so a teacher who left Mixed for Fractions and ticked Addition alone got every operation
+// on the sheet, in the saved roster and in the code (S40, found in pass M)
 function getSelectedOps(entryDiv, type) {
   var cbClass = type === "fractions" ? ".mwg-frac-op-cb:checked" : ".mwg-dec-op-cb:checked";
-  var cbs = entryDiv.querySelectorAll(cbClass);
+  var cbs = entryDiv.querySelectorAll(".mwg-ops-panel " + cbClass);
   if (!cbs.length) return null;
   var ops = [];
   for (var i = 0; i < cbs.length; i++) ops.push(cbs[i].value);
