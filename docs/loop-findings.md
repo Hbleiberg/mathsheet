@@ -1954,3 +1954,51 @@ S39-decimal-key-places, S20-fill-down, S11-robustness and 15 more green.
 **Traps.** `openPage` opens a fresh browser context each call, so a save read back through a second `openPage` finds
 empty storage: reload the same page. A select's text box in Chromium is its width less its padding and ~20 px of arrow.
 A row's hidden panel keeps its boxes and their classes: a reader that queries the row reaches them.
+
+## S41 (2026-11-12) — pass H (teacher walkthrough) on math-minute.html
+
+**Method.** Real clicks and keys at 1280 × 900, a pointer that wheels the page until a control is in the window and
+clicks its box (`page.mouse`, S39's rule), wheel turns counted (scratch `s41/walk.mjs`, `walk2.mjs`): Students 1-3 by
+keys (Avi Cohen, 1, Level 5), Add Student × 19, 19 names (two Hebrew), Fill Down, Student 7 (an IEP) on Level 1,
+Student 15 on Level 13, the Header line "Friday Math Minute · פרשת נח", Print Answer Key, Generate & Print, Save
+Roster; next week (a reload, Student 1 to Level 7, Fill Down, a new Header line, a new student, Fill Down again);
+a substitute's sheets (Name blank, 2 a student); Generate Advanced Code → Use in Advanced Input → Generate; Delete
+Student 10; then copies with keys, a Hebrew-first Header line at its 80-character cap printed at the paper's width, a
+names column pasted into the Advanced box, Duplicate mid-class, a row without its level, Clear Current Roster. Since
+S20 math-minute gained the continuing Number (S34), the named Duplicate / Delete (S37), the phone sheet header (S38)
+and Add Student's place (S39). Arm R first: the smoke, S40's two and S39's two
+probes, green on 79483ab; then the approved count text on index (b750f93).
+
+- **The class: 80 actions, 39 wheel turns, 0 page errors.** S20's 112 actions are 80: Add Student carries the Number on
+  (4…22 from row 3's 3, S34), so 42 typed numbers are 2. Add Student × 19 by a pointer: 19 clicks, 0 wheel turns
+  (S39 holds). Type-ahead "5" picks nothing, "05" Level 5 (queued, gate 2). 44 sheets in 963 ms to the print call,
+  keys after the sheets, the Header line on all 44; Student 7's "Thirty addition facts, sums less than ten", 15's
+  "Forty multiplication facts". The unsaved notice; Save → reload restores 22 rows, the Header line, the key, the
+  levels.
+- **Next week: 9 actions, 33 wheel turns.** Fill Down: "Level filled down from Student 1. Students 7 and 15 kept their
+  own levels." (S20's rule). A new student: Add Student at the foot (11 turns), its row 23 numbered 23 with no level,
+  Fill Down at the top (11 turns), Generate at the foot (11): the turns are the page's length (3,144 px at 22 rows), the
+  S39 seed (a new row on Student 1's level) the shape that saves them. The saved Header line is last week's until
+  changed (by design: saved with the roster).
+- **Substitute, copies, the round trip: clean.** Name blank: 92 sheets with no name, keys named, "Prints blank" in every
+  Name; 2 a student: "Worksheet 1 of 2", "(Key 1 of 2)". An 84-character Header line keeps 80; Hebrew first it prints
+  right to left, one line, 974 px wide, nothing cut, the grid's last row at 793 of 816 px. The code (23 lines, Hebrew
+  intact) → Use in Advanced Input (focus in the box) → 46 sheets. Delete keeps the other Numbers. Fix focuses the
+  missing Level. Clear Current Roster asks first.
+- **The skipped list followed the teacher to Standard (fixed, all three pages).** A names column pasted into the Advanced
+  box reports each line ('Entry 1 is invalid: "Avi Cohen"'; the Paste names seed). Back to Standard Input cleared the
+  status line ("No valid students found") but kept the list, under the buttons while the class was built in Standard
+  and again under the validation box's "Student 5: missing Level". index the same ("Entry 1 needs 5 fields"). The
+  toggle now clears the list with the status; the sheets stay, and Advanced lists it again on Generate.
+- **Duplicate mid-class (P4).** Duplicate adds 1 to the row's Number: Student 2 (2) of 1, 2, 3 gives a copy numbered 3
+  beside Student 3's 3 (index the same, line 1684). At the last row it is the next number, as meant.
+
+**Probes.** `S41-count-text` (index: every capped type at seven shapes reads "30 problems (max)" whole; the other types'
+counts, the seeded class set and the code as before): `--ref HEAD~1` fails 10. `S41-mode-switch-errors` (each page: an
+Advanced paste with a skipped line; Standard empties the list, keeps the sheets; the validation box alone; Advanced
+lists it again): `--ref b750f93` fails 9. The smoke, S40-tablet-rows and the 52 probes that switch modes green (S11-robustness crashed once in that batch run
+under `timeout 300` and is green alone).
+
+**Traps.** After a reload the harness's print counter is 0 again: wait for a count above the one read before the click.
+A sheet's `innerText` is empty while `content-visibility: auto` skips it (off screen): set it `visible` or read
+`textContent`.
