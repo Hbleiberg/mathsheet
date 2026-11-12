@@ -2600,7 +2600,9 @@ function remindUnsavedRoster() {
 function generateAndPrint() {
   clearStatus(); generate();
   if (resultsDiv.querySelector(".mwg-worksheet") && remindUnsavedRoster()) statusDiv.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
-  setTimeout(function() {
+  // One painted frame, then print (S44; found S1): the fixed 200 ms wait "to settle" was 71-94 % of the time from the click
+  // to the print dialog and settled nothing, since the print layout is made at the call; the frame shows the sheets behind it.
+  requestAnimationFrame(function () { setTimeout(function() {
     if (!resultsDiv.querySelector(".mwg-worksheet")) return;
     var originalParent=resultsDiv.parentNode, originalNext=resultsDiv.nextSibling;
     resultsDiv.id = "mwg-results-print";
@@ -2609,7 +2611,7 @@ function generateAndPrint() {
     resultsDiv.id = "mwgResults";
     if (originalNext) originalParent.insertBefore(resultsDiv, originalNext);
     else originalParent.appendChild(resultsDiv);
-  }, 200);
+  }, 0); });
 }
 
 // The two PDF libraries (html2canvas + jsPDF, from cdnjs) are fetched on the first Save PDF click,

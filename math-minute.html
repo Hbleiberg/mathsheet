@@ -1723,7 +1723,9 @@ function doGenerateAndPrint() {
   clearStatusMessages();
   generateWorksheets();
   if (results.querySelector(".worksheet") && remindUnsavedRoster()) statusMessages.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
-  setTimeout(function () {
+  // One painted frame, then print (S44; found S1): the fixed 200 ms wait "to settle" was 71-94 % of the time from the click
+  // to the print dialog and settled nothing, since the print layout is made at the call; the frame shows the sheets behind it.
+  requestAnimationFrame(function () { setTimeout(function () {
     if (results.querySelector(".worksheet")) {
       var originalParent = results.parentNode;
       var originalNext   = results.nextSibling;
@@ -1734,7 +1736,7 @@ function doGenerateAndPrint() {
       if (originalNext) originalParent.insertBefore(results, originalNext);
       else originalParent.appendChild(results);
     }
-  }, 200);
+  }, 0); });
 }
 
 // The two PDF libraries (html2canvas + jsPDF, from cdnjs) are fetched on the first Save PDF click,

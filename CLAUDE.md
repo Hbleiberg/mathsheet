@@ -160,7 +160,8 @@ Worksheets print as **landscape US Letter (11in × 8.5in)**, one worksheet per p
   `box-shadow:none` and `content-visibility:visible` on the sheet (on screen the sheets lay out lazily,
   `content-visibility:auto`, S1) and flex rules for its header, body and cells: copy `math-facts.html`'s block (S34).
 - **JS print flow (the "move to body" trick — `doGenerateAndPrint`):** generate worksheets,
-  then after `setTimeout(…, 200)`: save `results.parentNode`/`nextSibling`, set
+  then after one painted frame (`requestAnimationFrame`, then `setTimeout(…, 0)`; the fixed 200 ms it replaced settled
+  nothing and was most of the wait for the dialog, S44): save `results.parentNode`/`nextSibling`, set
   `results.id = "results-print"`, `document.body.appendChild(results)`, `window.print()`,
   then restore the id and original DOM position. This is what makes `body > *{display:none}`
   reveal only the worksheets.
