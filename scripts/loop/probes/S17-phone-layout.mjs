@@ -6,7 +6,7 @@
 // Generate Advanced Code were unreachable on every phone in portrait. At 1280 px each row stays one line.
 // Fails on the pages before the fix (`--ref e2bb697`).
 // Arm 2 — index.html's responsive rules (≤860 the Advanced box stacks over its reference card, ≤700 the roster
-// grid takes two columns, ≤480 one): they lost to the injected base rules appended after the static sheet, so
+// grid takes two columns, ≤480 one; 701-900 two rows on six tracks since S40): they lost to the injected base rules appended after the static sheet, so
 // a phone showed five 60 px roster fields and a 46 px paste box. Fails on `--ref 8e40f96`.
 // Arm 3 — math-facts.html's Advanced help names no side for the Level Reference, which sits beside the box on a
 // desktop and below it at ≤860 px ("…in the Level Reference.", approved S17, gate 2). Fails on `--ref 13bcc9b`.
@@ -58,7 +58,7 @@ for (const file of ['index.html', 'math-minute.html', 'math-facts.html']) {
         return { cols: getComputedStyle(grid).gridTemplateColumns.split(' ').length,
           narrowest: Math.min(...[...grid.querySelectorAll('input, select')].filter(e => e.offsetParent).map(e => Math.round(e.getBoundingClientRect().width))) };
       });
-      const want = vw <= 480 ? 1 : vw <= 700 ? 2 : 5;
+      const want = vw <= 480 ? 1 : vw <= 700 ? 2 : vw <= 900 ? 6 : 5;   // 701-900: two rows on six tracks (S40, gate 4)
       check(g.cols === want, `${shape}: roster grid ${g.cols} column(s), ${want} expected at ${vw} px (narrowest field ${g.narrowest} px)`);
     }
     for (const mode of ['standard', 'advanced']) {

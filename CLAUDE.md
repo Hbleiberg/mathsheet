@@ -83,6 +83,8 @@ the same bytes on all three; S36) in their `<head>`.
 - **Narrow screens (S17):** at ≤860 px the button rows wrap (a centred `nowrap` row cannot scroll to its left end,
   which hid Add Student on every phone) and the Advanced layout stacks; at ≤560 px the roster is one column. On
   `index.html` a static rule that must beat an injected one carries `#mwg-app`, since `injectStyles()` loads last.
+  `index.html`'s five roster fields take two rows at 701–900 px (Name, Number, Grade; then Type and Count), or an iPad
+  upright cut its Problem Type to "Level 2 — factor" (S40, gate 4).
   A phone's text fields, selects and textareas are 16 px, upright or on its side (`(max-width:560px), (pointer:coarse)
   and (max-height:500px)`; ≤480 on `index.html`), or iPhone Safari zooms into the field that takes focus (S23).
   A phone query styles the form, never the sheet: the sheet is 11 in wide at every width and prints without the query,

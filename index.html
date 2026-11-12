@@ -715,6 +715,13 @@ body { margin: 0; padding: 12px; background: white; }
   /* centred and nowrap, the row's left end could not be scrolled to on a phone (S17) */
   #mwg-app .mwg-button-row { flex-wrap: wrap; }
 }
+/* An iPad upright or a phone on its side: five fields in a row left Problem Type 94-116 px of text, "Level 2 — factor"
+   without its level, "30 problems (ma"; two rows give Type and Count half the row (approved S40, gate 4) */
+@media (min-width: 701px) and (max-width: 900px) {
+  #mwg-app .mwg-student-grid { grid-template-columns: repeat(6, 1fr); }
+  #mwg-app .mwg-student-grid > :nth-child(-n+3) { grid-column: span 2; }
+  #mwg-app .mwg-student-grid > :nth-child(4), #mwg-app .mwg-student-grid > :nth-child(5) { grid-column: span 3; }
+}
 @media (max-width: 700px) {
   #mwg-app .mwg-student-grid { grid-template-columns: 1fr 1fr; }
 }
