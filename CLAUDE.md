@@ -187,7 +187,8 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
      the click (S10).
   2. Build an off-screen **stage** `div`: `position:absolute; top:0; left:0;
      width:1056px; height:816px; overflow:hidden; z-index:-1000; pointer-events:none;
-     background:white;` (1056 × 816 = 11in × 8.5in @ 96 dpi).
+     background:white; opacity:0;` (1056 × 816 = 11in × 8.5in @ 96 dpi; `opacity:0` keeps the clones off the screen,
+     where they showed through behind the form, and never reaches the PDF: html2canvas draws the clone's own styles, S43).
   3. For each `.worksheet` (and answer-key sheet): clone it, size the clone
      `width:1056px; height:816px; padding:0.25in 0.3in; border:none; background:white;
      box-sizing:border-box; display:flex; flex-direction:column;` (print's own box: the screen's 1px
@@ -204,8 +205,9 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   5. First page: `new jsPDF({ orientation: "landscape", unit: "px", format: [1056, 816],
      hotfixes: ["px_scaling"] })`; later pages `addPage([1056, 816], "landscape")`; add with
      `addImage(imgData, "JPEG", 0, 0, 1056, 816, "", "FAST")`.
-  6. Drive it with a recursive `captureNext(idx)` (≈50 ms between pages, ≈300 ms initial
-     delay so layout settles).
+  6. Drive it with a recursive `captureNext(idx)` (a 0 ms timeout between pages, which lets the progress line
+     show: the 50 ms "to let the DOM paint" was ~18 % of an export and bought nothing, S43; ≈300 ms initial delay so
+     layout settles).
   7. Save as **`<page>-worksheets.pdf`** (e.g. `math-facts-worksheets.pdf`).
 
 ## Style constants

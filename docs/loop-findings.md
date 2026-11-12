@@ -2073,3 +2073,69 @@ worktree of each fix) and the 17 probes that use Add Student, Duplicate or the N
 **Traps.** A layout arm against an old reference decays with every approved layout change in its band: S40 never ran
 S30-row-targets at 800 px; replay the approved rule into the reference, as `replayLater` does for index's markup. Add
 Student's next Number is read before its row exists, so "one for each row after it" counts the rows already there.
+
+## S43 (2026-11-12) — pass A (performance) on index.html, then M (mobile & touch) on math-minute.html
+
+**Method.** Arm R first: the smoke, S42's two and S41's two probes, green on 801fa84. A as S23 ran it, rebuilt (scratch
+`s43/a-index.mjs`, `a-form.mjs`): a fresh context a run, the roster planted as a saved payload, Generate timed in the page
+from the click to the handler's end and the next frame, long tasks observed, cpu4 by CDP; every arm against S23's end
+(d31ff06) served from git, alternated, medians of 3, so the numbers are ratios on this machine; the two cdnjs files
+replayed from disk for Save PDF. index offers 153 (grade, type) pairs, d31ff06 151 (Rounding at grades 3-4 is S28's):
+the type-spread arms take the 151 both have. Since S23 index gained S24's name `<span>`, the dealing (S27), the across
+division (S31), the two rows at 701-900 px (S40) and both Numbers rules (S42).
+
+- **Load**: DCL 27 ms, load 40, FCP 56 (d31ff06 23 / 37 / 56); 146,446 B (129,035), 37.8 KB gzipped (30.8); 215 nodes.
+  The bytes are the sessions' comments (17.6 KB of `//` lines); nothing to fix.
+- **Generate, clean and faster** (handler / frame, HEAD ÷ d31ff06): add2 at grade 3, 30 × 5, 44 / 48 ms (×0.62; cpu4
+  201 ms, ×0.79); with keys 92 / 97 (×0.88; cpu4 380, ×0.75); fractions at grade 5 with keys 86 / 91 (×0.60; cpu4 487,
+  ×0.72); Mixed at grade 4 with keys 81 / 86 (×0.67; cpu4 420, ×0.82); 30 types × 5 with keys 82 / 87 (×0.62; cpu4 461,
+  ×0.84), without the Number 119 / 128 (×0.90; cpu4 475, ×0.75); all 151 types × 5 with keys, 1,510 sheets and 312,136
+  nodes, 454 / 469 ms (×0.72; cpu4 2.1 s, ×0.79). One long task a generate, as S23. S24's `<span>` for the `<bdi>`
+  (037221c) is the gain; nothing since S23 added cost.
+- **The form at 30 students** (to the next frame, 1× / cpu4): Add Student 7 / 39 ms, Fill Down 33 / 127, Duplicate 9 /
+  54, Delete 7 / 43, a grade change 6 / 30, a type change to Mixed 11 / 41, a keystroke 4 / 26, Save 6 / 27, Generate
+  Advanced Code 7 / 31, the mode toggle 7 / 35, Add Student with 30 sheets shown 17 / 43; every ratio ×0.78-1.19 at 1×
+  (noise at these sizes), none near 200 ms. A saved 31-row roster restores by DCL 43 / load 96 ms (cpu4 172 / 465, one
+  362 ms task at a quarter of the speed; d31ff06 307).
+- **Save PDF**, 30 pages: 283 ms a page for add2 (d31ff06 280), 350 for fractions (332), the longest task 148 / 216 ms
+  (121 / 197; html2canvas's own, as the twins' 205-222, S9); the files 19-21 % smaller (1,769 KB for 2,188; S26's JPEG
+  0.8). The 50 ms wait before each page was 18 % of that (S1's P4): shipped, below. Mid-export the stage S1 found
+  showed through: at the status line the export scrolls to, the bottom 129-145 px of each page's clone (its last row of
+  problems) lay behind the button row, changing page by page (screenshot `s43/shots/F1-before-mid-export.png`): shipped.
+- Clean but for the two queued S1 timers' shapes; a clean surface bought a second.
+
+**M on math-minute.html (S23's cell).** S38's audit (`s38/m-facts.mjs --file math-minute.html`, as `s43/m-twin.mjs`) on
+the iPhone SE, iPhone 13 both ways, iPad Mini both ways and a 350 × 1400 touch frame, seven states (fresh, the validation
+box, Fix, filled, the code panel, Advanced, generated); `s43/val.mjs` the validation box's place; `s43/sheet-phone.mjs`
+(S38's) the 41-name class on an iPhone 13 and at 1280 px, both twins; contact sheet
+`s43/shots/contact-math-minute-iphone13.png`. Since S23 math-minute gained the code panel under its button (S29), the
+40 px Duplicate / Delete (S30), the named row buttons (S37), S38's sheet-header rule removed, Add Student's place (S39).
+- **Clean.** No sideways scroll before a generate at any shape, nothing past the edge, no scroll box, no fixed element,
+  no select's text cut; fields 16 px on the phones and the phone on its side, 14 px on the iPad Mini (S23's choice);
+  the Student Number `type="text"`, no `inputmode`. The validation box ends at the window's foot with Fix in it (521-555
+  of 568 on the SE, 295-329 of 342 on its side); Fix focuses Student 1's Level in view; the code panel opens on its
+  textarea in view; Fill Down's line beside its button (two lines at 320 and 350 px). The phone's 164 sheets fit their
+  names as the desktop's, 0 past their line on paper, with and without the Number, both twins (S38 holds). Targets as
+  queued (S12): buttons 34 px, the checkboxes 16 px, Duplicate / Delete 40 px. After a generate 1,064 px wide (S17's P4).
+  0 page errors.
+- **Refuted.** On the iPhone 13 the Header line read top −10 after Playwright's `fill`: the tool scrolls an off-screen
+  field in mobile emulation (math-facts reads the same today); a tap at 166 or 66 px leaves it where it was, in view.
+
+**Fixes.** cb49c62 (all three): Save PDF's stage carries `opacity:0`, so nothing of the clone is painted on screen;
+html2canvas draws the clone from its own styles, so every page image is byte-identical. 9803612 (all three): no 50 ms
+wait before each page's capture, a 0 ms timeout that still yields: the gap from one page's image to the next capture
+5.0-5.4 ms for 51.6-51.8, the export ×0.79-0.81; index's 30 pages 7.1 s for 8.6 (add2), 9.5 for 11.0 (fractions).
+S1's "a bare rAF failed a paint probe" did not hold for the shape: the line "page k of N" is on screen in a frame for
+every page, and a rAF would have stalled an export in a hidden tab, where a timeout keeps running (clamped to 1 s). Every
+page on its cap after the two; the other two slots unused.
+
+**Probes.** `S43-pdf-stage-hidden` (the window over the stage the same with the stage taken out: 0 pixels differ;
+`--ref 801fa84` 21,510-25,351, fails 3; the page images equal 801fa84's). `S43-pdf-page-wait` (18 pages a page: the gap,
+every "page k of 18" in a frame, the images equal cb49c62's, the time ×0.79-0.81; `--ref cb49c62` fails 6). The smoke
+with `--cdn` and S4, S8, S9, S10, S22, S25's PDF probes green after each.
+
+**Traps.** Playwright's `fill` on a field off the window in mobile emulation leaves it at top −10: read where a field
+sits after a tap (`touchscreen.tap`), not a fill. A screenshot pair across a held html2canvas: the click's smooth scroll
+is still moving — wait for `scrollY` to hold; the strip of the stage the export leaves in the window may be only the
+clone's blank margin — scroll the window to the top. Taking out a composited layer moves 6-11 pixels of anti-aliasing at
+a rounded box's edge: count the differing pixels, never compare the PNG bytes.
