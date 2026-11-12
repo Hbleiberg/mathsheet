@@ -980,6 +980,9 @@ function createStudentEntry(index, studentData) {
     var newNumber = number;
     if (!isNaN(number) && number !== "") {
       newNumber = String(parseInt(number, 10) + 1);
+      // Mid-class the next number is a classmate's: Student 2 (2) of 1, 2, 3 gave a copy numbered 3 beside Student 3's 3,
+      // and both sheets printed it. The copy takes it only when no row holds it, or starts empty (S42; found S41)
+      if (numberHeld(newNumber)) newNumber = "";
     }
     var newEntry = createStudentEntry(
       studentsContainer.querySelectorAll(".student-entry").length + 1,
@@ -991,6 +994,16 @@ function createStudentEntry(index, studentData) {
   });
 
   return div;
+}
+
+// Whether a row's Student Number already reads n as a number ("3", "03") (S42)
+function numberHeld(n) {
+  var inputs = studentsContainer.querySelectorAll('input[name="studentNumber"]');
+  for (var i = 0; i < inputs.length; i++) {
+    var v = inputs[i].value.trim();
+    if (v !== "" && !isNaN(v) && parseInt(v, 10) === parseInt(n, 10)) return true;
+  }
+  return false;
 }
 
 function refreshStudentNumbers() {
