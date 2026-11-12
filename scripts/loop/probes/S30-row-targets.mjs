@@ -9,6 +9,7 @@
 // Fails before the change (`--control`: the reference page served as the one under test).
 //   node scripts/loop/probes/S30-row-targets.mjs [--control] [--ref <commit>]
 import { execSync } from 'node:child_process';
+import fs from 'node:fs';
 import { serve, launch, openPage, ROOT } from '../harness.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
@@ -56,7 +57,15 @@ const measure = (p, s) => p.page.evaluate(s => {
 
 try {
   for (const file of Object.keys(SEL)) {
-    const s = SEL[file], ref = execSync(`git show ${REF}:${file}`, { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
+    const s = SEL[file];
+    let ref = execSync(`git show ${REF}:${file}`, { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
+    // S40's two rows of fields at 701-900 px on index (approved, gate 4) moved the 800 px roster by design: replay that
+    // rule into the reference, so this arm still sees only the targets' own change (repaired S42)
+    if (file === 'index.html' && !ref.includes('An iPad upright')) {
+      const rule = fs.readFileSync(`${ROOT}/index.html`, 'utf8').match(/\/\* An iPad upright[\s\S]*?\n\}\n/);
+      if (!rule) throw new Error("index.html lacks S40's 701-900 px rule");
+      ref = ref.replace('@media (max-width: 700px) {', () => rule[0] + '@media (max-width: 700px) {');
+    }
     console.log(`${file}${CONTROL ? ` (control: ${REF})` : ''}`);
     for (const width of [1280, 800, 390]) {
       const p = await open(file, width, CONTROL ? ref : null), q = await open(file, width, ref);
