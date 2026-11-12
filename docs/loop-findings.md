@@ -1900,3 +1900,57 @@ the probe follows it and counts wheel turns.
 **Traps.** Playwright's `page.click` scrolls its target into view: count a teacher's scrolls with `page.mouse` on the
 box. An unscrollable page cannot hold a button still: `scrollBy` is a no-op there. A heredoc of nested quotes stopped
 at the shell's safety check as an unreadable removal: write such scripts with the Write tool.
+
+## S40 (2026-11-12) — pass M (mobile & touch) on index.html
+
+**Method.** Scratch `s40/m-index.mjs` (S38's audit adapted to index): Playwright's iPhone SE, iPhone 13 (both ways),
+iPad Mini (both ways) and a 350 × 1400 touch frame, eight states (fresh, the validation box, Fix, filled with Fill
+Down, the panels — Decimals on grade 8, Mixed on grade 5, Fractions on grade 6 —, the code panel, Advanced, after a
+generate): the document's scroll width, every UI element past the viewport, scroll boxes, text spilling its box,
+overlapping controls, every control's box, font and `inputmode`, the closed selects' text against their width, fixed
+elements, where focus lands, Fill Down's line; `s40/val.mjs` the validation box, Fix and the code panel's buttons by
+tap; `s40/mid.mjs` the five fields at nine widths from 701 to 1280 px, each Type and Count measured in its own font;
+`s40/sheet-phone.mjs` S38's arm on index (41 names from 24 to 64 characters, five types, 2 a student, keys, Math.random
+seeded) on an iPhone 13 and at 1280 px at the same density, then printed at the paper's 1056 px; contact sheet
+`s40/shots/` (iPhone 13). Since S19 index gained the 16 px phone fields (S23), the across division (S25, S31), the cap
+note (S31), the panels' groups (S37), the marked field's size (S38) and Add Student's place (S39). Arm R first: the
+smoke and S39's two and S38's three probes, green on 0af86f6.
+
+- **Phones and the frame: clean.** No sideways scroll before a generate at any shape, nothing past the edge, no scroll
+  box, no spill, no overlap, no fixed element; fields and selects 16 px on phones and on a phone on its side, 14 px on
+  the iPad Mini (S23's choice); the Number `type="text"`, no `inputmode`. The Mixed panel (grade 5, 39 boxes) and the
+  ops panels fit at 320 px, each box beside its label. The validation box comes into view with Fix and Generate Anyway
+  (521–555 of 568 px on the SE); Fix focuses Student 1's Grade in view; the code panel opens on its textarea with
+  Copy, Use and Close in view at every shape; Fill Down's line beside its button (two lines at 320 and 350 px).
+  0 page errors. Targets as queued (Duplicate / Delete 40 px, the checkboxes 13–16 px, the panel buttons 23 px).
+- **A phone's sheets: clean.** 164 sheets and keys from the iPhone 13 byte-identical to 1280 px's, with and without the
+  Number (name room 207.25 / 363.875 px both); at the paper's width no name past its line. index has no sheet rule in a
+  phone query (S38's twin trap does not apply).
+- **701–900 px (fixed, 0451580; S19's P4, gate 4 approved).** Five fields in a row gave Problem Type 84–116 px of text:
+  an iPad Mini upright read "Level 2 — factor" without its level, "Scientific Notatio", "Order of Operatio"; an
+  iPhone 13 on its side the same; up to 870 px "Level 2 — factor 6-9" lost its last digit. Two rows (Name, Number,
+  Grade; Type and Count on three tracks each of six): 320–420 px for Type, every one of 802 choices fits; outside the
+  band every field where it was. The before/after picture went to the maintainer with the question.
+- **The capped count (approved, held).** "30 problems (max for this type)" is 178 px of text, cut at every width, 169 px
+  of room at 1280 ("…(max for this typ"). Approved as "30 problems (max)" (gate 2); held when index reached its cap.
+- **A hidden Mixed panel (P2, fixed, 0af0664).** Found while proving the count text: a row that was Mixed keeps its
+  Mixed panel, hidden, and its Fractions and Decimals boxes carry the Operations panel's classes (`mwg-frac-op-cb`,
+  `mwg-dec-op-cb`); `getSelectedOps` read the whole row. A grade 6 row moved from Mixed to Fractions with Addition alone
+  ticked printed 10 +, 5 −, 5 ×, 10 ÷ (Decimals: 10 + of 30); Generate Advanced Code listed every operation twice
+  (`fractions[fractions-add|fractions-add|fractions-sub|…]`); Duplicate and Save Roster carried them, so the reload
+  ticked them all again. A row never Mixed was right. Mixed after Fractions was right (the ops panel is emptied).
+  Now it reads `.mwg-ops-panel` only. Before/after picture sent.
+- **After a generate (P4, re-measured).** 1,068 px of document at every shape under it; left queued (gate 4).
+
+**Probes.** `S40-tablet-rows` (701, 750, 768, 820, 900 px: every type each grade offers and every count fits, the two
+rows, the panels at the row's width, the Number removed; 390–700 and 901–1280 px against the page before): `--ref
+0af86f6` fails 10. `S40-hidden-mixed-ops` (Fractions and Decimals, reached directly, after Mixed and after a Mixed panel
+with its own picks: the sheet's operators, the code, Duplicate, Save and reload; the direct route byte-identical; then
+Mixed as a fresh Mixed row): `--ref 0451580` fails 16. S17-phone-layout now expects six tracks at 701–900 px. The smoke,
+S12-a11y, S16-focus, S23-phone-fields, S24-index-red-border, S26-ops-labels, S33-validation-focus, S37-panel-groups,
+S38-marked-field, S39-add-student-place and, for the second fix, S6-math-audit, S5-mixed-ops, S5-key-rows12,
+S39-decimal-key-places, S20-fill-down, S11-robustness and 15 more green.
+
+**Traps.** `openPage` opens a fresh browser context each call, so a save read back through a second `openPage` finds
+empty storage: reload the same page. A select's text box in Chromium is its width less its padding and ~20 px of arrow.
+A row's hidden panel keeps its boxes and their classes: a reader that queries the row reaches them.
