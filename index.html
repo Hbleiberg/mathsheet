@@ -2684,8 +2684,10 @@ function capturePdf(sheets) {
   var PAGE_W_PX = 1056;
   var PAGE_H_PX = 816;
 
-  // Stage element: position absolute so html2canvas can see it,
-  // scrolled just out of view vertically
+  // Stage element: position absolute so html2canvas can see it.
+  // Not painted on screen (S43; found S1): it lies at the page's top-left behind the form, so each page's clone showed
+  // through where the form has no background, its last row flickering behind the buttons for the whole export.
+  // html2canvas draws the clone from its own styles, so the stage's opacity never reaches the PDF.
   var stage = document.createElement("div");
   stage.style.cssText = [
     "position:absolute",
@@ -2696,7 +2698,8 @@ function capturePdf(sheets) {
     "overflow:hidden",
     "z-index:-1000",
     "pointer-events:none",
-    "background:white"
+    "background:white",
+    "opacity:0"
   ].join(";");
   document.body.appendChild(stage);
 

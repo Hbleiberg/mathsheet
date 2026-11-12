@@ -1807,8 +1807,11 @@ function capturePdf(sheets) {
   var jsPDFCtor = window.jspdf.jsPDF;
   var PAGE_W_PX = 1056;
   var PAGE_H_PX = 816;
+  // Not painted on screen (S43; found S1): it lies at the page's top-left behind the form, so each page's clone showed
+  // through where the form has no background, its last row flickering behind the buttons for the whole export.
+  // html2canvas draws the clone from its own styles, so the stage's opacity never reaches the PDF.
   var stage = document.createElement("div");
-  stage.style.cssText = "position:absolute;top:0;left:0;width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;z-index:-1000;pointer-events:none;background:white;";
+  stage.style.cssText = "position:absolute;top:0;left:0;width:" + PAGE_W_PX + "px;height:" + PAGE_H_PX + "px;overflow:hidden;z-index:-1000;pointer-events:none;background:white;opacity:0;";
   document.body.appendChild(stage);
   var jsPDFObj = null;
   var sheetArray = [];
