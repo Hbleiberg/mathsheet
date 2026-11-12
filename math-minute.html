@@ -1642,11 +1642,13 @@ function generateWorksheets() {
 // header layout has one width, so one line is measured (the other sheets stay unlaid out: content-visibility,
 // S1) and each name by canvas; the screen sheet's border leaves the line ~1 px narrower than paper, so a size
 // that fits here fits in print and the PDF. A name that fits gets no style; below 11 px the "…" returns.
+// A long Student Number does the same on its own line (S44, approved): a 10-digit ID printed "1234567…" on paper and
+// was cut mid-letter in Save PDF, which draws no CSS ellipsis.
 function fitLongNames() {
-  var fields = results.querySelectorAll(".worksheet-header-main > .student-field:first-child > .student-field-value");
+  var fields = results.querySelectorAll(".worksheet-header-main > .student-field > .student-field-value");
   var ctx = document.createElement("canvas").getContext("2d"), lines = {};
   for (var i = 0; i < fields.length; i++) {
-    var field = fields[i], key = field.parentNode.parentNode.style.gridTemplateColumns;
+    var field = fields[i], key = field.parentNode.parentNode.style.gridTemplateColumns + (field.parentNode.previousElementSibling ? "|number" : "");
     if (!field.textContent) continue;
     if (!lines[key]) {
       var cs = getComputedStyle(field);

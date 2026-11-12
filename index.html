@@ -2516,16 +2516,19 @@ function fitLongDescriptions() {
 // S2) and each name by canvas; with the Number removed the name column is "1fr auto", so the width also turns
 // on the description beside it. The screen sheet's border leaves the line ~1 px narrower than paper, so a size
 // that fits here fits in print and the PDF. A name that fits gets no style; below 11 px the "…" returns.
+// A long Student Number does the same on its own line (S44, approved): a 10-digit ID printed "1234567…" on paper and
+// was cut mid-letter in Save PDF, which draws no CSS ellipsis.
 // Those lines, one per description, are measured on copies of their headers in one hidden copy of their sheet, all in
 // one layout: read in place, each laid out its whole sheet (452 of 572 ms of a generate for 30 students on 30 types × 5
 // with keys, 2.6 s at a quarter of the speed; S23). The copies go once every name is fitted.
 function fitLongNames() {
-  var fields = resultsDiv.querySelectorAll(".mwg-ws-header-main > .mwg-ws-field:first-child > .mwg-ws-field-value");
+  var fields = resultsDiv.querySelectorAll(".mwg-ws-header-main > .mwg-ws-field > .mwg-ws-field-value");
   var ctx = document.createElement("canvas").getContext("2d"), lines = {}, keys = [], shells = {};
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i], header = field.parentNode.parentNode, key = header.style.gridTemplateColumns;
     if (!field.textContent) continue;
     if (key.indexOf("auto") >= 0) key += "|" + header.lastChild.textContent;
+    if (field.parentNode.previousElementSibling) key += "|number";   // the Number's own line (S44)
     keys[i] = key;
     if (lines[key]) continue;
     lines[key] = { field: field, heights: {} };

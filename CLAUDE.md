@@ -248,6 +248,7 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
   - **A long Student Name shrinks to fit its line** (`fitLongNames()` at the end of every generate, S9):
     down to 11 px, on the 18 px name's baseline; a name that fits gets no style. Still too long at 11 px, it is cut
     with a written "…" (`endWithEllipsis()`, S19): Save PDF draws no CSS ellipsis, and the name keeps its start.
+    A long Student Number does the same on its own line (S44, approved): a 10-digit ID printed "1234567…".
     On `index.html` a long description shrinks the same way (`fitLongDescriptions()`, S22), down to 9 px on its line height.
   - **A printed name sits in a `<span dir="auto">`** (`nameHtml()`, S18; `index.html` S19), so a Hebrew name keeps its
     punctuation and its "…" at its own end and stays at the left of its line; an empty name stays an empty line. Not a
