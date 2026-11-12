@@ -2002,3 +2002,74 @@ under `timeout 300` and is green alone).
 **Traps.** After a reload the harness's print counter is 0 again: wait for a count above the one read before the click.
 A sheet's `innerText` is empty while `content-visibility: auto` skips it (off screen): set it `visible` or read
 `textContent`.
+
+## S42 (2026-11-12) — pass H (teacher walkthrough) on math-facts.html, then D (accessibility) on math-minute.html
+
+**Method.** Arm R first: the smoke, S41's two and S40's two probes, green on d34e64d. H as S41 ran it on math-minute
+(scratch `s42/walk.mjs`, `walk2.mjs`): real clicks and keys at 1280 × 900, a pointer that wheels the page until a
+control is in the window and clicks its box (`page.mouse`), wheel turns counted. A second-grade class: Students 1-3 by
+keys (Avi Cohen, 1, "+3" by type-ahead), Add Student × 19, 19 names (two Hebrew), Fill Down, Student 7 (an IEP) on
+"+0  +1", Student 15 on "30 mixed +/-", the Header line "Friday Math Minute · פרשת וירא", Print Answer Key, Generate &
+Print, Save Roster; next week (a reload, Arrow Down from +3 to +4, Fill Down, a new Header line, a new student, Fill
+Down again); a substitute's sheets (Name blank, 2 a student); Generate Advanced Code → Use in Advanced Input →
+Generate; Delete Student 10; then copies with keys, a Hebrew-first Header line past its 80-character cap printed at the
+paper's width, a names column and a spreadsheet's three columns pasted into the Advanced box, the mode switch,
+Duplicate mid-class, a row without its level and Fix, Remove Student Number, Clear Current Roster, a third-grade row's
+Arrow Down from ×12 and +10. Since S21 math-facts gained the continuing Number (S34), the named Duplicate / Delete
+(S37), the phone sheet header (S38), Add Student's place (S39) and the mode switch's cleared list (S41).
+
+- **The class: 80 actions, 39 wheel turns, 0 page errors** (S21: 112 actions, the turns uncounted). Type-ahead "+3"
+  picks +3. Add Student × 19 by a pointer: 19 clicks, 0 wheel turns (S39 holds), numbered 4…22 from row 3's 3 (S34).
+  44 sheets in 977 ms to the print call, keys after the sheets, the Header line on all 44, 30 problems on each; Student
+  7's "Thirty addition facts — plus zero or one", 15's "Thirty mixed addition and subtraction facts". The unsaved
+  notice; Save → reload restores 22 rows, the Header line, the key and every level.
+- **Next week: 10 actions, 33 wheel turns.** Arrow Down moves +3 to +4; Fill Down: "Level filled down from Student 1.
+  Students 7 and 15 kept their own levels." A new student's row 23 is numbered 23, its level empty: Add Student, Fill
+  Down and Generate sit 11 turns apart (3,144 px at 22 rows), as on math-minute (S41): the S39 seed (a new row on
+  Student 1's level) is the shape that saves them. Arrow Down past a family's last fact goes on to the next family
+  (×12 → ÷1, +10 → "-itself -0 -1").
+- **Substitute, copies, the round trip, the edges: clean.** Name blank: 92 sheets with no name, keys named, "Prints
+  blank" in every Name; 2 a student: "Worksheet 1 of 2", "(Key 1 of 2)". An 85-character Header line keeps 80; Hebrew
+  first it prints right to left, one line, 974 px wide, nothing cut, the grid's last row at 793 of 816 px. The code (23
+  lines, "+0+1", "mixpm30" and the Hebrew intact) → Use in Advanced Input (focus in the box) → 46 sheets. Delete moves
+  focus to the next row's Delete and keeps the other Numbers. A names column: 'Entry 1 is invalid: "Avi Cohen"' for each
+  line, and Back to Standard Input clears the list (S41 holds). A spreadsheet's columns with "3" for "+3": S21's hint
+  ("A spreadsheet turns +3 into 3"), the other three lines printed. A row without its level: "Student 5: missing Level",
+  Fix focuses it. Remove Student Number prints no Number. Clear Current Roster asks first.
+- **Duplicate mid-class (S41's P4, on math-facts too).** Duplicate on Student 2 (2) of 1, 2, 3 gave a copy numbered
+  3 beside Moshe's 3: fixed on all three pages (880893d), the copy empty when a row holds the next number.
+- **Noted, not queued.** Fill Down's line ("…Students 7 and 15 kept their own levels.") hides in Advanced and shows
+  again Back in Standard after the round trip: a report on the Standard roster, still true, cleared by its next change.
+  Tab from a row's Level reaches the next row's Duplicate and Delete before its Name (the heading's buttons, S37).
+
+**D on math-minute.html (S22's cell; H clean, so a second surface).** S33's audits run on math-minute (scratch
+`s33/d-mf.mjs`, `d-mf2.mjs`, logs `s42/d-mm.log`, `d-mm2.log`). Since S22 math-minute gained Fill Down's line (S21),
+the 16 px phone fields (S23), the 40 px Duplicate / Delete (S30), the validation box's focus and reduced motion (S33),
+the rows' named buttons (S37), Add Student's place (S39).
+- **Names**: 29 interactive nodes in Standard, 31 with the validation box, 33 with the code panel, 12 in Advanced, none
+  unnamed; "Student 2 Level", "Duplicate student Student 3", the Header line with its title as the description.
+- **Keyboard**: 30 Tab stops, each with the ring and in view, in the visual order but the checkboxes' column (as S33).
+  Add Student and Duplicate keep focus while the counter announces; Delete → the next row's Delete; Generate with a row
+  empty → the validation box, Generate Anyway (Enter) prints and gives focus back to Generate, the next Tab Save PDF;
+  Fix → the marked Level; the code panel opens on its textarea, Escape returns to its button; Enter in a text field
+  submits nothing; the Clears land in the status line.
+- **Contrast** lowest first: the placeholder 4.61, Delete 6.15, the unsaved notice 6.66, Duplicate 8.10; field borders
+  4.31, the marked Level 5.59. **Targets**: the three settings checkboxes 16 px (S12's P4, open). **Text spacing** at
+  1280 and 390 px and **reflow** at 640 and 320 px: nothing clipped, no sideways scroll, no control past the edge, in
+  Standard, Advanced or with the code panel. S12-a11y, S16-focus, S22-pdf-focus, S22-level-reference,
+  S33-reduced-motion, S33-validation-focus and S37-row-button-names green. Clean.
+
+**Fixes.** 880893d: Duplicate's copy takes the next Number only when no row reads it as a number ("3", "03"), or starts
+empty; the last row's copy and a wordy "14B" as before. 47b7bc7: Add Student counts on from the last row whose Number is
+a number, one for each row after it: Student 1's 1 with the default rows 2 and 3 blank gives 4, and 19 clicks number
+4…22 (S39 found 19 empty); no number in any row still leaves it empty.
+
+**Probes.** `S42-duplicate-number` (six cases a page): `--ref d34e64d` fails 6. `S42-add-student-gap` (seven cases and a
+class of 22 a page): `--ref 880893d` fails 12. `S34-add-student-number`'s blank and wordy cases now expect the count (11,
+12, 13). `S30-row-targets` read red on index at 800 px from S40's approved two rows (0451580; the largest move 456 px):
+its reference now replays that rule, green, `--control` fails 27 as written. The smoke, S11-robustness (run from a
+worktree of each fix) and the 17 probes that use Add Student, Duplicate or the Numbers green.
+
+**Traps.** A layout arm against an old reference decays with every approved layout change in its band: S40 never ran
+S30-row-targets at 800 px; replay the approved rule into the reference, as `replayLater` does for index's markup. Add
+Student's next Number is read before its row exists, so "one for each row after it" counts the rows already there.
