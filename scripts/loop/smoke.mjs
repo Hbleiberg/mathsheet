@@ -106,7 +106,9 @@ try {
     await p.page.selectOption(p.spec.perStudent, '1');
     const adv = await generate(p);
     ok(adv === 2, `advanced input: 2 entries (one nameless) → ${adv} sheets`);
-    const advName = await p.page.locator(p.spec.sheet).first().innerText();
+    // textContent, not innerText: a sheet below the window lays out lazily (content-visibility: auto) and reads empty,
+    // and since S44 the print call comes one frame after the click, before the scroll reaches the sheets
+    const advName = await p.page.locator(p.spec.sheet).first().textContent();
     ok(advName.includes(p.spec.advancedName), `advanced input: the first entry prints as "${p.spec.advancedName}"`);
     ok(p.errors.length === 0, `0 page errors in advanced mode`);
     await p.close();
@@ -124,7 +126,7 @@ try {
     ok(back === hostile, `saved roster restored after reload`);
     await generate(p);
     const xss = await p.page.evaluate(() => window.__xss);
-    const literal = await p.page.locator(p.spec.sheet).first().innerText();
+    const literal = await p.page.locator(p.spec.sheet).first().textContent();   // as advName above (S44)
     ok(xss === undefined && literal.includes('<img'), `escapeHtml: hostile name printed literally, handler never ran`);
     await p.close();
 
