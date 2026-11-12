@@ -2748,7 +2748,8 @@ function capturePdf(sheets) {
     stage.innerHTML = "";
     stage.appendChild(clone);
 
-    // Small delay to let the DOM paint before capturing
+    // No settling wait (S43; found S1): html2canvas draws the clone from its styles, never from the screen, so the 50 ms
+    // "to let the DOM paint" bought nothing and was ~18 % of an export. The timeout still yields, so the line above shows.
     setTimeout(function() {
       html2canvas(clone, {
         scale:           1.5,
@@ -2787,7 +2788,7 @@ function capturePdf(sheets) {
         pdfDone();
         showNotice("PDF generation failed. Use Generate & Print and choose Save as PDF.");
       });
-    }, 50);
+    }, 0);
   }
 
   captureNext(0);
