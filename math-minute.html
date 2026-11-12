@@ -1931,8 +1931,11 @@ function validationRefocus(button) {
 }
 
 function wireButtons() {
+  // The mode's report goes with it: the skipped list stayed with the other mode's roster ('Entry 1 is invalid: "Avi
+  // Cohen"' under a Standard class and its validation box), though the status line went (S41, found in pass H)
   toggleInputModeButton.addEventListener("click", function () {
     clearStatusMessages();
+    clearErrors();
     setInputMode(inputMode === "standard" ? "advanced" : "standard");
   });
 
