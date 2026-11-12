@@ -1268,7 +1268,8 @@ function getGradeOptions(selected) {
 }
 
 function getCountOptions(selected, capAt30) {
-  if (capAt30) return '<option value="30" selected>30 problems (max for this type)</option>';
+  // "(max for this type)" was cut at every width, "30 problems (max for this typ" at 1280 px (approved S40, gate 2; S41)
+  if (capAt30) return '<option value="30" selected>30 problems (max)</option>';
   var html = '<option value="">Count</option>';
   for (var i = 0; i < VALID_COUNTS.length; i++) {
     var c = VALID_COUNTS[i];
