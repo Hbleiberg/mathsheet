@@ -11,7 +11,7 @@
 // Fails before the change (`--control`: REF served as the page under test).
 //   node scripts/loop/probes/S32-line-breaks.mjs [--control] [--ref <commit>] [--only <file>]
 import { execSync } from 'node:child_process';
-import { serve, launch, openPage, ROOT } from '../harness.mjs';
+import { serve, launch, openPage, replayLater, ROOT } from '../harness.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
 const REF = arg('--ref') || '469b56d', CONTROL = process.argv.includes('--control'), ONLY = arg('--only');
@@ -56,7 +56,9 @@ async function paste(p, file, text) {
 
 for (const file of Object.keys(PAGESPEC).filter(f => !ONLY || f === ONLY)) {
   const s = PAGESPEC[file];
-  const refBody = execSync(`git show ${REF}:${file}`, { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
+  // index's later approved sheet changes are replayed into the reference (S42's rule; S47: its Subtraction 3-5 minus)
+  const refRaw = execSync(`git show ${REF}:${file}`, { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
+  const refBody = file === 'index.html' ? replayLater(refRaw) : refRaw;
   console.log(`${file}${CONTROL ? ` (control: ${REF} served)` : ''}`);
   const p = await open(file, CONTROL ? refBody : null);
   const names = s.lines.map(l => l.split(',')[0]), numbers = s.lines.map(l => l.split(',')[1].trim());

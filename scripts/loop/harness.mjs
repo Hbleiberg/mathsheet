@@ -108,7 +108,8 @@ export const launch = () => chromium.launch();
  * where the old page already has it. S35: Integers' minus sign (`signed()`, `makeIntegers`) and the Scientific
  * Notation key's notation (`makeSciNote`'s `answerHtml`, which the key's across cell prints). S38: the last key's
  * `print-break` (`buildAnswerKeySheet(allAnswers, true)`). S46: Integers' brackets on a negative second number only
- * (`makeIntegers`) and the dec ÷ dec dividend's one place (`makeDecDivD`). Extend it when a later
+ * (`makeIntegers`) and the dec ÷ dec dividend's one place (`makeDecDivD`). S47: the minus sign in Subtraction
+ * Levels 3-5's descriptions (`TYPE_LABELS`). Extend it when a later
  * change to index's sheets breaks such an arm.
  */
 export function replayLater(body) {
@@ -123,6 +124,7 @@ export function replayLater(body) {
     body = body.replace(`flex-shrink:0">' + ansStr + '</span>' +`, `flex-shrink:0">' + (problem.answerHtml || ansStr) + '</span>' +`);
   }
   body = body.replace('buildAnswerKeySheet(allAnswers, !doKey)', 'buildAnswerKeySheet(allAnswers, true)');
+  body = body.replace(/(Subtraction Level [345] \(\d-digit) - /g, '$1 \\u2212 ');
   return body;
 }
 

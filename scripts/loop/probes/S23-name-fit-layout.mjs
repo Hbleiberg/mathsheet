@@ -10,7 +10,7 @@
 // Times are printed, not asserted. Fails before the change (`--ref 37af5e4`).
 //   node scripts/loop/probes/S23-name-fit-layout.mjs [--ref <commit>] [--identity]
 import { execSync } from 'node:child_process';
-import { serve, launch, openPage, ROOT } from '../harness.mjs';
+import { serve, launch, openPage, replayLater, ROOT } from '../harness.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
 const REF = arg('--ref'), BASE = '37af5e4', IDENTITY = process.argv.includes('--identity');
@@ -33,7 +33,9 @@ async function open(ref) {
   const p = await openPage(browser, srv.base, FILE, { raw: true });
   await p.context.addInitScript(INIT);
   if (ref) {
-    const body = execSync(`git show ${ref}:${FILE}`, { cwd: ROOT, encoding: 'utf8' });
+    // later approved sheet changes replayed (S42's rule): S47's wider minus in Subtraction 3-5's descriptions leaves a
+    // name less room when the Number is removed (its column "1fr auto")
+    const body = replayLater(execSync(`git show ${ref}:${FILE}`, { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 }));
     await p.page.route(/\/index\.html$/, r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body }));
   }
   await p.page.reload({ waitUntil: 'load' }); await p.page.waitForSelector('#mwgStudentsContainer .mwg-student-entry', { state: 'attached' });
