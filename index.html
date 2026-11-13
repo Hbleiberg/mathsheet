@@ -1205,7 +1205,10 @@ function scrollBehavior() {
 function nameHtml(name) { return name ? '<span dir="auto">' + esc(name) + "</span>" : ""; }
 function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function randFrom(arr)  { return arr[Math.floor(Math.random() * arr.length)]; }
-function clearStatus()  { statusDiv.innerHTML = ""; }
+// The validation box goes with the status line, as on the standard pages: Add, Duplicate, Delete, Clear, Save, the code
+// panel and the mode switch left it naming rows that had changed or gone, and in Advanced mode its Generate Anyway ran the
+// Advanced roster (S50; found in pass E)
+function clearStatus()  { statusDiv.innerHTML = ""; if (validationBox) validationBox.style.display = "none"; }
 function clearErrors()  { errorsDiv.innerHTML = ""; }
 function showSuccess(m) { statusDiv.innerHTML = '<div class="mwg-success-box">' + esc(m) + '</div>'; }
 function showNotice(m)  { statusDiv.innerHTML = '<div class="mwg-notice-box">' + esc(m) + '</div>'; }
