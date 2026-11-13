@@ -804,28 +804,30 @@ var STORAGE_KEY = "mathMinuteRosterData_v2";
 var inputMode = "standard";
 var entryUid = 0;   // numbers each roster row's ids: a label names its field only through `for` (S12)
 
+// Each level's name; the menu and the Level Reference both write it "5 \u2013 40 Addition" (no leading zero, so typing 5
+// picks Level 5; S49, approved; found S20)
 var levelNames = [
-  "01 - Easy Addition",
-  "02 - Hard Addition",
-  "03 - Easy Subtraction",
-  "04 - Hard Subtraction",
-  "05 - 40 Addition",
-  "06 - 40 Subtraction",
-  "07 - 50 Addition",
-  "08 - 50 Subtraction",
-  "09 - 60 Addition",
-  "10 - 60 Subtraction",
-  "11 - Easy X",
-  "12 - Hard X",
-  "13 - 40 X",
-  "14 - 50 X",
-  "15 - 60 X",
-  "16 - Easy \u00f7",
-  "17 - Hard \u00f7",
-  "18 - 40 \u00f7",
-  "19 - 50 \u00f7",
-  "20 - 60 \u00f7",
-  "21 - Mixed"
+  "Easy Addition",
+  "Hard Addition",
+  "Easy Subtraction",
+  "Hard Subtraction",
+  "40 Addition",
+  "40 Subtraction",
+  "50 Addition",
+  "50 Subtraction",
+  "60 Addition",
+  "60 Subtraction",
+  "Easy X",
+  "Hard X",
+  "40 X",
+  "50 X",
+  "60 X",
+  "Easy \u00f7",
+  "Hard \u00f7",
+  "40 \u00f7",
+  "50 \u00f7",
+  "60 \u00f7",
+  "Mixed"
 ];
 
 function escapeHtml(text) {
@@ -847,8 +849,7 @@ function renderLevelReference() {
   var rows = 11;
   var html = "";
   for (var i = 0; i < levelNames.length; i++) {
-    html += '<div class="level-reference-item">' + (i + 1) + " \u2013 " +
-      escapeHtml(levelNames[i].replace(/^\d+\s-\s/, "")) + "</div>";
+    html += '<div class="level-reference-item">' + (i + 1) + " \u2013 " + escapeHtml(levelNames[i]) + "</div>";
   }
   levelReferenceGrid.style.gridTemplateRows = "repeat(" + rows + ", auto)";
   levelReferenceGrid.style.gridAutoFlow = "column";
@@ -867,7 +868,7 @@ function getLevelOptions(selectedValue) {
   for (var i = 0; i < levelNames.length; i++) {
     var value = i + 1;
     var selected = String(value) === String(selectedValue) ? "selected" : "";
-    options += '<option value="' + value + '" ' + selected + ">" + levelNames[i] + "</option>";
+    options += '<option value="' + value + '" ' + selected + ">" + value + " \u2013 " + levelNames[i] + "</option>";
   }
   return options;
 }
