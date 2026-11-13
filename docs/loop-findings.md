@@ -2379,3 +2379,59 @@ the smoke and the red-mark, focus, Fill Down and a11y probes (S12, S16, S20, S21
 **Traps.** A text change in a sheet's description moves what is fitted beside it: the name's room with the Number
 removed, the description's own size on a key; an identity arm against an old commit decays with it (S23-name-fit-layout,
 S32-line-breaks): replay the label into the reference.
+
+## S48 (2026-11-13) — pass A (performance) on math-facts.html, then B (print & export) on math-minute.html
+
+**Method.** Arm R first: the smoke and S47's two and S46's two probes, green on 108145d. A as S44 ran it on math-minute
+(scratch `s48/a-twin.mjs`, S44's script with the heaviest code, mixmd60, added): a fresh context a run, the roster planted
+as a saved payload, Generate timed from the click to the handler's end and the next frame, long tasks observed, cpu4 by
+CDP; every arm against S29's end (892e4ef) served from git, alternated, medians of 3; Save PDF with the two cdnjs files
+replayed from disk. Since S29 math-facts gained 23 commits (the row targets, the line breaks, focus and scroll rules,
+Add Student's Number and place, the saved-row and restore guards, the site icon, the row names, the phone header rule,
+Duplicate's Number, the skipped list, S43's two PDF waits, S44's print wait and Number fit, S45's Level Reference
+columns and white marked select, S47's `aria-invalid`); no resize or mutation observer added.
+
+- **Load**: DCL 19 ms, load 29, FCP 40 (892e4ef 17 / 26 / 36); 88,982 B (79,233: the site icon, the sessions' comments,
+  S45's reference), 529 nodes (528).
+- **Generate**: the handler as at S29 (×0.88-1.10: +0+1 30 × 5 28 ms, +7 with keys 47, the 71 codes with long names and
+  keys 56, mixmd60 with keys 90, 1,510 sheets 220; cpu4 115-987); one long task a generate. The click → next frame reads
+  ×1.06-1.41 only because since S44 the print step (the move to body, the stubbed `window.print()`) runs one frame after
+  the click, inside that window, where 892e4ef ran it 200 ms later: click → `window.print()` is ×0.25 (63 / 252 ms) for 30
+  × 5 with keys, ×0.57 at cpu4, ×0.54 and ×0.93 for 1,510 sheets (246 / 455, 1,176 / 1,265 ms at cpu4).
+- **The form at 30 students** (to the next frame, 1× / cpu4): every action 3.4-9.9 / 13-50 ms; the mode toggle's ×1.39 at
+  cpu4 re-timed at seven runs ×0.94; Add Student and Fill Down with 30 sheets shown ×0.38-0.39 at 1×. A saved 31-row
+  roster restores by DCL 33 / load 71 ms (892e4ef 29 / 67; cpu4 149 / 339, one 285 ms task, 277).
+- **Save PDF**: 30 pages with long names 232 ms a page, 7.0 s (892e4ef 279, 8.4 s; ×0.83), 1,817 KB; 150 pages 212 ms
+  a page, 31.8 s (259, 38.9 s; ×0.82), the longest task 112 ms, 9.8 MB: S43's waits.
+- Clean; the clean surface bought a second.
+
+**B on math-minute.html (S29's cell).** `S8-minute-print --a4` (21 levels × plain / heavy / bare with keys), its
+`--control` (fails 3 with `--only plain`), `S8-minute-pdf` (a real cdnjs Save PDF), S44's `b-round.mjs` (math-minute's
+codes) and `b-number-pdf.mjs` (long Numbers, print against Save PDF).
+- **Print, clean.** 378 sheets (42 / 210 / 126), each 1056 × 816, `print-break` on all but the last, every grid its rows'
+  count, no ink outside its cell or under the inner bottom, ≥ 47 px between problems; paper under the lowest ink plain
+  rows-3…6 110 / 82 / 64 / 53 px (keys 101 / 72 / 55 / 43), heavy and bare down to 32 (keys 22); header 55-61, 76-82 with
+  the line; 40 heavy descriptions on two lines inside their box; no name cut. Print-to-PDF one Letter page a sheet, A4
+  both ways one a sheet (842.88 × 595.92). Every figure is S29's.
+- **Save PDF, clean.** `math-minute-worksheets.pdf`, 42 pages, one 1584 × 1224 JPEG a page, 84 KB a page, 6.9 s (S29:
+  9.1); scrolled away mid-export every page carries its problems; 1,760 cells within 3 px of print (3 / 1 / 1 / 1), the
+  header within 0 px; no frame; red on every key. Long Numbers ("1234567890", "Room 12 B", "Gr3-Cohen-07") alike in print
+  and the PDF (S44's fit).
+- **Round trip and payload.** 48 sheets, 40 identical through Generate Advanced Code → Use; the other 8 the two known P4s
+  ("Levi; Dana" prints "Dana", the Number "12, B"). Save → reload restores Advanced mode, its box, 2 copies, the key and
+  the line; the payload's keys CLAUDE.md's.
+
+**Fixes (index, S1's two A items; the twins' only autonomous items are index's too, so a third slot went unused).**
+e769836: a Fractions or Decimals row made with its own operations (restored, duplicated, filled down) builds its panel
+once — 21 panel writes for 14 restored rows → 14, a Duplicate 2 → 1, Fill Down over five rows 10 → 5, the roster
+byte-identical; a 60-row class restores ×0.97 (×0.91 at cpu4). 91df04e: the Include-in-Mixed panel answers its
+checkboxes with one change handler (a property, replaced at each build) — 109 listeners over three builds → 0, 20 steps
+by real clicks leaving the ticks and the count as before; a 60-row Mixed class restores in the same time (×0.97, ×1.02).
+
+**Probes.** `S48-ops-render` (fails 4 before), `S48-mixed-listeners` (fails 1). After each fix the smoke and the ops,
+Mixed, restore, Fill Down, Duplicate and a11y probes green (14 and 15).
+
+**Traps.** A row is built before it joins the page (createStudentEntry, then appendChild), so a MutationObserver on the
+document never sees its panel: count writes with a setter hook on `Element.prototype.innerHTML`, listeners with an
+`addEventListener` hook. Since S44 a generate's click → next frame includes the stubbed print step; against a commit
+before a03e7fd it reads slower: time the handler, or the click → `window.print()`.
