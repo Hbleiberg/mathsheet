@@ -2488,3 +2488,60 @@ smoke and the 27 probes that touch the settings checkboxes or the row targets, g
 **Traps.** index keeps its answer keys as `.mwg-answer-key-sheet`, not `.mwg-worksheet`, and its print id is
 `mwg-results-print`: a sheet script written for the twins counts no keys there. A page's option text sits inside every
 roster row, so an arm that compares a row's markup with an old commit reads an approved menu change as a difference.
+
+## S50 (2026-11-13) — pass E (errors & robustness), the suite: all three pages over S32–S49
+
+**Method.** Arm R first: the smoke and S49's two and S48's two probes, green on 5c5bc7c. Since S32 the pages took 38
+commits (S33's focus and reduced motion through S49's menu and targets), each with its own probe. `S11-robustness` in
+full on 5c5bc7c, then five new arms in scratch (`s50/e-new.mjs`, logs beside it) for what those commits added: Numbers
+through Add Student and Duplicate (S34, S42), saved rows whose fields are the wrong type (index's operations and Mixed
+picks, S40 / S48), the validation box after the roster changes under it (S33, S47), re-entrant clicks with the PDF
+libraries stubbed (S43, S44), pathological names and Numbers (S44's Number fit); then 500 students × 5 copies with keys
+(`s50/big.mjs`).
+
+- **The suite, green.** `S11-robustness`, every arm: index 525 selector combinations in 222 s (S32: 192), math-minute 21,
+  math-facts 71, each a sheet and a key with the count asked; the malformed paste reported entry by entry; 500 entries
+  print; storage denied and full give the defaults; the 13 bad payloads load; every control fires: 69 checks, 0 failing.
+- **Saved rows of the wrong type.** Numbers for strings, nulls, objects, arrays, a 100,000-character name, a row that is
+  a string, a number or an array: each loads as a blank or filled row beside the good one and Generate prints (an object
+  name prints "[object Object]"). index: an operations list or Mixed picks that are a string, hold nulls, numbers or
+  names foreign to the grade load and print the type's mix; an operations *object* or Mixed picks that are a *number*
+  start the page blank with the notice and keep the roster (S36's rule). The page never writes those shapes. A
+  5,000-character header line from storage prints on one line (the field's 80 is the input's `maxlength`). Noted.
+- **Re-entrant clicks, clean.** Save PDF double-clicked: one export, 6 pages; Generate & Print, Clear Current Roster or
+  Advanced mode after page 1 of an export: the PDF finishes whole, the results go back to the app, the button comes back,
+  no stage left. Generate & Print clicked twice before the next frame prints twice (a synthetic double click: a teacher's
+  second click lands on the print dialog). Noted.
+- **Names and Numbers.** 5,000 W's, 3,000 Hebrew letters, spaces only, 50 ZWJ, 200 combining accents, an RLO, 40 family
+  emoji, a tab; a 5,000-digit Number, an RLO, emoji: every one fits its line (11 px and "…", or 18 px), none past its
+  box, 0 errors; a cut emoji sequence ends on its ZWJ before the "…". 16 sheets in 80 ms.
+- **A big class.** 500 students × 5 copies with keys: 5,000 sheets in 2.4 s on index (72 MB of heap), 1.4 s on
+  math-minute, every one printed once, 0 errors.
+- **Numbers (P3, three pages).** Add Student and Duplicate count on with `parseInt`, so a zero-padded class loses its
+  width: 001, 002, 003 → Add gives "4", "5", Duplicate the last "6"; "007" → "10" / "8". The rest read as before
+  ("Infinity" → "NaN", 20 digits rounded, "0x1F" → 3; index's Duplicate reads "0x1F" as 31, `parseInt` without its
+  radix): nothing a teacher types. Fixed (below).
+- **index's validation box (P3).** index's `clearStatus()` empties the status line and leaves the box, where the twins'
+  `clearStatusMessages()` hides it: Add Student, Duplicate, Delete (the marked row too), Clear Current Roster, Save,
+  Generate Advanced Code and the mode switch all left "The following students have unfilled required fields: • Student 1:
+  missing Grade" up on index. In Advanced mode the box named Standard rows that were hidden, and its Generate Anyway ran the
+  Advanced roster ("No valid students"). Fixed (below).
+
+**Fixes.** 793f959 (all three): `numberAfter(n, k)` counts on in Add Student and Duplicate and writes the result as wide
+as n when n starts with a zero, so 001-003 go on 004, 005 and Duplicate's 006, and the sheets print them; every Number
+without a leading zero counts as before (index's Duplicate now reads with radix 10, as the twins', so "0x1F" gives 1, not
+32). 54b505e (index): `clearStatus()` hides the validation box as the twins' `clearStatusMessages()` does, so every flow that
+clears the status line on index (Add, Duplicate, Delete, Clear current, Clear saved, Save, the code panel, the mode
+switch) takes the box with it, as on the twins; picking a field keeps it, and its Generate Anyway prints. Both
+autonomous (no copy, no layout). index on its cap; nothing the twins hold alone is autonomous: two slots unused.
+
+**Probes.** `S50-padded-numbers` (fails 15 before, five a page), `S50-validation-box-clears` (fails 10 before, on index).
+**A probe repaired, S49's debt.** `S29-code-panel` failed 6 since 0930aa5: its closed-form layout arm compares every
+element's box with a53342b, and S49's settings labels grew their boxes (the padding over the checkbox, an equal
+negative margin, nothing moved). S49's sweep after that fix ran only the 27 probes that touch the settings. Repaired
+(ec22f73): the three labels are read by their text, as S30's Duplicate / Delete are. Then the smoke and all 101 probes, green on the tree with both fixes.
+
+**Traps.** A padded target (padding with an equal negative margin) moves nothing but grows the element's own box: an arm
+that compares every element's box with an old commit reads it as a change; after such a fix run every probe, not the
+ones that touch the control (S29-code-panel, missed in S49). index's `clearStatus()` is not the twins'
+`clearStatusMessages()`: the twins' also hides the validation box (now index's too, S50).

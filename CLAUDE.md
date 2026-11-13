@@ -261,7 +261,8 @@ PDF is a rasterized mirror of the print layout (so output matches print exactly)
     message sits beside the button in a polite live line (`fillDownStatus`, S21), cleared by any change to the roster.
   - **"Name blank"** (`nameBlankToggle`, helper `isNameBlank()`): prints an empty Student
     Name line on every worksheet even when a name is entered (answer keys still show the
-    name). Student Number is always free text — never validate it as numeric.
+    name). Student Number is always free text — never validate it as numeric. Add Student and Duplicate count on
+    from a numeric one (`numberAfter()`), as wide as it is when zero-padded: 003 → 004 (S50).
   - **"Header line (optional)"** (`headerLineInput`, math-minute S6 and math-facts S7; saved as `headerLine`):
     free text (≤ 80 characters, `dir="auto"`, escaped) printed as one line under the header row of every sheet
     and key; blank prints nothing, so the sheets stay byte-identical.
