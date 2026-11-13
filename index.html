@@ -2815,21 +2815,26 @@ function highlightInvalidEntries() {
     typeEl.style.border  = "";
     countEl.style.border = "";
     gradeEl.style.padding = typeEl.style.padding = countEl.style.padding = "";
+    gradeEl.style.backgroundColor = typeEl.style.backgroundColor = countEl.style.backgroundColor = "";
     if (!gradeEl.value) {
       // A 2 px mark on a 1 px field: its second pixel comes from the padding (8 → 7 px), so the field keeps its size and
-      // the rows under it stay put; clearing the mark clears the padding (S38; found S30)
+      // the rows under it stay put; clearing the mark clears the padding (S38; found S30). A white fill with it: an author
+      // border drops a select's native look, and Chromium filled the marked one grey (S45; found S30)
       gradeEl.style.border = "2px solid rgb(204,0,0)";
       gradeEl.style.padding = "7px";
+      gradeEl.style.backgroundColor = "#fff";
       entryProblems.push("Grade Level");
     }
     if (!typeEl.value) {
       typeEl.style.border = "2px solid rgb(204,0,0)";
       typeEl.style.padding = "7px";
+      typeEl.style.backgroundColor = "#fff";
       entryProblems.push("Problem Type");
     }
     if (!countEl.value) {
       countEl.style.border = "2px solid rgb(204,0,0)";
       countEl.style.padding = "7px";
+      countEl.style.backgroundColor = "#fff";
       entryProblems.push("Problem Count");
     }
     if (entryProblems.length) {
@@ -2848,6 +2853,7 @@ function clearValidationHighlights() {
     entry.querySelector('[name="problemType"]').style.border  = "";
     entry.querySelector('[name="count"]').style.border        = "";
     entry.querySelector('[name="grade"]').style.padding = entry.querySelector('[name="problemType"]').style.padding = entry.querySelector('[name="count"]').style.padding = "";
+    entry.querySelector('[name="grade"]').style.backgroundColor = entry.querySelector('[name="problemType"]').style.backgroundColor = entry.querySelector('[name="count"]').style.backgroundColor = "";
   }
 }
 
@@ -2856,7 +2862,7 @@ function clearValidationHighlights() {
 // still empty keeps it.
 function clearFilledHighlights() {
   var fields = studentsContainer.querySelectorAll('[name="grade"], [name="problemType"], [name="count"]');
-  for (var i = 0; i < fields.length; i++) if (fields[i].value && fields[i].style.border) { fields[i].style.border = ""; fields[i].style.padding = ""; }
+  for (var i = 0; i < fields.length; i++) if (fields[i].value && fields[i].style.border) { fields[i].style.border = ""; fields[i].style.padding = fields[i].style.backgroundColor = ""; }
 }
 
 function fallbackCopy(text, successMsg) {

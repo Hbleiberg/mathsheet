@@ -1678,13 +1678,15 @@ function highlightInvalidEntries() {
     var levelEl = entry.querySelector('select[name="level"]');
     nameEl.style.border  = "";
     levelEl.style.border = "";
-    levelEl.style.padding = "";
+    levelEl.style.padding = levelEl.style.backgroundColor = "";
     var entryProblems = [];
     if (!levelEl.value) {
       // A 2 px mark on a 1 px field: its second pixel comes from the padding (8 → 7 px), so the field keeps its size and
-      // the rows under it stay put; clearing the mark clears the padding (S38; found S30)
+      // the rows under it stay put; clearing the mark clears the padding (S38; found S30). A white fill with it: an author
+      // border drops a select's native look, and Chromium filled the marked one grey (S45; found S30)
       levelEl.style.border = "2px solid rgb(204,0,0)";
       levelEl.style.padding = "7px";
+      levelEl.style.backgroundColor = "#fff";
       entryProblems.push("Level");
     }
     if (entryProblems.length) {
@@ -1700,6 +1702,7 @@ function clearValidationHighlights() {
     entries[i].querySelector('input[name="studentName"]').style.border  = "";
     entries[i].querySelector('select[name="level"]').style.border       = "";
     entries[i].querySelector('select[name="level"]').style.padding      = "";
+    entries[i].querySelector('select[name="level"]').style.backgroundColor = "";
   }
 }
 
@@ -1707,7 +1710,7 @@ function clearValidationHighlights() {
 // until the next Generate, with every level set (found S17). A Level still empty keeps it.
 function clearFilledHighlights() {
   var levels = studentsContainer.querySelectorAll('select[name="level"]');
-  for (var i = 0; i < levels.length; i++) if (levels[i].value && levels[i].style.border) { levels[i].style.border = ""; levels[i].style.padding = ""; }
+  for (var i = 0; i < levels.length; i++) if (levels[i].value && levels[i].style.border) { levels[i].style.border = ""; levels[i].style.padding = levels[i].style.backgroundColor = ""; }
 }
 
 function validateAndRun(action, opener) {
