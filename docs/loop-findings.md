@@ -2292,3 +2292,49 @@ reference or a paste (45 for the last) green.
 against the track, not the cell box. A raster crop that ends at a row cuts a comma's tail into a period ("7.300.000"):
 read the number at a larger crop. Chromium paints a select with any author border or box-shadow from its
 `background-color` (rgb(239,239,239) by default): judge a marked control by its pixels, not its computed style.
+
+## S46 (2026-11-13) — pass G (math correctness & pedagogy) on index.html
+
+**Method.** Arm R first: the smoke and S45's three and S44's two probes, green on 95871a2. Then `S6-math-audit` (51
+selectors × 200 sheets with keys, 378,000 problems recomputed with exact rationals) and S27's two probes on HEAD, green;
+then the audit widened in scratch (`s46/g-all.mjs`) to every grade × type the Standard form offers, read off
+GRADE_TYPES: 153 pairs × 200 sheets (counts rotating 30-60), 1,290,000 problems; `s46/divd.mjs` counted each Decimals
+operation's places; the G probes since S27 (S28-rounding-grades, S28-sci-locale, S35-integer-sign, S35-sci-key,
+S39-decimal-key-places, S40-hidden-mixed-ops) green. Since S27 index gained 35 commits, five in what a sheet holds
+(Rounding at 3-4, Scientific Notation's locale and key, the Integers minus, the Decimals key's places, the ops panel).
+
+- **Clean.** Every key answer right (0 of 1,290,000), every key problem its sheet's own, every count its description's,
+  every level its label's promise, no negative difference, every Decimals number at its level's places, every fraction
+  key whole, mixed or proper in lowest terms; at every grade, not only those S6 picks. Rounding at grades 3-4 (S28) was
+  never audited: it keeps to 999, tens and hundreds (3.NBT.A.1); 5.1-5.3 % of its problems ask a number below the place
+  and 2.5-2.7 % round to 0 ("Round 23 to nearest hundreds"), as at 5+ (3.7-4.1 %, S6's queued P4). `S6-math-audit` now
+  runs `rounding@3` (the grade ≤ 4 branch); its control still fails 3.
+- **Integers (asked, fixed).** Every second number was bracketed, so 51-52 % of problems (3,097 of 6,000 at grade 7,
+  3,049 at 8) read "22 + (15) =", "5 − (23) =". Gate 6 → "brackets only if negative" (c20e13c): "22 + 15 =",
+  "5 − (−8) =", "−7 − (−3) =".
+- **Decimals dec ÷ dec (asked, fixed).** A tenths divisor times a whole quotient is a tenths number, written to two
+  places: every dividend ended in 0 ("15.60 ÷ 7.8 =", "18.00 ÷ 4.5 =", 3,000 of 3,000; the other five operations 5-10 %,
+  their real zeros). Gate 6 → "drop the zero" (528faf6): "15.6 ÷ 7.8 =", "18.0 ÷ 4.5 =".
+- **Queued (autonomous).** Subtraction Levels 3-5's printed descriptions write the minus as a hyphen ("Subtraction
+  Level 3 (2-digit - 1-digit)") where the page's own menu writes U+2212 and every problem the minus; index was on its cap.
+- **Measured, no candidate.** A Standard form's Fractions row ticks all five operations (frac ÷ frac at grade 5, beyond
+  5.NF; S39 saw the same for Decimals), and deals them in a fixed turn (add, sub, mul, ÷ frac, ÷ whole) where Mixed
+  shuffles; a bare Advanced `fractions` is `makeFractions(grade)`, like-denominator + and − at 5 (with × of like
+  denominators at 6+), under the same "Fractions — Grade 5" header: Generate Advanced Code writes the brackets, so the
+  round trip holds. Mul / divide operands are not in lowest terms in 20-21 % ("4/6 × 3/9"). Order of Operations has
+  + and × only; Integers + and − only; Scientific Notation exponents 2-6, never negative; a tenth of its coefficients
+  read "3.0". Long Division at 6+ reaches 5-digit dividends (2.3 %) with divisors 10-12.
+
+**Fixes.** c20e13c (gate 6): `makeIntegers` brackets `b` only when negative. 528faf6 (gate 6): `makeDecDivD` writes its
+dividend `toFixed(1)` (exact: a tenths number). index on its cap; nothing twin-only autonomous; two slots unused.
+
+**Probes.** `S46-integer-brackets` (fails 9 on c20e13c~: the shape, the kinds, the keys at grades 7 and 8 and a Mixed),
+`S46-decdiv-places` (fails 3 on 528faf6~; `--identity`: under a seed every other problem byte-identical to c20e13c's,
+the dec ÷ dec ones differing by the 0 alone). Repairs: S35-integer-sign reads the unbracketed positive;
+S39-decimal-key-places and harness `replayLater` (S31-across-division-left, S31-cap-note, S32-type-case) replay both
+changes into their old references (S42's rule; S32's control still fails 5, S39's `--ref 03356bd~1` 3). After each fix
+the smoke and the 22 probes that read a decimal or an integer green.
+
+**Traps.** A probe whose selectors were listed when it was written misses a branch added later: S6-math-audit never
+reached Rounding at grades 3-4 (S28) until S46. Widen an audit to every grade × type the form offers (GRADE_TYPES),
+and add a selector when a generator gains a branch.

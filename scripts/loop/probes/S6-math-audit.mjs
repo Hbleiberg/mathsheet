@@ -29,7 +29,7 @@ const SELECTORS = [
   ...['add','sub','mul','divf','divw'].map(o => `fractions[fractions-${o}]@6`),
   'decimals@5', 'decimals@6',
   ...['add','sub','mulw','muld','divw','divd'].map(o => `decimals[decimals-${o}]@6`),
-  'rounding@5', 'longdivision@5', 'longdivision@6', 'orderofoperations@6', 'integers@7', 'integers@8',
+  'rounding@3', 'rounding@5', 'longdivision@5',   // rounding@3: the grade ≤ 4 branch, offered since S28 and first audited S46 'longdivision@6', 'orderofoperations@6', 'integers@7', 'integers@8',
   'exponents@8', 'scientificnotation@8',
   ...[1,2,3,4,5,6,7,8].map(g => `mixed@${g}`),
 ].filter(s => !ONLY || s === ONLY);
