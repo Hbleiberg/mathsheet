@@ -35,9 +35,11 @@ async function open(file, body, storage) {
 }
 const hints = (p, s) => p.page.evaluate(sel => [...document.querySelectorAll(sel)].map(e => e.querySelector('input[name="studentName"]').placeholder), s.rows);
 // a row's markup with the Name's placeholder taken out, and S37's names: Duplicate / Delete's (an id and `aria-labelledby`),
-// index's panel groups (`role` and `aria-labelledby`)
+// index's panel groups (`role` and `aria-labelledby`), and math-minute's Level options as S49 writes them ("05 - 40 Addition"
+// → "5 \u2013 40 Addition", approved: replayed into the reference, S42's rule)
 const rowsHtml = (p, s) => p.page.evaluate(sel => [...document.querySelectorAll(sel)].map(e => e.outerHTML.replace(/ placeholder="[^"]*"/g, '')
-  .replace(/ id="(duplicate|delete)Student-\d+" aria-labelledby="[^"]*"/g, '').replace(/ role="group" aria-labelledby="studentHeading-\d+ (opsTitle|mixedLabel)-\d+"/g, '')), s.rows);
+  .replace(/ id="(duplicate|delete)Student-\d+" aria-labelledby="[^"]*"/g, '').replace(/ role="group" aria-labelledby="studentHeading-\d+ (opsTitle|mixedLabel)-\d+"/g, '')
+  .replace(/>(\d\d) - ([^<]*)<\/option>/g, (m, n, t) => '>' + Number(n) + ' \u2013 ' + t + '</option>')), s.rows);
 
 try {
   for (const file of FILES) {
