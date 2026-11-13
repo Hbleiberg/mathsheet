@@ -107,7 +107,10 @@ try {
         await o.fr.fill(`${u.rows} input[name="studentNumber"] >> nth=2`, '3');
         for (let i = 0; i < 5; i++) await o.fr.click(u.btn);
         const h = await o.fr.$eval(u.rows, e => e.innerHTML); await o.ctx.close(); return h; };
-      const a = await roster(source(file, base)), b = await roster(body);
+      // math-minute's Level options as S49 writes them ("05 - 40 Addition" → "5 \u2013 40 Addition", approved), replayed into the
+      // reference (S42's rule)
+      const s49 = h => h.replace(/>(\d\d) - ([^<]*)<\/option>/g, (m, n, t) => '>' + Number(n) + ' \u2013 ' + t + '</option>');
+      const a = s49(await roster(source(file, base))), b = await roster(body);
       check(a === b && a.length > 1000, `the roster after five clicks byte-identical to ${base}'s (${a.length} / ${b.length} chars; the numbers carry on from 3)`);
     }
   }
