@@ -1501,53 +1501,24 @@ function renderMixedCheckboxes(containerEl, grade, checkedTypes) {
       updateCountForMixed(entryDiv);
     });
   }
-  // Master frac checkbox: check/uncheck all frac ops
-  var fracMaster = box.querySelector(".mwg-frac-master");
-  if (fracMaster) {
-    fracMaster.addEventListener("change", function() {
-      var cbs = box.querySelectorAll(".mwg-frac-op-cb");
-      for (var i = 0; i < cbs.length; i++) cbs[i].checked = fracMaster.checked;
-      updateCountForMixed(entryDiv);
-    });
-  }
-  // Master dec checkbox: check/uncheck all dec ops
-  var decMaster = box.querySelector(".mwg-dec-master");
-  if (decMaster) {
-    decMaster.addEventListener("change", function() {
-      var cbs = box.querySelectorAll(".mwg-dec-op-cb");
-      for (var i = 0; i < cbs.length; i++) cbs[i].checked = decMaster.checked;
-      updateCountForMixed(entryDiv);
-    });
-  }
-  // Op checkboxes: auto-check master when any op checked, auto-uncheck when all unchecked
-  var fracOpCbs = box.querySelectorAll(".mwg-frac-op-cb");
-  for (var i = 0; i < fracOpCbs.length; i++) {
-    fracOpCbs[i].addEventListener("change", function() {
-      var master = box.querySelector(".mwg-frac-master");
+  // One change handler for the whole panel, a property, so a new build replaces it: each checkbox had its own listener,
+  // 36 at grade 6, added again at every build (S48; found S1). A Fractions / Decimals box ticks or clears its
+  // operations; an operation ticks its box while any is ticked; every change re-reads the count's 30 cap.
+  box.onchange = function(e) {
+    var t = e.target, cls = t.classList;
+    if (cls.contains("mwg-frac-master") || cls.contains("mwg-dec-master")) {
+      var ops = box.querySelectorAll(cls.contains("mwg-frac-master") ? ".mwg-frac-op-cb" : ".mwg-dec-op-cb");
+      for (var i = 0; i < ops.length; i++) ops[i].checked = t.checked;
+    } else if (cls.contains("mwg-frac-op-cb") || cls.contains("mwg-dec-op-cb")) {
+      var frac = cls.contains("mwg-frac-op-cb");
+      var master = box.querySelector(frac ? ".mwg-frac-master" : ".mwg-dec-master");
       if (!master) return;
-      var any = false;
-      var cbs2 = box.querySelectorAll(".mwg-frac-op-cb");
+      var any = false, cbs2 = box.querySelectorAll(frac ? ".mwg-frac-op-cb" : ".mwg-dec-op-cb");
       for (var j = 0; j < cbs2.length; j++) if (cbs2[j].checked) any = true;
       master.checked = any;
-      updateCountForMixed(entryDiv);
-    });
-  }
-  var decOpCbs = box.querySelectorAll(".mwg-dec-op-cb");
-  for (var i = 0; i < decOpCbs.length; i++) {
-    decOpCbs[i].addEventListener("change", function() {
-      var master = box.querySelector(".mwg-dec-master");
-      if (!master) return;
-      var any = false;
-      var cbs2 = box.querySelectorAll(".mwg-dec-op-cb");
-      for (var j = 0; j < cbs2.length; j++) if (cbs2[j].checked) any = true;
-      master.checked = any;
-      updateCountForMixed(entryDiv);
-    });
-  }
-  var otherCbs = box.querySelectorAll(".mwg-mixed-cb:not(.mwg-frac-master):not(.mwg-dec-master)");
-  for (var i = 0; i < otherCbs.length; i++) {
-    otherCbs[i].addEventListener("change", function() { updateCountForMixed(entryDiv); });
-  }
+    } else if (!cls.contains("mwg-mixed-cb")) return;
+    updateCountForMixed(entryDiv);
+  };
 }
 
 function updateCountForType(entryDiv) {
