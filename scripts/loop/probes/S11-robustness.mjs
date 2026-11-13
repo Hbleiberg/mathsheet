@@ -174,7 +174,7 @@ const PASTES = {
   'math-facts.html': { good: 8, lenient: 1, bad: 5, nums: [5, 6, 7, 8, 9], text: [
     'Avi Cohen, 1, +2;', 'Cohen, Dana, 2, x3;', ', 3, X3;', 'Uri, 4, ×3;', 'Noa, 5;', 'Lior, 6, +99;', 'Tal, 7, abc;', 'Gal, 8, ;', 'Ron, 9, x;', ';;', '', '',
     '   Maya   ,   10   ,   /4   ;', 'Eli\t, 11, ÷4;', 'Yael, 12, *5;', 'Dov, 13, 3, +2;', 'Ben, 14, doubles'].join('\r\n') },
-  'index.html': { good: 5, lenient: 3, bad: 6, nums: [4, 5, 6, 7, 8, 12], capped: [10, 14], text: [   // 40 of Mixed at 5 and 60 of rounding print 30 and say so (S31)
+  'index.html': { good: 5, lenient: 2, bad: 7, nums: [4, 5, 6, 7, 8, 11, 12], capped: [10, 14], text: [   // 40 of Mixed at 5 and 60 of rounding print 30 and say so (S31); a grade "2.5" is reported since S45, not read as 2
     'Avi Cohen, 1, add1, 30, 2;', 'Cohen, Dana, 2, sub2, 40, 3;', ', 3, mul1, 30, 1;', 'Noa, 4, add1, 30;', 'Lior, 5, add1, 30, 9;', 'Tal, 6, add1, 35, 2;',
     'Gal, 7, fractions, 30, 1;', 'Ron, 8, mixed[add1|foo], 30, 2;', ';;', '', '',
     '   Maya   ,   9   ,   div1   ,   30   ,   4   ;', 'Eli\t, 10, mixed, 40, 5;', 'Rina, 11, add1, 30, 2.5;', 'Shai, 12, add1, 3O, 2;', 'Dov, 13, 14, add2, 30, 2;', 'Ben, 15, rounding, 60, 5'].join('\r\n') },

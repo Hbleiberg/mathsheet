@@ -1903,6 +1903,14 @@ function unknownBracketName(grade, mixedTypes, fracOps, decOps) {
   return null;
 }
 
+// An Advanced grade or count is read by its leading whole number, so "2nd" and "40 problems" mean Grade 2 and 40, but a
+// fraction or an exponent makes it another number: "2.5" printed Grade 2, "30.9" 30 and "2e1" Grade 2, with no message.
+// Those read as NaN now, reported as the invalid grade or count they are; "3.0" is still 3 (S45; found S11).
+function wholeNumberRead(text) {
+  var whole = parseInt(text, 10);
+  return /^[+-]?\d+(\.\d+|e[+-]?\d+)/i.test(text) && parseFloat(text) !== whole ? NaN : whole;
+}
+
 function parseAdvancedInput() {
   var raw = advancedBox.value.trim();
   var students = [], errors = [], notes = [], n = 0;
@@ -1924,9 +1932,9 @@ function parseAdvancedInput() {
     // Number drop them; the name keeps its own (ZWNJ is part of some names) (S34; found S32).
     for (var p = 0; p < parts.length; p++) parts[p] = (p > 1 ? parts[p].replace(/[\u061c\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/g, "") : parts[p]).trim();
     if (parts.length !== 5) { errors.push("Entry " + n + " needs 5 fields: " + entry); continue; }
-    var grade = parseInt(parts[4]);
+    var grade = wholeNumberRead(parts[4]);
     if (isNaN(grade) || grade < 1 || grade > 8) { errors.push("Entry " + n + " invalid grade: " + entry); continue; }
-    var count = parseInt(parts[3]);
+    var count = wholeNumberRead(parts[3]);
     if (VALID_COUNTS.indexOf(count) === -1) { errors.push("Entry " + n + " invalid count: " + entry); continue; }
     // Every type and bracket name is lower case: "Add1", "Mixed" (as the Type menu writes it), "Fractions[Add]" read too (S32; found S21).
     var type = parts[2].toLowerCase(), mixedTypes = null, fracOps = null, decOps = null;
