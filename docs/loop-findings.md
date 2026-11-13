@@ -2220,3 +2220,75 @@ still fails with `escapeHtml` broken.
 **Traps.** A probe that reads a sheet right after Generate & Print: `textContent`, never `innerText` (since S44). S8's
 "names cut" counts every header field, the Number too. `page.screenshot`'s `clip` is in window coordinates: shoot the
 element. Generate's ratio at three runs spans ×0.65-1.25 on unchanged code: re-time a suspect ratio at seven.
+
+## S45 (2026-11-13) — pass B (print & export) on index.html, then C (aesthetics) on math-facts.html
+
+**Method.** Arm R first: the smoke and S44's two and S43's two probes, green on ea552d7. B as S25 ran it (its scratch is
+gone; rebuilt as `s45/b-print.mjs`, `b-pdf.mjs`, `b-round.mjs`): every grade × type × count the Standard form offers,
+read off its selects (153 pairs, 525 combinations; S25 151 / 523 before Rounding at Grades 3-4), `Math.random` seeded,
+"ink" = the glyphs' own box (canvas `measureText`) plus every drawn border, under print at the paper's width with the
+page's move to body; PDFs from Chromium's print and the real Save PDF (cdnjs), rasterized with `pdftoppm`. Since S25
+index gained 38 commits, a dozen of them in what a sheet holds (the dealing, Division Level 5, Rounding at 3-4, the
+across division's place, the divisor's baseline, the Integers minus, the Scientific Notation key, the Decimals key's
+places, the ops panel's picks, the last key's `print-break`, S44's Number fit).
+
+- **Print, clean.** Three configurations with keys: plain (525 × 1, 1,050 sheets), heavy (153 at their largest count × 5,
+  long Latin, Hebrew, pointed-Hebrew and empty names, Numbers to 10 characters; 1,530), bare (153 at their smallest × 2,
+  no Number, Name blank; 612): 3,192 sheets, each 1056 × 816, `print-break` on all but the last, every grid its count,
+  every problem's ink inside its cell side to side and above the paper's inner bottom, ≥ 2.6 px between problems, red in
+  every key cell, every description inside its box and clear of the brand (9.5-13 px), every name and Number inside its
+  line (12.5-18 px), the header 55 px; Name blank empties the student's line and keeps the key's. Paper under the lowest
+  ink: rows-3…6 99 / 70 / 53 / 42 px (keys alike), rows-8 21 (key 14), rows-10 13 (key 5), rows-12 7 (key 2), the
+  across grids 1 (Fractions, ink to 791.4 of 792; S25 790.5): every figure S25's, and 24cec4f measures the same.
+  Print-to-PDF one Letter page a sheet; A4 landscape and portrait one page a sheet. A cell's box runs 4 px past its
+  track (its padding, content-box outside `#mwg-app`), so ink is measured against the track: the rows-12 Mixed 60 keys
+  at Grades 3-4 cross theirs by 1.7 px and stay 2.6 px clear of the problem below (S5's room). Control: a landscape
+  `@page` and a 140 px cell fail 4.
+- **Save PDF (real cdnjs), clean.** Grades 2, 5 and 8, every type at its largest count, with keys and long Latin /
+  Hebrew / empty names: `worksheets.pdf`, 126 pages for 126 sheets, one 1584 × 1224 JPEG a page, 112 KB a page (S25 146:
+  S26's JPEG 0.8), 20.1 s from the click (24); 6,720 cells, 6,630 within 3 px of print against the common offset (3 / 1 /
+  1 / 1), 90 at 8 px: the last row of the eighteen 60-problem keys at Grades 5 and 8 (rows-12), S25's 90 at 8 px, the same
+  at 192 dpi by eye; the header within 1 px; no frame; red on every key; the Fractions, Integers and Scientific Notation
+  keys legible at 144 dpi ("7,300,000" whole). Control (rows-6 at 1.4 in in the clone) fails.
+- **Round trip and payload, clean.** 12 Standard rows by real selects and ticks (a Fractions and a Decimals op subset,
+  two Mixed subsets, one with Fractions and one op; Hebrew, quotes, `&`, `<b>`, a tab, a blank name, "Levi; Dana", the
+  Number "12, B") × 2 with keys → Generate Advanced Code → Use → Generate: 40 of 48 sheets identical, the other 8 the
+  two known P4s. Saved in Advanced mode with 3 copies, the key, no Number and Name blank, a reload restores every
+  setting, the box and the 12 Standard rows with their ticks; the payload keeps `students` (the known P4).
+- **For G (not B):** Integers write the second number in parentheses when it is positive too ("22 + (15) =",
+  "5 − (23) ="), every sheet and key (`makeIntegers`); a pedagogy call for G on index.
+- Clean; a clean surface bought a second.
+
+**C on math-facts.html (S26's cell).** `s45/c-ui.mjs`: the UI at 1280 and 800 px in eight states (fresh; four rows with
+Hebrew, a 25-character name, a header line and Fill Down's line; the validation box; after a generate with keys; the
+code panel; Advanced with the Level Reference; an Advanced generate with skipped entries; saved), screenshots and the
+computed type; `c-sheet.mjs`: eight codes (+3, ×12, ÷7, mix+60, mixmd60, doubles, -fr10, mix/40) × sheet and key with a
+header line, a Hebrew name, the 31-character name, a 10-digit Number and a blank name, under print.
+- **UI.** Type as S26 (the small buttons 14 px and 34 tall, Duplicate / Delete 13 / 40 since S30, the two large 17 /
+  48); every state inside the window but the known 1,064 px after a generate at 800 (S17's P4). Two findings: (1) the
+  Level select the validation box marks is filled grey, rgb(239,239,239) (S30's P4; an author border drops a select's
+  native look, and a box-shadow ring, the queued shape, does the same); (2) Advanced mode's Level Reference lists its 71
+  short codes in two columns: the card 1,195 px tall at 1280 (Generate at 1,417 px), 1,155 at 800 (Generate at 1,787),
+  1,214 at 390. Gate 3 asked with before / after pictures (`s45/shots/level-reference-*-before-after.png`) → "compact".
+- **Sheets, clean.** 16 sheets as S26 found them: the header with its line, the long name and the 10-digit Number shrunk
+  onto their lines (S9, S44), the keys' answers under their problems, the quotients over the bracket.
+
+**Fixes.** 2621a9d (math-facts, gate 3): the reference grid `repeat(auto-fill, minmax(84px, 1fr))`: 4 / 8 / 3 columns at
+1280 / 800 / 390 px, the card 754 / 528 / 914 px, Generate at 976 / 1,160 / 1,824 (1,417 / 1,787 / 2,125); 3 columns at
+320 and 861-1100 px, nothing cut. 8698860 (all three): the marked select takes a white fill with its border and padding,
+cleared with them. 13417bb (index): `wholeNumberRead()` reports an Advanced grade or count with a fraction or an
+exponent ("2.5", "30.9", "2e1", "1.5e1") and keeps "2nd", "40 problems", "3.0". Every page but math-minute on its cap;
+math-minute has nothing of its own autonomous; the fourth slot unused.
+
+**Probes.** `S45-level-reference` (fails 6 on HEAD~: columns, the card's height, codes whole, headings spanning, reading
+order at 1280 / 800 / 390), `S45-marked-select` (fails 3: every marked select painted white as an unmarked one is, at its
+size; a pick and Generate Anyway leave no style), `S45-index-grade-read` (fails 2: the four reported and unprinted, the
+meant ones read). Repairs: `S38-phone-sheet-header`'s desktop arm shoots the Advanced form against a00e10c, so the S45
+rule is replayed into it (S42's rule; `--ref a00e10c` still fails 10); `S11-robustness`'s index arm counted "2.5" among
+the lenient reads that print: it is reported now. After each fix the smoke and the probes that read the mark, the
+reference or a paste (45 for the last) green.
+
+**Traps.** index's cells are 4 px taller than their tracks in print (content-box padding outside the app): check ink
+against the track, not the cell box. A raster crop that ends at a row cuts a comma's tail into a period ("7.300.000"):
+read the number at a larger crop. Chromium paints a select with any author border or box-shadow from its
+`background-color` (rgb(239,239,239) by default): judge a marked control by its pixels, not its computed style.
