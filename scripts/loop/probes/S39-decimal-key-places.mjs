@@ -33,7 +33,10 @@ async function run(browser, base, c, ref) {
   const p = await openPage(browser, base, 'index.html', { raw: true });
   const { page } = p;
   await page.addInitScript(SEED);
-  if (ref) { const body = execSync(`git show ${ref}:index.html`, { cwd: ROOT, encoding: 'utf8' });
+  // S46's approved dec ÷ dec dividend, one place ("15.6 ÷ 7.8"), is replayed into an older page (S42's rule): it prints
+  // a number and draws nothing, so the identity arms still compare the change S39 made
+  if (ref) { const body = execSync(`git show ${ref}:index.html`, { cwd: ROOT, encoding: 'utf8' })
+      .replace('horizHtml(a.toFixed(2)+" ÷ "+b.toFixed(1)+" =")', 'horizHtml(a.toFixed(1)+" ÷ "+b.toFixed(1)+" =")');
     await page.route(/\/index\.html$/, r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body })); }
   await page.reload({ waitUntil: 'load' }); await page.waitForSelector('#mwgStudentsContainer .mwg-student-entry');
   if (c.standard) {

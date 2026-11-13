@@ -107,7 +107,8 @@ export const launch = () => chromium.launch();
  * commit before them then measures its own change only. Each swap takes today's text for the old one, and is skipped
  * where the old page already has it. S35: Integers' minus sign (`signed()`, `makeIntegers`) and the Scientific
  * Notation key's notation (`makeSciNote`'s `answerHtml`, which the key's across cell prints). S38: the last key's
- * `print-break` (`buildAnswerKeySheet(allAnswers, true)`). Extend it when a later
+ * `print-break` (`buildAnswerKeySheet(allAnswers, true)`). S46: Integers' brackets on a negative second number only
+ * (`makeIntegers`) and the dec ÷ dec dividend's one place (`makeDecDivD`). Extend it when a later
  * change to index's sheets breaks such an arm.
  */
 export function replayLater(body) {
@@ -115,6 +116,8 @@ export function replayLater(body) {
   const take = re => { const m = now.match(re); if (!m) throw new Error(`replayLater: today's page lacks ${re}`); return m[0]; };
   if (!/function signed\(/.test(body))
     body = body.replace(/function makeIntegers\(grade\) \{[\s\S]*?\n\}\n/, () => take(/\/\/ A negative number takes[\s\S]*?\nfunction makeIntegers[\s\S]*?\n\}\n/));
+  else body = body.replace(/function makeIntegers\(grade\) \{[\s\S]*?\n\}\n/, () => take(/function makeIntegers\(grade\) \{[\s\S]*?\n\}\n/));
+  body = body.replace('horizHtml(a.toFixed(2)+" ÷ "+b.toFixed(1)+" =")', 'horizHtml(a.toFixed(1)+" ÷ "+b.toFixed(1)+" =")');
   if (!/answerHtml/.test(body)) {
     body = body.replace(/function makeSciNote\(\) \{[\s\S]*?\n\}\n/, () => take(/function makeSciNote\(\) \{[\s\S]*?\n\}\n/));
     body = body.replace(`flex-shrink:0">' + ansStr + '</span>' +`, `flex-shrink:0">' + (problem.answerHtml || ansStr) + '</span>' +`);

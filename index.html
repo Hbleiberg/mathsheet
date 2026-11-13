@@ -2150,10 +2150,12 @@ function makeDecDivW() {
   var a=parseFloat((q*b).toFixed(pl));
   return {html:horizHtml(a.toFixed(pl)+" ÷ "+b+" ="),answer:q,kind:"horiz"};
 }
+// A tenths divisor times a whole quotient is a tenths dividend, written with its one place ("15.6 ÷ 7.8 =", "18.0 ÷ 4.5 ="):
+// at two places every dividend ended in a needless 0, "15.60 ÷ 7.8 =" (S46, approved at gate 6).
 function makeDecDivD() {
   var b=Math.round(rand(11,99))/10,q=rand(2,9);
   var a=parseFloat((b*q).toFixed(2));
-  return {html:horizHtml(a.toFixed(2)+" ÷ "+b.toFixed(1)+" ="),answer:q,kind:"horiz"};
+  return {html:horizHtml(a.toFixed(1)+" ÷ "+b.toFixed(1)+" ="),answer:q,kind:"horiz"};
 }
 function makeRounding(grade) {
   var places=[10,100];
