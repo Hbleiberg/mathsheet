@@ -937,7 +937,7 @@ function createStudentEntry(index, studentData) {
     var level  = div.querySelector('select[name="level"]').value;
     var newNumber = number;
     if (!isNaN(number) && number !== "") {
-      newNumber = String(parseInt(number, 10) + 1);
+      newNumber = numberAfter(number, 1);
       // Mid-class the next number is a classmate's: Student 2 (2) of 1, 2, 3 gave a copy numbered 3 beside Student 3's 3,
       // and both sheets printed it. The copy takes it only when no row holds it, or starts empty (S42; found S41)
       if (numberHeld(newNumber)) newNumber = "";
@@ -974,6 +974,14 @@ function refreshStudentNumbers() {
   updateStudentCounter();
 }
 
+// The number k after n, as wide as n when n is zero-padded: a class numbered 001-022 goes on with 023, where parseInt gave
+// "23" beside "022", and 007's copy is 008 (S50; found in pass E). A Number without a leading zero counts as before.
+function numberAfter(n, k) {
+  var next = String(parseInt(n, 10) + k);
+  if (/^0\d+$/.test(n)) while (next.length < n.length) next = "0" + next;
+  return next;
+}
+
 // Add Student carries on the Student Number, as index's does and Duplicate does here: after 3 the new row reads 4
 // (approved S34; found S18). It counts on from the last row whose Number is a number, one for each row after it, so a
 // blank row or a "14B" no longer stops the count: Student 1's 1 with the default rows 2 and 3 blank gives 4 (S39 found
@@ -982,7 +990,7 @@ function getNextStudentNumber() {
   var entries = studentsContainer.querySelectorAll(".student-entry");
   for (var i = entries.length - 1; i >= 0; i--) {
     var num = entries[i].querySelector('input[name="studentNumber"]').value.trim();
-    if (num !== "" && !isNaN(num)) return String(parseInt(num, 10) + entries.length - i);
+    if (num !== "" && !isNaN(num)) return numberAfter(num, entries.length - i);
   }
   return "";
 }
