@@ -2338,3 +2338,44 @@ the smoke and the 22 probes that read a decimal or an integer green.
 **Traps.** A probe whose selectors were listed when it was written misses a branch added later: S6-math-audit never
 reached Rounding at grades 3-4 (S28) until S46. Widen an audit to every grade × type the form offers (GRADE_TYPES),
 and add a selector when a generator gains a branch.
+
+## S47 (2026-11-13) — pass G (math correctness & pedagogy) on math-minute.html, then math-facts.html
+
+**Method.** Arm R first: the smoke and S46's two and S45's three probes, green on 788ca0c. Since S28 the twins gained
+23 commits each, none in a generator, a family, a description or the deal (the diff of `generateProblemsForLevel`,
+the `*Facts` makers, `dealProblems` and `getLevelMeta` is empty). `S7-facts-audit` on both pages (21 levels and 71
+codes × 200 students, keys on: 176,000 and 498,000 problems read back and recomputed, every deck against its documented
+family; every level the dropdown offers audited, none added since S7); `--control --n 40` fails 6 and 7. A scratch probe
+(`s47/copies.mjs`) took what the audit does not: every level × 3-4 students × 5 copies with keys (math-minute 1,260
+sheets and 1,260 keys, math-facts 1,065 and 1,065).
+
+- **Clean, both pages.** Every key right, every problem in its family and its description's promise, every deck dealt
+  as documented, every split exact (S28's results hold to the problem). A student's five copies are five deals: 0 of
+  2,520 and 0 of 2,130 copy pairs alike, a problem in the same place as on the copy before 1.6 % and 3.8 % (chance for
+  the families' sizes); each key carries its own copy's problems in order and "(Key c of 5)" under "Worksheet c of 5"
+  (0 off). The control (each copy reusing the first deal, the last key shifted one cell) reads 210 of 210 and 710 of 710
+  alike and 21 and 71 keys off.
+- **Measured, no candidate.** math-minute Level 3 "numbers through nine": 17 % n − 0 and 17 % n − n (18 of its 54
+  facts), by design as Level 1's 33 % zero addends (S7). math-facts "/n": 8 % 0 ÷ n (S7). The option text "11 - Easy X"
+  stays the maintainer's (S9).
+
+**Fixes.** f745d72 (index, the S46 queue, autonomous): Subtraction Levels 3-5's descriptions write U+2212, "(2-digit −
+1-digit)". The minus is wider than the hyphen (Arial 0.584 em, 0.333): two keys' long descriptions ("ANSWER KEY — 30
+Subtraction Level 3 …" at grade 5) are fitted 12 px where they were 12.5 (`fitLongDescriptions`, S22), and with the
+Number removed a long name beside them gets 0.5 px less (`fitLongNames`, its column "1fr auto"); every description
+inside its room under print (S22-desc-fit, every grade × type). 56ff78c (all three pages, S12's P4 in part): a field the validation box marks red
+carries `aria-invalid="true"`, set with the red and removed wherever the red is; nothing on screen or paper moves. A third
+fix went unused: index on its cap, and the twins' autonomous items (the settings checkboxes' targets, the small names'
+line height) are index's too, one diff for all three.
+
+**Probes.** `S47-sub-minus` (fails 3 before; `--identity`: every other sheet and key byte-identical, the two keys
+fitted anew named). `S47-aria-invalid` (fails 12 before: per page the red fields are exactly the
+`aria-invalid` ones and the accessibility tree's invalid nodes, through a pick, a second Generate, Generate Anyway and
+Fill Down). Repairs (S42's rule): harness `replayLater` replays the sign into an old index;
+S32-line-breaks' identity arm and S23-name-fit-layout's reference now go through it (S23's `--ref 37af5e4` control still
+fails 3, S32-line-breaks' `--control` 9). All 94 probes after the first fix: green but S23-name-fit-layout, repaired as above; after the second
+the smoke and the red-mark, focus, Fill Down and a11y probes (S12, S16, S20, S21, S23, S24, S33, S37 ×2, S38, S45).
+
+**Traps.** A text change in a sheet's description moves what is fitted beside it: the name's room with the Number
+removed, the description's own size on a key; an identity arm against an old commit decays with it (S23-name-fit-layout,
+S32-line-breaks): replay the label into the reference.
