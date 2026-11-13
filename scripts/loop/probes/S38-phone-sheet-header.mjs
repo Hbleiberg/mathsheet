@@ -32,7 +32,16 @@ async function open(browser, base, file, dev, ref, opts = {}) {
   const p = await openPage(browser, base, file, { raw: true, device: dev, ...opts });
   const { page } = p; page.on('dialog', d => d.accept());
   await page.addInitScript(SEED);
-  if (ref) { const body = execSync(`git show ${ref}:${file}`, { cwd: ROOT, encoding: 'utf8' });
+  if (ref) { let body = execSync(`git show ${ref}:${file}`, { cwd: ROOT, encoding: 'utf8' });
+    // S45's Level Reference in as many columns as fit (math-facts, approved at gate 3) moved the Advanced-mode form this
+    // arm shoots, and the sheet below it, by design: replay that rule into the reference (repaired S45, S42's rule)
+    if (file === 'math-facts.html' && !body.includes('repeat(auto-fill,minmax(84px,1fr))')) {
+      const rule = fs.readFileSync(`${ROOT}/math-facts.html`, 'utf8').match(/grid-template-columns:repeat\(auto-fill,minmax\(84px,1fr\)\);[^\n]*/);
+      if (!rule) throw new Error("math-facts.html lacks S45's Level Reference rule");
+      body = body.replace('grid-template-columns:minmax(0,1fr) minmax(0,1fr);\ngap:6px 18px;', () => rule[0] + '\ngap:6px 18px;')
+        .replace('    grid-template-columns:minmax(0,1fr) minmax(0,1fr);\n    gap:6px 12px;', '    gap:6px 12px;')
+        .replace('    grid-template-columns:minmax(120px,1fr) minmax(120px,1fr);\n', '');
+    }
     await page.route(new RegExp(`/${file.replace('.', '\\.')}$`), r => r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body })); }
   await page.reload({ waitUntil: 'load' }); await page.waitForSelector('#studentsContainer .student-entry');
   return p;

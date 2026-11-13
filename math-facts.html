@@ -148,7 +148,7 @@ margin-bottom:10px;
 
 .level-reference-grid{
 display:grid;
-grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+grid-template-columns:repeat(auto-fill,minmax(84px,1fr));   /* as many columns of codes as fit (S45, gate 3): two made the card ~1,200 px tall, Generate below it */
 gap:6px 18px;
 font-size:13px;
 line-height:1.35;
@@ -514,7 +514,6 @@ text-align:right;
   }
 
   .level-reference-grid{
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
     gap:6px 12px;
   }
 }
@@ -537,7 +536,6 @@ text-align:right;
   }
 
   .level-reference-grid{
-    grid-template-columns:minmax(120px,1fr) minmax(120px,1fr);
     gap:6px 10px;
     min-width:250px;
   }
