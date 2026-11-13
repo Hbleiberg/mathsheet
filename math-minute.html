@@ -1552,12 +1552,15 @@ function highlightInvalidEntries() {
     nameEl.style.border  = "";
     levelEl.style.border = "";
     levelEl.style.padding = levelEl.style.backgroundColor = "";
+    levelEl.removeAttribute("aria-invalid");
     var entryProblems = [];
     if (!levelEl.value) {
       // A 2 px mark on a 1 px field: its second pixel comes from the padding (8 → 7 px), so the field keeps its size and
       // the rows under it stay put; clearing the mark clears the padding (S38; found S30). A white fill with it: an author
-      // border drops a select's native look, and Chromium filled the marked one grey (S45; found S30)
+      // border drops a select's native look, and Chromium filled the marked one grey (S45; found S30). Marked invalid
+      // for a screen reader too, with the red and cleared with it: the border was the only mark (S47; found S12)
       levelEl.style.border = "2px solid rgb(204,0,0)";
+      levelEl.setAttribute("aria-invalid", "true");
       levelEl.style.padding = "7px";
       levelEl.style.backgroundColor = "#fff";
       entryProblems.push("Level");
@@ -1576,6 +1579,7 @@ function clearValidationHighlights() {
     entries[i].querySelector('select[name="level"]').style.border       = "";
     entries[i].querySelector('select[name="level"]').style.padding      = "";
     entries[i].querySelector('select[name="level"]').style.backgroundColor = "";
+    entries[i].querySelector('select[name="level"]').removeAttribute("aria-invalid");
   }
 }
 
@@ -1583,7 +1587,7 @@ function clearValidationHighlights() {
 // until the next Generate, with every level set (found S17). A Level still empty keeps it.
 function clearFilledHighlights() {
   var levels = studentsContainer.querySelectorAll('select[name="level"]');
-  for (var i = 0; i < levels.length; i++) if (levels[i].value && levels[i].style.border) { levels[i].style.border = ""; levels[i].style.padding = levels[i].style.backgroundColor = ""; }
+  for (var i = 0; i < levels.length; i++) if (levels[i].value && levels[i].style.border) { levels[i].style.border = ""; levels[i].style.padding = levels[i].style.backgroundColor = ""; levels[i].removeAttribute("aria-invalid"); }
 }
 
 function validateAndRun(action, opener) {

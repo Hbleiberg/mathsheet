@@ -2828,23 +2828,28 @@ function highlightInvalidEntries() {
     countEl.style.border = "";
     gradeEl.style.padding = typeEl.style.padding = countEl.style.padding = "";
     gradeEl.style.backgroundColor = typeEl.style.backgroundColor = countEl.style.backgroundColor = "";
+    gradeEl.removeAttribute("aria-invalid"); typeEl.removeAttribute("aria-invalid"); countEl.removeAttribute("aria-invalid");
     if (!gradeEl.value) {
       // A 2 px mark on a 1 px field: its second pixel comes from the padding (8 → 7 px), so the field keeps its size and
       // the rows under it stay put; clearing the mark clears the padding (S38; found S30). A white fill with it: an author
-      // border drops a select's native look, and Chromium filled the marked one grey (S45; found S30)
+      // border drops a select's native look, and Chromium filled the marked one grey (S45; found S30). Marked invalid
+      // for a screen reader too, with the red and cleared with it: the border was the only mark (S47; found S12)
       gradeEl.style.border = "2px solid rgb(204,0,0)";
+      gradeEl.setAttribute("aria-invalid", "true");
       gradeEl.style.padding = "7px";
       gradeEl.style.backgroundColor = "#fff";
       entryProblems.push("Grade Level");
     }
     if (!typeEl.value) {
       typeEl.style.border = "2px solid rgb(204,0,0)";
+      typeEl.setAttribute("aria-invalid", "true");
       typeEl.style.padding = "7px";
       typeEl.style.backgroundColor = "#fff";
       entryProblems.push("Problem Type");
     }
     if (!countEl.value) {
       countEl.style.border = "2px solid rgb(204,0,0)";
+      countEl.setAttribute("aria-invalid", "true");
       countEl.style.padding = "7px";
       countEl.style.backgroundColor = "#fff";
       entryProblems.push("Problem Count");
@@ -2866,6 +2871,7 @@ function clearValidationHighlights() {
     entry.querySelector('[name="count"]').style.border        = "";
     entry.querySelector('[name="grade"]').style.padding = entry.querySelector('[name="problemType"]').style.padding = entry.querySelector('[name="count"]').style.padding = "";
     entry.querySelector('[name="grade"]').style.backgroundColor = entry.querySelector('[name="problemType"]').style.backgroundColor = entry.querySelector('[name="count"]').style.backgroundColor = "";
+    entry.querySelector('[name="grade"]').removeAttribute("aria-invalid"); entry.querySelector('[name="problemType"]').removeAttribute("aria-invalid"); entry.querySelector('[name="count"]').removeAttribute("aria-invalid");
   }
 }
 
@@ -2874,7 +2880,7 @@ function clearValidationHighlights() {
 // still empty keeps it.
 function clearFilledHighlights() {
   var fields = studentsContainer.querySelectorAll('[name="grade"], [name="problemType"], [name="count"]');
-  for (var i = 0; i < fields.length; i++) if (fields[i].value && fields[i].style.border) { fields[i].style.border = ""; fields[i].style.padding = fields[i].style.backgroundColor = ""; }
+  for (var i = 0; i < fields.length; i++) if (fields[i].value && fields[i].style.border) { fields[i].style.border = ""; fields[i].style.padding = fields[i].style.backgroundColor = ""; fields[i].removeAttribute("aria-invalid"); }
 }
 
 function fallbackCopy(text, successMsg) {
