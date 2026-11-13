@@ -2435,3 +2435,56 @@ Mixed, restore, Fill Down, Duplicate and a11y probes green (14 and 15).
 document never sees its panel: count writes with a setter hook on `Element.prototype.innerHTML`, listeners with an
 `addEventListener` hook. Since S44 a generate's click → next frame includes the stubbed print step; against a commit
 before a03e7fd it reads slower: time the handler, or the click → `window.print()`.
+
+## S49 (2026-11-13) — pass C (aesthetics) on math-minute.html, then C on index.html
+
+**Method.** Arm R first: the smoke and S48's two and S47's two probes, green on 029af8f. C as S45 ran it on math-facts:
+scratch `s49/c-ui.mjs` (the UI at 1280 and 800 px in eight states: fresh; four rows with a Hebrew and a 25-character name,
+the header line and Fill Down's line; the validation box; a generate with keys; the code panel; Advanced with the Level
+Reference; an Advanced generate with skipped entries; saved; screenshots at DSF 2, every button's type and height),
+`s49/c-sheet.mjs` (eight levels, 1 / 4 / 6 / 12 / 15 / 17 / 20 / 21, sheet and key, with a header line, a Hebrew name, the
+31-character name, a 10-digit Number and a blank name, under print at the paper's width). The twins' `<style>` blocks
+differ only in the Level Reference's grid (math-facts' S45 columns), so S45's C covers the shared CSS.
+
+- **UI, clean.** Type as S45 (the small buttons 14 px and 34 tall, Duplicate / Delete 13 / 40, the two large 17 / 48);
+  nothing past the edge in any state but the known 1,064 px after a generate at 800 (S17's P4). The Level Reference: 21
+  levels in two columns of 11, the card 304 px tall at 1280 beside the paste box and 305 at 800 under it (math-facts'
+  was 1,195 before S45): no case for S45's columns here.
+- **Sheets, clean.** 16 sheets and keys as S30 measured them: the header 76 px (82 with the Mixed key's two-line
+  description, S30's known wrap), the grid 102 px down, 23 px of bottom padding; long name and Number fitted (S9, S44);
+  answers red under the stacks and over the bracket (S26's two sizes, unasked).
+- **The menu (S20's P4).** The Level options read "05 - 40 Addition" beside the reference's "5 – 40 Addition": typing 5 or
+  9 picked nothing and 1 picked Level 10. Asked at gate 2 (the letter X stays, S9's answer) → "drop the zero".
+
+**C on index.html (S31's cell), the clean surface buying a second.** `s49/c-ui-index.mjs` (the same eight states with a
+Grade 5 Mixed row, a Grade 6 Fractions row and a Grade 3 Subtraction 3 row at 40), `c-sheet-index.mjs` /
+`c-key-index.mjs` (ten students: Mixed 5, Fractions 6, Subtraction 3 at 40, Integers 7, Decimals 6, Long Division 5,
+Order of Operations 6, Exponents 8, Multiplication 4 at 60, Rounding 4, with keys).
+- **UI, clean.** As S31 found it: Georgia and #1a1a1a (the convergence session's), the panels' grey buttons 23 / 20 px
+  (the S12 P4, now index's own), the Decimals panel's sixth operation alone on a second line of its five-column grid at
+  1280; S40's two rows of fields at 800. Nothing past the edge but the 1,068 px after a generate at 800.
+- **For the convergence session (not a candidate).** index's settings checkboxes sit 42 px apart where the twins' sit 30
+  (`.mwg-answer-key-row`'s `margin: 8px 0 4px` inside a column with an 8 px gap), so its column is 118 px tall to 82 and
+  its form starts 36-40 px lower; S49's targets take the room (42 px), and a convergence that closes the gap takes them
+  to 30 with it.
+- **Sheets and keys, clean.** 20, each 1056 × 816, the lowest ink 794 px (Fractions); Integers bracket a negative only
+  (S46), divisions across start at the left (S31), the 60-problem key in S4's tight rows. Rounding still reads "to nearest
+  thousands" (S6's gate-2 P4).
+
+**Fixes.** f0c8a33 (math-minute, gate 2): the level names hold the name alone and the menu writes "<n> – <name>" as the
+reference does — type-ahead 5 → Level 5, 9 → 9, 1 → 1, 12 and 21 as before; values, saved rosters, the Advanced format
+and 42 seeded sheets and keys byte-identical. 0930aa5 (all three, S12's P4): each settings label (Print Answer Key,
+Remove 'Student Number' Field, Name blank) reaches over its checkbox (the box's 4 + 16 + 3 px and the row's 10 px gap)
+and halfway to the next row, padding with the same negative margin, the checkbox on top: one 30 px target a line on the
+twins, 42 on index, where the box was 16 px and the gap dead. Every point of each line toggles its own setting, no
+element moves, the column's pixels are identical, at 1280 / 800 / 390. One slot unused: math-minute on its cap, and
+what index and math-facts have alone is gated.
+
+**Probes.** `S49-level-menu` (fails 3 before), `S49-settings-targets` (fails 18). After the first fix all 98 probes ran:
+96 green, and two identity arms against old commits read the new option text, repaired by replaying it (S42's rule):
+`S29-default-name-hint` (9b0decf; `--control` still fails 9), `S39-add-student-place` (ee9a566). After the second the
+smoke and the 27 probes that touch the settings checkboxes or the row targets, green.
+
+**Traps.** index keeps its answer keys as `.mwg-answer-key-sheet`, not `.mwg-worksheet`, and its print id is
+`mwg-results-print`: a sheet script written for the twins counts no keys there. A page's option text sits inside every
+roster row, so an arm that compares a row's markup with an old commit reads an approved menu change as a difference.
