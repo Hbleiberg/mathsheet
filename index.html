@@ -1367,14 +1367,16 @@ function renderOpsPanel(entryDiv, type, checkedFrac, checkedDec) {
   });
 }
 
-function updateOpsPanel(entryDiv) {
+// A row made with its own operations (restored, duplicated, filled down) passes them in: the panel is built once, not
+// with every operation ticked and then again with its own (S48; found S1)
+function updateOpsPanel(entryDiv, checkedFrac, checkedDec) {
   var typeSelect = entryDiv.querySelector('[name="problemType"]');
   var panel = entryDiv.querySelector(".mwg-ops-panel");
   if (!typeSelect || !panel) return;
   var type = typeSelect.value;
   if (type === "fractions" || type === "decimals") {
     panel.className = "mwg-ops-panel visible";
-    renderOpsPanel(entryDiv, type, null, null);
+    renderOpsPanel(entryDiv, type, checkedFrac || null, checkedDec || null);
   } else {
     panel.className = "mwg-ops-panel";
     panel.innerHTML = "";
@@ -1663,8 +1665,7 @@ function createStudentEntry(index, data) {
   gradeSelect.addEventListener("change", function() { updateTypeOptionsForGrade(div); });
   typeSelect.addEventListener("change",  function() { updateMixedVisibility(div); updateOpsPanel(div); });
   updateMixedVisibility(div, type === "mixed" ? mixedTypes : null);
-  updateOpsPanel(div);
-  if (data.fracOps || data.decOps) renderOpsPanel(div, type, data.fracOps, data.decOps);
+  updateOpsPanel(div, data.fracOps, data.decOps);
   // The row's settings before the teacher changed them, for Fill Down (S20): when made, loaded or last filled down, or
   // the first complete ones picked; a later change keeps them, so the rows still on Student 1's earlier settings follow.
   div.setAttribute("data-fill-from", settingsKey(div));
@@ -3002,8 +3003,7 @@ function wireButtons() {
       if (own && own !== now && own !== earlier) { kept.push(i + 1); continue; }
       e.querySelector('[name="grade"]').value = first.grade;
       updateTypeOptionsForGrade(e, first.type, first.mixedTypes);
-      updateOpsPanel(e);
-      if (first.fracOps || first.decOps) renderOpsPanel(e, first.type, first.fracOps, first.decOps);
+      updateOpsPanel(e, first.fracOps, first.decOps);
       e.querySelector('[name="count"]').value = first.count;
       e.setAttribute("data-fill-from", now);
     }
