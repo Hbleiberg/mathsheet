@@ -2182,10 +2182,12 @@ function makeOOO() {
 // A negative number takes the minus sign U+2212, as the operator does (CLAUDE.md), on the sheet and the key: a hyphen sat
 // beside the operator's minus on ~74 % of the problems ("-7 \u2212 (-3) =", key "-4"; S35, found S6, pass G).
 function signed(n) { return n < 0 ? "\u2212" + (-n) : String(n); }
+// Only a negative second number takes brackets, as a textbook writes it ("22 + 15 =", "5 \u2212 (\u22128) ="): every one had
+// them, so half the problems read "22 + (15) =" (S46, approved at gate 6; found S45).
 function makeIntegers(grade) {
   var max=grade<=7?20:50,a=rand(-max,max),b=rand(-max,max);
   var op=randFrom(["+","\u2212"]);
-  return {html:horizHtml(signed(a)+" "+op+" ("+signed(b)+") ="),answer:signed(op==="+"?a+b:a-b),kind:"horiz"};
+  return {html:horizHtml(signed(a)+" "+op+" "+(b<0?"("+signed(b)+")":b)+" ="),answer:signed(op==="+"?a+b:a-b),kind:"horiz"};
 }
 function makeExponents() {
   if(Math.random()<0.5){var base=rand(2,9),exp=rand(2,3);return {html:horizHtml(base+"<sup>"+exp+"</sup> ="),answer:Math.pow(base,exp),kind:"horiz"};}

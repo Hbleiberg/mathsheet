@@ -47,10 +47,10 @@ try {
     check(!got.sheet.some(t => t.includes('-')) && !got.key.some(k => k.q.includes('-') || k.a.includes('-')), `${entry}: no hyphen on a sheet or key (${(got.sheet.find(t => t.includes('-')) || '').slice(0, 30)})`);
     check(sheetNeg > got.sheet.length / 2, `${entry}: ${sheetNeg} of ${got.sheet.length} problems hold a negative number`);
     check(got.key.some(k => k.a.startsWith(MINUS)), `${entry}: negative answers on the key`);
-    // work each key problem: "a op (b) =" with either sign read as minus
+    // work each key problem: "a op (b) =", or "a op b =" for a positive b since S46, with either sign read as minus
     const num = s => +s.replace(/[\u2212-]/g, '-');
     const bad = got.key.filter(k => {
-      const m = k.q.match(/^([\u2212-]?\d+) ([+\u2212]) \(([\u2212-]?\d+)\) =$/);
+      const m = k.q.match(/^([\u2212-]?\d+) ([+\u2212]) \(?([\u2212-]?\d+)\)? =$/);
       if (!m) return true;
       const v = m[2] === '+' ? num(m[1]) + num(m[3]) : num(m[1]) - num(m[3]);
       return num(k.a) !== v;
