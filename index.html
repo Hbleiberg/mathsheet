@@ -241,6 +241,10 @@ body { margin: 0; padding: 12px; background: white; }
   height: 16px;
   cursor: pointer;
 }
+/* Each setting's label reaches over its checkbox (its 4 + 16 + 3 px and the row's 10 px gap) and halfway to the next row:
+   one 42 px target a line where the checkbox was 16 px, nothing moved (S49; found S12, pass D) */
+#mwg-app .mwg-answer-key-row input[type=checkbox] { position: relative; z-index: 1; }
+#mwg-app .mwg-answer-key-row label { padding: 13px 0 13px 33px; margin: -13px 0 -13px -33px; }
 
 /* ── Advanced input ── */
 .mwg-advanced-layout {

@@ -215,6 +215,17 @@ justify-content:space-between;
 margin:10px 0 8px 0;
 }
 
+/* Each setting's label reaches over its checkbox (its 4 + 16 + 3 px and the row's 10 px gap) and halfway to the next row:
+   one 30 px target a line where the checkbox was 16 px, nothing moved (S49; found S12, pass D) */
+#math-minute-app #answerKeyToggle,#math-minute-app #removeNumberToggle,#math-minute-app #nameBlankToggle{
+position:relative;
+z-index:1;
+}
+#math-minute-app #answerKeyToggle + label,#math-minute-app #removeNumberToggle + label,#math-minute-app #nameBlankToggle + label{
+padding:7px 0 7px 33px;
+margin:-7px 0 -7px -33px;
+}
+
 .settings-left{
 flex:1 1 auto;
 display:flex;
