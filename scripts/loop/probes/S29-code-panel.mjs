@@ -43,10 +43,12 @@ const STYLE = sel => [document.querySelector(sel), ...document.querySelectorAll(
   const c = getComputedStyle(e); const r = e.getBoundingClientRect();
   return [e.tagName, e.id, c.fontFamily, c.fontSize, c.fontWeight, c.color, c.backgroundColor, c.borderTop, c.padding, c.margin, c.display, c.width, Math.round(r.width), Math.round(r.height)].join('|');
 });
-// Duplicate / Delete by their text: S30 padded their targets (a negative margin takes the padding back, so nothing moves)
+// Duplicate / Delete by their text: S30 padded their targets (a negative margin takes the padding back, so nothing moves);
+// the three settings labels the same since S49, whose padding reaches over the checkbox
 const LAYOUT = app => [...document.querySelectorAll(app + ' *')].filter(e => e.offsetParent).slice(0, 400).map(e => {
   let r = e.getBoundingClientRect();
-  if (/duplicate|delete/.test(e.className)) { const g = document.createRange(); g.selectNodeContents(e); r = g.getBoundingClientRect(); }
+  if (/duplicate|delete/.test(e.className) || /^(mwg)?(answerKey|AnswerKey|removeNumber|RemoveNumber|nameBlank|NameBlank)Toggle$/.test(e.htmlFor || '')) {
+    const g = document.createRange(); g.selectNodeContents(e); r = g.getBoundingClientRect(); }
   const id = e.id.replace(/^(duplicate|delete)Student-\d+$/, '');   // S37 gave Duplicate / Delete ids: the boxes are what is compared
   return `${e.tagName}#${id}:${Math.round(r.top + scrollY)},${Math.round(r.left)},${Math.round(r.width)}x${Math.round(r.height)}`; });
 
